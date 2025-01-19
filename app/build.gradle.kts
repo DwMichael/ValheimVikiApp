@@ -2,6 +2,9 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("com.google.devtools.ksp")
+    kotlin("plugin.serialization") version "2.1.0"
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -56,4 +59,55 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    //dagger - hilt
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.android.compiler)
+    ksp(libs.androidx.hilt.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
+
+    //room
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.room.paging)
+
+    //splashscreen
+    implementation(libs.androidx.core.splashscreen)
+
+    //Navigation
+    implementation(libs.androidx.navigation.compose)
+
+    //ViewModel
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+
+    //Serialization
+    implementation(libs.kotlinx.serialization.json)
+
+
+    //retrofit
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    //noinspection UseTomlInstead
+    implementation(libs.retrofit2.kotlinx.serialization.converter)
+
+    //coil
+    //noinspection UseTomlInstead
+    implementation(libs.coil.compose)
+
+    // Palette API
+    implementation(libs.androidx.palette.ktx)
+
+    //Testing
+    androidTestImplementation(libs.androidx.core)
+    androidTestImplementation(libs.core.ktx)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.runner)
+    androidTestImplementation(libs.androidx.rules)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.ui.test.junit4)
+    debugImplementation(libs.ui.test.manifest)
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlin.test.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
 }
