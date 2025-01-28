@@ -28,21 +28,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.rabbitv.valheimviki.domain.model.BiomeDtoX
-import com.rabbitv.valheimviki.domain.model.Stage
+import com.rabbitv.valheimviki.domain.model.CreatureDtoX
 import com.rabbitv.valheimviki.presentation.base.UiState
+import com.rabbitv.valheimviki.presentation.creatures.CreaturesViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BiomeScreen(
-    viewModel: BiomeViewModel = hiltViewModel(),
+fun CreatureScreen(
+    viewModel: CreaturesViewModel = hiltViewModel(),
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Biomes") })
+            TopAppBar(title = { Text("Creatures") })
         },
         content = { padding ->
             Box(
@@ -57,8 +57,8 @@ fun BiomeScreen(
                         )
                     }
                     is UiState.Success -> {
-                        val biomes = (uiState as UiState.Success<List<BiomeDtoX>>).data
-                        BiomeList(biomes = biomes)
+                        val creatures = (uiState as UiState.Success<List<CreatureDtoX>>).data
+                        CreatureList(creatures = creatures)
                     }
                     is UiState.Error -> {
                         val errorMessage = (uiState as UiState.Error).message
@@ -75,8 +75,8 @@ fun BiomeScreen(
 }
 
 @Composable
-fun BiomeList(
-    biomes: List<BiomeDtoX>,
+fun CreatureList(
+    creatures: List<CreatureDtoX>,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -84,16 +84,16 @@ fun BiomeList(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        items(biomes) { biome ->
-            BiomeItem(biome = biome)
+        items(creatures) { creature ->
+            CreatureItem(creature = creature)
             HorizontalDivider()
         }
     }
 }
 
 @Composable
-fun BiomeItem(
-    biome: BiomeDtoX,
+fun CreatureItem(
+    creature: CreatureDtoX,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -101,36 +101,20 @@ fun BiomeItem(
             .fillMaxWidth()
             .padding(vertical = 8.dp)
     ) {
-        Text(text = biome.nameContent, style = MaterialTheme.typography.bodyLarge)
+        Text(text = creature.name.toString(), style = MaterialTheme.typography.bodyMedium)
+        creature.summoningItems?.let { Text(text = it, style = MaterialTheme.typography.bodyLarge) }
         Spacer(modifier = Modifier.height(4.dp))
-        Text(text = biome.descriptionContent, style = MaterialTheme.typography.bodyMedium)
+        Text(text = creature.note.toString(), style = MaterialTheme.typography.bodyMedium)
+        Text(text = creature.biomeId, style = MaterialTheme.typography.bodyMedium)
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
-fun PreviewBiomeScreen() {
-    val sampleBiomes = listOf(
-        BiomeDtoX(
-            biomeId = "123123",
-            nameContent = "Forest", descriptionContent = "A dense and lush forest.",
-
-            stage = Stage.MID.toString(),
-            imageUrl = "",
-            order = 1
-        ),
-        BiomeDtoX(
-            biomeId = "123123",
-            nameContent = "Desert", descriptionContent =  "A vast and arid desert.",
-
-            stage = Stage.EARLY.toString(),
-            imageUrl = "",
-            order = 2
-        ),
-
-    )
-    val uiState = UiState.Success(sampleBiomes)
+fun PreviewCreatureScreen() {
+    val sampleCreatures = emptyList<CreatureDtoX>()
+    val uiState = UiState.Success(sampleCreatures)
 
     Scaffold(
         topBar = {
