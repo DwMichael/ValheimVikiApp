@@ -4,8 +4,10 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.rabbitv.valheimviki.presentation.HomeScreen
 import com.rabbitv.valheimviki.presentation.biome.BiomeScreen
 import com.rabbitv.valheimviki.presentation.biome.CreatureScreen
+import com.rabbitv.valheimviki.presentation.core.SecondScreen
 import com.rabbitv.valheimviki.presentation.core.WelcomeScreen
 
 
@@ -23,16 +25,16 @@ fun SetupNavGraph(navController: NavHostController){
         ){
             WelcomeScreen()
         }
-//        composable(
-//            route = Screen.Second.route
-//        ){
-////            SecondScreen()
-//        }
-//        composable(
-//            route = Screen.Home.route
-//        ){
-////            HomeScreen()
-//        }
+        composable(
+            route = Screen.Second.route
+        ){
+            SecondScreen()
+        }
+        composable(
+            route = Screen.Home.route
+        ){
+            HomeScreen()
+        }
         composable(
             route = Screen.Biome.route,
 //            arguments = listOf(navArgument(name = DETAILS_BIOME_ARGUMENT_KEY){

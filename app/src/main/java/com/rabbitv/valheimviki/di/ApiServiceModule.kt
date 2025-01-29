@@ -1,9 +1,12 @@
 package com.rabbitv.valheimviki.di
 
+import com.rabbitv.valheimviki.data.local.dao.BiomeDao
+import com.rabbitv.valheimviki.data.local.dao.CreatureDao
 import com.rabbitv.valheimviki.data.remote.api.ApiBiomeService
 import com.rabbitv.valheimviki.data.remote.api.ApiCreatureService
-import com.rabbitv.valheimviki.data.repository.ApiBiomeRepository
-import com.rabbitv.valheimviki.data.repository.ApiCreatureRepository
+import com.rabbitv.valheimviki.data.remote.api.BiomeRepository
+import com.rabbitv.valheimviki.data.repository.BiomeRepositoryImpl
+import com.rabbitv.valheimviki.data.repository.CreatureRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -40,13 +43,20 @@ object ApiServiceModule {
 
     @Singleton
     @Provides
-    fun provideApiBiomeRepository(apiBiomeService: ApiBiomeService): ApiBiomeRepository {
-        return ApiBiomeRepository(apiBiomeService)
+    fun provideApiBiomeRepository(
+        apiBiomeService: ApiBiomeService,
+        biomeDao: BiomeDao
+    ): BiomeRepository {
+        return BiomeRepositoryImpl(apiBiomeService, biomeDao)
     }
+
 
     @Singleton
     @Provides
-    fun provideApiCreatureRepository(apiCreatureService: ApiCreatureService): ApiCreatureRepository {
-        return ApiCreatureRepository(apiCreatureService)
+    fun provideApiCreatureRepository(
+        apiCreatureService: ApiCreatureService,
+        creatureDao:CreatureDao
+    ): CreatureRepositoryImpl {
+        return CreatureRepositoryImpl(apiCreatureService,creatureDao)
     }
 }
