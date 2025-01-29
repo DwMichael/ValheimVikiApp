@@ -5,6 +5,7 @@ import com.rabbitv.valheimviki.data.remote.api.ApiBiomeService
 import com.rabbitv.valheimviki.data.remote.api.BiomeRepository
 import com.rabbitv.valheimviki.domain.model.BiomeDtoX
 import kotlinx.coroutines.flow.Flow
+
 import javax.inject.Inject
 
 class BiomeRepositoryImpl @Inject constructor(
@@ -15,8 +16,11 @@ class BiomeRepositoryImpl @Inject constructor(
         return biomeDao.getAllBiomes()
     }
 
-    override suspend fun refreshBiomes() {
-        val biomes = apiService.getAllBiomes()
-        biomeDao.insertAllBiomes(biomes.biomes)
+    override suspend fun refreshBiomes(lang:String) {
+        val biomes = apiService.getAllBiomes(lang)
+        val filteredBiomes = biomes.biomes.filter {
+            it.biomeId != "00000000-0000-0000-0000-000000000000"
+        }
+        biomeDao.insertAllBiomes(filteredBiomes)
     }
 }

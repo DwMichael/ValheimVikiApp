@@ -2,7 +2,7 @@ package com.rabbitv.valheimviki.presentation.biome
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rabbitv.valheimviki.data.repository.ApiBiomeRepository
+import com.rabbitv.valheimviki.data.remote.api.BiomeRepository
 import com.rabbitv.valheimviki.domain.model.BiomeDtoX
 import com.rabbitv.valheimviki.domain.model.Stage
 import com.rabbitv.valheimviki.presentation.base.UiState
@@ -16,22 +16,34 @@ import kotlinx.coroutines.launch
 
 
 @HiltViewModel
-class BiomeViewModel @Inject constructor( 
-    private val apiBiomeRepository: ApiBiomeRepository
+class BiomeViewModel @Inject constructor(
+    private val biomeRepository: BiomeRepository
 ) :ViewModel() {
     private val _uiState = MutableStateFlow<UiState<List<BiomeDtoX>>>(UiState.Loading)
 
     val uiState: StateFlow<UiState<List<BiomeDtoX>>> = _uiState
 
 
-
     init {
+        refreshBiomes()
         fetchBiomeRespond()
     }
 
-    private fun fetchBiomeRespond() {
+    private fun refreshBiomes() {
         viewModelScope.launch {
-            apiBiomeRepository.getAllBiomes("en")
+            try {
+                biomeRepository.refreshBiomes("en")
+            }catch (e:Exception)
+            {
+                _uiState.value = UiState.Error(e.toString())
+            }
+        }
+    }
+
+    private fun fetchBiomeRespond() {
+
+            viewModelScope.launch {
+                biomeRepository.getAllBiomes("en")
                 .catch { e ->
                     _uiState.value = UiState.Error(e.toString())
                 }.map {
@@ -43,9 +55,7 @@ class BiomeViewModel @Inject constructor(
                         }
                             .thenBy { it.order }
                     )
-
-                }
-                .collect {
+                }.collect {
                     _uiState.value = UiState.Success(it)
                 }
         }
@@ -56,5 +66,6 @@ class BiomeViewModel @Inject constructor(
         Stage.MID.toString()   to 2,
         Stage.LATE.toString()  to 3
     )
+
 
 }

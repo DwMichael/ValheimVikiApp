@@ -2,7 +2,7 @@ package com.rabbitv.valheimviki.presentation.creatures
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rabbitv.valheimviki.data.repository.ApiCreatureRepository
+import com.rabbitv.valheimviki.data.remote.api.CreatureRepository
 import com.rabbitv.valheimviki.domain.model.CreatureDtoX
 import com.rabbitv.valheimviki.domain.model.Type
 import com.rabbitv.valheimviki.presentation.base.UiState
@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CreaturesViewModel @Inject constructor(
-    private val apiCreatureRepository: ApiCreatureRepository
+    private val creatureRepository: CreatureRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<UiState<List<CreatureDtoX>>>(UiState.Loading)
 
@@ -24,19 +24,31 @@ class CreaturesViewModel @Inject constructor(
 
 
     init {
+        refreshCreatures()
         fetchCreatureRespond()
+    }
+
+    private fun refreshCreatures() {
+        viewModelScope.launch {
+            try {
+                creatureRepository.refreshCreatures("en")
+            }catch (e:Exception)
+            {
+                _uiState.value = UiState.Error(e.toString())
+            }
+        }
     }
 
     private fun fetchCreatureRespond() {
 
         viewModelScope.launch {
-            apiCreatureRepository.getAllCreatures("pl")
+            creatureRepository.getAllCreatures("pl")
                 .catch { e ->
                 _uiState.value = UiState.Error(e.toString())
             }.map { creatureList ->
                     creatureList.sortedWith(
                         compareBy<CreatureDtoX> { creature ->
-                            typeOrderMap.getOrElse(creature.typeId) { Int.MAX_VALUE }
+                            typeOrderMap.getOrElse(creature.typeName) { Int.MAX_VALUE }
                         }
                             .thenBy { it.order }
                     )

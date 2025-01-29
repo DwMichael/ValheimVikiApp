@@ -3,10 +3,12 @@ package com.rabbitv.valheimviki.domain.model
 
 import com.google.gson.annotations.SerializedName
 import androidx.annotation.Keep
+import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.serialization.Serializable
 
 @Keep
+@Entity(tableName = "biomes")
 @Serializable
 data class BiomeDtoX(
     @SerializedName("biomeId")
