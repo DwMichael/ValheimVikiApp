@@ -84,6 +84,8 @@ dependencies {
     //Serialization
     implementation(libs.kotlinx.serialization.json)
 
+    //Icons
+    implementation(libs.icons.lucide)
 
     //retrofit
     implementation(libs.retrofit)

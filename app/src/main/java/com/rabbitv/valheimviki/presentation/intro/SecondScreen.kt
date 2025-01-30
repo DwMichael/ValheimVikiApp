@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.core
+package com.rabbitv.valheimviki.presentation.intro
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.Text

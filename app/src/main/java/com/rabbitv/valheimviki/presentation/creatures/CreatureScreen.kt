@@ -28,6 +28,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+
 import com.rabbitv.valheimviki.domain.model.CreatureDtoX
 import com.rabbitv.valheimviki.presentation.base.UiState
 import com.rabbitv.valheimviki.presentation.creatures.CreaturesViewModel
@@ -38,7 +40,7 @@ fun CreatureScreen(
     viewModel: CreaturesViewModel = hiltViewModel(),
     modifier: Modifier = Modifier
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState: UiState<List<CreatureDtoX>> by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {

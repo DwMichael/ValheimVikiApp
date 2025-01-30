@@ -1,3 +1,10 @@
 package com.rabbitv.valheimviki.presentation.base
 
-data class DrawerItem()
+import androidx.compose.ui.graphics.vector.ImageVector
+
+data class DrawerItem(
+    val icon:ImageVector,
+    val label:String,
+    val contentDescription:String,
+    val route:String = label
+)

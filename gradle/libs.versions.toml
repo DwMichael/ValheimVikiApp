@@ -5,6 +5,7 @@ converterGson = "2.11.0"
 coreSplashscreen = "1.0.1"
 hiltAndroidCompiler = "2.55"
 hiltCompiler = "1.2.0"
+iconsLucide = "1.0.0"
 kotlin = "2.1.0"
 coreKtx = "1.15.0"
 junit = "4.13.2"
@@ -46,6 +47,7 @@ converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref
 core-ktx = { module = "androidx.test:core-ktx", version.ref = "rules" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroidCompiler" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroidCompiler" }
+icons-lucide = { module = "com.composables:icons-lucide", version.ref = "iconsLucide" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }

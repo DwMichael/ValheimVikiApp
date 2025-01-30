@@ -2,6 +2,7 @@ package com.rabbitv.valheimviki.presentation.biome
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,27 +29,23 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rabbitv.valheimviki.domain.model.BiomeDtoX
 import com.rabbitv.valheimviki.domain.model.Stage
 import com.rabbitv.valheimviki.presentation.base.UiState
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun BiomeScreen(
     viewModel: BiomeViewModel = hiltViewModel(),
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues,
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-
-    Scaffold(
-        topBar = {
-            TopAppBar(title = { Text("Biomes") })
-        },
-        content = { padding ->
+    val uiState: UiState<List<BiomeDtoX>> by viewModel.uiState.collectAsStateWithLifecycle()
             Box(
                 modifier = modifier
                     .fillMaxSize()
-                    .padding(padding)
+                    .padding(contentPadding)
             ) {
                 when (uiState) {
                     is UiState.Loading -> {
@@ -70,8 +67,6 @@ fun BiomeScreen(
                     }
                 }
             }
-        }
-    )
 }
 
 @Composable
@@ -142,7 +137,7 @@ fun PreviewBiomeScreen() {
                     .fillMaxSize()
                     .padding(padding)
             ) {
-
+                BiomeList(biomes = sampleBiomes)
             }
         }
     )
