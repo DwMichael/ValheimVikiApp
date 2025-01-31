@@ -38,6 +38,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -49,6 +50,7 @@ import androidx.navigation.compose.rememberNavController
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.MountainSnow
 import com.composables.icons.lucide.Rabbit
+import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.navigation.ChildNavGraph
 import com.rabbitv.valheimviki.navigation.Screen
 import com.rabbitv.valheimviki.presentation.base.DrawerItem
@@ -161,14 +163,15 @@ fun HomeScreenContent(
         topBar = {
             TopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    containerColor = Color.Transparent,
                     titleContentColor = MaterialTheme.colorScheme.primary,
                 ),
                 navigationIcon = {
                     IconButton(onClick = { scope.launch { drawerState.open() } }) {
                         Icon(
-                            imageVector = Icons.Filled.Menu,
-                            contentDescription = null
+                            painter = painterResource(id = R.drawable.bars),
+                            contentDescription = "Menu section",
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                 },
