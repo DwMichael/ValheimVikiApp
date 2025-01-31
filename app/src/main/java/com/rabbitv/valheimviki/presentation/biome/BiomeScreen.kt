@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,6 +17,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -35,38 +37,39 @@ import com.rabbitv.valheimviki.domain.model.Stage
 import com.rabbitv.valheimviki.presentation.base.UiState
 
 
+
 @Composable
 fun BiomeScreen(
     viewModel: BiomeViewModel = hiltViewModel(),
     modifier: Modifier = Modifier,
-    contentPadding: PaddingValues,
 ) {
-    val uiState: UiState<List<BiomeDtoX>> by viewModel.uiState.collectAsStateWithLifecycle()
-            Box(
-                modifier = modifier
-                    .fillMaxSize()
-                    .padding(contentPadding)
-            ) {
-                when (uiState) {
-                    is UiState.Loading -> {
-                        CircularProgressIndicator(
-                            modifier = Modifier.align(Alignment.Center)
-                        )
-                    }
-                    is UiState.Success -> {
-                        val biomes = (uiState as UiState.Success<List<BiomeDtoX>>).data
-                        BiomeList(biomes = biomes)
-                    }
-                    is UiState.Error -> {
-                        val errorMessage = (uiState as UiState.Error).message
-                        Text(
-                            text = errorMessage,
-                            color = Color.Red,
-                            modifier = Modifier.align(Alignment.Center)
-                        )
-                    }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    Surface{
+        Box {
+            when (uiState) {
+                is UiState.Loading -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
+
+                is UiState.Success -> {
+                    val biomes = (uiState as UiState.Success<List<BiomeDtoX>>).data
+                    BiomeList(biomes = biomes)
+                }
+
+                is UiState.Error -> {
+                    val errorMessage = (uiState as UiState.Error).message
+                    Text(
+                        text = errorMessage,
+                        color = Color.Red,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
                 }
             }
+        }
+    }
+
 }
 
 @Composable
@@ -77,7 +80,12 @@ fun BiomeList(
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .absolutePadding(
+                left = 16.dp,
+                top = 0.dp,
+                right = 16.dp,
+                bottom = 16.dp
+            )
     ) {
         items(biomes) { biome ->
             BiomeItem(biome = biome)
@@ -129,7 +137,9 @@ fun PreviewBiomeScreen() {
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Biomes") })
+            TopAppBar(
+modifier = Modifier.padding(0.dp),
+                title = { Text("Biomes") })
         },
         content = { padding ->
             Box(

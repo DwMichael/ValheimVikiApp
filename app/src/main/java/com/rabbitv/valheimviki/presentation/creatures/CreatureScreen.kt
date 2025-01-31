@@ -3,6 +3,7 @@ package com.rabbitv.valheimviki.presentation.biome
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -15,10 +16,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,17 +41,13 @@ fun CreatureScreen(
     viewModel: CreaturesViewModel = hiltViewModel(),
     modifier: Modifier = Modifier
 ) {
-    val uiState: UiState<List<CreatureDtoX>> by viewModel.uiState.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    Scaffold(
-        topBar = {
-            TopAppBar(title = { Text("Creatures") })
-        },
-        content = { padding ->
+    Surface {
             Box(
                 modifier = modifier
                     .fillMaxSize()
-                    .padding(padding)
+                    .padding(0.dp)
             ) {
                 when (uiState) {
                     is UiState.Loading -> {
@@ -58,10 +55,12 @@ fun CreatureScreen(
                             modifier = Modifier.align(Alignment.Center)
                         )
                     }
+
                     is UiState.Success -> {
                         val creatures = (uiState as UiState.Success<List<CreatureDtoX>>).data
                         CreatureList(creatures = creatures)
                     }
+
                     is UiState.Error -> {
                         val errorMessage = (uiState as UiState.Error).message
                         Text(
@@ -72,8 +71,7 @@ fun CreatureScreen(
                     }
                 }
             }
-        }
-    )
+    }
 }
 
 @Composable
@@ -84,7 +82,12 @@ fun CreatureList(
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .absolutePadding(
+                left = 16.dp,
+                top = 0.dp,
+                right = 16.dp,
+                bottom = 16.dp
+            )
     ) {
         items(creatures) { creature ->
             CreatureItem(creature = creature)

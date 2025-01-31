@@ -12,7 +12,7 @@ import com.rabbitv.valheimviki.presentation.biome.BiomeScreen
 import com.rabbitv.valheimviki.presentation.biome.CreatureScreen
 
 @Composable
-fun ChildNavGraph(navHostController: NavHostController,paddingValues: PaddingValues) {
+fun ChildNavGraph(navHostController: NavHostController) {
     NavHost(
         navController = navHostController,
         startDestination = Screen.Biome.route,
@@ -21,7 +21,6 @@ fun ChildNavGraph(navHostController: NavHostController,paddingValues: PaddingVal
         composable(Screen.Biome.route) {
             BiomeScreen(
                 modifier = Modifier,
-                contentPadding = paddingValues
             )
         }
         composable(Screen.Creature.route) {

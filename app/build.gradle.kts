@@ -100,6 +100,9 @@ dependencies {
     // Palette API
     implementation(libs.androidx.palette.ktx)
 
+    //Fonts
+    implementation("androidx.compose.ui:ui-text-google-fonts:1.7.6")
+
     //Testing
     androidTestImplementation(libs.androidx.core)
     androidTestImplementation(libs.core.ktx)
