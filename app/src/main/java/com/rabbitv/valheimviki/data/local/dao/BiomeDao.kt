@@ -13,6 +13,9 @@ interface BiomeDao {
     @Query("SELECT * FROM biomes")
     fun getAllBiomes(): Flow<List<BiomeDtoX>>
 
+    @Query("SELECT * FROM biomes WHERE biomeId = :biomeId")
+    fun getBiomeById(biomeId: String): Flow<BiomeDtoX>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAllBiomes(biomes: List<BiomeDtoX>)
 }

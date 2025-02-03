@@ -1,10 +1,10 @@
-package com.rabbitv.valheimviki.data.remote.api
+package com.rabbitv.valheimviki.domain.repository
 
 import com.rabbitv.valheimviki.domain.model.CreatureDtoX
 import kotlinx.coroutines.flow.Flow
 
 interface CreatureRepository {
-    fun getAllCreatures(lang:String): Flow<List<CreatureDtoX>>
+    fun getAllCreatures(): Flow<List<CreatureDtoX>>
     suspend fun refreshCreatures(lang: String)
 
 }

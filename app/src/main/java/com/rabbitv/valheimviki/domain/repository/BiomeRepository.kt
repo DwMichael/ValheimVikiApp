@@ -1,10 +1,10 @@
-package com.rabbitv.valheimviki.data.remote.api
+package com.rabbitv.valheimviki.domain.repository
 
 import com.rabbitv.valheimviki.domain.model.BiomeDtoX
 import kotlinx.coroutines.flow.Flow
 
 interface BiomeRepository{
-    fun getAllBiomes(lang:String): Flow<List<BiomeDtoX>>
+    fun getAllBiomes(): Flow<List<BiomeDtoX>>
     suspend fun refreshBiomes(lang: String)
-
+    fun getBiomeById(biomeId: String): Flow<BiomeDtoX>
 }

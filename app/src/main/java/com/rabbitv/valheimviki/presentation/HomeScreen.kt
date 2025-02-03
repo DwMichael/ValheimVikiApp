@@ -69,8 +69,8 @@ fun HomeScreen(
         DrawerItem(
             icon = Lucide.MountainSnow,
             label = "Biomes",
-            contentDescription = "Biome section",
-            route = Screen.Biome.route
+            contentDescription = "List of Biomes",
+            route = Screen.BiomeList.route
         ),
         DrawerItem(
             icon = Lucide.Rabbit,
@@ -230,8 +230,8 @@ private fun PreviewHomeScreenContent() {
         DrawerItem(
             icon = Lucide.MountainSnow,
             label = "Biomes",
-            contentDescription = "Biome section",
-            route = Screen.Biome.route
+            contentDescription = "List of Biomes",
+            route = Screen.BiomeList.route
         ),
         DrawerItem(
             icon = Lucide.Rabbit,

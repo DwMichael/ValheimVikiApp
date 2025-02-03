@@ -1,11 +1,10 @@
 package com.rabbitv.valheimviki.presentation.base
 
-sealed interface UiState<out T> {
-
-    data class Success<T>(val data: T) : UiState<T>
-
-    data class Error(val message: String) : UiState<Nothing>
-
-    object Loading : UiState<Nothing>
-
+data class UiState<T>(
+    val data: T? = null,
+    val isLoading: Boolean = false,
+    val error: String? = null
+) {
+    val shouldShowData: Boolean get() = data != null
+    val shouldShowError: Boolean get() = error != null
 }

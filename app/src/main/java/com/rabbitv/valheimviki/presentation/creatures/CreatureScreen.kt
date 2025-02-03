@@ -26,16 +26,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.runtime.getValue
 
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.graphics.Color
+
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.rabbitv.valheimviki.domain.model.CreatureDtoX
-import com.rabbitv.valheimviki.presentation.base.UiState
 import com.rabbitv.valheimviki.presentation.creatures.CreaturesViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun CreatureScreen(
     viewModel: CreaturesViewModel = hiltViewModel(),
@@ -49,27 +47,7 @@ fun CreatureScreen(
                     .fillMaxSize()
                     .padding(0.dp)
             ) {
-                when (uiState) {
-                    is UiState.Loading -> {
-                        CircularProgressIndicator(
-                            modifier = Modifier.align(Alignment.Center)
-                        )
-                    }
 
-                    is UiState.Success -> {
-                        val creatures = (uiState as UiState.Success<List<CreatureDtoX>>).data
-                        CreatureList(creatures = creatures)
-                    }
-
-                    is UiState.Error -> {
-                        val errorMessage = (uiState as UiState.Error).message
-                        Text(
-                            text = errorMessage,
-                            color = Color.Red,
-                            modifier = Modifier.align(Alignment.Center)
-                        )
-                    }
-                }
             }
     }
 }
@@ -119,7 +97,7 @@ fun CreatureItem(
 @Composable
 fun PreviewCreatureScreen() {
     val sampleCreatures = emptyList<CreatureDtoX>()
-    val uiState = UiState.Success(sampleCreatures)
+
 
     Scaffold(
         topBar = {
