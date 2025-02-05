@@ -10,9 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -22,31 +20,21 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshState
-import androidx.compose.material3.pulltorefresh.pullToRefresh
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
-
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.rabbitv.valheimviki.domain.model.BiomeDtoX
 import com.rabbitv.valheimviki.domain.model.Stage
-import com.rabbitv.valheimviki.navigation.Screen
-import com.rabbitv.valheimviki.presentation.base.UiState
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
@@ -57,44 +45,36 @@ fun BiomeListScreen(
     navController: NavHostController,
     onClick: () -> Unit = {}
 ) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val scope = rememberCoroutineScope()
+    val refreshState = rememberPullToRefreshState()
+    val biomeUIState: BiomesUIState by viewModel.biomeUIState.collectAsStateWithLifecycle()
+    val refreshing: Boolean by viewModel.isRefreshing.collectAsStateWithLifecycle()
 
-    var isRefreshing by remember { mutableStateOf(false) }
-    val coroutineScope = rememberCoroutineScope()
-    val onRefresh: () -> Unit = {
-        isRefreshing = true
-        coroutineScope.launch {
-            viewModel.fetchData()
-            delay(1000)
-            isRefreshing = false
+
+    if (biomeUIState.isLoading) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
+    } else {
+        Surface {
+            BiomeList(
+                biomes = biomeUIState.biomes,
+                modifier = Modifier,
+                state = refreshState,
+                onRefresh = {
+                    viewModel.load()
+                    scope.launch {
+                        refreshState.animateToHidden()
+                    }
+                },
+                isRefreshing = refreshing,
+            )
+
         }
     }
-
-    if (uiState.isLoading && !uiState.shouldShowData) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
-        } else {
-            Surface{
-                if (uiState.shouldShowData) {
-                    BiomeList(
-                        biomes = uiState.data!!,
-                        modifier = Modifier,
-                        onRefresh = onRefresh,
-                        isRefreshing = isRefreshing
-                    )
-                }else{
-                    uiState.error?.let { error ->
-                        ErrorMessage(
-                            message = error,
-                        )
-                    }
-                }
-            }
-        }
 
 }
 
@@ -103,16 +83,19 @@ fun BiomeListScreen(
 fun BiomeList(
     biomes: List<BiomeDtoX>,
     modifier: Modifier = Modifier,
+    state: PullToRefreshState,
     onRefresh: () -> Unit,
-    isRefreshing: Boolean ,
+    isRefreshing: Boolean,
 ) {
 
 
     PullToRefreshBox(
+        state = state,
         isRefreshing = isRefreshing,
         onRefresh = onRefresh,
         modifier = modifier,
-    ) {
+
+        ) {
         LazyColumn(
             modifier = modifier
                 .fillMaxSize()
@@ -123,7 +106,7 @@ fun BiomeList(
                     bottom = 16.dp
                 )
         ) {
-            if(biomes.isEmpty()){
+            if (biomes.isEmpty()) {
                 items(biomes) {
                     Text(
                         text = "Sprawdź połączenie z internetem",
@@ -131,7 +114,7 @@ fun BiomeList(
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
-            }else{
+            } else {
                 items(biomes) { biome ->
                     BiomeItem(biome = biome)
                     HorizontalDivider()
@@ -188,20 +171,20 @@ fun PreviewBiomeScreen() {
         ),
         BiomeDtoX(
             biomeId = "123123",
-            nameContent = "Desert", descriptionContent =  "A vast and arid desert.",
+            nameContent = "Desert", descriptionContent = "A vast and arid desert.",
 
             stage = Stage.EARLY.toString(),
             imageUrl = "",
             order = 2
         ),
 
-    )
+        )
 
 
     Scaffold(
         topBar = {
             TopAppBar(
-modifier = Modifier.padding(0.dp),
+                modifier = Modifier.padding(0.dp),
                 title = { Text("Biomes") })
         },
         content = { padding ->

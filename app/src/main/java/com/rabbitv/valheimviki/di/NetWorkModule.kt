@@ -17,13 +17,14 @@ import javax.inject.Singleton
 object NetWorkModule {
     private const val BASE_URL = "http://192.168.1.130:8100/"
 
-
     @Provides
     @Singleton
     fun provideHttpClient(): OkHttpClient {
+
         return OkHttpClient.Builder()
-            .readTimeout(15, TimeUnit.SECONDS)
-            .connectTimeout(15, TimeUnit.SECONDS)
+            .connectTimeout(4, TimeUnit.SECONDS)
+            .readTimeout(5, TimeUnit.SECONDS)
+            .callTimeout(10, TimeUnit.SECONDS)
             .build()
     }
 

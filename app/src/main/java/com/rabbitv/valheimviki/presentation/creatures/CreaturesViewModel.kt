@@ -2,10 +2,9 @@ package com.rabbitv.valheimviki.presentation.creatures
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rabbitv.valheimviki.domain.model.BiomeDtoX
-import com.rabbitv.valheimviki.domain.repository.CreatureRepository
 import com.rabbitv.valheimviki.domain.model.CreatureDtoX
 import com.rabbitv.valheimviki.domain.model.Type
+import com.rabbitv.valheimviki.domain.repository.CreatureRepository
 import com.rabbitv.valheimviki.presentation.base.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,11 +23,11 @@ class CreaturesViewModel @Inject constructor(
     val uiState: StateFlow<UiState<List<CreatureDtoX>>> = _uiState
 
 
-
     init {
 
         fetchInitialData()
     }
+
     private fun fetchInitialData() {
         fetchBiomesFromRoom()
         fetchCreaturesFromAPI()
@@ -53,8 +52,7 @@ class CreaturesViewModel @Inject constructor(
                     current.copy(
                         isLoading = false,
                         error = e.message ?: "Error fetching data"
-                    ).takeUnless { current.shouldShowData }
-                        ?: current.copy(error = e.message ?: "Error fetching data")
+                    )
                 }
             }
         }
@@ -97,7 +95,7 @@ class CreaturesViewModel @Inject constructor(
                         current.copy(error = e.message ?: "Local data error")
                     }
                 }
-                .map {  creatureList ->
+                .map { creatureList ->
                     creatureList.sortedWith(
                         compareBy<CreatureDtoX> { creature ->
                             typeOrderMap.getOrElse(creature.typeName) { Int.MAX_VALUE }
