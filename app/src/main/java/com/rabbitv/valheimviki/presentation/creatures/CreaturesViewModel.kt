@@ -2,62 +2,84 @@ package com.rabbitv.valheimviki.presentation.creatures
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rabbitv.valheimviki.data.remote.api.CreatureRepository
 import com.rabbitv.valheimviki.domain.model.CreatureDtoX
 import com.rabbitv.valheimviki.domain.model.Type
-import com.rabbitv.valheimviki.presentation.base.UiState
+import com.rabbitv.valheimviki.domain.repository.CreatureRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+data class CreaturesUIState(
+    val creatures: List<CreatureDtoX> = emptyList(),
+    val error: String? = null,
+    val isLoading: Boolean = false
+)
+
 
 @HiltViewModel
 class CreaturesViewModel @Inject constructor(
     private val creatureRepository: CreatureRepository
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow<UiState<List<CreatureDtoX>>>(UiState.Loading)
 
-    val uiState: StateFlow<UiState<List<CreatureDtoX>>> = _uiState
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean>
+        get() = _isRefreshing.asStateFlow()
+
+
+    private val _creatureUIState = MutableStateFlow(CreaturesUIState())
+    val creatureUIState: StateFlow<CreaturesUIState> = _creatureUIState
 
 
     init {
-        refreshCreatures()
-        fetchCreatureRespond()
+        load()
     }
 
-    private fun refreshCreatures() {
+    fun load() {
+        _creatureUIState.value = _creatureUIState.value.copy(isLoading = true, error = null)
         viewModelScope.launch {
             try {
-                creatureRepository.refreshCreatures("en")
-            }catch (e:Exception)
-            {
-                _uiState.value = UiState.Error(e.toString())
-            }
-        }
-    }
+                val response = creatureRepository.refreshCreatures("en")
+                when (response.success) {
+                    true -> {
+                        creatureRepository.getAllCreatures()
+                            .map { creatureList ->
+                                creatureList.sortedWith(
+                                    compareBy<CreatureDtoX> { creature ->
+                                        typeOrderMap.getOrElse(creature.typeName) { Int.MAX_VALUE }
+                                    }
+                                        .thenBy { it.order }
+                                )
+                            }
+                            .collect { sortedCreatures ->
+                                _creatureUIState.update { current ->
+                                    current.copy(
+                                        creatures = sortedCreatures,
+                                        isLoading = false,
+                                        error = current.error
+                                    )
+                                }
+                            }
+                    }
 
-    private fun fetchCreatureRespond() {
-
-        viewModelScope.launch {
-            creatureRepository.getAllCreatures("pl")
-                .catch { e ->
-                _uiState.value = UiState.Error(e.toString())
-            }.map { creatureList ->
-                    creatureList.sortedWith(
-                        compareBy<CreatureDtoX> { creature ->
-                            typeOrderMap.getOrElse(creature.typeName) { Int.MAX_VALUE }
-                        }
-                            .thenBy { it.order }
-                    )
-                }.collect {
-                    _uiState.value = UiState.Success(it)
+                    false -> {
+                        _creatureUIState.value =
+                            _creatureUIState.value.copy(isLoading = false)
+                    }
                 }
+            } catch (e: Exception) {
+                _creatureUIState.value =
+                    _creatureUIState.value.copy(isLoading = false, error = e.message)
+            }
+            _isRefreshing.emit(false)
         }
-
     }
+
+
     private val typeOrderMap = mapOf(
         Type.BOSS.toString() to 1,
         Type.MINI_BOSS.toString() to 2,

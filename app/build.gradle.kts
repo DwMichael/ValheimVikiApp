@@ -84,6 +84,8 @@ dependencies {
     //Serialization
     implementation(libs.kotlinx.serialization.json)
 
+    //Icons
+    implementation(libs.icons.lucide)
 
     //retrofit
     implementation(libs.retrofit)
@@ -97,6 +99,9 @@ dependencies {
 
     // Palette API
     implementation(libs.androidx.palette.ktx)
+
+    //Fonts
+    implementation("androidx.compose.ui:ui-text-google-fonts:1.7.6")
 
     //Testing
     androidTestImplementation(libs.androidx.core)

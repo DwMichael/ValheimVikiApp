@@ -4,12 +4,13 @@ import com.rabbitv.valheimviki.data.local.dao.BiomeDao
 import com.rabbitv.valheimviki.data.local.dao.CreatureDao
 import com.rabbitv.valheimviki.data.remote.api.ApiBiomeService
 import com.rabbitv.valheimviki.data.remote.api.ApiCreatureService
-import com.rabbitv.valheimviki.data.remote.api.BiomeRepository
-import com.rabbitv.valheimviki.data.remote.api.CreatureRepository
+import com.rabbitv.valheimviki.domain.repository.BiomeRepository
+import com.rabbitv.valheimviki.domain.repository.CreatureRepository
 import com.rabbitv.valheimviki.data.repository.BiomeRepositoryImpl
 import com.rabbitv.valheimviki.data.repository.CreatureRepositoryImpl
-import com.rabbitv.valheimviki.presentation.biome.BiomeViewModel
+import com.rabbitv.valheimviki.presentation.biome.BiomeListScreenViewModel
 import com.rabbitv.valheimviki.presentation.creatures.CreaturesViewModel
+import com.rabbitv.valheimviki.presentation.detail.biome.BiomeScreenViewModel
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,27 +21,17 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
-    @Provides
-    @Singleton
-    fun provideBiomeRepositoryImpl(
-        apiService: ApiBiomeService,
-        biomeDao: BiomeDao
-    ): BiomeRepository {
-        return BiomeRepositoryImpl(apiService, biomeDao)
-    }
 
     @Provides
     @Singleton
-    fun provideCreatureRepositoryImpl(
-        apiService: ApiCreatureService,
-        creatureDao: CreatureDao
-    ):CreatureRepository{
-        return CreatureRepositoryImpl(apiService,creatureDao)
-    }
-    @Provides
-    fun provideBiomeViewModel(biomeRepository: BiomeRepositoryImpl) = BiomeViewModel(biomeRepository)
+    fun provideBiomeViewModel(biomeRepository: BiomeRepositoryImpl) = BiomeListScreenViewModel(biomeRepository)
 
     @Provides
+    @Singleton
     fun provideCreaturesViewModel(creatureRepository: CreatureRepositoryImpl) = CreaturesViewModel(creatureRepository)
+
+    @Provides
+    @Singleton
+    fun provideBiomeDetailViewModel(biomeRepository: BiomeRepositoryImpl) = BiomeScreenViewModel(biomeRepository = biomeRepository)
 
 }
