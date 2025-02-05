@@ -1,5 +1,6 @@
 package com.rabbitv.valheimviki.presentation.biome
 
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,32 +28,32 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import com.rabbitv.valheimviki.domain.model.BiomeDtoX
-import com.rabbitv.valheimviki.domain.model.Stage
+import com.rabbitv.valheimviki.domain.model.CreatureDtoX
 import com.rabbitv.valheimviki.navigation.Screen
+import com.rabbitv.valheimviki.presentation.creatures.CreaturesUIState
+import com.rabbitv.valheimviki.presentation.creatures.CreaturesViewModel
 import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BiomeListScreen(
-    viewModel: BiomeListScreenViewModel = hiltViewModel(),
-    navController: NavHostController,
+fun CreatureListScreen(
+    viewModel: CreaturesViewModel = hiltViewModel(),
+    modifier: Modifier = Modifier,
+    navController: NavHostController
 ) {
     val scope = rememberCoroutineScope()
     val refreshState = rememberPullToRefreshState()
-    val biomeUIState: BiomesUIState by viewModel.biomeUIState.collectAsStateWithLifecycle()
+    val creatureUIState: CreaturesUIState by viewModel.creatureUIState.collectAsStateWithLifecycle()
     val refreshing: Boolean by viewModel.isRefreshing.collectAsStateWithLifecycle()
 
 
-    if (biomeUIState.isLoading) {
+    if (creatureUIState.isLoading) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
@@ -61,8 +62,8 @@ fun BiomeListScreen(
         }
     } else {
         Surface {
-            BiomeList(
-                biomes = biomeUIState.biomes,
+            CreatureList(
+                creatures = creatureUIState.creatures,
                 modifier = Modifier,
                 state = refreshState,
                 onRefresh = {
@@ -77,13 +78,12 @@ fun BiomeListScreen(
 
         }
     }
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BiomeList(
-    biomes: List<BiomeDtoX>,
+fun CreatureList(
+    creatures: List<CreatureDtoX>,
     modifier: Modifier = Modifier,
     state: PullToRefreshState,
     onRefresh: () -> Unit,
@@ -107,28 +107,25 @@ fun BiomeList(
                     bottom = 16.dp
                 )
         ) {
-            if (biomes.isEmpty()) {
-                items(biomes) {
-                    Text(
-                        text = "Sprawdź połączenie z internetem",
-                        color = Color.Red,
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                }
-            } else {
-                items(biomes) { biome ->
-                    BiomeItem(biome = biome, navController = navController)
+            if (creatures.isEmpty()) {
+                items(creatures) { creature ->
+                    CreatureItem(creature = creature, navController = navController)
                     HorizontalDivider()
                 }
-            }
+            } else {
+                items(creatures) { creature ->
+                    CreatureItem(creature = creature, navController = navController)
+                    HorizontalDivider()
+                }
 
+            }
         }
     }
 }
 
 @Composable
-fun BiomeItem(
-    biome: BiomeDtoX,
+fun CreatureItem(
+    creature: CreatureDtoX,
     modifier: Modifier = Modifier,
     navController: NavHostController
 ) {
@@ -136,7 +133,7 @@ fun BiomeItem(
         modifier = Modifier
             .fillMaxSize()
             .clickable {
-                navController.navigate(Screen.Biome.passBiomeId(biomeId = biome.biomeId))
+                navController.navigate(Screen.Creature.passCreatureId(creatureId = creature.creatureId))
             },
     ) {
         Column(
@@ -144,58 +141,30 @@ fun BiomeItem(
                 .fillMaxWidth()
                 .padding(vertical = 8.dp)
         ) {
-            Text(text = biome.nameContent, style = MaterialTheme.typography.bodyLarge)
+            Text(text = creature.name.toString(), style = MaterialTheme.typography.bodyMedium)
+            creature.summoningItems?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
             Spacer(modifier = Modifier.height(4.dp))
-            Text(text = biome.descriptionContent, style = MaterialTheme.typography.bodyMedium)
+            Text(text = creature.note.toString(), style = MaterialTheme.typography.bodyMedium)
+            Text(text = creature.biomeId, style = MaterialTheme.typography.bodyMedium)
         }
-    }
-}
-
-@Composable
-private fun ErrorMessage(message: String, modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier.padding(16.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = message,
-            color = MaterialTheme.colorScheme.error,
-            style = MaterialTheme.typography.bodyMedium
-        )
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
-fun PreviewBiomeScreen() {
-    val navController = NavHostController(LocalContext.current)
-    val sampleBiomes = listOf(
-        BiomeDtoX(
-            biomeId = "123123",
-            nameContent = "Forest", descriptionContent = "A dense and lush forest.",
-
-            stage = Stage.MID.toString(),
-            imageUrl = "",
-            order = 1
-        ),
-        BiomeDtoX(
-            biomeId = "123123",
-            nameContent = "Desert", descriptionContent = "A vast and arid desert.",
-
-            stage = Stage.EARLY.toString(),
-            imageUrl = "",
-            order = 2
-        ),
-
-        )
+fun PreviewCreatureScreen() {
+    val sampleCreatures = emptyList<CreatureDtoX>()
 
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                modifier = Modifier.padding(0.dp),
-                title = { Text("Biomes") })
+            TopAppBar(title = { Text("Biomes") })
         },
         content = { padding ->
             Box(
@@ -204,7 +173,6 @@ fun PreviewBiomeScreen() {
                     .padding(padding)
             ) {
 
-//                BiomeList(biomes = sampleBiomes, navController = navController)
             }
         }
     )

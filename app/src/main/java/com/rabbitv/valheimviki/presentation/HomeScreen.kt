@@ -76,7 +76,7 @@ fun HomeScreen(
             icon = Lucide.Rabbit,
             label = "Creatures",
             contentDescription = "Creatures section",
-            route = Screen.Creature.route
+            route = Screen.CreatureList.route
         )
     )
     val selectedItem: MutableState<DrawerItem> = remember { mutableStateOf(items[0]) }
