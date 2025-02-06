@@ -132,7 +132,7 @@ fun CreatureItem(
         modifier = Modifier
             .fillMaxSize()
             .clickable {
-                navController.navigate(Screen.Creature.passCreatureId(creatureId = creature.creatureId))
+                navController.navigate(Screen.Creature.passCreatureId(creatureId = creature.id))
             },
     ) {
         Column(

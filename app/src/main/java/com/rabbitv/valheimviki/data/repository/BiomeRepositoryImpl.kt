@@ -26,7 +26,7 @@ class BiomeRepositoryImpl @Inject constructor(
         try {
             val biomes = apiService.getAllBiomes(lang)
             val filteredBiomes = biomes.biomes.filter {
-                it.biomeId != "00000000-0000-0000-0000-000000000000"
+                it.id != "00000000-0000-0000-0000-000000000000"
             }
             biomeDao.insertAllBiomes(filteredBiomes)
             return biomes
