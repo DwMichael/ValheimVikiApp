@@ -1,6 +1,7 @@
 [versions]
 agp = "8.8.0"
 coilCompose = "3.0.4"
+coilNetworkOkhttp = "3.1.0"
 converterGson = "2.11.0"
 coreSplashscreen = "1.0.1"
 hiltAndroidCompiler = "2.55"
@@ -16,16 +17,18 @@ kotlinxCoroutinesTest = "1.10.1"
 kotlinxSerializationJson = "1.8.0"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.10.0"
-composeBom = "2025.01.00"
-navigationCompose = "2.8.5"
+composeBom = "2025.01.01"
+navigationCompose = "2.8.6"
 paletteKtx = "1.0.0"
 retrofit = "2.11.0"
 retrofit2KotlinxSerializationConverter = "1.0.0"
 roomRuntime = "2.6.1"
 rules = "1.6.1"
 runner = "1.6.2"
-uiTestJunit4 = "1.7.6"
-uiTestManifest = "1.7.6"
+uiTestJunit4 = "1.7.7"
+uiTestManifest = "1.7.7"
+uiTextGoogleFonts = "1.7.7"
+composeMaterial = "1.4.0"
 
 [libraries]
 androidx-core = { module = "androidx.test:core", version.ref = "rules" }
@@ -42,7 +45,9 @@ androidx-room-paging = { module = "androidx.room:room-paging", version.ref = "ro
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
 androidx-rules = { module = "androidx.test:rules", version.ref = "rules" }
 androidx-runner = { module = "androidx.test:runner", version.ref = "runner" }
+androidx-ui-text-google-fonts = { module = "androidx.compose.ui:ui-text-google-fonts", version.ref = "uiTextGoogleFonts" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
+coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coilNetworkOkhttp" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 core-ktx = { module = "androidx.test:core-ktx", version.ref = "rules" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroidCompiler" }
@@ -68,6 +73,7 @@ retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit
 retrofit2-kotlinx-serialization-converter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "retrofit2KotlinxSerializationConverter" }
 ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "uiTestJunit4" }
 ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "uiTestManifest" }
+androidx-compose-material = { group = "androidx.wear.compose", name = "compose-material", version.ref = "composeMaterial" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

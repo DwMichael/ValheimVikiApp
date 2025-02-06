@@ -4,6 +4,7 @@ package com.rabbitv.valheimviki.presentation.biome
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxSize
@@ -43,6 +44,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreatureListScreen(
+    paddingValues: PaddingValues,
     viewModel: CreaturesViewModel = hiltViewModel(),
     navController: NavHostController
 ) {
@@ -54,13 +56,17 @@ fun CreatureListScreen(
 
     if (creatureUIState.isLoading) {
         Box(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxWidth(),
             contentAlignment = Alignment.Center
         ) {
             CircularProgressIndicator()
         }
     } else {
-        Surface {
+        Surface(
+            modifier = Modifier.padding(paddingValues)
+        ) {
             CreatureList(
                 creatures = creatureUIState.creatures,
                 modifier = Modifier,

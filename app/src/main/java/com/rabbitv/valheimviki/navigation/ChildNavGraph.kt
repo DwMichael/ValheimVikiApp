@@ -1,5 +1,6 @@
 package com.rabbitv.valheimviki.navigation
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -18,7 +19,7 @@ import com.rabbitv.valheimviki.utils.Constants.CREATURE_ARGUMENT_KEY
 
 @Composable
 fun ChildNavGraph(
-    modifier: Modifier,
+    paddingValues: PaddingValues,
     navHostController: NavHostController
 ) {
     NavHost(
@@ -28,6 +29,7 @@ fun ChildNavGraph(
     ) {
         composable(Screen.BiomeList.route) {
             BiomeListScreen(
+                paddingValues = paddingValues,
                 navController = navHostController
             )
         }
@@ -37,10 +39,14 @@ fun ChildNavGraph(
             { type = NavType.StringType }
             )
         ) {
-            BiomeScreen()
+            BiomeScreen(
+                paddingValues = paddingValues,
+            )
         }
         composable(Screen.CreatureList.route) {
-            CreatureListScreen(navController = navHostController)
+            CreatureListScreen(
+                paddingValues = paddingValues,
+                navController = navHostController)
         }
         composable(
             route = Screen.Creature.route,
@@ -48,7 +54,9 @@ fun ChildNavGraph(
             { type = NavType.StringType }
             )
         ) {
-            CreatureScreen()
+            CreatureScreen(
+                paddingValues = paddingValues,
+            )
         }
 
 

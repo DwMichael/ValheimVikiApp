@@ -1,5 +1,6 @@
 package com.rabbitv.valheimviki.presentation.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,9 +35,8 @@ import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ContentList(
+fun ListContent(
     items: List<ItemData>,
-    modifier: Modifier = Modifier,
     clickToNavigate: (item: ItemData) -> Unit,
     state: PullToRefreshState,
     onRefresh: () -> Unit,
@@ -46,10 +46,10 @@ fun ContentList(
         state = state,
         isRefreshing = isRefreshing,
         onRefresh = onRefresh,
-        modifier = modifier,
+        modifier = Modifier.background(Color.Transparent),
     ) {
         LazyColumn(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .absolutePadding(
                     left = 16.dp,
@@ -150,9 +150,8 @@ private fun PreviewContentList2() {
 
 
     ValheimVikiAppTheme {
-        ContentList(
+        ListContent(
             items = sampleBiomes,
-            modifier = Modifier,
             clickToNavigate = { item -> {} },
             state = rememberPullToRefreshState(),
             onRefresh = {},

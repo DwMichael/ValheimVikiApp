@@ -1,48 +1,55 @@
 package com.rabbitv.valheimviki.presentation.components
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.material3.Text
-
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-
-package com.rabbitv.valheimviki.presentation.components
-
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.absolutePadding
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshState
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.wear.compose.material.ContentAlpha
+import coil3.compose.LocalPlatformContext
+import coil3.compose.rememberAsyncImagePainter
+import coil3.compose.rememberConstraintsSizeResolver
+import coil3.request.ImageRequest
+import coil3.request.error
+import coil3.request.placeholder
+import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.BiomeDtoX
 import com.rabbitv.valheimviki.domain.model.Stage
 import com.rabbitv.valheimviki.domain.repository.ItemData
+
+import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT
+import com.rabbitv.valheimviki.ui.theme.SMALL_PADDING
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
+import com.rabbitv.valheimviki.utils.Constants.BASE_URL
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ContentGrid(
+fun GridContent(
     items: List<ItemData>,
     modifier: Modifier = Modifier,
     clickToNavigate: (item: ItemData) -> Unit,
@@ -54,17 +61,12 @@ fun ContentGrid(
         state = state,
         isRefreshing = isRefreshing,
         onRefresh = onRefresh,
-        modifier = modifier,
     ) {
-        LazyColumn(
-            modifier = modifier
-                .fillMaxSize()
-                .absolutePadding(
-                    left = 16.dp,
-                    top = 0.dp,
-                    right = 16.dp,
-                    bottom = 16.dp
-                )
+        LazyVerticalGrid(
+
+            columns = GridCells.Fixed(2),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             if (items.isEmpty()) {
                 items(items) {
@@ -76,7 +78,7 @@ fun ContentGrid(
                 }
             } else {
                 items(items) { item ->
-                    ListItem(item = item, clickToNavigate = clickToNavigate)
+                    GridItem(item = item, clickToNavigate = clickToNavigate)
                     HorizontalDivider()
                 }
             }
@@ -88,33 +90,65 @@ fun ContentGrid(
 @Composable
 fun GridItem(
     item: ItemData,
-    modifier: Modifier = Modifier,
     clickToNavigate: (item: ItemData) -> Unit
 ) {
+    val sizeResolver = rememberConstraintsSizeResolver()
+    val painter = rememberAsyncImagePainter(
+        ImageRequest.Builder(LocalPlatformContext.current)
+            .data("$BASE_URL${item.imageUrl}")
+            .placeholder(R.drawable.ic_placeholder)
+            .error(R.drawable.ic_placeholder)
+            .size(sizeResolver)
+            .build(),
+    )
+
     Box(
         modifier = Modifier
-            .fillMaxSize()
+            .height(ITEM_HEIGHT)
             .clickable {
                 clickToNavigate(item)
             },
+        contentAlignment = Alignment.BottomStart
     ) {
-        Column(
-            modifier = modifier
+        Surface(
+            color = Color.Transparent,
+            shape = RoundedCornerShape(
+                size = SMALL_PADDING
+            ),
+        ) {
+            Image(
+                painter = painter,
+                contentDescription = stringResource(R.string.biome_image),
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .then(sizeResolver),
+            )
+        }
+        Surface(
+            modifier = Modifier
+                .fillMaxHeight(0.4f)
                 .fillMaxWidth()
-                .padding(vertical = 8.dp)
+                .clip(
+                    RoundedCornerShape(
+                        bottomStart = SMALL_PADDING,
+                        bottomEnd = SMALL_PADDING
+                    )
+                ),
+            shadowElevation = 0.dp,
+            color = Color.Black.copy(alpha = ContentAlpha.medium),
         ) {
             Text(
                 text = item.name,
                 style = MaterialTheme.typography.bodyLarge
             )
-            Spacer(modifier = Modifier.height(4.dp))
         }
     }
 }
 
 @Preview(name = "GridItem", showBackground = true)
 @Composable
-private fun PreviewListItem() {
+private fun PreviewGridItem() {
     val item = BiomeDtoX(
         id = "123",
         stage = Stage.EARLY.toString(),
@@ -124,9 +158,8 @@ private fun PreviewListItem() {
         order = 1
     )
     ValheimVikiAppTheme {
-        ListItem(
+        GridItem(
             item = item,
-            modifier = Modifier,
             clickToNavigate = {}
         )
     }
@@ -135,7 +168,7 @@ private fun PreviewListItem() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(name = "ContentGrid", showBackground = true)
 @Composable
-private fun PreviewContentList2() {
+private fun PreviewContentGrid() {
 
     val sampleBiomes = listOf(
         BiomeDtoX(
@@ -158,7 +191,7 @@ private fun PreviewContentList2() {
 
 
     ValheimVikiAppTheme {
-        ContentList(
+        GridContent(
             items = sampleBiomes,
             modifier = Modifier,
             clickToNavigate = { item -> {} },

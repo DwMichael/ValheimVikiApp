@@ -1,16 +1,16 @@
 package com.rabbitv.valheimviki.presentation.detail.biome
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
 fun BiomeScreen(
     viewModel: BiomeScreenViewModel = hiltViewModel(),
-    modifier: Modifier = Modifier
+    paddingValues: PaddingValues
 ) {
     Text("BiomeScreen")
 
@@ -19,8 +19,8 @@ fun BiomeScreen(
 @Preview(
     name = "BiomeDetail",
     showBackground = true
-    )
+)
 @Composable
 private fun PreviewBiomeDetail() {
-    BiomeScreen()
+    BiomeScreen(paddingValues = PaddingValues(0.dp))
 }

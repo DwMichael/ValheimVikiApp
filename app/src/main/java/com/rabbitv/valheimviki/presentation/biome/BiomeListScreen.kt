@@ -2,40 +2,38 @@ package com.rabbitv.valheimviki.presentation.biome
 
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import com.rabbitv.valheimviki.domain.model.BiomeDtoX
-import com.rabbitv.valheimviki.domain.model.Stage
 import com.rabbitv.valheimviki.navigation.Screen
-import com.rabbitv.valheimviki.presentation.components.ContentList
+import com.rabbitv.valheimviki.presentation.components.GridContent
 import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BiomeListScreen(
+    paddingValues: PaddingValues,
     viewModel: BiomeListScreenViewModel = hiltViewModel(),
     navController: NavHostController,
-) {
+
+    ) {
     val scope = rememberCoroutineScope()
     val refreshState = rememberPullToRefreshState()
     val biomeUIState: BiomesUIState by viewModel.biomeUIState.collectAsStateWithLifecycle()
@@ -43,14 +41,21 @@ fun BiomeListScreen(
 
     if (biomeUIState.isLoading) {
         Box(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
             contentAlignment = Alignment.Center
         ) {
             CircularProgressIndicator()
         }
     } else {
-        Surface {
-            ContentList(
+        Surface(
+            color = Color.Transparent,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            GridContent(
                 items = biomeUIState.biomes,
                 modifier = Modifier,
                 clickToNavigate = { item ->
