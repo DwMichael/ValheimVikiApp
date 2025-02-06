@@ -5,59 +5,63 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import com.rabbitv.valheimviki.domain.model.CreatureDtoX
 import com.rabbitv.valheimviki.navigation.Screen
 import com.rabbitv.valheimviki.presentation.components.GridContent
-import com.rabbitv.valheimviki.presentation.components.LoadingIndicator
-import com.rabbitv.valheimviki.presentation.creatures.CreaturesUIState
-import com.rabbitv.valheimviki.presentation.creatures.CreaturesViewModel
-import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_THREE_COLUMNS
-import com.rabbitv.valheimviki.utils.Constants.CREATURE_GRID_COLUMNS
+import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_TWO_COLUMNS
+import com.rabbitv.valheimviki.utils.Constants.BIOME_GRID_COLUMNS
 import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreatureListScreen(
+fun BiomeGridScreen(
     paddingValues: PaddingValues,
-    viewModel: CreaturesViewModel = hiltViewModel(),
-    navController: NavHostController
-) {
+    viewModel: BiomeListScreenViewModel = hiltViewModel(),
+    navController: NavHostController,
+
+    ) {
     val scope = rememberCoroutineScope()
     val refreshState = rememberPullToRefreshState()
-    val creatureUIState: CreaturesUIState by viewModel.creatureUIState.collectAsStateWithLifecycle()
+    val biomeUIState: BiomesUIState by viewModel.biomeUIState.collectAsStateWithLifecycle()
     val refreshing: Boolean by viewModel.isRefreshing.collectAsStateWithLifecycle()
 
-
-    if (creatureUIState.isLoading) {
-        LoadingIndicator(
-            paddingValues = paddingValues
-        )
+    if (biomeUIState.isLoading) {
+        Box(
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
     } else {
         Surface(
             color = Color.Transparent,
-            modifier = Modifier.padding(paddingValues)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
         ) {
             GridContent(
-                items = creatureUIState.creatures,
+                items = biomeUIState.biomes,
                 modifier = Modifier,
                 clickToNavigate = { item ->
-                    navController.navigate(Screen.Creature.passCreatureId(creatureId = item.id))
+                    navController.navigate(Screen.Biome.passBiomeId(biomeId = item.id))
                 },
                 state = refreshState,
                 onRefresh = {
@@ -67,34 +71,27 @@ fun CreatureListScreen(
                     }
                 },
                 isRefreshing = refreshing,
-                numbersOfColumns = CREATURE_GRID_COLUMNS,
-                height = ITEM_HEIGHT_THREE_COLUMNS
+                numbersOfColumns = BIOME_GRID_COLUMNS,
+                height = ITEM_HEIGHT_TWO_COLUMNS
             )
 
         }
     }
+
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview(showBackground = true)
 @Composable
-fun PreviewCreatureScreen() {
-    val sampleCreatures = emptyList<CreatureDtoX>()
-
-
-    Scaffold(
-        topBar = {
-            TopAppBar(title = { Text("Biomes") })
-        },
-        content = { padding ->
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-            ) {
-
-            }
-        }
-    )
+private fun ErrorMessage(message: String, modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier.padding(16.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = message,
+            color = MaterialTheme.colorScheme.error,
+            style = MaterialTheme.typography.bodyMedium
+        )
+    }
 }
+

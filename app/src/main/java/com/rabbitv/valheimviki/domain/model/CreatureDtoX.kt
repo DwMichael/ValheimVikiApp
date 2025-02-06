@@ -1,10 +1,11 @@
 package com.rabbitv.valheimviki.domain.model
 
 
-import com.google.gson.annotations.SerializedName
 import androidx.annotation.Keep
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.google.gson.annotations.SerializedName
+import com.rabbitv.valheimviki.domain.repository.ItemData
 import kotlinx.serialization.Serializable
 
 @Keep
@@ -13,7 +14,7 @@ import kotlinx.serialization.Serializable
 data class CreatureDtoX(
     @PrimaryKey(autoGenerate = false)
     @SerializedName("creatureId")
-    val creatureId: String,
+    override val id: String,
     @SerializedName("biomeId")
     val biomeId: String,
     @SerializedName("typeName")
@@ -21,7 +22,7 @@ data class CreatureDtoX(
     @SerializedName("type")
     val type: String,
     @SerializedName("name")
-    val name: String,
+    override val name: String,
     @SerializedName("primarySpawn")
     val primarySpawn: String?,
     @SerializedName("summoningItems")
@@ -41,7 +42,7 @@ data class CreatureDtoX(
     @SerializedName("immune")
     val immune: String?,
     @SerializedName("imageUrl")
-    val imageUrl: String,
+    override val imageUrl: String,
     @SerializedName("order")
     val order: Int
-)
+) : ItemData

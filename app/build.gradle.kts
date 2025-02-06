@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId = "com.rabbitv.valheimviki"
-        minSdk = 24
+        minSdk = 25
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -52,6 +52,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.compose.material)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -96,12 +97,12 @@ dependencies {
     //coil
     //noinspection UseTomlInstead
     implementation(libs.coil.compose)
-
+    implementation(libs.coil.network.okhttp)
     // Palette API
     implementation(libs.androidx.palette.ktx)
 
     //Fonts
-    implementation("androidx.compose.ui:ui-text-google-fonts:1.7.6")
+    implementation(libs.androidx.ui.text.google.fonts)
 
     //Testing
     androidTestImplementation(libs.androidx.core)

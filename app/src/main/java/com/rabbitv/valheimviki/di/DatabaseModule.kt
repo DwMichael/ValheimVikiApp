@@ -20,7 +20,8 @@ object DatabaseModule {
             application,
             ValheimVikiDatabase::class.java,
             "valheimViki_database"
-        ).build()
+        ).fallbackToDestructiveMigration()
+            .build()
     }
 
     @Provides

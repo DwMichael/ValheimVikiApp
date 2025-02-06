@@ -20,13 +20,13 @@ class BiomeRepositoryImpl @Inject constructor(
         return biomeDao.getBiomeById(biomeId)
     }
 
-    //TODO CHANGE NAME OF THIS STUPID FUNCTION
-    override suspend fun refreshBiomes(lang: String): BiomeDto {
+
+    override suspend fun fetchBiomes(lang: String): BiomeDto {
 
         try {
             val biomes = apiService.getAllBiomes(lang)
             val filteredBiomes = biomes.biomes.filter {
-                it.biomeId != "00000000-0000-0000-0000-000000000000"
+                it.id != "00000000-0000-0000-0000-000000000000"
             }
             biomeDao.insertAllBiomes(filteredBiomes)
             return biomes

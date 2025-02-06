@@ -41,8 +41,9 @@ class BiomeListScreenViewModel @Inject constructor(
         _biomeUIState.value = _biomeUIState.value.copy(isLoading = true, error = null)
         viewModelScope.launch {
             try {
-                val response = biomeRepository.refreshBiomes("en")
-
+                val response = biomeRepository.fetchBiomes("en")
+                println("NA DOLE !!!")
+                println(response.message)
                 when (response.success) {
                     true -> {
                         biomeRepository.getAllBiomes()
@@ -67,7 +68,7 @@ class BiomeListScreenViewModel @Inject constructor(
 
                     false -> {
                         _biomeUIState.value =
-                            _biomeUIState.value.copy(isLoading = false)
+                            _biomeUIState.value.copy(isLoading = false, error = response.message)
                     }
                 }
             } catch (e: Exception) {

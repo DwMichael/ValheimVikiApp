@@ -40,16 +40,16 @@ val Typography = Typography(
     titleLarge = TextStyle(
         fontFamily = IMFellEnglishFontFamily,
         fontWeight = FontWeight.Normal,
-        fontSize = 32.sp,
+        fontSize = 28.sp,
         lineHeight = 45.sp,
         letterSpacing = 0.15.sp
     ),
 
 
     labelSmall = TextStyle(
-        fontFamily =robotoFontFamily,
+        fontFamily = robotoFontFamily,
         fontWeight = FontWeight.Medium,
-        fontSize = 11.sp,
+        fontSize = 2.sp,
         lineHeight = 16.sp,
         letterSpacing = 0.5.sp
     )

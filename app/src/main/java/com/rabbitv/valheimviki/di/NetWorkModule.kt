@@ -2,6 +2,7 @@ package com.rabbitv.valheimviki.di
 
 import com.rabbitv.valheimviki.data.remote.api.ApiBiomeService
 import com.rabbitv.valheimviki.data.remote.api.ApiCreatureService
+import com.rabbitv.valheimviki.utils.Constants.BASE_URL
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,7 +16,7 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object NetWorkModule {
-    private const val BASE_URL = "http://192.168.1.130:8100/"
+
 
     @Provides
     @Singleton
