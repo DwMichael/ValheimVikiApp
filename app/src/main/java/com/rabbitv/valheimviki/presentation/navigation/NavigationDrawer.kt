@@ -1,16 +1,22 @@
 package com.rabbitv.valheimviki.presentation.navigation
 
 import android.content.res.Configuration
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
@@ -22,15 +28,24 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.MountainSnow
 import com.composables.icons.lucide.Rabbit
+import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.navigation.Screen
+import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
+import com.rabbitv.valheimviki.ui.theme.ForestGreen40Dark
+import com.rabbitv.valheimviki.ui.theme.IMFellEnglishFontFamily
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -46,19 +61,62 @@ fun NavigationDrawer(
     content: @Composable () -> Unit
 ) {
     ModalNavigationDrawer(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .fillMaxSize(),
         drawerState = drawerState,
         drawerContent = {
-            ModalDrawerSheet {
-                Column(Modifier.verticalScroll(rememberScrollState())) {
+            ModalDrawerSheet(
+                modifier = Modifier.fillMaxWidth(0.92f),
+                drawerContainerColor = ForestGreen40Dark,
+            ) {
+                Column(
+                    Modifier.verticalScroll(rememberScrollState())
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 12.dp, top = 24.dp, end = 12.dp),
+                        verticalAlignment = Alignment.Bottom
+                    ) {
+                        Image(
+                            modifier = Modifier
+                                .size(80.dp),
+                            painter = painterResource(R.drawable.viking),
+                            contentDescription = "Background",
+                            contentScale = ContentScale.FillBounds,
+                        )
+                        Spacer(modifier.padding(12.dp))
+                        Text(
+                            text = "ValheimViki",
+                            fontFamily = IMFellEnglishFontFamily,
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 36.sp,
+                            lineHeight = 45.sp,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        )
+                    }
+                    Spacer(Modifier.height(12.dp))
+                    HorizontalDivider()
                     Spacer(Modifier.height(12.dp))
                     items.forEach { item ->
                         NavigationDrawerItem(
+                            colors = NavigationDrawerItemDefaults.colors(ForestGreen10Dark),
                             icon = {
-                                Icon(
-                                    imageVector = item.icon,
-                                    contentDescription = item.contentDescription
-                                )
+                                if(item.iconPainter != null) {
+                                    Icon(
+                                        painter = item.iconPainter,
+                                        contentDescription = item.contentDescription,
+                                        modifier = Modifier.size(24.dp) // Ensures consistent icon size
+                                    )
+                                } else {
+                                    item.icon?.let {
+                                        Icon(
+                                            imageVector = it,
+                                            contentDescription = item.contentDescription,
+                                            modifier = Modifier.size(24.dp)
+                                        )
+                                    }
+                                }
                             },
                             label = { Text(item.label) },
                             selected = (item == selectedItem.value),
@@ -83,6 +141,27 @@ fun NavigationDrawer(
         content()
     }
 }
+
+@Preview(name = "NavigationDrawerImage", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun NavigationDrawerImage() {
+
+    ValheimVikiAppTheme {
+
+        Image(
+            modifier = Modifier
+                .padding(start = 16.dp, top = 24.dp, end = 12.dp)
+                .size(80.dp),
+            painter = painterResource(R.drawable.viking),
+            contentDescription = "Background",
+            contentScale = ContentScale.Crop,
+
+            )
+
+    }
+}
+
+
 @Preview(name = "NavigationDrawer", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun PreviewNavigationDrawer() {
@@ -95,12 +174,25 @@ private fun PreviewNavigationDrawer() {
             route = Screen.BiomeList.route
         ),
         DrawerItem(
+            iconPainter = painterResource(R.drawable.skull),
+            label = "Bosses",
+            contentDescription = "Creatures section",
+            route = Screen.Boss.route
+        ),
+        DrawerItem(
+            iconPainter = painterResource(R.drawable.ogre),
+            label = "MiniBosses",
+            contentDescription = "Creatures section",
+            route = Screen.MiniBoss.route
+        ),
+        DrawerItem(
             icon = Lucide.Rabbit,
             label = "Creatures",
             contentDescription = "Creatures section",
             route = Screen.CreatureList.route
+        ),
+
         )
-    )
     ValheimVikiAppTheme {
         NavigationDrawer(
             modifier = Modifier,

@@ -6,6 +6,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface CreatureRepository {
     fun getAllCreatures(): Flow<List<CreatureDtoX>>
-    suspend fun refreshCreatures(lang: String): CreatureDto
+    fun getMainBosses(): Flow<List<CreatureDtoX>>
+    fun getMiniBosses(): Flow<List<CreatureDtoX>>
+    suspend fun fetchCreatures(lang: String): CreatureDto
 
 }

@@ -23,12 +23,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.rabbitv.valheimviki.navigation.Screen
 import com.rabbitv.valheimviki.presentation.components.GridContent
+import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_TWO_COLUMNS
+import com.rabbitv.valheimviki.utils.Constants.BIOME_GRID_COLUMNS
 import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BiomeListScreen(
+fun BiomeGridScreen(
     paddingValues: PaddingValues,
     viewModel: BiomeListScreenViewModel = hiltViewModel(),
     navController: NavHostController,
@@ -42,8 +44,8 @@ fun BiomeListScreen(
     if (biomeUIState.isLoading) {
         Box(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
+                .padding(paddingValues)
+                .fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
             CircularProgressIndicator()
@@ -69,8 +71,9 @@ fun BiomeListScreen(
                     }
                 },
                 isRefreshing = refreshing,
-
-                )
+                numbersOfColumns = BIOME_GRID_COLUMNS,
+                height = ITEM_HEIGHT_TWO_COLUMNS
+            )
 
         }
     }

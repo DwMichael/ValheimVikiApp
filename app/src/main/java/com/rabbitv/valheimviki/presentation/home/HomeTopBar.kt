@@ -1,6 +1,10 @@
 package com.rabbitv.valheimviki.presentation.home
 
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -20,6 +24,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rabbitv.valheimviki.R
+import com.rabbitv.valheimviki.ui.theme.ICON_CLICK_DIM
+import com.rabbitv.valheimviki.ui.theme.ICON_SIZE
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -34,6 +40,7 @@ fun HomeTopBar(
     drawerState: DrawerState,
 ) {
     TopAppBar(
+        scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Color.Transparent,
             titleContentColor = MaterialTheme.colorScheme.primary,
@@ -43,7 +50,7 @@ fun HomeTopBar(
                 Icon(
                     painter = painterResource(id = R.drawable.bars),
                     contentDescription = "Menu section",
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(ICON_SIZE)
                 )
             }
         },
@@ -54,16 +61,37 @@ fun HomeTopBar(
             )
         },
         actions = {
-            FilledIconButton(
+            IconButton(
                 onClick = { /*TODO*/ },
-                shape = MaterialTheme.shapes.extraSmall,
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier
+                    .size(ICON_CLICK_DIM)
             ) {
                 Icon(
-                    tint = Color.Black,
-                    painter = painterResource(R.drawable.loop),
+                    painter = painterResource(R.drawable.ic_bookmarks),
                     contentDescription = "Search section",
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(ICON_SIZE)
+                )
+            }
+           IconButton(
+                onClick = { /*TODO*/ },
+                modifier = Modifier
+                    .size(ICON_CLICK_DIM)
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.icon_search),
+                    contentDescription = "Search section",
+                    modifier = Modifier.size(ICON_SIZE)
+                )
+            }
+            IconButton(
+                onClick = { /*TODO*/ },
+                modifier = Modifier
+                    .size(ICON_CLICK_DIM)
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_filtr),
+                    contentDescription = "Search section",
+                    modifier = Modifier.size(ICON_SIZE)
                 )
             }
         }
@@ -77,7 +105,7 @@ fun HomeTopBar(
 )
 @Composable
 private fun PreviewHomeTopBar() {
-    ValheimVikiAppTheme  { // Ensure your app theme is applied
+    ValheimVikiAppTheme { // Ensure your app theme is applied
         HomeTopBar(
             onSearchBarClick = {},
             onMenuClick = {},

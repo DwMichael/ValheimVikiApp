@@ -24,27 +24,28 @@ import com.rabbitv.valheimviki.domain.model.CreatureDtoX
 import com.rabbitv.valheimviki.navigation.Screen
 import com.rabbitv.valheimviki.presentation.components.GridContent
 import com.rabbitv.valheimviki.presentation.components.LoadingIndicator
-import com.rabbitv.valheimviki.presentation.creatures.CreaturesUIState
-import com.rabbitv.valheimviki.presentation.creatures.CreaturesViewModel
-import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_THREE_COLUMNS
-import com.rabbitv.valheimviki.utils.Constants.CREATURE_GRID_COLUMNS
+import com.rabbitv.valheimviki.presentation.creatures.mini_bosses.MiniBossesUIState
+import com.rabbitv.valheimviki.presentation.creatures.mini_bosses.MiniBossesViewModel
+import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_TWO_COLUMNS
+import com.rabbitv.valheimviki.utils.Constants.BOSS_GRID_COLUMNS
 import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreatureListScreen(
+fun MiniBossGridScreen(
     paddingValues: PaddingValues,
-    viewModel: CreaturesViewModel = hiltViewModel(),
+    viewModel: MiniBossesViewModel = hiltViewModel(),
     navController: NavHostController
 ) {
     val scope = rememberCoroutineScope()
     val refreshState = rememberPullToRefreshState()
-    val creatureUIState: CreaturesUIState by viewModel.creatureUIState.collectAsStateWithLifecycle()
+    val miniBossesUIState: MiniBossesUIState by viewModel.miniBossesUIState
+        .collectAsStateWithLifecycle()
     val refreshing: Boolean by viewModel.isRefreshing.collectAsStateWithLifecycle()
 
 
-    if (creatureUIState.isLoading) {
+    if (miniBossesUIState.isLoading) {
         LoadingIndicator(
             paddingValues = paddingValues
         )
@@ -54,7 +55,7 @@ fun CreatureListScreen(
             modifier = Modifier.padding(paddingValues)
         ) {
             GridContent(
-                items = creatureUIState.creatures,
+                items = miniBossesUIState.creatures,
                 modifier = Modifier,
                 clickToNavigate = { item ->
                     navController.navigate(Screen.Creature.passCreatureId(creatureId = item.id))
@@ -67,19 +68,18 @@ fun CreatureListScreen(
                     }
                 },
                 isRefreshing = refreshing,
-                numbersOfColumns = CREATURE_GRID_COLUMNS,
-                height = ITEM_HEIGHT_THREE_COLUMNS
+                numbersOfColumns = BOSS_GRID_COLUMNS,
+                height = ITEM_HEIGHT_TWO_COLUMNS
             )
 
         }
     }
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
-fun PreviewCreatureScreen() {
+fun PreviewMiniBossListScreen() {
     val sampleCreatures = emptyList<CreatureDtoX>()
 
 

@@ -6,6 +6,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface BiomeRepository {
     fun getAllBiomes(): Flow<List<BiomeDtoX>>
-    suspend fun refreshBiomes(lang: String): BiomeDto
+    suspend fun fetchBiomes(lang: String): BiomeDto
     fun getBiomeById(biomeId: String): Flow<BiomeDtoX>
 }

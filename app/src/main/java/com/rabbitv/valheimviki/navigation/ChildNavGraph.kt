@@ -10,8 +10,10 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.rabbitv.valheimviki.presentation.biome.BiomeListScreen
+import com.rabbitv.valheimviki.presentation.biome.BiomeGridScreen
+import com.rabbitv.valheimviki.presentation.biome.BossGirdScreen
 import com.rabbitv.valheimviki.presentation.biome.CreatureListScreen
+import com.rabbitv.valheimviki.presentation.biome.MiniBossGridScreen
 import com.rabbitv.valheimviki.presentation.detail.biome.BiomeScreen
 import com.rabbitv.valheimviki.presentation.detail.creature.CreatureScreen
 import com.rabbitv.valheimviki.utils.Constants.BIOME_ARGUMENT_KEY
@@ -28,7 +30,7 @@ fun ChildNavGraph(
         modifier = Modifier.padding(0.dp)
     ) {
         composable(Screen.BiomeList.route) {
-            BiomeListScreen(
+            BiomeGridScreen(
                 paddingValues = paddingValues,
                 navController = navHostController
             )
@@ -43,10 +45,23 @@ fun ChildNavGraph(
                 paddingValues = paddingValues,
             )
         }
+        composable(Screen.Boss.route) {
+            BossGirdScreen(
+                paddingValues = paddingValues,
+                navController = navHostController
+            )
+        }
+        composable(Screen.MiniBoss.route) {
+            MiniBossGridScreen(
+                paddingValues = paddingValues,
+                navController = navHostController
+            )
+        }
         composable(Screen.CreatureList.route) {
             CreatureListScreen(
                 paddingValues = paddingValues,
-                navController = navHostController)
+                navController = navHostController
+            )
         }
         composable(
             route = Screen.Creature.route,

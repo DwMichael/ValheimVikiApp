@@ -20,8 +20,8 @@ class BiomeRepositoryImpl @Inject constructor(
         return biomeDao.getBiomeById(biomeId)
     }
 
-    //TODO CHANGE NAME OF THIS STUPID FUNCTION
-    override suspend fun refreshBiomes(lang: String): BiomeDto {
+
+    override suspend fun fetchBiomes(lang: String): BiomeDto {
 
         try {
             val biomes = apiService.getAllBiomes(lang)

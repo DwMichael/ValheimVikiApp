@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.creatures
+package com.rabbitv.valheimviki.presentation.creatures.mini_bosses
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-data class CreaturesUIState(
+data class MiniBossesUIState(
     val creatures: List<CreatureDtoX> = emptyList(),
     val error: String? = null,
     val isLoading: Boolean = false
@@ -22,7 +22,7 @@ data class CreaturesUIState(
 
 
 @HiltViewModel
-class CreaturesViewModel @Inject constructor(
+class MiniBossesViewModel @Inject constructor(
     private val creatureRepository: CreatureRepository
 ) : ViewModel() {
 
@@ -31,8 +31,8 @@ class CreaturesViewModel @Inject constructor(
         get() = _isRefreshing.asStateFlow()
 
 
-    private val _creatureUIState = MutableStateFlow(CreaturesUIState())
-    val creatureUIState: StateFlow<CreaturesUIState> = _creatureUIState
+    private val _miniBossesUIState = MutableStateFlow(MiniBossesUIState())
+    val miniBossesUIState: StateFlow<MiniBossesUIState> = _miniBossesUIState
 
 
     init {
@@ -40,13 +40,13 @@ class CreaturesViewModel @Inject constructor(
     }
 
     fun load() {
-        _creatureUIState.value = _creatureUIState.value.copy(isLoading = true, error = null)
+        _miniBossesUIState.value = _miniBossesUIState.value.copy(isLoading = true, error = null)
         viewModelScope.launch {
             try {
                 val response = creatureRepository.fetchCreatures("en")
                 when (response.success) {
                     true -> {
-                        creatureRepository.getAllCreatures()
+                        creatureRepository.getMiniBosses()
                             .map { creatureList ->
                                 creatureList.sortedWith(
                                     compareBy<CreatureDtoX> { creature ->
@@ -56,7 +56,7 @@ class CreaturesViewModel @Inject constructor(
                                 )
                             }
                             .collect { sortedCreatures ->
-                                _creatureUIState.update { current ->
+                                _miniBossesUIState.update { current ->
                                     current.copy(
                                         creatures = sortedCreatures,
                                         isLoading = false,
@@ -67,13 +67,13 @@ class CreaturesViewModel @Inject constructor(
                     }
 
                     false -> {
-                        _creatureUIState.value =
-                            _creatureUIState.value.copy(isLoading = false)
+                        _miniBossesUIState.value =
+                            _miniBossesUIState.value.copy(isLoading = false)
                     }
                 }
             } catch (e: Exception) {
-                _creatureUIState.value =
-                    _creatureUIState.value.copy(isLoading = false, error = e.message)
+                _miniBossesUIState.value =
+                    _miniBossesUIState.value.copy(isLoading = false, error = e.message)
             }
             _isRefreshing.emit(false)
         }

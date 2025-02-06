@@ -44,12 +44,25 @@ fun HomeScreen(
             route = Screen.BiomeList.route
         ),
         DrawerItem(
+            iconPainter = painterResource(R.drawable.skull),
+            label = "Bosses",
+            contentDescription = "Creatures section",
+            route = Screen.Boss.route
+        ),
+        DrawerItem(
+            iconPainter = painterResource(R.drawable.ogre),
+            label = "MiniBosses",
+            contentDescription = "Creatures section",
+            route = Screen.MiniBoss.route
+        ),
+        DrawerItem(
             icon = Lucide.Rabbit,
             label = "Creatures",
             contentDescription = "Creatures section",
             route = Screen.CreatureList.route
+        ),
+
         )
-    )
     val selectedItem: MutableState<DrawerItem> = remember { mutableStateOf(items[0]) }
 
     NavigationDrawer(
@@ -83,7 +96,6 @@ fun HomeScreen(
 )
 @Composable
 private fun PreviewHomeScreenContent() {
-
 
 
     CompositionLocalProvider {

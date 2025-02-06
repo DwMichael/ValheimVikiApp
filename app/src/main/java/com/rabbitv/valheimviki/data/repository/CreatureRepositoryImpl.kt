@@ -16,7 +16,15 @@ class CreatureRepositoryImpl @Inject constructor(
         return creatureDao.getAllCreatures()
     }
 
-    override suspend fun refreshCreatures(lang: String): CreatureDto {
+    override fun getMainBosses(): Flow<List<CreatureDtoX>> {
+        return creatureDao.getMainBosses()
+    }
+
+    override fun getMiniBosses(): Flow<List<CreatureDtoX>> {
+        return creatureDao.getMiniBosses()
+    }
+
+    override suspend fun fetchCreatures(lang: String): CreatureDto {
         try {
             val creatures = apiService.getAllCreatures(lang)
             creatureDao.insertAllCreatures(creatures.creatures)
