@@ -17,14 +17,19 @@ import com.rabbitv.valheimviki.utils.Constants.BIOME_ARGUMENT_KEY
 import com.rabbitv.valheimviki.utils.Constants.CREATURE_ARGUMENT_KEY
 
 @Composable
-fun ChildNavGraph(navHostController: NavHostController) {
+fun ChildNavGraph(
+    modifier: Modifier,
+    navHostController: NavHostController
+) {
     NavHost(
         navController = navHostController,
         startDestination = Screen.BiomeList.route,
         modifier = Modifier.padding(0.dp)
     ) {
         composable(Screen.BiomeList.route) {
-            BiomeListScreen(navController = navHostController)
+            BiomeListScreen(
+                navController = navHostController
+            )
         }
         composable(
             route = Screen.Biome.route,

@@ -1,6 +1,6 @@
 package com.rabbitv.valheimviki.navigation
 
-import com.rabbitv.valheimviki.presentation.HomeScreen
+import com.rabbitv.valheimviki.presentation.home.HomeScreen
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController

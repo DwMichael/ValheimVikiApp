@@ -44,7 +44,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun CreatureListScreen(
     viewModel: CreaturesViewModel = hiltViewModel(),
-    modifier: Modifier = Modifier,
     navController: NavHostController
 ) {
     val scope = rememberCoroutineScope()
