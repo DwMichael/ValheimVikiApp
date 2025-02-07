@@ -20,9 +20,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import com.rabbitv.valheimviki.domain.model.CreatureDtoX
+import com.rabbitv.valheimviki.domain.model.creature.CreatureDtoX
 import com.rabbitv.valheimviki.navigation.Screen
-import com.rabbitv.valheimviki.presentation.components.GridContent
+import com.rabbitv.valheimviki.presentation.common.GridContent
 import com.rabbitv.valheimviki.presentation.components.LoadingIndicator
 import com.rabbitv.valheimviki.presentation.creatures.CreaturesUIState
 import com.rabbitv.valheimviki.presentation.creatures.CreaturesViewModel
@@ -55,7 +55,6 @@ fun CreatureListScreen(
         ) {
             GridContent(
                 items = creatureUIState.creatures,
-                modifier = Modifier,
                 clickToNavigate = { item ->
                     navController.navigate(Screen.Creature.passCreatureId(creatureId = item.id))
                 },

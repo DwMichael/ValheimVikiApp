@@ -2,8 +2,8 @@ package com.rabbitv.valheimviki.presentation.creatures
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rabbitv.valheimviki.domain.model.CreatureDtoX
-import com.rabbitv.valheimviki.domain.model.Type
+import com.rabbitv.valheimviki.domain.model.creature.CreatureDtoX
+import com.rabbitv.valheimviki.domain.model.creature.Type
 import com.rabbitv.valheimviki.domain.repository.CreatureRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -44,33 +44,29 @@ class CreaturesViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val response = creatureRepository.fetchCreatures("en")
-                when (response.success) {
-                    true -> {
-                        creatureRepository.getAllCreatures()
-                            .map { creatureList ->
-                                creatureList.sortedWith(
-                                    compareBy<CreatureDtoX> { creature ->
-                                        typeOrderMap.getOrElse(creature.typeName) { Int.MAX_VALUE }
-                                    }
-                                        .thenBy { it.order }
-                                )
-                            }
-                            .collect { sortedCreatures ->
-                                _creatureUIState.update { current ->
-                                    current.copy(
-                                        creatures = sortedCreatures,
-                                        isLoading = false,
-                                        error = current.error
-                                    )
-                                }
-                            }
-                    }
-
-                    false -> {
-                        _creatureUIState.value =
-                            _creatureUIState.value.copy(isLoading = false)
-                    }
+                var errorMessage = response.error
+                if (response.errorDetails == "503") {
+                    errorMessage = "Server Unavailable try later"
                 }
+
+                creatureRepository.getAllCreatures()
+                    .map { creatureList ->
+                        creatureList.sortedWith(
+                            compareBy<CreatureDtoX> { creature ->
+                                typeOrderMap.getOrElse(creature.typeName) { Int.MAX_VALUE }
+                            }
+                                .thenBy { it.order }
+                        )
+                    }
+                    .collect { sortedCreatures ->
+                        _creatureUIState.update { current ->
+                            current.copy(
+                                creatures = sortedCreatures,
+                                isLoading = false,
+                                error = errorMessage
+                            )
+                        }
+                    }
             } catch (e: Exception) {
                 _creatureUIState.value =
                     _creatureUIState.value.copy(isLoading = false, error = e.message)

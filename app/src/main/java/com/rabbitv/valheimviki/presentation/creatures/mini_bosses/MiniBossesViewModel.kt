@@ -2,8 +2,8 @@ package com.rabbitv.valheimviki.presentation.creatures.mini_bosses
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rabbitv.valheimviki.domain.model.CreatureDtoX
-import com.rabbitv.valheimviki.domain.model.Type
+import com.rabbitv.valheimviki.domain.model.creature.CreatureDtoX
+import com.rabbitv.valheimviki.domain.model.creature.Type
 import com.rabbitv.valheimviki.domain.repository.CreatureRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class MiniBossesUIState(
-    val creatures: List<CreatureDtoX> = emptyList(),
+    val miniBosses: List<CreatureDtoX> = emptyList(),
     val error: String? = null,
     val isLoading: Boolean = false
 )
@@ -44,33 +44,28 @@ class MiniBossesViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val response = creatureRepository.fetchCreatures("en")
-                when (response.success) {
-                    true -> {
-                        creatureRepository.getMiniBosses()
-                            .map { creatureList ->
-                                creatureList.sortedWith(
-                                    compareBy<CreatureDtoX> { creature ->
-                                        typeOrderMap.getOrElse(creature.typeName) { Int.MAX_VALUE }
-                                    }
-                                        .thenBy { it.order }
-                                )
-                            }
-                            .collect { sortedCreatures ->
-                                _miniBossesUIState.update { current ->
-                                    current.copy(
-                                        creatures = sortedCreatures,
-                                        isLoading = false,
-                                        error = current.error
-                                    )
-                                }
-                            }
-                    }
-
-                    false -> {
-                        _miniBossesUIState.value =
-                            _miniBossesUIState.value.copy(isLoading = false)
-                    }
+                var errorMessage = response.error
+                if (response.errorDetails == "503") {
+                    errorMessage = "Server Unavailable try later"
                 }
+                creatureRepository.getMiniBosses()
+                    .map { creatureList ->
+                        creatureList.sortedWith(
+                            compareBy<CreatureDtoX> { creature ->
+                                typeOrderMap.getOrElse(creature.typeName) { Int.MAX_VALUE }
+                            }
+                                .thenBy { it.order }
+                        )
+                    }
+                    .collect { sortedCreatures ->
+                        _miniBossesUIState.update { current ->
+                            current.copy(
+                                miniBosses = sortedCreatures,
+                                isLoading = false,
+                                error = errorMessage
+                            )
+                        }
+                    }
             } catch (e: Exception) {
                 _miniBossesUIState.value =
                     _miniBossesUIState.value.copy(isLoading = false, error = e.message)

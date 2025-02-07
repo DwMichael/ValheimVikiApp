@@ -1,7 +1,7 @@
 package com.rabbitv.valheimviki.domain.repository
 
-import com.rabbitv.valheimviki.domain.model.BiomeDto
-import com.rabbitv.valheimviki.domain.model.BiomeDtoX
+import com.rabbitv.valheimviki.domain.model.biome.BiomeDto
+import com.rabbitv.valheimviki.domain.model.biome.BiomeDtoX
 import kotlinx.coroutines.flow.Flow
 
 interface BiomeRepository {

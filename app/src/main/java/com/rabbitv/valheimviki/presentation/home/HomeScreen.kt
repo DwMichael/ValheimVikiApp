@@ -73,13 +73,9 @@ fun HomeScreen(
         items = items,
         selectedItem = selectedItem
     ) {
+
         Box(modifier = Modifier.fillMaxSize()) {
-            Image(
-                painter = painterResource(id = R.drawable.main_background),
-                contentDescription = "Background",
-                contentScale = ContentScale.FillBounds,
-                modifier = Modifier.matchParentSize()
-            )
+
             HomeContent(
                 drawerState = drawerState,
                 scope = scope,

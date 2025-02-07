@@ -2,8 +2,9 @@ package com.rabbitv.valheimviki.data.repository
 
 import com.rabbitv.valheimviki.data.local.dao.CreatureDao
 import com.rabbitv.valheimviki.data.remote.api.ApiCreatureService
-import com.rabbitv.valheimviki.domain.model.CreatureDto
-import com.rabbitv.valheimviki.domain.model.CreatureDtoX
+import com.rabbitv.valheimviki.data.remote.exceptions.NetworkExceptionHandler
+import com.rabbitv.valheimviki.domain.model.creature.CreatureDto
+import com.rabbitv.valheimviki.domain.model.creature.CreatureDtoX
 import com.rabbitv.valheimviki.domain.repository.CreatureRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -30,11 +31,14 @@ class CreatureRepositoryImpl @Inject constructor(
             creatureDao.insertAllCreatures(creatures.creatures)
             return creatures
         } catch (e: Exception) {
-            return CreatureDto(
+            val networkException = NetworkExceptionHandler.handleException(e)
+            val creatureDto = CreatureDto(
                 creatures = emptyList(),
-                message = e.message ?: "Something goes wrong",
-                success = false,
+                error = networkException.error,
+                success = networkException.success,
+                errorDetails = networkException.errorDetails
             )
+            return creatureDto
         }
 
     }

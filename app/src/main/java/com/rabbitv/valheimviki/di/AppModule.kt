@@ -2,7 +2,7 @@ package com.rabbitv.valheimviki.di
 
 import com.rabbitv.valheimviki.data.repository.BiomeRepositoryImpl
 import com.rabbitv.valheimviki.data.repository.CreatureRepositoryImpl
-import com.rabbitv.valheimviki.presentation.biome.BiomeListScreenViewModel
+import com.rabbitv.valheimviki.presentation.biome.BiomeGridScreenViewModel
 import com.rabbitv.valheimviki.presentation.creatures.CreaturesViewModel
 import com.rabbitv.valheimviki.presentation.creatures.bosses.BossesViewModel
 import com.rabbitv.valheimviki.presentation.creatures.mini_bosses.MiniBossesViewModel
@@ -30,7 +30,7 @@ object AppModule {
     @Provides
     @Singleton
     fun provideBiomeViewModel(biomeRepository: BiomeRepositoryImpl) =
-        BiomeListScreenViewModel(biomeRepository)
+        BiomeGridScreenViewModel(biomeRepository)
 
     @Provides
     @Singleton
