@@ -2,8 +2,8 @@ package com.rabbitv.valheimviki.presentation.biome
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rabbitv.valheimviki.domain.model.BiomeDtoX
-import com.rabbitv.valheimviki.domain.model.Stage
+import com.rabbitv.valheimviki.domain.model.biome.BiomeDtoX
+import com.rabbitv.valheimviki.domain.model.biome.Stage
 import com.rabbitv.valheimviki.domain.repository.BiomeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +21,7 @@ data class BiomesUIState(
 )
 
 @HiltViewModel
-class BiomeListScreenViewModel @Inject constructor(
+class BiomeGridScreenViewModel @Inject constructor(
     private val biomeRepository: BiomeRepository
 ) : ViewModel() {
 
@@ -42,35 +42,29 @@ class BiomeListScreenViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val response = biomeRepository.fetchBiomes("en")
-                println("NA DOLE !!!")
-                println(response.message)
-                when (response.success) {
-                    true -> {
-                        biomeRepository.getAllBiomes()
-                            .map { biomes ->
-                                biomes.sortedWith(
-                                    compareBy(
-                                        { stageOrderMap[it.stage] ?: Int.MAX_VALUE },
-                                        { it.order }
-                                    )
-                                )
-                            }
-                            .collect { sortedBiomes ->
-                                _biomeUIState.update { current ->
-                                    current.copy(
-                                        biomes = sortedBiomes,
-                                        isLoading = false,
-                                        error = null
-                                    )
-                                }
-                            }
-                    }
-
-                    false -> {
-                        _biomeUIState.value =
-                            _biomeUIState.value.copy(isLoading = false, error = response.message)
-                    }
+                var errorMessage = response.error
+                if (response.errorDetails == "503") {
+                    errorMessage = "Server Unavailable try later"
                 }
+
+                biomeRepository.getAllBiomes()
+                    .map { biomes ->
+                        biomes.sortedWith(
+                            compareBy(
+                                { stageOrderMap[it.stage] ?: Int.MAX_VALUE },
+                                { it.order }
+                            )
+                        )
+                    }
+                    .collect { sortedBiomes ->
+                        _biomeUIState.update { current ->
+                            current.copy(
+                                biomes = sortedBiomes,
+                                isLoading = false,
+                                error = null ?: errorMessage
+                            )
+                        }
+                    }
             } catch (e: Exception) {
                 _biomeUIState.value =
                     _biomeUIState.value.copy(isLoading = false, error = e.message)

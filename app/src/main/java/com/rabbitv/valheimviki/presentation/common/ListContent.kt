@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.components
+package com.rabbitv.valheimviki.presentation.common
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,8 +27,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.rabbitv.valheimviki.domain.model.BiomeDtoX
-import com.rabbitv.valheimviki.domain.model.Stage
+import com.rabbitv.valheimviki.domain.model.biome.BiomeDtoX
+import com.rabbitv.valheimviki.domain.model.biome.Stage
 import com.rabbitv.valheimviki.domain.repository.ItemData
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 

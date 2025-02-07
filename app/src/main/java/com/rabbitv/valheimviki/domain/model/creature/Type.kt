@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.domain.model
+package com.rabbitv.valheimviki.domain.model.creature
 
 enum class Type {
     BOSS,

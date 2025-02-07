@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.domain.model
+package com.rabbitv.valheimviki.domain.model.biome
 
 
 import androidx.annotation.Keep

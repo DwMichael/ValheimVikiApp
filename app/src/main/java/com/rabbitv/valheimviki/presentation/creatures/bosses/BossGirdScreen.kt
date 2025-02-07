@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.biome
+package com.rabbitv.valheimviki.presentation.creatures.bosses
 
 
 import androidx.compose.foundation.layout.Box
@@ -20,12 +20,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import com.rabbitv.valheimviki.domain.model.CreatureDtoX
+import com.rabbitv.valheimviki.domain.model.creature.CreatureDtoX
 import com.rabbitv.valheimviki.navigation.Screen
-import com.rabbitv.valheimviki.presentation.components.GridContent
+import com.rabbitv.valheimviki.presentation.common.EmptyScreen
+import com.rabbitv.valheimviki.presentation.common.GridContent
 import com.rabbitv.valheimviki.presentation.components.LoadingIndicator
-import com.rabbitv.valheimviki.presentation.creatures.bosses.BossUIState
-import com.rabbitv.valheimviki.presentation.creatures.bosses.BossesViewModel
 import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_TWO_COLUMNS
 import com.rabbitv.valheimviki.utils.Constants.BOSS_GRID_COLUMNS
 import kotlinx.coroutines.launch
@@ -53,23 +52,41 @@ fun BossGirdScreen(
             color = Color.Transparent,
             modifier = Modifier.padding(paddingValues)
         ) {
-            GridContent(
-                items = bossUIState.creatures,
-                modifier = Modifier,
-                clickToNavigate = { item ->
-                    navController.navigate(Screen.Creature.passCreatureId(creatureId = item.id))
-                },
-                state = refreshState,
-                onRefresh = {
-                    viewModel.load()
-                    scope.launch {
-                        refreshState.animateToHidden()
-                    }
-                },
-                isRefreshing = refreshing,
-                numbersOfColumns = BOSS_GRID_COLUMNS,
-                height = ITEM_HEIGHT_TWO_COLUMNS
-            )
+            when (bossUIState.bosses.isEmpty()) {
+                false -> {
+                    GridContent(
+                        items = bossUIState.bosses,
+                        clickToNavigate = { item ->
+                            navController.navigate(Screen.Creature.passCreatureId(creatureId = item.id))
+                        },
+                        state = refreshState,
+                        onRefresh = {
+                            viewModel.load()
+                            scope.launch {
+                                refreshState.animateToHidden()
+                            }
+                        },
+                        isRefreshing = refreshing,
+                        numbersOfColumns = BOSS_GRID_COLUMNS,
+                        height = ITEM_HEIGHT_TWO_COLUMNS
+                    )
+                }
+
+                true -> {
+                    EmptyScreen(
+                        state = refreshState,
+                        isRefreshing = refreshing,
+                        onRefresh = {
+                            viewModel.load()
+                            scope.launch {
+                                refreshState.animateToHidden()
+                            }
+                        },
+                        errorMessage = bossUIState.error.toString()
+                    )
+                }
+            }
+
 
         }
     }
