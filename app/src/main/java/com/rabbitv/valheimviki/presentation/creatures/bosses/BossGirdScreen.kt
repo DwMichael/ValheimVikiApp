@@ -86,8 +86,6 @@ fun BossGirdScreen(
                     )
                 }
             }
-
-
         }
     }
 }

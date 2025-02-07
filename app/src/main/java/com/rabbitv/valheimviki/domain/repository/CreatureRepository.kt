@@ -9,5 +9,6 @@ interface CreatureRepository {
     fun getMainBosses(): Flow<List<CreatureDtoX>>
     fun getMiniBosses(): Flow<List<CreatureDtoX>>
     suspend fun fetchCreatures(lang: String): CreatureDto
+    suspend fun storeCreatures(creatures: List<CreatureDtoX>)
 
 }

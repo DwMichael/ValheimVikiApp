@@ -57,6 +57,8 @@ fun BiomeGridScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
+            println("LISTA :")
+            println(biomeUIState.biomes)
             when (biomeUIState.biomes.isEmpty()) {
                 false -> {
                     GridContent(

@@ -2,14 +2,13 @@ package com.rabbitv.valheimviki.presentation.biome
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rabbitv.valheimviki.domain.exceptions.FetchException
 import com.rabbitv.valheimviki.domain.model.biome.BiomeDtoX
-import com.rabbitv.valheimviki.domain.model.biome.Stage
-import com.rabbitv.valheimviki.domain.repository.BiomeRepository
+import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -22,7 +21,7 @@ data class BiomesUIState(
 
 @HiltViewModel
 class BiomeGridScreenViewModel @Inject constructor(
-    private val biomeRepository: BiomeRepository
+    private val biomeUseCases: BiomeUseCases
 ) : ViewModel() {
 
     private val _isRefreshing = MutableStateFlow(false)
@@ -41,42 +40,21 @@ class BiomeGridScreenViewModel @Inject constructor(
         _biomeUIState.value = _biomeUIState.value.copy(isLoading = true, error = null)
         viewModelScope.launch {
             try {
-                val response = biomeRepository.fetchBiomes("en")
-                var errorMessage = response.error
-                if (response.errorDetails == "503") {
-                    errorMessage = "Server Unavailable try later"
+                biomeUseCases.getAllBiomesUseCase("en").collect { sortedBiomes ->
+                    _biomeUIState.update { current ->
+                        current.copy(biomes = sortedBiomes, isLoading = false)
+                    }
                 }
-
-                biomeRepository.getAllBiomes()
-                    .map { biomes ->
-                        biomes.sortedWith(
-                            compareBy(
-                                { stageOrderMap[it.stage] ?: Int.MAX_VALUE },
-                                { it.order }
-                            )
-                        )
-                    }
-                    .collect { sortedBiomes ->
-                        _biomeUIState.update { current ->
-                            current.copy(
-                                biomes = sortedBiomes,
-                                isLoading = false,
-                                error = null ?: errorMessage
-                            )
-                        }
-                    }
+            } catch (e: FetchException) {
+                println("TAK BYŁEM EXECPION")
+                _biomeUIState.value = _biomeUIState.value.copy(isLoading = false, error = e.message)
             } catch (e: Exception) {
-                _biomeUIState.value =
-                    _biomeUIState.value.copy(isLoading = false, error = e.message)
+                _biomeUIState.value = _biomeUIState.value.copy(isLoading = false, error = e.message)
+            } finally {
+                _isRefreshing.emit(false)
             }
-
-            _isRefreshing.emit(false)
         }
     }
 
-    private val stageOrderMap = mapOf(
-        Stage.EARLY.toString() to 1,
-        Stage.MID.toString() to 2,
-        Stage.LATE.toString() to 3
-    )
+
 }

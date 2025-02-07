@@ -12,9 +12,9 @@ data class BiomeDto(
     @SerializedName("success")
     override val success: Boolean,
     @SerializedName("message")
-    override val error: String,
+    override val error: String?,
     @SerializedName("error")
-    override val errorDetails: String,
+    override val errorDetails: String?,
     @SerializedName("biomes")
     val biomes: List<BiomeDtoX>
 ) : ErrorResponseDto

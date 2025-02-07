@@ -68,10 +68,6 @@ fun EmptyScreen(
                                     "Server Unavailable",
                                     textAlign = TextAlign.Center
                                 )
-                                Text(
-                                    errorMessage,
-                                    textAlign = TextAlign.Center
-                                )
                             }
 
                 }

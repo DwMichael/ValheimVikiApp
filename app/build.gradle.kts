@@ -116,4 +116,8 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.kotlin.test.junit)
     testImplementation(libs.kotlinx.coroutines.test)
+    //Mockito
+    testImplementation(libs.mockito.kotlin) // Dodajemy Mockito-kotlin
+    testImplementation(libs.mockito.core) // Dodajemy core Mockito
+    androidTestImplementation(libs.mockito.android)
 }

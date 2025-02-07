@@ -22,6 +22,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.rabbitv.valheimviki.domain.model.creature.CreatureDtoX
 import com.rabbitv.valheimviki.navigation.Screen
+import com.rabbitv.valheimviki.presentation.common.EmptyScreen
 import com.rabbitv.valheimviki.presentation.common.GridContent
 import com.rabbitv.valheimviki.presentation.components.LoadingIndicator
 import com.rabbitv.valheimviki.presentation.creatures.CreaturesUIState
@@ -53,23 +54,40 @@ fun CreatureListScreen(
             color = Color.Transparent,
             modifier = Modifier.padding(paddingValues)
         ) {
-            GridContent(
-                items = creatureUIState.creatures,
-                clickToNavigate = { item ->
-                    navController.navigate(Screen.Creature.passCreatureId(creatureId = item.id))
-                },
-                state = refreshState,
-                onRefresh = {
-                    viewModel.load()
-                    scope.launch {
-                        refreshState.animateToHidden()
-                    }
-                },
-                isRefreshing = refreshing,
-                numbersOfColumns = CREATURE_GRID_COLUMNS,
-                height = ITEM_HEIGHT_THREE_COLUMNS
-            )
+            when (creatureUIState.creatures.isEmpty()) {
+                false -> {
+                    GridContent(
+                        items = creatureUIState.creatures,
+                        clickToNavigate = { item ->
+                            navController.navigate(Screen.Creature.passCreatureId(creatureId = item.id))
+                        },
+                        state = refreshState,
+                        onRefresh = {
+                            viewModel.load()
+                            scope.launch {
+                                refreshState.animateToHidden()
+                            }
+                        },
+                        isRefreshing = refreshing,
+                        numbersOfColumns = CREATURE_GRID_COLUMNS,
+                        height = ITEM_HEIGHT_THREE_COLUMNS
+                    )
+                }
 
+                true -> {
+                    EmptyScreen(
+                        state = refreshState,
+                        isRefreshing = refreshing,
+                        onRefresh = {
+                            viewModel.load()
+                            scope.launch {
+                                refreshState.animateToHidden()
+                            }
+                        },
+                        errorMessage = creatureUIState.error.toString()
+                    )
+                }
+            }
         }
     }
 }
