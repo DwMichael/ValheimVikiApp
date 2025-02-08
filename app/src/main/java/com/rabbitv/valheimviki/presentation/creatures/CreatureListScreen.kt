@@ -63,7 +63,7 @@ fun CreatureListScreen(
                         },
                         state = refreshState,
                         onRefresh = {
-                            viewModel.load()
+                            viewModel.refetchBiomes()
                             scope.launch {
                                 refreshState.animateToHidden()
                             }
@@ -79,7 +79,7 @@ fun CreatureListScreen(
                         state = refreshState,
                         isRefreshing = refreshing,
                         onRefresh = {
-                            viewModel.load()
+                            viewModel.refetchBiomes()
                             scope.launch {
                                 refreshState.animateToHidden()
                             }

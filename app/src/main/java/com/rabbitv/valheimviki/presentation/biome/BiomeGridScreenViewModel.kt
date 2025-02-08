@@ -36,7 +36,7 @@ class BiomeGridScreenViewModel @Inject constructor(
         load()
     }
 
-    fun load() {
+    private fun load() {
         _biomeUIState.value = _biomeUIState.value.copy(isLoading = true, error = null)
         viewModelScope.launch {
             try {
@@ -46,7 +46,25 @@ class BiomeGridScreenViewModel @Inject constructor(
                     }
                 }
             } catch (e: FetchException) {
-                println("TAK BYŁEM EXECPION")
+                _biomeUIState.value = _biomeUIState.value.copy(isLoading = false, error = e.message)
+            } catch (e: Exception) {
+                _biomeUIState.value = _biomeUIState.value.copy(isLoading = false, error = e.message)
+            } finally {
+                _isRefreshing.emit(false)
+            }
+        }
+    }
+
+    fun refetchBiomes() {
+        _biomeUIState.value = _biomeUIState.value.copy(isLoading = true, error = null)
+        viewModelScope.launch {
+            try {
+                biomeUseCases.refetchBiomes("en").collect { sortedBiomes ->
+                    _biomeUIState.update { current ->
+                        current.copy(biomes = sortedBiomes, isLoading = false)
+                    }
+                }
+            } catch (e: FetchException) {
                 _biomeUIState.value = _biomeUIState.value.copy(isLoading = false, error = e.message)
             } catch (e: Exception) {
                 _biomeUIState.value = _biomeUIState.value.copy(isLoading = false, error = e.message)

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.exceptions.FetchException
 import com.rabbitv.valheimviki.domain.model.creature.CreatureDtoX
+import com.rabbitv.valheimviki.domain.model.creature.RefetchUseCases
 import com.rabbitv.valheimviki.domain.use_cases.creatures.CreatureUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -38,7 +39,7 @@ class CreaturesViewModel @Inject constructor(
         load()
     }
 
-    fun load() {
+    private fun load() {
         _creatureUIState.value = _creatureUIState.value.copy(isLoading = true, error = null)
         viewModelScope.launch {
             try {
@@ -51,6 +52,28 @@ class CreaturesViewModel @Inject constructor(
                     }
                 }
 
+            } catch (e: FetchException) {
+                _creatureUIState.value =
+                    _creatureUIState.value.copy(isLoading = false, error = e.message)
+            } catch (e: Exception) {
+                _creatureUIState.value =
+                    _creatureUIState.value.copy(isLoading = false, error = e.message)
+            } finally {
+                _isRefreshing.emit(false)
+            }
+        }
+    }
+
+    fun refetchBiomes() {
+        _creatureUIState.value = _creatureUIState.value.copy(isLoading = true, error = null)
+        viewModelScope.launch {
+            try {
+                creatureUseCases.refetchCreatures("en", RefetchUseCases.GET_BOSSES)
+                    .collect { sortedMiniBosses ->
+                        _creatureUIState.update { current ->
+                            current.copy(creatures = sortedMiniBosses, isLoading = false)
+                        }
+                    }
             } catch (e: FetchException) {
                 _creatureUIState.value =
                     _creatureUIState.value.copy(isLoading = false, error = e.message)
