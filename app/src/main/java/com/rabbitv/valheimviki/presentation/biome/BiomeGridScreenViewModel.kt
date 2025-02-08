@@ -14,9 +14,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class BiomesUIState(
-    val biomes: List<BiomeDtoX> = emptyList(),
-    val error: String? = null,
-    val isLoading: Boolean = false
+    val biomes : List<BiomeDtoX> = emptyList() ,
+    val error : String? = null ,
+    val isLoading : Boolean = false
 )
 
 @HiltViewModel
@@ -49,8 +49,6 @@ class BiomeGridScreenViewModel @Inject constructor(
                 _biomeUIState.value = _biomeUIState.value.copy(isLoading = false, error = e.message)
             } catch (e: Exception) {
                 _biomeUIState.value = _biomeUIState.value.copy(isLoading = false, error = e.message)
-            } finally {
-                _isRefreshing.emit(false)
             }
         }
     }

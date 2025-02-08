@@ -116,6 +116,11 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.kotlin.test.junit)
     testImplementation(libs.kotlinx.coroutines.test)
+    //Hilt tests
+    testImplementation(libs.hilt.android.testing)
+    kspTest(libs.hilt.compiler)
+    androidTestImplementation(libs.hilt.android.testing)
+    kspAndroidTest(libs.hilt.compiler)
     //Mockito
     testImplementation(libs.mockito.kotlin) // Dodajemy Mockito-kotlin
     testImplementation(libs.mockito.core) // Dodajemy core Mockito
