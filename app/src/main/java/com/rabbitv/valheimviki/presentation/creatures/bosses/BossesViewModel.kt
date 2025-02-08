@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.exceptions.FetchException
 import com.rabbitv.valheimviki.domain.model.creature.CreatureDtoX
-import com.rabbitv.valheimviki.domain.model.creature.Type
+import com.rabbitv.valheimviki.domain.model.creature.RefetchUseCases
 import com.rabbitv.valheimviki.domain.use_cases.creatures.CreatureUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,7 +39,7 @@ class BossesViewModel @Inject constructor(
         load()
     }
 
-    fun load() {
+    private fun load() {
         _bossUIState.value = _bossUIState.value.copy(isLoading = true, error = null)
         viewModelScope.launch {
             try {
@@ -58,12 +58,25 @@ class BossesViewModel @Inject constructor(
         }
     }
 
+    fun refetchBiomes() {
+        _bossUIState.value = _bossUIState.value.copy(isLoading = true, error = null)
+        viewModelScope.launch {
+            try {
+                creatureUseCases.refetchCreatures("en", RefetchUseCases.GET_BOSSES)
+                    .collect { sortedBosses ->
+                        _bossUIState.update { current ->
+                            current.copy(bosses = sortedBosses, isLoading = false)
+                        }
+                    }
+            } catch (e: FetchException) {
+                _bossUIState.value = _bossUIState.value.copy(isLoading = false, error = e.message)
+            } catch (e: Exception) {
+                _bossUIState.value = _bossUIState.value.copy(isLoading = false, error = e.message)
+            } finally {
+                _isRefreshing.emit(false)
+            }
+        }
+    }
 
-    private val typeOrderMap = mapOf(
-        Type.BOSS.toString() to 1,
-        Type.MINI_BOSS.toString() to 2,
-        Type.AGGRESSIVE_CREATURE.toString() to 3,
-        Type.PASSIVE_CREATURE.toString() to 4,
-        Type.NPC.toString() to 5,
-    )
+
 }

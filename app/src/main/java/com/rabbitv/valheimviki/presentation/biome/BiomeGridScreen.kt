@@ -68,7 +68,7 @@ fun BiomeGridScreen(
                         },
                         state = refreshState,
                         onRefresh = {
-                            viewModel.load()
+                            viewModel.refetchBiomes()
                             scope.launch {
                                 refreshState.animateToHidden()
                             }
@@ -85,7 +85,7 @@ fun BiomeGridScreen(
                         state = refreshState,
                         isRefreshing = refreshing,
                         onRefresh = {
-                            viewModel.load()
+                            viewModel.refetchBiomes()
                             scope.launch {
                                 refreshState.animateToHidden()
                             }
