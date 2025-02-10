@@ -1,5 +1,6 @@
 package com.rabbitv.valheimviki.domain.use_cases.biome.refetch_biomes
 
+import com.rabbitv.valheimviki.domain.model.biome.BiomeDto
 import com.rabbitv.valheimviki.domain.model.biome.BiomeDtoX
 import com.rabbitv.valheimviki.domain.model.biome.Stage
 import com.rabbitv.valheimviki.domain.repository.BiomeRepository
@@ -10,7 +11,7 @@ import javax.inject.Inject
 class RefetchBiomes @Inject constructor(private val biomeRepository: BiomeRepository) {
 
     suspend operator fun invoke(language: String): Flow<List<BiomeDtoX>> {
-        val response = biomeRepository.fetchBiomes(language)
+        val response: BiomeDto = biomeRepository.fetchBiomes(language)
 
         biomeRepository.storeBiomes(response.biomes)
 

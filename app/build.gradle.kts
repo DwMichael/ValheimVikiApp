@@ -40,8 +40,10 @@ android {
     buildFeatures {
         compose = true
     }
-}
 
+
+}
+val mockitoAgent = configurations.create("mockitoAgent")
 dependencies {
 
     implementation(libs.androidx.core.ktx)
@@ -122,7 +124,13 @@ dependencies {
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.compiler)
     //Mockito
-    testImplementation(libs.mockito.kotlin) // Dodajemy Mockito-kotlin
-    testImplementation(libs.mockito.core) // Dodajemy core Mockito
+
+    testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.mockito.core)
     androidTestImplementation(libs.mockito.android)
+    mockitoAgent(libs.mockito.core) { isTransitive = false }
+}
+
+tasks.withType<Test> {
+    jvmArgs("-javaagent:${mockitoAgent.asPath}")
 }

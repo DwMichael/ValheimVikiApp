@@ -11,12 +11,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.jetbrains.annotations.VisibleForTesting
 import javax.inject.Inject
 
 data class BiomesUIState(
-    val biomes : List<BiomeDtoX> = emptyList() ,
-    val error : String? = null ,
-    val isLoading : Boolean = false
+    val biomes: List<BiomeDtoX> = emptyList(),
+    val error: String? = null,
+    val isLoading: Boolean = false
 )
 
 @HiltViewModel
@@ -36,7 +37,8 @@ class BiomeGridScreenViewModel @Inject constructor(
         load()
     }
 
-    private fun load() {
+    @VisibleForTesting
+    internal fun load() {
         _biomeUIState.value = _biomeUIState.value.copy(isLoading = true, error = null)
         viewModelScope.launch {
             try {
