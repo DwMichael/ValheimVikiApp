@@ -1,14 +1,17 @@
 package com.rabbitv.valheimviki.presentation.biome
 
 
+import com.rabbitv.valheimviki.domain.exceptions.FetchException
 import com.rabbitv.valheimviki.domain.model.biome.BiomeDtoX
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.biome.get_all_biomes.GetAllBiomesUseCase
+import com.rabbitv.valheimviki.domain.use_cases.biome.refetch_biomes.RefetchBiomes
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -52,6 +55,9 @@ class BiomeViewModelTest {
     private lateinit var getAllBiomesUseCase: GetAllBiomesUseCase
 
     @Mock
+    private lateinit var refetchBiomes: RefetchBiomes
+
+    @Mock
     private lateinit var biomeUseCases: BiomeUseCases
 
     private lateinit var viewModel: BiomeGridScreenViewModel
@@ -61,14 +67,12 @@ class BiomeViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
 
-        // Stub the use case invocation:
         whenever(getAllBiomesUseCase.invoke("en"))
             .thenReturn(flowOf(mockBiomes))
 
-        // Stub biomeUseCases.getAllBiomesUseCase to return the mocked getAllBiomesUseCase.
         whenever(biomeUseCases.getAllBiomesUseCase).thenReturn(getAllBiomesUseCase)
 
-        // Create the ViewModel – load() is called in the constructor.
+        whenever(biomeUseCases.refetchBiomes).thenReturn(refetchBiomes)
         viewModel = BiomeGridScreenViewModel(biomeUseCases)
     }
 
@@ -76,6 +80,7 @@ class BiomeViewModelTest {
     fun tearDown() {
         Dispatchers.resetMain()
     }
+
 
     @Test
     fun testInitializing_updatesBiomeUIStateBeforeLoadAndAfter() = runTest(testDispatcher) {
@@ -95,5 +100,119 @@ class BiomeViewModelTest {
         assertNull("Error should be null", finalState.error)
         assertEquals("List of Biome is not the same", mockBiomes, finalState.biomes)
     }
+
+
+    @Test
+    fun wrongInitializationImpactsUiState() = runTest(testDispatcher) {
+        val biomeViewModel = BiomeGridScreenViewModel(biomeUseCases)
+        val initialState =
+            biomeViewModel.biomeUIState.value
+        val listBiome: List<BiomeDtoX> = emptyList()
+        val errorMessage = "No local data available and failed to fetch from internet."
+        whenever(getAllBiomesUseCase.invoke("en")).thenReturn(flow {
+            throw FetchException(
+                errorMessage
+            )
+        })
+
+        assertTrue(initialState.isLoading, "Loading should be true")
+        assertNull("Error should be null", initialState.error)
+        assertEquals("List of Biome is not the same", listBiome, initialState.biomes)
+
+        advanceUntilIdle()
+
+
+        val finalState = biomeViewModel.biomeUIState.value
+
+        assertFalse("Loading should be false in final state after error", finalState.isLoading)
+        assertEquals(errorMessage, finalState.error)
+        assertEquals("List of Biome is still empty after error", listBiome, finalState.biomes)
+
+    }
+
+
+    @Test
+    fun testRefetchingBiomes_updatesBiomeUIStateBeforeAndAfter() = runTest(testDispatcher) {
+        val viewModel = BiomeGridScreenViewModel(biomeUseCases)
+        val initialUiState =
+            viewModel.biomeUIState.value
+        val emptyBiomes: List<BiomeDtoX> = emptyList()
+        whenever(refetchBiomes.invoke("en"))
+            .thenReturn(flowOf(mockBiomes))
+        advanceUntilIdle()
+
+        assertTrue(initialUiState.isLoading, "Loading should be true")
+        assertNull("Error should be null", initialUiState.error)
+        assertEquals("List of Biome is not the same", emptyBiomes, initialUiState.biomes)
+
+
+        val uiStateAfterInitialFetch = viewModel.biomeUIState.value
+
+        assertFalse("Loading should be false", uiStateAfterInitialFetch.isLoading)
+        assertNull("Error should be null", uiStateAfterInitialFetch.error)
+        assertEquals("List of Biome is not the same", mockBiomes, uiStateAfterInitialFetch.biomes)
+
+
+
+        viewModel.refetchBiomes()
+
+        val whenRefreshSate =
+            viewModel.biomeUIState.value
+
+        assertTrue(whenRefreshSate.isLoading, "Loading should be true")
+        assertNull("Error should be null", whenRefreshSate.error)
+        assertEquals("List of Biome is not the same", mockBiomes, whenRefreshSate.biomes)
+
+        advanceUntilIdle()
+
+        val finalUiState = viewModel.biomeUIState.value
+
+        assertFalse("Loading should be false", finalUiState.isLoading)
+        assertNull("Error should be null", finalUiState.error)
+        assertEquals("List of Biome is not the same", mockBiomes, finalUiState.biomes)
+    }
+
+
+    @Test
+    fun wrongRefetchingBiomesImpactsUiState() = runTest {
+        whenever(biomeUseCases.getAllBiomesUseCase("en")).thenReturn(flowOf(mockBiomes))
+
+        val errorMessage = "No local data available and failed to fetch from internet."
+        whenever(biomeUseCases.refetchBiomes("en")).thenReturn(flow {
+            throw FetchException(errorMessage)
+        })
+
+        val viewModel = BiomeGridScreenViewModel(biomeUseCases)
+
+        advanceUntilIdle()
+
+        val initialState = viewModel.biomeUIState.value
+        assertFalse("Initial load: Loading should be false", initialState.isLoading)
+        assertNull(initialState.error)
+        assertEquals("Initial list of biomes should match", mockBiomes, initialState.biomes)
+
+        viewModel.refetchBiomes()
+
+        val duringState = viewModel.biomeUIState.value
+        assertTrue(duringState.isLoading, "During refetch, loading should be true")
+        assertNull(duringState.error)
+        assertEquals(
+            "List of biomes should remain unchanged during refetch",
+            mockBiomes,
+            duringState.biomes
+        )
+
+        advanceUntilIdle()
+
+        val finalState = viewModel.biomeUIState.value
+        assertFalse("After refetch, loading should be false", finalState.isLoading)
+        assertEquals(errorMessage, finalState.error)
+        assertEquals(
+            "List of biomes should remain unchanged after refetch error",
+            mockBiomes,
+            finalState.biomes
+        )
+    }
+
 
 }
