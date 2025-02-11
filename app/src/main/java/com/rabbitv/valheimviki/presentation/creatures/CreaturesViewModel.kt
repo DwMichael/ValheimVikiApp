@@ -68,7 +68,7 @@ class CreaturesViewModel @Inject constructor(
         _creatureUIState.value = _creatureUIState.value.copy(isLoading = true, error = null)
         viewModelScope.launch {
             try {
-                creatureUseCases.refetchCreatures("en", RefetchUseCases.GET_BOSSES)
+                creatureUseCases.refetchCreaturesUseCase("en", RefetchUseCases.GET_BOSSES)
                     .collect { sortedMiniBosses ->
                         _creatureUIState.update { current ->
                             current.copy(creatures = sortedMiniBosses, isLoading = false)

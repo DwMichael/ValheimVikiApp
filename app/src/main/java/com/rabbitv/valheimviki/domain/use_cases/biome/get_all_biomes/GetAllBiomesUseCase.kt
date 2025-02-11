@@ -2,8 +2,8 @@ package com.rabbitv.valheimviki.domain.use_cases.biome.get_all_biomes
 
 import com.rabbitv.valheimviki.domain.exceptions.FetchException
 import com.rabbitv.valheimviki.domain.model.biome.BiomeDtoX
-import com.rabbitv.valheimviki.domain.model.biome.Stage
 import com.rabbitv.valheimviki.domain.repository.BiomeRepository
+import com.rabbitv.valheimviki.utils.Constants.STAGE_ORDER_MAP
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapConcat
@@ -32,16 +32,10 @@ class GetAllBiomesUseCase @Inject constructor(private val biomeRepository: Biome
             .map { biomes ->
                 biomes.sortedWith(
                     compareBy(
-                        { stageOrderMap[it.stage] ?: Int.MAX_VALUE },
+                        { STAGE_ORDER_MAP[it.stage] ?: Int.MAX_VALUE },
                         { it.order }
                     )
                 )
             }
     }
-
-    private val stageOrderMap = mapOf(
-        Stage.EARLY.toString() to 1,
-        Stage.MID.toString() to 2,
-        Stage.LATE.toString() to 3
-    )
 }

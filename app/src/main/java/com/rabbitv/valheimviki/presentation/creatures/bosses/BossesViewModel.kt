@@ -62,7 +62,7 @@ class BossesViewModel @Inject constructor(
         _bossUIState.value = _bossUIState.value.copy(isLoading = true, error = null)
         viewModelScope.launch {
             try {
-                creatureUseCases.refetchCreatures("en", RefetchUseCases.GET_BOSSES)
+                creatureUseCases.refetchCreaturesUseCase("en", RefetchUseCases.GET_BOSSES)
                     .collect { sortedBosses ->
                         _bossUIState.update { current ->
                             current.copy(bosses = sortedBosses, isLoading = false)

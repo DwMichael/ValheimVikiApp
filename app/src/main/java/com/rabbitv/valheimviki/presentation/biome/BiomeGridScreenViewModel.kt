@@ -59,7 +59,7 @@ class BiomeGridScreenViewModel @Inject constructor(
         _biomeUIState.value = _biomeUIState.value.copy(isLoading = true, error = null)
         viewModelScope.launch {
             try {
-                biomeUseCases.refetchBiomes("en").collect { sortedBiomes ->
+                biomeUseCases.refetchBiomesUseCase("en").collect { sortedBiomes ->
                     _biomeUIState.update { current ->
                         current.copy(biomes = sortedBiomes, isLoading = false)
                     }

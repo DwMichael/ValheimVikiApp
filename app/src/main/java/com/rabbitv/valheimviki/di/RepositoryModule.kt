@@ -10,12 +10,12 @@ import com.rabbitv.valheimviki.domain.repository.BiomeRepository
 import com.rabbitv.valheimviki.domain.repository.CreatureRepository
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.biome.get_all_biomes.GetAllBiomesUseCase
-import com.rabbitv.valheimviki.domain.use_cases.biome.refetch_biomes.RefetchBiomes
+import com.rabbitv.valheimviki.domain.use_cases.biome.refetch_biomes.RefetchBiomesUseCase
 import com.rabbitv.valheimviki.domain.use_cases.creatures.CreatureUseCases
 import com.rabbitv.valheimviki.domain.use_cases.creatures.get_all_creatures.GetAllCreaturesUseCase
 import com.rabbitv.valheimviki.domain.use_cases.creatures.get_bosses.GetBossesUseCase
 import com.rabbitv.valheimviki.domain.use_cases.creatures.get_mini_bosses.GetMiniBossesUseCase
-import com.rabbitv.valheimviki.domain.use_cases.creatures.refetch_creatures.RefetchCreatures
+import com.rabbitv.valheimviki.domain.use_cases.creatures.refetch_creatures.RefetchCreaturesUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -49,7 +49,7 @@ object RepositoryModule {
     fun provideBiomeUseCases(biomeRepository: BiomeRepository): BiomeUseCases {
         return BiomeUseCases(
             getAllBiomesUseCase = GetAllBiomesUseCase(biomeRepository),
-            refetchBiomes = RefetchBiomes(biomeRepository)
+            refetchBiomesUseCase = RefetchBiomesUseCase(biomeRepository)
         )
     }
 
@@ -60,7 +60,7 @@ object RepositoryModule {
             getAllCreaturesUseCase = GetAllCreaturesUseCase(creatureRepository),
             getBossesUseCase = GetBossesUseCase(creatureRepository),
             getMiniBossesUseCase = GetMiniBossesUseCase(creatureRepository),
-            refetchCreatures = RefetchCreatures(creatureRepository)
+            refetchCreaturesUseCase = RefetchCreaturesUseCase(creatureRepository)
         )
     }
 }

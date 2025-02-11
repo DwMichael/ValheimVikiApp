@@ -5,7 +5,7 @@ import com.rabbitv.valheimviki.domain.exceptions.FetchException
 import com.rabbitv.valheimviki.domain.model.biome.BiomeDtoX
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.biome.get_all_biomes.GetAllBiomesUseCase
-import com.rabbitv.valheimviki.domain.use_cases.biome.refetch_biomes.RefetchBiomes
+import com.rabbitv.valheimviki.domain.use_cases.biome.refetch_biomes.RefetchBiomesUseCase
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertNull
@@ -55,7 +55,7 @@ class BiomeViewModelTest {
     private lateinit var getAllBiomesUseCase: GetAllBiomesUseCase
 
     @Mock
-    private lateinit var refetchBiomes: RefetchBiomes
+    private lateinit var refetchBiomesUseCase: RefetchBiomesUseCase
 
     @Mock
     private lateinit var biomeUseCases: BiomeUseCases
@@ -72,7 +72,7 @@ class BiomeViewModelTest {
 
         whenever(biomeUseCases.getAllBiomesUseCase).thenReturn(getAllBiomesUseCase)
 
-        whenever(biomeUseCases.refetchBiomes).thenReturn(refetchBiomes)
+        whenever(biomeUseCases.refetchBiomesUseCase).thenReturn(refetchBiomesUseCase)
         viewModel = BiomeGridScreenViewModel(biomeUseCases)
     }
 
@@ -137,7 +137,7 @@ class BiomeViewModelTest {
         val initialUiState =
             viewModel.biomeUIState.value
         val emptyBiomes: List<BiomeDtoX> = emptyList()
-        whenever(refetchBiomes.invoke("en"))
+        whenever(refetchBiomesUseCase.invoke("en"))
             .thenReturn(flowOf(mockBiomes))
         advanceUntilIdle()
 
@@ -178,7 +178,7 @@ class BiomeViewModelTest {
         whenever(biomeUseCases.getAllBiomesUseCase("en")).thenReturn(flowOf(mockBiomes))
 
         val errorMessage = "No local data available and failed to fetch from internet."
-        whenever(biomeUseCases.refetchBiomes("en")).thenReturn(flow {
+        whenever(biomeUseCases.refetchBiomesUseCase("en")).thenReturn(flow {
             throw FetchException(errorMessage)
         })
 

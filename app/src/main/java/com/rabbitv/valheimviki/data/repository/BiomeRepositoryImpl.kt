@@ -21,7 +21,6 @@ class BiomeRepositoryImpl @Inject constructor(
         return biomeDao.getBiomeById(biomeId)
     }
 
-
     override suspend fun fetchBiomes(lang: String): BiomeDto {
         try {
             val response = apiService.getAllBiomes(lang)
