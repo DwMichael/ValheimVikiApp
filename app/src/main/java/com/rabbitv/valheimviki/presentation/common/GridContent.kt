@@ -50,6 +50,7 @@ import com.rabbitv.valheimviki.utils.Constants.BASE_URL
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GridContent(
+    modifier: Modifier,
     items: List<ItemData>,
     clickToNavigate: (item: ItemData) -> Unit,
     state: PullToRefreshState,
@@ -206,6 +207,7 @@ private fun PreviewContentGrid() {
 
     ValheimVikiAppTheme {
         GridContent(
+            modifier = Modifier,
             items = sampleBiomes,
             clickToNavigate = { item -> {} },
             state = rememberPullToRefreshState(),

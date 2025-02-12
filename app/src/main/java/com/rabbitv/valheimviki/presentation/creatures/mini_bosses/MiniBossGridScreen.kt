@@ -16,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -56,6 +57,7 @@ fun MiniBossGridScreen(
             when (miniBossesUIState.miniBosses.isEmpty()) {
                 false -> {
                     GridContent(
+                        modifier = Modifier,
                         items = miniBossesUIState.miniBosses,
                         clickToNavigate = { item ->
                             navController.navigate(Screen.Creature.passCreatureId(creatureId = item.id))
@@ -75,6 +77,7 @@ fun MiniBossGridScreen(
 
                 true -> {
                     EmptyScreen(
+                        modifier = Modifier.testTag("EmptyScreenMiniBoss"),
                         state = refreshState,
                         isRefreshing = refreshing,
                         onRefresh = {
