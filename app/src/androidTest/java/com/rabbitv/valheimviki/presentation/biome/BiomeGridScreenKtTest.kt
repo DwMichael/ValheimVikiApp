@@ -1,12 +1,15 @@
 package com.rabbitv.valheimviki.presentation.biome
 
 
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.swipe
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.rabbitv.valheimviki.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -35,7 +38,7 @@ class BiomeGridScreenKtTest {
     }
 
     @Test
-    fun showLoadingIndicatorWhenLoadingAndDontShowWhenFalse() {
+    fun showLoadingIndicatorWhenLoadingAndNotShowWhenFalse() {
         if (biomeViewModel.biomeUIState.value.isLoading) {
             composeTestRule
                 .onNodeWithTag("LoadingIndicator")
@@ -59,12 +62,23 @@ class BiomeGridScreenKtTest {
     @OptIn(ExperimentalTestApi::class)
     @Test
     fun testContentShownBasedOnBiomeState() {
-        composeTestRule
-            .onNodeWithTag("LoadingIndicator")
-            .assertExists()
-        composeTestRule
-            .onNodeWithTag("LoadingIndicator")
-            .assertIsDisplayed()
+        if (biomeViewModel.biomeUIState.value.isLoading) {
+            composeTestRule
+                .onNodeWithTag("LoadingIndicator")
+                .assertExists()
+            composeTestRule
+                .onNodeWithTag("LoadingIndicator")
+                .assertIsDisplayed()
+            composeTestRule.onNodeWithTag("BiomeSurface").assertDoesNotExist()
+        } else {
+            composeTestRule
+                .onNodeWithTag("LoadingIndicator")
+                .assertDoesNotExist()
+            composeTestRule
+                .onNodeWithTag("LoadingIndicator")
+                .assertIsNotDisplayed()
+            composeTestRule.onNodeWithTag("BiomeSurface").assertExists()
+        }
 
         composeTestRule.waitUntilDoesNotExist(hasTestTag("LoadingIndicator"), timeoutMillis = 5000)
 
@@ -80,6 +94,67 @@ class BiomeGridScreenKtTest {
 
             composeTestRule.onNodeWithTag("BiomeGird").assertExists("Expected Biome Grid")
             composeTestRule.onNodeWithTag("BiomeGird").assertIsDisplayed()
+            composeTestRule.onNodeWithTag("EmptyScreenBiome").assertDoesNotExist()
+        }
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun testRefetchBiomes_withPullToRefresh() {
+
+        composeTestRule.waitUntilDoesNotExist(hasTestTag("LoadingIndicator"), timeoutMillis = 5000)
+
+        composeTestRule.onNodeWithTag("BiomeSurface")
+            .assertExists("Expected BiomeSurface to be displayed")
+            .assertIsDisplayed()
+
+        if (biomeViewModel.biomeUIState.value.biomes.isEmpty()) {
+            composeTestRule.onNodeWithTag("BiomeGird").assertDoesNotExist()
+            composeTestRule.onNodeWithTag("EmptyScreenBiome")
+                .assertExists("Expected Empty Screen for empty data")
+                .assertIsDisplayed()
+        } else {
+            composeTestRule.onNodeWithTag("BiomeGird")
+                .assertExists("Expected Biome Grid for non-empty data")
+                .assertIsDisplayed()
+            composeTestRule.onNodeWithTag("EmptyScreenBiome").assertDoesNotExist()
+        }
+
+        val refreshableTag = if (biomeViewModel.biomeUIState.value.biomes.isEmpty()) {
+            "EmptyScreenBiome"
+        } else {
+            "BiomeGird"
+        }
+
+        composeTestRule.onNodeWithTag(refreshableTag).performTouchInput {
+            val endY = center.y + 800
+            swipe(start = topCenter, end = Offset(center.x, endY), durationMillis = 300)
+        }
+
+        composeTestRule.waitUntil(timeoutMillis = 1000) {
+            composeTestRule.onAllNodes(hasTestTag("LoadingIndicator")).fetchSemanticsNodes()
+                .isNotEmpty()
+        }
+
+        composeTestRule.onNodeWithTag("LoadingIndicator")
+            .assertExists("Loading indicator should appear during refresh")
+            .assertIsDisplayed()
+
+        composeTestRule.waitUntilDoesNotExist(hasTestTag("LoadingIndicator"), timeoutMillis = 5000)
+
+        composeTestRule.onNodeWithTag("BiomeSurface")
+            .assertExists("Expected BiomeSurface after refresh")
+            .assertIsDisplayed()
+
+        if (biomeViewModel.biomeUIState.value.biomes.isEmpty()) {
+            composeTestRule.onNodeWithTag("BiomeGird").assertDoesNotExist()
+            composeTestRule.onNodeWithTag("EmptyScreenBiome")
+                .assertExists("Expected Empty Screen after refresh")
+                .assertIsDisplayed()
+        } else {
+            composeTestRule.onNodeWithTag("BiomeGird")
+                .assertExists("Expected Biome Grid after refresh")
+                .assertIsDisplayed()
             composeTestRule.onNodeWithTag("EmptyScreenBiome").assertDoesNotExist()
         }
     }
