@@ -1,5 +1,5 @@
 [versions]
-agp = "8.8.0"
+agp = "8.8.1"
 coilCompose = "3.0.4"
 coilNetworkOkhttp = "3.1.0"
 converterGson = "2.11.0"
@@ -18,21 +18,21 @@ kotlinxCoroutinesTest = "1.10.1"
 kotlinxSerializationJson = "1.8.0"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.10.0"
-composeBom = "2025.01.01"
+composeBom = "2025.02.00"
 mockitoAndroid = "5.15.2"
 mockitoCore = "5.15.2"
 mockitoKotlin = "5.4.0"
-navigationCompose = "2.8.6"
+navigationCompose = "2.8.7"
 paletteKtx = "1.0.0"
 retrofit = "2.11.0"
 retrofit2KotlinxSerializationConverter = "1.0.0"
 roomRuntime = "2.6.1"
 rules = "1.6.1"
 runner = "1.6.2"
-uiTestJunit4 = "1.7.7"
-uiTestManifest = "1.7.7"
-uiTextGoogleFonts = "1.7.7"
-composeMaterial = "1.4.0"
+uiTestJunit4 = "1.7.8"
+uiTestManifest = "1.7.8"
+uiTextGoogleFonts = "1.7.8"
+composeMaterial = "1.4.1"
 
 [libraries]
 androidx-core = { module = "androidx.test:core", version.ref = "rules" }
@@ -42,6 +42,7 @@ androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref =
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltCompiler" }
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycleRuntimeKtx" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+androidx-navigation-testing = { module = "androidx.navigation:navigation-testing", version.ref = "navigationCompose" }
 androidx-palette-ktx = { module = "androidx.palette:palette-ktx", version.ref = "paletteKtx" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomRuntime" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomRuntime" }

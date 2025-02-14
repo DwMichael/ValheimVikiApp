@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.creatures.mini_bosses
+package com.rabbitv.valheimviki.presentation.creatures.bosses
 
 
 import androidx.compose.foundation.layout.Box
@@ -33,65 +33,71 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MiniBossGridScreen(
+fun BossScreen(
     paddingValues: PaddingValues,
-    viewModel: MiniBossesViewModel = hiltViewModel(),
+    viewModel: BossesViewModel = hiltViewModel(),
     navController: NavHostController
 ) {
     val scope = rememberCoroutineScope()
     val refreshState = rememberPullToRefreshState()
-    val miniBossesUIState: MiniBossesUIState by viewModel.miniBossesUIState
-        .collectAsStateWithLifecycle()
+    val bossUIState: BossUIState by viewModel.bossUIState.collectAsStateWithLifecycle()
     val refreshing: Boolean by viewModel.isRefreshing.collectAsStateWithLifecycle()
 
 
-    if (miniBossesUIState.isLoading) {
-        LoadingIndicator(
-            paddingValues = paddingValues
-        )
+    if (bossUIState.isLoading) {
+        LoadingIndicator(paddingValues = paddingValues)
     } else {
         Surface(
             color = Color.Transparent,
-            modifier = Modifier.padding(paddingValues)
+            modifier = Modifier
+                .testTag("BossSurface")
+                .fillMaxSize()
+                .padding(paddingValues)
         ) {
-            when (miniBossesUIState.miniBosses.isEmpty()) {
+            when (bossUIState.bosses.isEmpty()) {
                 false -> {
-                    GridContent(
-                        modifier = Modifier,
-                        items = miniBossesUIState.miniBosses,
-                        clickToNavigate = { item ->
-                            navController.navigate(Screen.Creature.passCreatureId(creatureId = item.id))
-                        },
-                        state = refreshState,
-                        onRefresh = {
-                            viewModel.refetchBiomes()
-                            scope.launch {
-                                refreshState.animateToHidden()
-                            }
-                        },
-                        isRefreshing = refreshing,
-                        numbersOfColumns = BOSS_GRID_COLUMNS,
-                        height = ITEM_HEIGHT_TWO_COLUMNS
-                    )
+                    Box(
+                        modifier = Modifier.testTag("BossGrid"),
+                    ) {
+                        GridContent(
+                            modifier = Modifier,
+                            items = bossUIState.bosses,
+                            clickToNavigate = { item ->
+                                navController.navigate(Screen.Creature.passCreatureId(creatureId = item.id))
+                            },
+                            state = refreshState,
+                            onRefresh = {
+                                viewModel.refetchBiomes()
+                                scope.launch {
+                                    refreshState.animateToHidden()
+                                }
+                            },
+                            isRefreshing = refreshing,
+                            numbersOfColumns = BOSS_GRID_COLUMNS,
+                            height = ITEM_HEIGHT_TWO_COLUMNS
+                        )
+                    }
                 }
 
                 true -> {
-                    EmptyScreen(
-                        modifier = Modifier.testTag("EmptyScreenMiniBoss"),
-                        state = refreshState,
-                        isRefreshing = refreshing,
-                        onRefresh = {
-                            viewModel.refetchBiomes()
-                            scope.launch {
-                                refreshState.animateToHidden()
-                            }
-                        },
-                        errorMessage = miniBossesUIState.error.toString()
-                    )
+                    Box(
+                        modifier = Modifier.testTag("EmptyScreenBoss"),
+                    ) {
+                        EmptyScreen(
+                            modifier = Modifier,
+                            state = refreshState,
+                            isRefreshing = refreshing,
+                            onRefresh = {
+                                viewModel.refetchBiomes()
+                                scope.launch {
+                                    refreshState.animateToHidden()
+                                }
+                            },
+                            errorMessage = bossUIState.error.toString()
+                        )
+                    }
                 }
             }
-
-
         }
     }
 }
@@ -99,7 +105,7 @@ fun MiniBossGridScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
-fun PreviewMiniBossListScreen() {
+fun PreviewBossListScreen() {
     val sampleCreatures = emptyList<CreatureDtoX>()
 
 

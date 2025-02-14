@@ -10,12 +10,12 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.rabbitv.valheimviki.presentation.biome.BiomeGridScreen
-import com.rabbitv.valheimviki.presentation.biome.CreatureListScreen
-import com.rabbitv.valheimviki.presentation.creatures.bosses.BossGirdScreen
-import com.rabbitv.valheimviki.presentation.creatures.mini_bosses.MiniBossGridScreen
-import com.rabbitv.valheimviki.presentation.detail.biome.BiomeScreen
-import com.rabbitv.valheimviki.presentation.detail.creature.CreatureScreen
+import com.rabbitv.valheimviki.presentation.biome.BiomeScreen
+import com.rabbitv.valheimviki.presentation.biome.CreatureScreen
+import com.rabbitv.valheimviki.presentation.creatures.bosses.BossScreen
+import com.rabbitv.valheimviki.presentation.creatures.mini_bosses.MiniBossScreen
+import com.rabbitv.valheimviki.presentation.detail.biome.BiomeDetailScreen
+import com.rabbitv.valheimviki.presentation.detail.creature.CreatureDetailScreen
 import com.rabbitv.valheimviki.utils.Constants.BIOME_ARGUMENT_KEY
 import com.rabbitv.valheimviki.utils.Constants.CREATURE_ARGUMENT_KEY
 
@@ -30,7 +30,7 @@ fun ChildNavGraph(
         modifier = Modifier.padding(0.dp)
     ) {
         composable(Screen.BiomeList.route) {
-            BiomeGridScreen(
+            BiomeScreen(
                 paddingValues = paddingValues,
                 navController = navHostController
             )
@@ -41,24 +41,24 @@ fun ChildNavGraph(
             { type = NavType.StringType }
             )
         ) {
-            BiomeScreen(
+            BiomeDetailScreen(
                 paddingValues = paddingValues,
             )
         }
         composable(Screen.Boss.route) {
-            BossGirdScreen(
+            BossScreen(
                 paddingValues = paddingValues,
                 navController = navHostController
             )
         }
         composable(Screen.MiniBoss.route) {
-            MiniBossGridScreen(
+            MiniBossScreen(
                 paddingValues = paddingValues,
                 navController = navHostController
             )
         }
         composable(Screen.CreatureList.route) {
-            CreatureListScreen(
+            CreatureScreen(
                 paddingValues = paddingValues,
                 navController = navHostController
             )
@@ -69,7 +69,7 @@ fun ChildNavGraph(
             { type = NavType.StringType }
             )
         ) {
-            CreatureScreen(
+            CreatureDetailScreen(
                 paddingValues = paddingValues,
             )
         }

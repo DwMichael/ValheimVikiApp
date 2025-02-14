@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -35,7 +36,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreatureListScreen(
+fun CreatureScreen(
     paddingValues: PaddingValues,
     viewModel: CreaturesViewModel = hiltViewModel(),
     navController: NavHostController
@@ -47,48 +48,57 @@ fun CreatureListScreen(
 
 
     if (creatureUIState.isLoading) {
-        LoadingIndicator(
-            paddingValues = paddingValues
-        )
+        LoadingIndicator(paddingValues = paddingValues)
     } else {
         Surface(
             color = Color.Transparent,
-            modifier = Modifier.padding(paddingValues)
+            modifier = Modifier
+                .testTag("CreaturesSurface")
+                .fillMaxSize()
+                .padding(paddingValues)
         ) {
             when (creatureUIState.creatures.isEmpty()) {
                 false -> {
-                    GridContent(
-                        modifier = Modifier,
-                        items = creatureUIState.creatures,
-                        clickToNavigate = { item ->
-                            navController.navigate(Screen.Creature.passCreatureId(creatureId = item.id))
-                        },
-                        state = refreshState,
-                        onRefresh = {
-                            viewModel.refetchBiomes()
-                            scope.launch {
-                                refreshState.animateToHidden()
-                            }
-                        },
-                        isRefreshing = refreshing,
-                        numbersOfColumns = CREATURE_GRID_COLUMNS,
-                        height = ITEM_HEIGHT_THREE_COLUMNS
-                    )
+                    Box(
+                        modifier = Modifier.testTag("CreatureGrid")
+                    ) {
+                        GridContent(
+                            modifier = Modifier,
+                            items = creatureUIState.creatures,
+                            clickToNavigate = { item ->
+                                navController.navigate(Screen.Creature.passCreatureId(creatureId = item.id))
+                            },
+                            state = refreshState,
+                            onRefresh = {
+                                viewModel.refetchBiomes()
+                                scope.launch {
+                                    refreshState.animateToHidden()
+                                }
+                            },
+                            isRefreshing = refreshing,
+                            numbersOfColumns = CREATURE_GRID_COLUMNS,
+                            height = ITEM_HEIGHT_THREE_COLUMNS
+                        )
+                    }
                 }
 
                 true -> {
-                    EmptyScreen(
-                        modifier = Modifier.testTag("EmptyScreenCreatures"),
-                        state = refreshState,
-                        isRefreshing = refreshing,
-                        onRefresh = {
-                            viewModel.refetchBiomes()
-                            scope.launch {
-                                refreshState.animateToHidden()
-                            }
-                        },
-                        errorMessage = creatureUIState.error.toString()
-                    )
+                    Box(
+                        modifier = Modifier.testTag("EmptyScreenCreatures")
+                    ) {
+                        EmptyScreen(
+                            modifier = Modifier,
+                            state = refreshState,
+                            isRefreshing = refreshing,
+                            onRefresh = {
+                                viewModel.refetchBiomes()
+                                scope.launch {
+                                    refreshState.animateToHidden()
+                                }
+                            },
+                            errorMessage = creatureUIState.error.toString()
+                        )
+                    }
                 }
             }
         }

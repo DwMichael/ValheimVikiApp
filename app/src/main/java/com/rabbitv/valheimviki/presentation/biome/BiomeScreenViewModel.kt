@@ -21,7 +21,7 @@ data class BiomesUIState(
 )
 
 @HiltViewModel
-class BiomeGridScreenViewModel @Inject constructor(
+class BiomeScreenViewModel @Inject constructor(
     private val biomeUseCases: BiomeUseCases
 ) : ViewModel() {
 

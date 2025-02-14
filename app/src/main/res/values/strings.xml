@@ -1,5 +1,13 @@
 <resources>
     <string name="app_name">ValheimVikiApp</string>
-    <string name="biome_image">Biome Image</string>
+    <string name="item_grid_image">Item Grid Image</string>
     <string name="no_internet_connection">No Internet Connection</string>
+    <string name="creatures_section">Creatures section</string>
+    <string name="biomes_section">Biomes section</string>
+    <string name="boss_section">Boss section</string>
+    <string name="minibosses_section">MiniBosses section</string>
+    <string name="biomes">Biomes</string>
+    <string name="creatures">Creatures</string>
+    <string name="bosses">Bosses</string>
+    <string name="minibosses">MiniBosses</string>
 </resources>

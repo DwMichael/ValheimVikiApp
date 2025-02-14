@@ -1,75 +1,70 @@
-package com.rabbitv.valheimviki.presentation.biome
+package com.rabbitv.valheimviki.presentation.creatures.mini_bosses
 
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.rabbitv.valheimviki.domain.model.creature.CreatureDtoX
 import com.rabbitv.valheimviki.navigation.Screen
 import com.rabbitv.valheimviki.presentation.common.EmptyScreen
 import com.rabbitv.valheimviki.presentation.common.GridContent
+import com.rabbitv.valheimviki.presentation.components.LoadingIndicator
 import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_TWO_COLUMNS
-import com.rabbitv.valheimviki.utils.Constants.BIOME_GRID_COLUMNS
+import com.rabbitv.valheimviki.utils.Constants.BOSS_GRID_COLUMNS
 import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BiomeGridScreen(
+fun MiniBossScreen(
     paddingValues: PaddingValues,
-    viewModel: BiomeGridScreenViewModel = hiltViewModel(),
-    navController: NavHostController,
-
-    ) {
+    viewModel: MiniBossesViewModel = hiltViewModel(),
+    navController: NavHostController
+) {
     val scope = rememberCoroutineScope()
     val refreshState = rememberPullToRefreshState()
-    val biomeUIState: BiomesUIState by viewModel.biomeUIState.collectAsStateWithLifecycle()
+    val miniBossesUIState: MiniBossesUIState by viewModel.miniBossesUIState
+        .collectAsStateWithLifecycle()
     val refreshing: Boolean by viewModel.isRefreshing.collectAsStateWithLifecycle()
 
 
-    if (biomeUIState.isLoading) {
-        Box(
-            modifier = Modifier
-                .padding(paddingValues)
-                .fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator(modifier = Modifier.testTag("LoadingIndicator"))
-        }
+    if (miniBossesUIState.isLoading) {
+        LoadingIndicator(paddingValues = paddingValues)
     } else {
-
         Surface(
             color = Color.Transparent,
             modifier = Modifier
-                .testTag("BiomeSurface")
+                .testTag("MiniBossSurface")
                 .fillMaxSize()
                 .padding(paddingValues)
-
         ) {
-            when (biomeUIState.biomes.isEmpty()) {
+            when (miniBossesUIState.miniBosses.isEmpty()) {
                 false -> {
                     Box(
-                        modifier = Modifier.testTag("BiomeGird"),
+                        modifier = Modifier.testTag("MiniBossGird"),
                     ) {
                         GridContent(
                             modifier = Modifier,
-                            items = biomeUIState.biomes,
+                            items = miniBossesUIState.miniBosses,
                             clickToNavigate = { item ->
-                                navController.navigate(Screen.Biome.passBiomeId(biomeId = item.id))
+                                navController.navigate(Screen.Creature.passCreatureId(creatureId = item.id))
                             },
                             state = refreshState,
                             onRefresh = {
@@ -79,16 +74,15 @@ fun BiomeGridScreen(
                                 }
                             },
                             isRefreshing = refreshing,
-                            numbersOfColumns = BIOME_GRID_COLUMNS,
+                            numbersOfColumns = BOSS_GRID_COLUMNS,
                             height = ITEM_HEIGHT_TWO_COLUMNS
                         )
                     }
-
                 }
 
                 true -> {
                     Box(
-                        modifier = Modifier.testTag("EmptyScreenBiome"),
+                        modifier = Modifier.testTag("EmptyScreenMiniBoss"),
                     ) {
                         EmptyScreen(
                             modifier = Modifier,
@@ -100,14 +94,36 @@ fun BiomeGridScreen(
                                     refreshState.animateToHidden()
                                 }
                             },
-                            errorMessage = biomeUIState.error.toString()
+                            errorMessage = miniBossesUIState.error.toString()
                         )
                     }
                 }
             }
+
+
         }
-
     }
-
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true)
+@Composable
+fun PreviewMiniBossListScreen() {
+    val sampleCreatures = emptyList<CreatureDtoX>()
+
+
+    Scaffold(
+        topBar = {
+            TopAppBar(title = { Text("Biomes") })
+        },
+        content = { padding ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+            ) {
+
+            }
+        }
+    )
+}

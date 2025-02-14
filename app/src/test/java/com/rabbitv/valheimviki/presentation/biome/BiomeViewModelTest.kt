@@ -60,7 +60,7 @@ class BiomeViewModelTest {
     @Mock
     private lateinit var biomeUseCases: BiomeUseCases
 
-    private lateinit var viewModel: BiomeGridScreenViewModel
+    private lateinit var viewModel: BiomeScreenViewModel
 
 
     @Before
@@ -73,7 +73,7 @@ class BiomeViewModelTest {
         whenever(biomeUseCases.getAllBiomesUseCase).thenReturn(getAllBiomesUseCase)
 
         whenever(biomeUseCases.refetchBiomesUseCase).thenReturn(refetchBiomesUseCase)
-        viewModel = BiomeGridScreenViewModel(biomeUseCases)
+        viewModel = BiomeScreenViewModel(biomeUseCases)
     }
 
     @After
@@ -84,7 +84,7 @@ class BiomeViewModelTest {
 
     @Test
     fun testInitializing_updatesBiomeUIStateBeforeLoadAndAfter() = runTest(testDispatcher) {
-        val biomeViewModel = BiomeGridScreenViewModel(biomeUseCases)
+        val biomeViewModel = BiomeScreenViewModel(biomeUseCases)
         val initialState =
             biomeViewModel.biomeUIState.value
         val listBiome: List<BiomeDtoX> = emptyList()
@@ -104,7 +104,7 @@ class BiomeViewModelTest {
 
     @Test
     fun wrongInitializationImpactsUiState() = runTest(testDispatcher) {
-        val biomeViewModel = BiomeGridScreenViewModel(biomeUseCases)
+        val biomeViewModel = BiomeScreenViewModel(biomeUseCases)
         val initialState =
             biomeViewModel.biomeUIState.value
         val listBiome: List<BiomeDtoX> = emptyList()
@@ -133,7 +133,7 @@ class BiomeViewModelTest {
 
     @Test
     fun testRefetchingBiomes_updatesBiomeUIStateBeforeAndAfter() = runTest(testDispatcher) {
-        val viewModel = BiomeGridScreenViewModel(biomeUseCases)
+        val viewModel = BiomeScreenViewModel(biomeUseCases)
         val initialUiState =
             viewModel.biomeUIState.value
         val emptyBiomes: List<BiomeDtoX> = emptyList()
@@ -182,7 +182,7 @@ class BiomeViewModelTest {
             throw FetchException(errorMessage)
         })
 
-        val viewModel = BiomeGridScreenViewModel(biomeUseCases)
+        val viewModel = BiomeScreenViewModel(biomeUseCases)
 
         advanceUntilIdle()
 

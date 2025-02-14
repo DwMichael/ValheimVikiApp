@@ -118,6 +118,7 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.kotlin.test.junit)
     testImplementation(libs.kotlinx.coroutines.test)
+    androidTestImplementation(libs.androidx.navigation.testing)
     //Hilt tests
     testImplementation(libs.hilt.android.testing)
     kspTest(libs.hilt.compiler)

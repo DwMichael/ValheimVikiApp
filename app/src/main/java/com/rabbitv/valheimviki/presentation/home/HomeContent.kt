@@ -42,7 +42,7 @@ fun HomeContent(
         content = { innerPadding ->
             Image(
                 painter = painterResource(id = R.drawable.main_background),
-                contentDescription = "Background",
+                contentDescription = "BackgroundImage",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize(),
             )

@@ -125,7 +125,7 @@ fun GridItem(
         ) {
             Image(
                 painter = painter,
-                contentDescription = stringResource(R.string.biome_image),
+                contentDescription = stringResource(R.string.item_grid_image),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxSize()

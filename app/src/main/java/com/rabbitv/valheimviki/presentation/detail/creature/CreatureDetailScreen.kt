@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
-fun CreatureScreen(
+fun CreatureDetailScreen(
     viewModel: CreatureScreenViewModel = hiltViewModel(),
     paddingValues: PaddingValues
 ) {
@@ -29,5 +29,5 @@ fun CreatureScreen(
     )
 @Composable
 private fun PreviewCreatureDetail() {
-    CreatureScreen(paddingValues = PaddingValues(0.dp))
+    CreatureDetailScreen(paddingValues = PaddingValues(0.dp))
 }

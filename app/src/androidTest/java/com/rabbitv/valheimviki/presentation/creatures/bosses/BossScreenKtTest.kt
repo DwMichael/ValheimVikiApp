@@ -1,17 +1,20 @@
-package com.rabbitv.valheimviki.presentation.biome
+package com.rabbitv.valheimviki.presentation.creatures.bosses
 
-
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.hasTestTag
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipe
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.rabbitv.valheimviki.MainActivity
+import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Before
@@ -20,33 +23,44 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import javax.inject.Inject
 
+
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
-class BiomeGridScreenKtTest {
+class BossScreenKtTest {
     @get:Rule(order = 0)
     val hiltRule = HiltAndroidRule(this)
 
     @get:Rule(order = 1)
-    val composeTestRule = createAndroidComposeRule<MainActivity>()
+    val composeTestRule = createComposeRule()
 
     @Inject
-    lateinit var biomeViewModel: BiomeGridScreenViewModel
+    lateinit var bossViewModel: BossesViewModel
 
     @Before
     fun setUp() {
         hiltRule.inject()
+        composeTestRule.setContent {
+            ValheimVikiAppTheme {
+                BossScreen(
+                    paddingValues = PaddingValues(0.dp),
+                    viewModel = bossViewModel,
+                    navController = NavHostController(LocalContext.current)
+                )
+            }
+        }
     }
 
     @Test
     fun showLoadingIndicatorWhenLoadingAndNotShowWhenFalse() {
-        if (biomeViewModel.biomeUIState.value.isLoading) {
+
+        if (bossViewModel.bossUIState.value.isLoading) {
             composeTestRule
                 .onNodeWithTag("LoadingIndicator")
                 .assertExists()
             composeTestRule
                 .onNodeWithTag("LoadingIndicator")
                 .assertIsDisplayed()
-            composeTestRule.onNodeWithTag("BiomeSurface").assertDoesNotExist()
+            composeTestRule.onNodeWithTag("BossSurface").assertDoesNotExist()
         } else {
             composeTestRule
                 .onNodeWithTag("LoadingIndicator")
@@ -54,22 +68,22 @@ class BiomeGridScreenKtTest {
             composeTestRule
                 .onNodeWithTag("LoadingIndicator")
                 .assertIsNotDisplayed()
-            composeTestRule.onNodeWithTag("BiomeSurface").assertExists()
+            composeTestRule.onNodeWithTag("BossSurface").assertExists()
         }
 
     }
 
     @OptIn(ExperimentalTestApi::class)
     @Test
-    fun testContentShownBasedOnBiomeState() {
-        if (biomeViewModel.biomeUIState.value.isLoading) {
+    fun testContentShownBasedOnBossState() {
+        if (bossViewModel.bossUIState.value.isLoading) {
             composeTestRule
                 .onNodeWithTag("LoadingIndicator")
                 .assertExists()
             composeTestRule
                 .onNodeWithTag("LoadingIndicator")
                 .assertIsDisplayed()
-            composeTestRule.onNodeWithTag("BiomeSurface").assertDoesNotExist()
+            composeTestRule.onNodeWithTag("BossSurface").assertDoesNotExist()
         } else {
             composeTestRule
                 .onNodeWithTag("LoadingIndicator")
@@ -77,53 +91,53 @@ class BiomeGridScreenKtTest {
             composeTestRule
                 .onNodeWithTag("LoadingIndicator")
                 .assertIsNotDisplayed()
-            composeTestRule.onNodeWithTag("BiomeSurface").assertExists()
+            composeTestRule.onNodeWithTag("BossSurface").assertExists()
         }
 
         composeTestRule.waitUntilDoesNotExist(hasTestTag("LoadingIndicator"), timeoutMillis = 5000)
 
-        composeTestRule.onNodeWithTag("BiomeSurface").assertExists("Expected Surface")
-        composeTestRule.onNodeWithTag("BiomeSurface").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("BossSurface").assertExists("Expected Surface")
+        composeTestRule.onNodeWithTag("BossSurface").assertIsDisplayed()
 
-        if (biomeViewModel.biomeUIState.value.biomes.isEmpty()) {
+        if (bossViewModel.bossUIState.value.bosses.isEmpty()) {
 
-            composeTestRule.onNodeWithTag("BiomeGird").assertDoesNotExist()
-            composeTestRule.onNodeWithTag("EmptyScreenBiome").assertExists("Expected Empty Screen")
-            composeTestRule.onNodeWithTag("EmptyScreenBiome").assertIsDisplayed()
+            composeTestRule.onNodeWithTag("BossGrid").assertDoesNotExist()
+            composeTestRule.onNodeWithTag("EmptyScreenBoss").assertExists("Expected Empty Screen")
+            composeTestRule.onNodeWithTag("EmptyScreenBoss").assertIsDisplayed()
         } else {
 
-            composeTestRule.onNodeWithTag("BiomeGird").assertExists("Expected Biome Grid")
-            composeTestRule.onNodeWithTag("BiomeGird").assertIsDisplayed()
-            composeTestRule.onNodeWithTag("EmptyScreenBiome").assertDoesNotExist()
+            composeTestRule.onNodeWithTag("BossGrid").assertExists("Expected Boss Grid")
+            composeTestRule.onNodeWithTag("BossGrid").assertIsDisplayed()
+            composeTestRule.onNodeWithTag("EmptyScreenBoss").assertDoesNotExist()
         }
     }
 
     @OptIn(ExperimentalTestApi::class)
     @Test
-    fun testRefetchBiomes_withPullToRefresh() {
+    fun testRefetchBossWithPullToRefresh() {
 
         composeTestRule.waitUntilDoesNotExist(hasTestTag("LoadingIndicator"), timeoutMillis = 5000)
 
-        composeTestRule.onNodeWithTag("BiomeSurface")
-            .assertExists("Expected BiomeSurface to be displayed")
+        composeTestRule.onNodeWithTag("BossSurface")
+            .assertExists("Expected BossSurface to be displayed")
             .assertIsDisplayed()
 
-        if (biomeViewModel.biomeUIState.value.biomes.isEmpty()) {
-            composeTestRule.onNodeWithTag("BiomeGird").assertDoesNotExist()
-            composeTestRule.onNodeWithTag("EmptyScreenBiome")
+        if (bossViewModel.bossUIState.value.bosses.isEmpty()) {
+            composeTestRule.onNodeWithTag("BossGrid").assertDoesNotExist()
+            composeTestRule.onNodeWithTag("EmptyScreenBoss")
                 .assertExists("Expected Empty Screen for empty data")
                 .assertIsDisplayed()
         } else {
-            composeTestRule.onNodeWithTag("BiomeGird")
-                .assertExists("Expected Biome Grid for non-empty data")
+            composeTestRule.onNodeWithTag("BossGrid")
+                .assertExists("Expected Boss Grid for non-empty data")
                 .assertIsDisplayed()
-            composeTestRule.onNodeWithTag("EmptyScreenBiome").assertDoesNotExist()
+            composeTestRule.onNodeWithTag("EmptyScreenBoss").assertDoesNotExist()
         }
 
-        val refreshableTag = if (biomeViewModel.biomeUIState.value.biomes.isEmpty()) {
-            "EmptyScreenBiome"
+        val refreshableTag = if (bossViewModel.bossUIState.value.bosses.isEmpty()) {
+            "EmptyScreenBoss"
         } else {
-            "BiomeGird"
+            "BossGrid"
         }
 
         composeTestRule.onNodeWithTag(refreshableTag).performTouchInput {
@@ -142,22 +156,20 @@ class BiomeGridScreenKtTest {
 
         composeTestRule.waitUntilDoesNotExist(hasTestTag("LoadingIndicator"), timeoutMillis = 5000)
 
-        composeTestRule.onNodeWithTag("BiomeSurface")
-            .assertExists("Expected BiomeSurface after refresh")
+        composeTestRule.onNodeWithTag("BossSurface")
+            .assertExists("Expected BossSurface after refresh")
             .assertIsDisplayed()
 
-        if (biomeViewModel.biomeUIState.value.biomes.isEmpty()) {
-            composeTestRule.onNodeWithTag("BiomeGird").assertDoesNotExist()
-            composeTestRule.onNodeWithTag("EmptyScreenBiome")
+        if (bossViewModel.bossUIState.value.bosses.isEmpty()) {
+            composeTestRule.onNodeWithTag("BossGrid").assertDoesNotExist()
+            composeTestRule.onNodeWithTag("EmptyScreenBoss")
                 .assertExists("Expected Empty Screen after refresh")
                 .assertIsDisplayed()
         } else {
-            composeTestRule.onNodeWithTag("BiomeGird")
-                .assertExists("Expected Biome Grid after refresh")
+            composeTestRule.onNodeWithTag("BossGrid")
+                .assertExists("Expected Boss Grid after refresh")
                 .assertIsDisplayed()
-            composeTestRule.onNodeWithTag("EmptyScreenBiome").assertDoesNotExist()
+            composeTestRule.onNodeWithTag("EmptyScreenBoss").assertDoesNotExist()
         }
     }
-
-
 }
