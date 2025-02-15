@@ -21,7 +21,7 @@ class GetBossesUseCase @Inject constructor(private val creatureRepository: Creat
                     try {
                         val response = creatureRepository.fetchCreatures(language)
                         creatureRepository.storeCreatures(response.creatures)
-                        creatureRepository.getAllCreatures()
+                        creatureRepository.getMainBosses()
                     } catch (e: Exception) {
                         throw FetchException("No local data available and failed to fetch from internet.")
                     }

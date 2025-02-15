@@ -72,7 +72,7 @@ fun BossScreen(
                             },
                             state = refreshState,
                             onRefresh = {
-                                viewModel.refetchBiomes()
+                                viewModel.refetchBosses()
                                 scope.launch {
                                     refreshState.animateToHidden()
                                 }
@@ -93,7 +93,7 @@ fun BossScreen(
                             state = refreshState,
                             isRefreshing = refreshing,
                             onRefresh = {
-                                viewModel.refetchBiomes()
+                                viewModel.refetchBosses()
                                 scope.launch {
                                     refreshState.animateToHidden()
                                 }
