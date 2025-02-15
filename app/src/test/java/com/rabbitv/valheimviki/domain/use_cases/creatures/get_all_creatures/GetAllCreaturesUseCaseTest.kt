@@ -54,10 +54,12 @@ class GetAllCreaturesUseCaseTest {
         Dispatchers.resetMain()
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `invoke returns sorted biomes when local data is available`() = runTest(testDispatcher) {
+        // Stub both flows so that none return null.
         whenever(creatureRepository.getAllCreatures()).thenReturn(flowOf(mockCreaturesLocal))
+        whenever(creatureRepository.getMainBosses()).thenReturn(flowOf(emptyList()))
+
         whenever(creatureRepository.fetchCreatures("en")).thenReturn(
             CreatureDto(
                 success = true,
@@ -81,7 +83,8 @@ class GetAllCreaturesUseCaseTest {
     @Test
     fun `invoke fetches remote data when local is empty and returns sorted results`() =
         runTest(testDispatcher) {
-            whenever(creatureRepository.getMainBosses()).thenReturn(
+
+            whenever(creatureRepository.getAllCreatures()).thenReturn(
                 flowOf(emptyList()),
                 flowOf(expectedMockApiCreatures)
             )
@@ -101,7 +104,8 @@ class GetAllCreaturesUseCaseTest {
             assertEquals(
                 expectedMockApiCreatures, result, "Expected fetched and sorted bosses list"
             )
-            verify(creatureRepository, times(2)).getMainBosses()
+
+            verify(creatureRepository, times(2)).getAllCreatures()
             verify(creatureRepository).fetchCreatures("en")
             verify(creatureRepository).storeCreatures(mockCreaturesApi)
         }
@@ -112,7 +116,6 @@ class GetAllCreaturesUseCaseTest {
         runTest(testDispatcher) {
             val errorMessage = "No local data available and failed to fetch from internet."
             val mockEmptyLocalBiomes = flowOf(emptyList<CreatureDtoX>())
-            whenever(creatureRepository.getMainBosses()).thenReturn(mockEmptyLocalBiomes)
             whenever(creatureRepository.getAllCreatures()).thenReturn(mockEmptyLocalBiomes)
             whenever(creatureRepository.fetchCreatures("en")).thenThrow(RuntimeException("Remote fetch failed"))
             val exception = assertFailsWith<FetchException> {
@@ -120,7 +123,6 @@ class GetAllCreaturesUseCaseTest {
             }
 
             assertEquals(errorMessage, exception.message)
-            verify(creatureRepository).getMainBosses()
             verify(creatureRepository).getAllCreatures()
             verify(creatureRepository).fetchCreatures("en")
             verify(

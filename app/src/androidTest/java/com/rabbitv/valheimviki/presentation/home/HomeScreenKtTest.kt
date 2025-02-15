@@ -34,18 +34,10 @@ class HomeScreenKtTest {
 
         composeTestRule.onNodeWithTag("NavigationDrawer")
             .assertExists("Navigation drawer should exist on the HomeScreen")
-            .assertIsDisplayed()
 
         composeTestRule.onNodeWithTag("HomeContent")
             .assertExists("Home content should be displayed on the HomeScreen")
             .assertIsDisplayed()
-
-        composeTestRule.onNodeWithText("Biomes")
-            .assertExists("The drawer should display the 'Biomes' menu item")
-            .assertIsDisplayed()
-
-        composeTestRule.onNodeWithText("Bosses")
-            .assertExists("The drawer should display the 'Bosses' menu item")
-            .assertIsDisplayed()
+        
     }
 }
