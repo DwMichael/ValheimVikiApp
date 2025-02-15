@@ -1,10 +1,11 @@
 [versions]
-agp = "8.8.0"
+agp = "8.8.1"
 coilCompose = "3.0.4"
 coilNetworkOkhttp = "3.1.0"
 converterGson = "2.11.0"
 coreSplashscreen = "1.0.1"
 hiltAndroidCompiler = "2.55"
+hiltAndroidTesting = "2.55"
 hiltCompiler = "1.2.0"
 iconsLucide = "1.0.0"
 kotlin = "2.1.0"
@@ -17,18 +18,21 @@ kotlinxCoroutinesTest = "1.10.1"
 kotlinxSerializationJson = "1.8.0"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.10.0"
-composeBom = "2025.01.01"
-navigationCompose = "2.8.6"
+composeBom = "2025.02.00"
+mockitoAndroid = "5.15.2"
+mockitoCore = "5.15.2"
+mockitoKotlin = "5.4.0"
+navigationCompose = "2.8.7"
 paletteKtx = "1.0.0"
 retrofit = "2.11.0"
 retrofit2KotlinxSerializationConverter = "1.0.0"
 roomRuntime = "2.6.1"
 rules = "1.6.1"
 runner = "1.6.2"
-uiTestJunit4 = "1.7.7"
-uiTestManifest = "1.7.7"
-uiTextGoogleFonts = "1.7.7"
-composeMaterial = "1.4.0"
+uiTestJunit4 = "1.7.8"
+uiTestManifest = "1.7.8"
+uiTextGoogleFonts = "1.7.8"
+composeMaterial = "1.4.1"
 
 [libraries]
 androidx-core = { module = "androidx.test:core", version.ref = "rules" }
@@ -38,6 +42,7 @@ androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref =
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltCompiler" }
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycleRuntimeKtx" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+androidx-navigation-testing = { module = "androidx.navigation:navigation-testing", version.ref = "navigationCompose" }
 androidx-palette-ktx = { module = "androidx.palette:palette-ktx", version.ref = "paletteKtx" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomRuntime" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomRuntime" }
@@ -52,6 +57,8 @@ converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref
 core-ktx = { module = "androidx.test:core-ktx", version.ref = "rules" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroidCompiler" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroidCompiler" }
+hilt-android-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "hiltAndroidTesting" }
+hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hiltAndroidTesting" }
 icons-lucide = { module = "com.composables:icons-lucide", version.ref = "iconsLucide" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
@@ -69,6 +76,9 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlinTestJunit" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+mockito-android = { module = "org.mockito:mockito-android", version.ref = "mockitoAndroid" }
+mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockitoCore" }
+mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockitoKotlin" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofit2-kotlinx-serialization-converter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "retrofit2KotlinxSerializationConverter" }
 ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "uiTestJunit4" }
@@ -77,6 +87,6 @@ androidx-compose-material = { group = "androidx.wear.compose", name = "compose-m
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version = "1.9.24" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version = "2.1.0" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 

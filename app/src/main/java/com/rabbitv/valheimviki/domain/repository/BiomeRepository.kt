@@ -8,4 +8,5 @@ interface BiomeRepository {
     fun getAllBiomes(): Flow<List<BiomeDtoX>>
     suspend fun fetchBiomes(lang: String): BiomeDto
     fun getBiomeById(biomeId: String): Flow<BiomeDtoX>
+    suspend fun storeBiomes(biomes: List<BiomeDtoX>)
 }

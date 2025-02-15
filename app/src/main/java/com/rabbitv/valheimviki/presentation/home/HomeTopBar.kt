@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -45,11 +46,17 @@ fun HomeTopBar(
             containerColor = Color.Transparent,
             titleContentColor = MaterialTheme.colorScheme.primary,
         ),
+        modifier = Modifier.testTag("HomeTopAppBar"),
         navigationIcon = {
-            IconButton(onClick = { scope.launch { drawerState.open() } }) {
+            IconButton(
+                onClick = { scope.launch { drawerState.open() } },
+                modifier = Modifier
+                    .size(ICON_CLICK_DIM)
+            )
+            {
                 Icon(
                     painter = painterResource(id = R.drawable.bars),
-                    contentDescription = "Menu section",
+                    contentDescription = "Menu section Icon",
                     modifier = Modifier.size(ICON_SIZE)
                 )
             }
@@ -68,7 +75,7 @@ fun HomeTopBar(
             ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_bookmarks),
-                    contentDescription = "Search section",
+                    contentDescription = "Bookmarks section Icon",
                     modifier = Modifier.size(ICON_SIZE)
                 )
             }
@@ -79,7 +86,7 @@ fun HomeTopBar(
             ) {
                 Icon(
                     painter = painterResource(R.drawable.icon_search),
-                    contentDescription = "Search section",
+                    contentDescription = "Search section Icon",
                     modifier = Modifier.size(ICON_SIZE)
                 )
             }

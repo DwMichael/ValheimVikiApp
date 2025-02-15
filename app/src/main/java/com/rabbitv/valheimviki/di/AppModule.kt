@@ -1,12 +1,11 @@
 package com.rabbitv.valheimviki.di
 
-import com.rabbitv.valheimviki.data.repository.BiomeRepositoryImpl
-import com.rabbitv.valheimviki.data.repository.CreatureRepositoryImpl
-import com.rabbitv.valheimviki.presentation.biome.BiomeGridScreenViewModel
+import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
+import com.rabbitv.valheimviki.domain.use_cases.creatures.CreatureUseCases
+import com.rabbitv.valheimviki.presentation.biome.BiomeScreenViewModel
 import com.rabbitv.valheimviki.presentation.creatures.CreaturesViewModel
 import com.rabbitv.valheimviki.presentation.creatures.bosses.BossesViewModel
 import com.rabbitv.valheimviki.presentation.creatures.mini_bosses.MiniBossesViewModel
-import com.rabbitv.valheimviki.presentation.detail.biome.BiomeScreenViewModel
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,27 +18,28 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideBossesViewModel(creatureRepository: CreatureRepositoryImpl) =
-        BossesViewModel(creatureRepository)
+    fun provideBossesViewModel(creatureUseCases: CreatureUseCases) =
+        BossesViewModel(creatureUseCases)
 
     @Provides
     @Singleton
-    fun provideMiniBossesViewModel(creatureRepository: CreatureRepositoryImpl) =
-        MiniBossesViewModel(creatureRepository)
+    fun provideMiniBossesViewModel(creatureUseCases: CreatureUseCases) =
+        MiniBossesViewModel(creatureUseCases)
 
     @Provides
     @Singleton
-    fun provideBiomeViewModel(biomeRepository: BiomeRepositoryImpl) =
-        BiomeGridScreenViewModel(biomeRepository)
+    fun provideBiomeViewModel(biomesUseCase: BiomeUseCases) =
+        BiomeScreenViewModel(biomesUseCase)
 
     @Provides
     @Singleton
-    fun provideCreaturesViewModel(creatureRepository: CreatureRepositoryImpl) =
-        CreaturesViewModel(creatureRepository)
+    fun provideCreaturesViewModel(creatureUseCases: CreatureUseCases) =
+        CreaturesViewModel(creatureUseCases)
 
-    @Provides
-    @Singleton
-    fun provideBiomeDetailViewModel(biomeRepository: BiomeRepositoryImpl) =
-        BiomeScreenViewModel(biomeRepository = biomeRepository)
+//
+//    @Provides
+//    @Singleton
+//    fun provideBiomeDetailViewModel(biomeRepository: BiomeRepositoryImpl) =
+//        BiomeScreenViewModel(biomeRepository = biomeRepository)
 
 }

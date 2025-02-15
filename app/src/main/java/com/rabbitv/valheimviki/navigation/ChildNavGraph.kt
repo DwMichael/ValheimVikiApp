@@ -10,12 +10,12 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.rabbitv.valheimviki.presentation.biome.BiomeGridScreen
-import com.rabbitv.valheimviki.presentation.biome.CreatureListScreen
-import com.rabbitv.valheimviki.presentation.creatures.bosses.BossGirdScreen
-import com.rabbitv.valheimviki.presentation.creatures.mini_bosses.MiniBossGridScreen
-import com.rabbitv.valheimviki.presentation.detail.biome.BiomeScreen
-import com.rabbitv.valheimviki.presentation.detail.creature.CreatureScreen
+import com.rabbitv.valheimviki.presentation.biome.BiomeScreen
+import com.rabbitv.valheimviki.presentation.biome.CreatureScreen
+import com.rabbitv.valheimviki.presentation.creatures.bosses.BossScreen
+import com.rabbitv.valheimviki.presentation.creatures.mini_bosses.MiniBossScreen
+import com.rabbitv.valheimviki.presentation.detail.biome.BiomeDetailScreen
+import com.rabbitv.valheimviki.presentation.detail.creature.CreatureDetailScreen
 import com.rabbitv.valheimviki.utils.Constants.BIOME_ARGUMENT_KEY
 import com.rabbitv.valheimviki.utils.Constants.CREATURE_ARGUMENT_KEY
 
@@ -26,50 +26,50 @@ fun ChildNavGraph(
 ) {
     NavHost(
         navController = navHostController,
-        startDestination = Screen.BiomeList.route,
+        startDestination = Screen.Biome.route,
         modifier = Modifier.padding(0.dp)
     ) {
-        composable(Screen.BiomeList.route) {
-            BiomeGridScreen(
+        composable(Screen.Biome.route) {
+            BiomeScreen(
                 paddingValues = paddingValues,
                 navController = navHostController
             )
         }
         composable(
-            route = Screen.Biome.route,
+            route = Screen.BiomeDetail.route,
             arguments = listOf(navArgument(BIOME_ARGUMENT_KEY)
             { type = NavType.StringType }
             )
         ) {
-            BiomeScreen(
+            BiomeDetailScreen(
                 paddingValues = paddingValues,
             )
         }
         composable(Screen.Boss.route) {
-            BossGirdScreen(
+            BossScreen(
                 paddingValues = paddingValues,
                 navController = navHostController
             )
         }
         composable(Screen.MiniBoss.route) {
-            MiniBossGridScreen(
+            MiniBossScreen(
                 paddingValues = paddingValues,
                 navController = navHostController
             )
         }
-        composable(Screen.CreatureList.route) {
-            CreatureListScreen(
+        composable(Screen.Creature.route) {
+            CreatureScreen(
                 paddingValues = paddingValues,
                 navController = navHostController
             )
         }
         composable(
-            route = Screen.Creature.route,
+            route = Screen.CreatureDetail.route,
             arguments = listOf(navArgument(CREATURE_ARGUMENT_KEY)
             { type = NavType.StringType }
             )
         ) {
-            CreatureScreen(
+            CreatureDetailScreen(
                 paddingValues = paddingValues,
             )
         }

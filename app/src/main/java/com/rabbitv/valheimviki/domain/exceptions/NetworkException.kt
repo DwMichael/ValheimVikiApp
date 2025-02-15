@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.data.remote.exceptions
+package com.rabbitv.valheimviki.domain.exceptions
 
 import com.rabbitv.valheimviki.domain.model.error.ErrorResponseDtoImpl
 import retrofit2.HttpException

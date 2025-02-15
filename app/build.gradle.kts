@@ -18,7 +18,7 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.rabbitv.valheimviki.CustomTestRunner"
     }
 
     buildTypes {
@@ -40,8 +40,10 @@ android {
     buildFeatures {
         compose = true
     }
-}
 
+
+}
+val mockitoAgent = configurations.create("mockitoAgent")
 dependencies {
 
     implementation(libs.androidx.core.ktx)
@@ -116,4 +118,20 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.kotlin.test.junit)
     testImplementation(libs.kotlinx.coroutines.test)
+    androidTestImplementation(libs.androidx.navigation.testing)
+    //Hilt tests
+    testImplementation(libs.hilt.android.testing)
+    kspTest(libs.hilt.compiler)
+    androidTestImplementation(libs.hilt.android.testing)
+    kspAndroidTest(libs.hilt.compiler)
+    //Mockito
+
+    testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.mockito.core)
+    androidTestImplementation(libs.mockito.android)
+    mockitoAgent(libs.mockito.core) { isTransitive = false }
+}
+
+tasks.withType<Test> {
+    jvmArgs("-javaagent:${mockitoAgent.asPath}")
 }

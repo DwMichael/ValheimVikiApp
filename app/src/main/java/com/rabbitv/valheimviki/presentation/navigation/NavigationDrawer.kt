@@ -31,6 +31,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -62,7 +63,8 @@ fun NavigationDrawer(
 ) {
     ModalNavigationDrawer(
         modifier = modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .testTag("NavigationDrawer"),
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet(
@@ -82,7 +84,7 @@ fun NavigationDrawer(
                             modifier = Modifier
                                 .size(80.dp),
                             painter = painterResource(R.drawable.viking),
-                            contentDescription = "Background",
+                            contentDescription = "DrawerLogoImage",
                             contentScale = ContentScale.FillBounds,
                         )
                         Spacer(modifier.padding(12.dp))
@@ -102,11 +104,11 @@ fun NavigationDrawer(
                         NavigationDrawerItem(
                             colors = NavigationDrawerItemDefaults.colors(ForestGreen10Dark),
                             icon = {
-                                if(item.iconPainter != null) {
+                                if (item.iconPainter != null) {
                                     Icon(
                                         painter = item.iconPainter,
                                         contentDescription = item.contentDescription,
-                                        modifier = Modifier.size(24.dp) // Ensures consistent icon size
+                                        modifier = Modifier.size(24.dp)
                                     )
                                 } else {
                                     item.icon?.let {
@@ -153,7 +155,7 @@ private fun NavigationDrawerImage() {
                 .padding(start = 16.dp, top = 24.dp, end = 12.dp)
                 .size(80.dp),
             painter = painterResource(R.drawable.viking),
-            contentDescription = "Background",
+            contentDescription = "DrawerBackground",
             contentScale = ContentScale.Crop,
 
             )
@@ -171,7 +173,7 @@ private fun PreviewNavigationDrawer() {
             icon = Lucide.MountainSnow,
             label = "Biomes",
             contentDescription = "List of Biomes",
-            route = Screen.BiomeList.route
+            route = Screen.Biome.route
         ),
         DrawerItem(
             iconPainter = painterResource(R.drawable.skull),
@@ -189,7 +191,7 @@ private fun PreviewNavigationDrawer() {
             icon = Lucide.Rabbit,
             label = "Creatures",
             contentDescription = "Creatures section",
-            route = Screen.CreatureList.route
+            route = Screen.Creature.route
         ),
 
         )

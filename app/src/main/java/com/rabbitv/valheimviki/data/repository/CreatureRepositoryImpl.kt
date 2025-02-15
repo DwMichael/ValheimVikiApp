@@ -2,7 +2,7 @@ package com.rabbitv.valheimviki.data.repository
 
 import com.rabbitv.valheimviki.data.local.dao.CreatureDao
 import com.rabbitv.valheimviki.data.remote.api.ApiCreatureService
-import com.rabbitv.valheimviki.data.remote.exceptions.NetworkExceptionHandler
+import com.rabbitv.valheimviki.domain.exceptions.NetworkExceptionHandler
 import com.rabbitv.valheimviki.domain.model.creature.CreatureDto
 import com.rabbitv.valheimviki.domain.model.creature.CreatureDtoX
 import com.rabbitv.valheimviki.domain.repository.CreatureRepository
@@ -27,20 +27,40 @@ class CreatureRepositoryImpl @Inject constructor(
 
     override suspend fun fetchCreatures(lang: String): CreatureDto {
         try {
-            val creatures = apiService.getAllCreatures(lang)
-            creatureDao.insertAllCreatures(creatures.creatures)
-            return creatures
+
+            val response = apiService.getAllCreatures(lang)
+
+            return if (response.success) {
+                CreatureDto(
+                    creatures = response.creatures,
+                    error = null,
+                    success = true,
+                    errorDetails = null
+                )
+            } else {
+                CreatureDto(
+                    creatures = emptyList(),
+                    error = response.error,
+                    success = false,
+                    errorDetails = response.errorDetails
+                )
+            }
+
         } catch (e: Exception) {
             val networkException = NetworkExceptionHandler.handleException(e)
-            val creatureDto = CreatureDto(
+            return CreatureDto(
                 creatures = emptyList(),
                 error = networkException.error,
                 success = networkException.success,
                 errorDetails = networkException.errorDetails
             )
-            return creatureDto
         }
+    }
 
+    override suspend fun storeCreatures(creatures: List<CreatureDtoX>) {
+        if (creatures.isNotEmpty()) {
+            creatureDao.insertAllCreatures(creatures)
+        }
     }
 
 

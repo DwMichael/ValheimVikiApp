@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -50,6 +51,7 @@ import com.rabbitv.valheimviki.utils.Constants.BASE_URL
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GridContent(
+    modifier: Modifier,
     items: List<ItemData>,
     clickToNavigate: (item: ItemData) -> Unit,
     state: PullToRefreshState,
@@ -58,6 +60,7 @@ fun GridContent(
     numbersOfColumns: Int,
     height: Dp,
 ) {
+    val listSize = items.size
     PullToRefreshBox(
         state = state,
         isRefreshing = isRefreshing,
@@ -78,12 +81,18 @@ fun GridContent(
                     )
                 }
             } else {
+
                 items(items) { item ->
-                    GridItem(
-                        item = item,
-                        clickToNavigate = clickToNavigate,
-                        height = height
-                    )
+                    println("GirdItem ${item.name}")
+                    Box(
+                        modifier = modifier.testTag("GirdItem ${item.name}")
+                    ) {
+                        GridItem(
+                            item = item,
+                            clickToNavigate = clickToNavigate,
+                            height = height
+                        )
+                    }
                 }
             }
 
@@ -124,7 +133,7 @@ fun GridItem(
         ) {
             Image(
                 painter = painter,
-                contentDescription = stringResource(R.string.biome_image),
+                contentDescription = stringResource(R.string.item_grid_image),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxSize()
@@ -174,7 +183,7 @@ private fun PreviewGridItem() {
         GridItem(
             item = item,
             clickToNavigate = {},
-            height = ITEM_HEIGHT_TWO_COLUMNS
+            height = ITEM_HEIGHT_TWO_COLUMNS,
         )
     }
 }
@@ -206,6 +215,7 @@ private fun PreviewContentGrid() {
 
     ValheimVikiAppTheme {
         GridContent(
+            modifier = Modifier,
             items = sampleBiomes,
             clickToNavigate = { item -> {} },
             state = rememberPullToRefreshState(),

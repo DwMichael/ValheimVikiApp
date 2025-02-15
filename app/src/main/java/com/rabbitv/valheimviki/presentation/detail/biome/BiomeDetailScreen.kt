@@ -12,7 +12,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 
 
 @Composable
-fun BiomeScreen(
+fun BiomeDetailScreen(
     viewModel: BiomeScreenViewModel = hiltViewModel(),
     paddingValues: PaddingValues
 ) {
@@ -31,5 +31,5 @@ fun BiomeScreen(
 )
 @Composable
 private fun PreviewBiomeDetail() {
-    BiomeScreen(paddingValues = PaddingValues(0.dp))
+    BiomeDetailScreen(paddingValues = PaddingValues(0.dp))
 }

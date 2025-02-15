@@ -17,10 +17,10 @@ sealed class Screen(val route: String) {
     object Home : Screen("home_screen")
 
     @Serializable
-    object BiomeList : Screen("biome_list_screen")
+    object Biome : Screen("biome_list_screen")
 
     @Serializable
-    object CreatureList : Screen("creature_list_screen")
+    object Creature : Screen("creature_list_screen")
 
     @Serializable
     object Boss : Screen("boss_screen")
@@ -29,14 +29,14 @@ sealed class Screen(val route: String) {
     object MiniBoss : Screen("mini_boss_screen/")
 
     @Serializable
-    object Creature : Screen("creature_screen/{$CREATURE_ARGUMENT_KEY}") {
+    object CreatureDetail : Screen("creature_screen/{$CREATURE_ARGUMENT_KEY}") {
         fun passCreatureId(creatureId: String): String {
             return "creature_screen/$creatureId"
         }
     }
 
     @Serializable
-    object Biome : Screen("biome_screen/{$BIOME_ARGUMENT_KEY}") {
+    object BiomeDetail : Screen("biome_screen/{$BIOME_ARGUMENT_KEY}") {
         fun passBiomeId(biomeId: String): String {
             return "biome_screen/$biomeId"
         }
