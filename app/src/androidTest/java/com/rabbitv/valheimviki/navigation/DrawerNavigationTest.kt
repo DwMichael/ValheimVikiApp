@@ -1,12 +1,21 @@
 package com.rabbitv.valheimviki.navigation
 
 import androidx.activity.compose.setContent
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performClick
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.testing.TestNavHostController
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.rabbitv.valheimviki.MainActivity
+import com.rabbitv.valheimviki.R
+import com.rabbitv.valheimviki.assertions.assertCurrentRouteName
+import com.rabbitv.valheimviki.onNodeWithStringId
+import com.rabbitv.valheimviki.presentation.home.HomeScreen
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -27,9 +36,48 @@ class DrawerNavigationTest {
 
     private lateinit var navController: TestNavHostController
 
+    private fun assertWithTextIfExist(stringValue: Int, errorText: String) {
+        composeTestRule.onNodeWithStringId(stringValue).assertExists(
+            errorText
+        )
+    }
+
+    private fun navigateToBiomesScreen() {
+        composeTestRule.onNodeWithContentDescription(composeTestRule.activity.getString(R.string.biomes_section))
+            .performClick()
+
+    }
+
+    private fun navigateToBossesScreen() {
+        composeTestRule.onNodeWithContentDescription(
+            composeTestRule.activity.getString(
+                R.string
+                    .boss_section
+            )
+        ).performClick()
+    }
+
+    private fun navigateToMiniBossesScreen() {
+        composeTestRule.onNodeWithContentDescription(
+            composeTestRule.activity.getString(
+                R.string
+                    .minibosses_section
+            )
+        ).performClick()
+    }
+
+    private fun navigateToCreaturesScreen() {
+        composeTestRule.onNodeWithContentDescription(
+            composeTestRule.activity.getString(
+                R.string
+                    .creatures_section
+            )
+        ).performClick()
+    }
+
+
     @Before
     fun setUp() {
-        hiltRule.inject()
         composeTestRule.activity.runOnUiThread {
             composeTestRule.activity.setContent {
                 val testNavController = TestNavHostController(LocalContext.current).apply {
@@ -38,56 +86,36 @@ class DrawerNavigationTest {
                 navController = testNavController
 
                 ValheimVikiAppTheme {
-                    SetupNavGraph(navController = testNavController)
+                    HomeScreen(
+                        modifier = Modifier,
+                        childNavController = testNavController
+                    )
                 }
             }
         }
         composeTestRule.waitForIdle()
     }
 
+
     @Test
     fun verifyStartDestination() {
-        navController.assertCurrentRouteName(Screen.Home.route)
+        navController.assertCurrentRouteName(Screen.BiomeList.route)
     }
 
+    @Test
+    fun testDrawerNavigationFromBiomeScreenToBossScreen() {
+        composeTestRule.onNodeWithContentDescription("Menu section Icon").performClick()
+        composeTestRule.onNodeWithTag("NavigationDrawer").isDisplayed()
+
+        assertWithTextIfExist(R.string.biomes, "Expected Biomes Button")
+        assertWithTextIfExist(R.string.bosses, "Expected Bosses Button")
+        assertWithTextIfExist(R.string.minibosses, "Expected MiniBosses Button")
+        assertWithTextIfExist(R.string.creatures, "Expected Creatures Button")
+
+        navigateToBossesScreen()
+
+        navController.assertCurrentRouteName(Screen.Boss.route)
+    }
+
+
 }
-//    @Test
-//    fun testDrawerNavigationFromBiomeScreenToBiomeDetail() {
-//
-//        val navController =
-//            TestNavHostController(composeTestRule.activity) // Create TestNavHostController
-//
-//        composeTestRule.setContent { // Set content and pass the TestNavHostController
-//            SetupNavGraph(navController = navController) // Pass it to your NavGraph setup
-//            //  If you have a root composable that wraps SetupNavGraph, use that instead.
-//            //  For example:  MyApp(navController = navController)
-//        }
-//
-//
-//        composeTestRule.onNodeWithContentDescription("Menu section Icon").performClick()
-//        composeTestRule.onNodeWithTag("NavigationDrawer").isDisplayed()
-//
-//        val context = composeTestRule.activity
-//
-//        composeTestRule.onNodeWithText(context.getString(R.string.biomes)).assertExists(
-//            "Expected Biomes Button"
-//        )
-//        composeTestRule.onNodeWithText(context.getString(R.string.creatures)).assertExists(
-//            "Expected Creatures Button"
-//        )
-//        composeTestRule.onNodeWithText(context.getString(R.string.bosses)).assertExists(
-//            "Expected Bosses Button"
-//        )
-//        composeTestRule.onNodeWithText(context.getString(R.string.minibosses)).assertExists(
-//            "Expected MiniBosses Button"
-//        )
-//
-//        composeTestRule.onNodeWithContentDescription(context.getString(R.string.boss_section))
-//            .performClick()
-//
-//        composeTestRule.runOnIdle {
-//            assertEquals(Screen.Boss.route, navController.currentBackStackEntry?.destination?.route)
-//            // Now it should work because navController is connected to NavHost in setContent
-//        }
-//    }
-//}

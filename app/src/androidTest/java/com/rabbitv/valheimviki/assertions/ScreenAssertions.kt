@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.navigation
+package com.rabbitv.valheimviki.assertions
 
 import androidx.navigation.NavController
 import org.junit.Assert.assertEquals
