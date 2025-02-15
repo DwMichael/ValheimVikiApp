@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -59,6 +60,7 @@ fun GridContent(
     numbersOfColumns: Int,
     height: Dp,
 ) {
+    val listSize = items.size
     PullToRefreshBox(
         state = state,
         isRefreshing = isRefreshing,
@@ -79,12 +81,18 @@ fun GridContent(
                     )
                 }
             } else {
+
                 items(items) { item ->
-                    GridItem(
-                        item = item,
-                        clickToNavigate = clickToNavigate,
-                        height = height
-                    )
+                    println("GirdItem ${item.name}")
+                    Box(
+                        modifier = modifier.testTag("GirdItem ${item.name}")
+                    ) {
+                        GridItem(
+                            item = item,
+                            clickToNavigate = clickToNavigate,
+                            height = height
+                        )
+                    }
                 }
             }
 
@@ -175,7 +183,7 @@ private fun PreviewGridItem() {
         GridItem(
             item = item,
             clickToNavigate = {},
-            height = ITEM_HEIGHT_TWO_COLUMNS
+            height = ITEM_HEIGHT_TWO_COLUMNS,
         )
     }
 }

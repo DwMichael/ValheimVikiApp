@@ -47,7 +47,7 @@ class NavigationDrawerKtTest {
                     icon = Lucide.MountainSnow,
                     label = "Biomes",
                     contentDescription = "List of Biomes",
-                    route = Screen.BiomeList.route
+                    route = Screen.Biome.route
                 ),
                 DrawerItem(
                     iconPainter = painterResource(R.drawable.skull),
@@ -65,7 +65,7 @@ class NavigationDrawerKtTest {
                     icon = Lucide.Rabbit,
                     label = "Creatures",
                     contentDescription = "Creatures section",
-                    route = Screen.CreatureList.route
+                    route = Screen.Creature.route
                 ),
 
                 )

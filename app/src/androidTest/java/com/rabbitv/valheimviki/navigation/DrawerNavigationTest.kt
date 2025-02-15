@@ -2,12 +2,17 @@ package com.rabbitv.valheimviki.navigation
 
 import androidx.activity.compose.setContent
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performKeyInput
+import androidx.compose.ui.test.pressKey
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.testing.TestNavHostController
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -75,6 +80,13 @@ class DrawerNavigationTest {
         ).performClick()
     }
 
+    @OptIn(ExperimentalTestApi::class)
+    private fun navigateGoBackToBiomeScreen() {
+        composeTestRule.onRoot().performKeyInput {
+            pressKey(Key.Back)
+        }
+    }
+
 
     @Before
     fun setUp() {
@@ -99,11 +111,11 @@ class DrawerNavigationTest {
 
     @Test
     fun verifyStartDestination() {
-        navController.assertCurrentRouteName(Screen.BiomeList.route)
+        navController.assertCurrentRouteName(Screen.Biome.route)
     }
 
     @Test
-    fun testDrawerNavigationFromBiomeScreenToBossScreen() {
+    fun navigateFromDrawerToBossScreen() {
         composeTestRule.onNodeWithContentDescription("Menu section Icon").performClick()
         composeTestRule.onNodeWithTag("NavigationDrawer").isDisplayed()
 
@@ -117,5 +129,73 @@ class DrawerNavigationTest {
         navController.assertCurrentRouteName(Screen.Boss.route)
     }
 
+    @Test
+    fun navigateFromDrawerToMiniBossScreen() {
+        composeTestRule.onNodeWithContentDescription("Menu section Icon").performClick()
+        composeTestRule.onNodeWithTag("NavigationDrawer").isDisplayed()
+
+        assertWithTextIfExist(R.string.biomes, "Expected Biomes Button")
+        assertWithTextIfExist(R.string.bosses, "Expected Bosses Button")
+        assertWithTextIfExist(R.string.minibosses, "Expected MiniBosses Button")
+        assertWithTextIfExist(R.string.creatures, "Expected Creatures Button")
+
+        navigateToMiniBossesScreen()
+
+        navController.assertCurrentRouteName(Screen.MiniBoss.route)
+    }
+
+    @Test
+    fun navigateFromDrawerToCreaturesScreen() {
+        composeTestRule.onNodeWithContentDescription("Menu section Icon").performClick()
+        composeTestRule.onNodeWithTag("NavigationDrawer").isDisplayed()
+
+        assertWithTextIfExist(R.string.biomes, "Expected Biomes Button")
+        assertWithTextIfExist(R.string.bosses, "Expected Bosses Button")
+        assertWithTextIfExist(R.string.minibosses, "Expected MiniBosses Button")
+        assertWithTextIfExist(R.string.creatures, "Expected Creatures Button")
+
+        navigateToCreaturesScreen()
+
+        navController.assertCurrentRouteName(Screen.Creature.route)
+    }
+
+
+    @Test
+    fun navigateByDrawerBackToBiomeScreen() {
+        composeTestRule.onNodeWithContentDescription("Menu section Icon").performClick()
+        composeTestRule.onNodeWithTag("NavigationDrawer").isDisplayed()
+
+        assertWithTextIfExist(R.string.biomes, "Expected Biomes Button")
+        assertWithTextIfExist(R.string.bosses, "Expected Bosses Button")
+        assertWithTextIfExist(R.string.minibosses, "Expected MiniBosses Button")
+        assertWithTextIfExist(R.string.creatures, "Expected Creatures Button")
+
+        navigateToCreaturesScreen()
+
+        navController.assertCurrentRouteName(Screen.Creature.route)
+
+        composeTestRule.onNodeWithContentDescription("Menu section Icon").performClick()
+        composeTestRule.onNodeWithTag("NavigationDrawer").isDisplayed()
+
+        navigateToBiomesScreen()
+
+        navController.assertCurrentRouteName(Screen.Biome.route)
+
+    }
+
+
+    @Test
+    fun navigateIntoBiomeDetailScreen() {
+        navController.assertCurrentRouteName(Screen.Biome.route)
+
+        composeTestRule.onNodeWithTag("BiomeGrid").assertExists().isDisplayed()
+        composeTestRule.onNodeWithTag("GirdItem Meadows").assertExists().isDisplayed()
+
+        composeTestRule.onNodeWithTag("GirdItem Meadows").performClick()
+
+        navController.assertCurrentRouteName(Screen.BiomeDetail.route)
+
+
+    }
 
 }

@@ -68,7 +68,7 @@ fun BiomeScreen(
                             modifier = Modifier,
                             items = biomeUIState.biomes,
                             clickToNavigate = { item ->
-                                navController.navigate(Screen.Biome.passBiomeId(biomeId = item.id))
+                                navController.navigate(Screen.BiomeDetail.passBiomeId(biomeId = item.id))
                             },
                             state = refreshState,
                             onRefresh = {

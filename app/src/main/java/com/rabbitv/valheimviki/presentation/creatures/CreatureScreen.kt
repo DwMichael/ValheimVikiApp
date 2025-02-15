@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -66,7 +65,12 @@ fun CreatureScreen(
                             modifier = Modifier,
                             items = creatureUIState.creatures,
                             clickToNavigate = { item ->
-                                navController.navigate(Screen.Creature.passCreatureId(creatureId = item.id))
+                                navController.navigate(
+                                    Screen.CreatureDetail.passCreatureId(
+                                        creatureId = item
+                                            .id
+                                    )
+                                )
                             },
                             state = refreshState,
                             onRefresh = {

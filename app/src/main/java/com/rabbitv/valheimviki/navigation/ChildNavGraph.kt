@@ -26,17 +26,17 @@ fun ChildNavGraph(
 ) {
     NavHost(
         navController = navHostController,
-        startDestination = Screen.BiomeList.route,
+        startDestination = Screen.Biome.route,
         modifier = Modifier.padding(0.dp)
     ) {
-        composable(Screen.BiomeList.route) {
+        composable(Screen.Biome.route) {
             BiomeScreen(
                 paddingValues = paddingValues,
                 navController = navHostController
             )
         }
         composable(
-            route = Screen.Biome.route,
+            route = Screen.BiomeDetail.route,
             arguments = listOf(navArgument(BIOME_ARGUMENT_KEY)
             { type = NavType.StringType }
             )
@@ -57,14 +57,14 @@ fun ChildNavGraph(
                 navController = navHostController
             )
         }
-        composable(Screen.CreatureList.route) {
+        composable(Screen.Creature.route) {
             CreatureScreen(
                 paddingValues = paddingValues,
                 navController = navHostController
             )
         }
         composable(
-            route = Screen.Creature.route,
+            route = Screen.CreatureDetail.route,
             arguments = listOf(navArgument(CREATURE_ARGUMENT_KEY)
             { type = NavType.StringType }
             )

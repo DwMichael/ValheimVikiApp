@@ -173,7 +173,7 @@ private fun PreviewNavigationDrawer() {
             icon = Lucide.MountainSnow,
             label = "Biomes",
             contentDescription = "List of Biomes",
-            route = Screen.BiomeList.route
+            route = Screen.Biome.route
         ),
         DrawerItem(
             iconPainter = painterResource(R.drawable.skull),
@@ -191,7 +191,7 @@ private fun PreviewNavigationDrawer() {
             icon = Lucide.Rabbit,
             label = "Creatures",
             contentDescription = "Creatures section",
-            route = Screen.CreatureList.route
+            route = Screen.Creature.route
         ),
 
         )

@@ -9,7 +9,9 @@ import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -19,6 +21,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.MountainSnow
@@ -44,7 +47,7 @@ fun HomeScreen(
             icon = Lucide.MountainSnow,
             label = stringResource(R.string.biomes),
             contentDescription = stringResource(R.string.biomes_section),
-            route = Screen.BiomeList.route
+            route = Screen.Biome.route
         ),
         DrawerItem(
             iconPainter = painterResource(R.drawable.skull),
@@ -62,11 +65,21 @@ fun HomeScreen(
             icon = Lucide.Rabbit,
             label = stringResource(R.string.creatures),
             contentDescription = stringResource(R.string.creatures_section),
-            route = Screen.CreatureList.route
+            route = Screen.Creature.route
         ),
 
         )
     val selectedItem: MutableState<DrawerItem> = remember { mutableStateOf(items[0]) }
+
+    val navBackStackEntry by childNavController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    LaunchedEffect(currentRoute) {
+        val item = items.find { it.route == currentRoute }
+        if (item != null) {
+            selectedItem.value = item
+        }
+    }
 
     NavigationDrawer(
         modifier = modifier,

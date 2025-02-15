@@ -21,9 +21,6 @@
           </targets>
         </DialogSelection>
       </SelectionState>
-      <SelectionState runConfigName="HomeScreenKtTest">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
       <SelectionState runConfigName="NavigationDrawerKtTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
@@ -34,6 +31,9 @@
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
       <SelectionState runConfigName="DrawerNavigationTest">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="navigateBackToBiomeScreen()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
