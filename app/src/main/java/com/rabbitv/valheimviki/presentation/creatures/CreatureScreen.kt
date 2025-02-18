@@ -28,8 +28,8 @@ import com.rabbitv.valheimviki.presentation.common.GridContent
 import com.rabbitv.valheimviki.presentation.components.LoadingIndicator
 import com.rabbitv.valheimviki.presentation.creatures.CreaturesUIState
 import com.rabbitv.valheimviki.presentation.creatures.CreaturesViewModel
-import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_THREE_COLUMNS
-import com.rabbitv.valheimviki.utils.Constants.CREATURE_GRID_COLUMNS
+import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_TWO_COLUMNS
+import com.rabbitv.valheimviki.utils.Constants.BIOME_GRID_COLUMNS
 import kotlinx.coroutines.launch
 
 
@@ -80,8 +80,8 @@ fun CreatureScreen(
                                 }
                             },
                             isRefreshing = refreshing,
-                            numbersOfColumns = CREATURE_GRID_COLUMNS,
-                            height = ITEM_HEIGHT_THREE_COLUMNS
+                            numbersOfColumns = BIOME_GRID_COLUMNS,
+                            height = ITEM_HEIGHT_TWO_COLUMNS
                         )
                     }
                 }

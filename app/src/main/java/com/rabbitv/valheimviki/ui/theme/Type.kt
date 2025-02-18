@@ -17,14 +17,14 @@ val provider = GoogleFont.Provider(
 )
 
 val IMFellEnglish = GoogleFont("IM Fell English SC")
-val roboto = GoogleFont("Roboto")
+val robotoSlab = GoogleFont("Roboto Slab")
 
 val IMFellEnglishFontFamily = FontFamily(
     Font(googleFont = IMFellEnglish, fontProvider = provider)
 )
 
 val robotoFontFamily = FontFamily(
-    Font(googleFont = roboto, fontProvider = provider)
+    Font(googleFont = robotoSlab, fontProvider = provider)
 )
 
 // Set of Material typography styles to start with
@@ -32,7 +32,7 @@ val Typography = Typography(
     bodyLarge = TextStyle(
         fontFamily = IMFellEnglishFontFamily,
         fontWeight = FontWeight.Bold,
-        fontSize = 24.sp,
+        fontSize = 21.sp,
         lineHeight = 24.sp,
         letterSpacing = 0.5.sp
     ),
@@ -40,7 +40,7 @@ val Typography = Typography(
     titleLarge = TextStyle(
         fontFamily = IMFellEnglishFontFamily,
         fontWeight = FontWeight.Bold,
-        fontSize = 32.sp,
+        fontSize = 28.sp,
         lineHeight = 45.sp,
         letterSpacing = 0.15.sp
     ),
@@ -48,10 +48,10 @@ val Typography = Typography(
 
     labelSmall = TextStyle(
         fontFamily = robotoFontFamily,
-        fontWeight = FontWeight.Medium,
-        fontSize = 2.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.5.sp
+        fontWeight = FontWeight.Normal,
+        fontSize = 16.sp,
+        lineHeight = 32.sp,
+        color = TextWhite
     )
 
 )

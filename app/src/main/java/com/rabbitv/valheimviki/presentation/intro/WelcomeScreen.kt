@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -38,6 +39,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rabbitv.valheimviki.R
@@ -60,11 +62,12 @@ fun WelcomeScreen(
     )
     val pagerState = rememberPagerState { pages.size }
     val currentPage = pagerState.currentPage
-
+    val horizontalPadding = 16.dp
 
     Column(
         modifier = Modifier
-            .fillMaxSize().paint(
+            .fillMaxSize()
+            .paint(
                 painterResource(id = pages[currentPage].image),
                 contentScale = ContentScale.Crop
             )
@@ -77,8 +80,9 @@ fun WelcomeScreen(
                 .fillMaxWidth()
         ) { position ->
 
-            PagerScreen(onBoardingPage = pages[position],position)
+            PagerScreen(onBoardingPage = pages[position], position, horizontalPadding)
         }
+        NavigationButton(pages[currentPage], horizontalPadding)
         Row(
             modifier = Modifier
                 .weight(1f)
@@ -105,18 +109,21 @@ fun WelcomeScreen(
             }
         }
 
+
     }
 }
 
 
 @Composable
-fun PagerScreen(onBoardingPage: OnBoardingPage,position:Int) {
+fun PagerScreen(onBoardingPage: OnBoardingPage, position: Int, horizontalPadding: Dp) {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = horizontalPadding),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        if(position==0) {
+        if (position == 0) {
             Image(
                 painter = painterResource(id = R.drawable.viking_logo_hd),
                 contentDescription = "VikingLogo",
@@ -125,7 +132,7 @@ fun PagerScreen(onBoardingPage: OnBoardingPage,position:Int) {
                     .size(260.dp)
                     .clip(CircleShape)
             )
-        Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(24.dp))
         }
         Text(
             modifier = Modifier.testTag("AppTitle"),
@@ -140,71 +147,63 @@ fun PagerScreen(onBoardingPage: OnBoardingPage,position:Int) {
                 textAlign = TextAlign.Center
             )
         )
-        Spacer(modifier = Modifier.height(8.dp))
-        Box(
-            modifier = Modifier
-                .testTag("AppTitle")
-                .height(44.dp),
-        ) {
-            Text(
+        Spacer(modifier = Modifier.height(18.dp))
+        Text(
+            text = onBoardingPage.description,
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.labelSmall // Now style is correctly used
+        )
 
-                text = onBoardingPage.description,
-                style = TextStyle(
-                    color = Color.White,
-                    fontSize = 16.sp,
-                    fontFamily = IMFellEnglishFontFamily,
-                    lineHeight = 21.sp,
-                    textAlign = TextAlign.Center
-                )
-            )
-        }
-        Spacer(modifier = Modifier.height(20.dp))
-        ElevatedButton(
 
-            {
-                println("Button Clicked!")
-            },
-            Modifier
-                .height(64.dp)
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            true,
-            shape = RoundedCornerShape(12.dp),
-            ButtonDefaults.elevatedButtonColors(
-                containerColor = ForestGreen10Dark,
-                contentColor = Color.White,
-                disabledContainerColor = ForestGreen10Dark.copy(alpha = 0.5f),
-                disabledContentColor = Color.White.copy(alpha = 0.5f)
-            ),
-            ButtonDefaults.buttonElevation(),
-            null,
-            PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-            remember { MutableInteractionSource() }
-        ) {
-            Text(
-                text = onBoardingPage.buttonTitle,
-                style = TextStyle(
-                    color = Color.White,
-                    fontSize = 16.sp,
-                    fontFamily = IMFellEnglishFontFamily,
-                    fontWeight = FontWeight(600),
-                    letterSpacing = 0.6.sp,
-                    lineHeight = 22.sp,
-                    textAlign = TextAlign.Center
-                )
-
-            )
-        }
     }
 }
 
+@Composable
+fun NavigationButton(onBoardingPage: OnBoardingPage, horizontalPadding: Dp) {
+    ElevatedButton(
+
+        {
+            println("Button Clicked!")
+        },
+        Modifier
+            .height(64.dp)
+            .fillMaxWidth()
+            .padding(horizontal = horizontalPadding),
+        true,
+        shape = RoundedCornerShape(12.dp),
+        ButtonDefaults.elevatedButtonColors(
+            containerColor = ForestGreen10Dark,
+            contentColor = Color.White,
+            disabledContainerColor = ForestGreen10Dark.copy(alpha = 0.5f),
+            disabledContentColor = Color.White.copy(alpha = 0.5f)
+        ),
+        ButtonDefaults.buttonElevation(),
+        null,
+        PaddingValues(horizontal = horizontalPadding, vertical = 8.dp),
+        remember { MutableInteractionSource() }
+    ) {
+        Text(
+            text = onBoardingPage.buttonTitle,
+            style = TextStyle(
+                color = Color.White,
+                fontSize = 16.sp,
+                fontFamily = IMFellEnglishFontFamily,
+                fontWeight = FontWeight(600),
+                letterSpacing = 0.6.sp,
+                lineHeight = 22.sp,
+                textAlign = TextAlign.Center
+            )
+
+        )
+    }
+}
 
 @Composable
 @Preview(showBackground = true, backgroundColor = 0xFF000000)
 fun FirstOnBoardingScreenPreview() {
     ValheimVikiAppTheme {
         Column(modifier = Modifier.fillMaxSize()) {
-            PagerScreen(onBoardingPage = OnBoardingPage.First,0)
+            PagerScreen(onBoardingPage = OnBoardingPage.First, 0,16.dp)
         }
     }
 }
@@ -214,7 +213,7 @@ fun FirstOnBoardingScreenPreview() {
 fun SecondOnBoardingScreenPreview() {
     ValheimVikiAppTheme {
         Column(modifier = Modifier.fillMaxSize()) {
-            PagerScreen(onBoardingPage = OnBoardingPage.Second,1)
+            PagerScreen(onBoardingPage = OnBoardingPage.Second, 1,16.dp)
         }
     }
 }
@@ -224,7 +223,7 @@ fun SecondOnBoardingScreenPreview() {
 fun ThirdOnBoardingScreenPreview() {
     ValheimVikiAppTheme {
         Column(modifier = Modifier.fillMaxSize()) {
-            PagerScreen(onBoardingPage = OnBoardingPage.Third,2)
+            PagerScreen(onBoardingPage = OnBoardingPage.Third, 2,16.dp)
         }
     }
 }

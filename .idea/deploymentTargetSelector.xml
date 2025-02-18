@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-02-07T21:55:05.603025300Z">
+        <DropdownSelection timestamp="2025-02-18T18:28:34.881830100Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\Legio\.android\avd\Pixel_9_API_33.avd" />
+              <DeviceId pluginId="PhysicalDevice" identifier="serial=RFCW60EHDNV" />
             </handle>
           </Target>
         </DropdownSelection>
