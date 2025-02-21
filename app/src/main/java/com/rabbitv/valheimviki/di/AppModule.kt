@@ -2,10 +2,13 @@ package com.rabbitv.valheimviki.di
 
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.creatures.CreatureUseCases
+import com.rabbitv.valheimviki.domain.use_cases.datastore.DataStoreUseCases
 import com.rabbitv.valheimviki.presentation.biome.BiomeScreenViewModel
 import com.rabbitv.valheimviki.presentation.creatures.CreaturesViewModel
 import com.rabbitv.valheimviki.presentation.creatures.bosses.BossesViewModel
 import com.rabbitv.valheimviki.presentation.creatures.mini_bosses.MiniBossesViewModel
+import com.rabbitv.valheimviki.presentation.intro.WelcomeViewModel
+import com.rabbitv.valheimviki.presentation.splash.SplashViewModel
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -35,6 +38,18 @@ object AppModule {
     @Singleton
     fun provideCreaturesViewModel(creatureUseCases: CreatureUseCases) =
         CreaturesViewModel(creatureUseCases)
+
+
+    @Provides
+    @Singleton
+    fun provideWelcomeViewModel(dataUseCases: DataStoreUseCases) =
+        WelcomeViewModel(dataUseCases)
+
+    @Provides
+    @Singleton
+    fun provideSplashViewModel(dataUseCases: DataStoreUseCases) =
+        SplashViewModel(dataUseCases)
+
 
 //
 //    @Provides

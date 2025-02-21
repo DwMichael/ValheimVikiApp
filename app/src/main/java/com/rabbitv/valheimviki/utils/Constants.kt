@@ -14,6 +14,7 @@ object Constants {
 
     const val NORMAL_SIZE_GRID = 2
     const val LARGE_SIZE_GRID = 3
+    const val LAST_ON_BOARDING_PAGE = 2
 
     const val BIOME_ARGUMENT_KEY = "biomeId"
     const val CREATURE_ARGUMENT_KEY = "creatureId"

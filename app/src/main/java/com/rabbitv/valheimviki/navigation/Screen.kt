@@ -8,10 +8,10 @@ import kotlinx.serialization.Serializable
 @Serializable
 sealed class Screen(val route: String) {
     @Serializable
-    object Welcome : Screen("welcome_screen")
+    object Splash : Screen("splash_screen")
 
     @Serializable
-    object Second : Screen("second_screen")
+    object Welcome : Screen("welcome_screen")
 
     @Serializable
     object Home : Screen("home_screen")

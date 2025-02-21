@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.rabbitv.valheimviki.presentation.home.HomeScreen
 import com.rabbitv.valheimviki.presentation.intro.WelcomeScreen
+import com.rabbitv.valheimviki.presentation.splash.SplashScreen
 
 
 @Composable
@@ -14,12 +15,14 @@ fun SetupNavGraph(navController: NavHostController) {
 
     NavHost(
         navController = navController,
-        startDestination = Screen.Home.route
-    ) {
-        composable(
-            route = Screen.Welcome.route
+        startDestination = Screen.Splash.route,
+
         ) {
-            WelcomeScreen()
+        composable(route = Screen.Splash.route) {
+            SplashScreen(navController)
+        }
+        composable(route = Screen.Welcome.route) {
+            WelcomeScreen(navController)
         }
         composable(
             route = Screen.Home.route
