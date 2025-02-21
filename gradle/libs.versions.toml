@@ -4,6 +4,7 @@ coilCompose = "3.0.4"
 coilNetworkOkhttp = "3.1.0"
 converterGson = "2.11.0"
 coreSplashscreen = "1.0.1"
+datastorePreferencesVersion = "1.1.2"
 hiltAndroidCompiler = "2.55"
 hiltAndroidTesting = "2.55"
 hiltCompiler = "1.2.0"
@@ -33,6 +34,7 @@ uiTestJunit4 = "1.7.8"
 uiTestManifest = "1.7.8"
 uiTextGoogleFonts = "1.7.8"
 composeMaterial = "1.4.1"
+junitKtx = "1.2.1"
 
 [libraries]
 androidx-core = { module = "androidx.test:core", version.ref = "rules" }
@@ -55,6 +57,7 @@ coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCo
 coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coilNetworkOkhttp" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 core-ktx = { module = "androidx.test:core-ktx", version.ref = "rules" }
+datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferencesVersion" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroidCompiler" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroidCompiler" }
 hilt-android-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "hiltAndroidTesting" }
@@ -84,6 +87,7 @@ retrofit2-kotlinx-serialization-converter = { module = "com.jakewharton.retrofit
 ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "uiTestJunit4" }
 ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "uiTestManifest" }
 androidx-compose-material = { group = "androidx.wear.compose", name = "compose-material", version.ref = "composeMaterial" }
+androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "junitKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

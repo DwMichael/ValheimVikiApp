@@ -7,9 +7,15 @@ object Constants {
 
     const val BASE_URL = "http://192.168.1.130:8100/"
 
+    const val PREFERENCES_NAME = "valheimViki_preferences"
+    const val PREFERENCES_KEY = "on_boarding_completed"
+
     const val BIOME_GRID_COLUMNS = 2
-    const val BOSS_GRID_COLUMNS = 2
-    const val CREATURE_GRID_COLUMNS = 3
+
+    const val NORMAL_SIZE_GRID = 2
+    const val LARGE_SIZE_GRID = 3
+    const val LAST_ON_BOARDING_PAGE = 2
+
     const val BIOME_ARGUMENT_KEY = "biomeId"
     const val CREATURE_ARGUMENT_KEY = "creatureId"
     val STAGE_ORDER_MAP = mapOf(

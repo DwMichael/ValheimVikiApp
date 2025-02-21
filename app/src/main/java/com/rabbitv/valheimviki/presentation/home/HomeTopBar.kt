@@ -90,17 +90,6 @@ fun HomeTopBar(
                     modifier = Modifier.size(ICON_SIZE)
                 )
             }
-            IconButton(
-                onClick = { /*TODO*/ },
-                modifier = Modifier
-                    .size(ICON_CLICK_DIM)
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_filtr),
-                    contentDescription = "Search section",
-                    modifier = Modifier.size(ICON_SIZE)
-                )
-            }
         }
 
     )

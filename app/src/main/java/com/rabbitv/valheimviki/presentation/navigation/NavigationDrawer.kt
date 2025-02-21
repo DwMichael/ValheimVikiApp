@@ -77,12 +77,12 @@ fun NavigationDrawer(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(start = 12.dp, top = 24.dp, end = 12.dp),
+                            .padding(start = 12.dp, top = 0.dp, end = 12.dp),
                         verticalAlignment = Alignment.Bottom
                     ) {
                         Image(
                             modifier = Modifier
-                                .size(80.dp),
+                                .size(60.dp),
                             painter = painterResource(R.drawable.viking),
                             contentDescription = "DrawerLogoImage",
                             contentScale = ContentScale.FillBounds,

@@ -16,12 +16,7 @@ fun BiomeDetailScreen(
     viewModel: BiomeScreenViewModel = hiltViewModel(),
     paddingValues: PaddingValues
 ) {
-    Box(
-        modifier = Modifier
-            .padding(paddingValues)
-    ) {
-        Text("BiomeScreen")
-    }
+
 
 }
 

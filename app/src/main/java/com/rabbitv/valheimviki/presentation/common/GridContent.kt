@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -44,6 +45,7 @@ import com.rabbitv.valheimviki.domain.model.biome.Stage
 import com.rabbitv.valheimviki.domain.repository.ItemData
 import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_TWO_COLUMNS
 import com.rabbitv.valheimviki.ui.theme.MEDIUM_PADDING
+import com.rabbitv.valheimviki.ui.theme.TextWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.Constants.BASE_URL
 
@@ -60,7 +62,7 @@ fun GridContent(
     numbersOfColumns: Int,
     height: Dp,
 ) {
-    val listSize = items.size
+
     PullToRefreshBox(
         state = state,
         isRefreshing = isRefreshing,
@@ -142,7 +144,7 @@ fun GridItem(
         }
         Surface(
             modifier = Modifier
-                .fillMaxHeight(0.15f)
+                .fillMaxHeight(0.2f)
                 .fillMaxWidth()
                 .clip(
                     RoundedCornerShape(
@@ -155,13 +157,12 @@ fun GridItem(
         ) {
             Text(
                 text = item.name,
+                color = TextWhite,
                 style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(
-                    top = 1.dp,
-                    start = 10.dp,
-                    bottom = 5.dp,
-                    end = 5.dp,
-                )
+                modifier = Modifier
+                    .wrapContentHeight(align = Alignment.CenterVertically)
+                    .padding
+                        (horizontal = 8.dp, vertical = 8.dp),
             )
         }
     }
@@ -174,8 +175,8 @@ private fun PreviewGridItem() {
     val item = BiomeDtoX(
         id = "123",
         stage = Stage.EARLY.toString(),
-        imageUrl = "https://stackoverflow.com/questions/27963555/display-image-in-jsp-using-image-url",
-        name = "TestImage",
+        imageUrl = "https://http://192.168.1.130:8100/Creatures/images/creatures/bosses/Fader.png",
+        name = "TestImagesasdasdasdassdas dasdasdasdasdasd",
         description = "ImageTest",
         order = 1
     )
@@ -196,7 +197,7 @@ private fun PreviewContentGrid() {
     val sampleBiomes = listOf(
         BiomeDtoX(
             id = "123123",
-            name = "Forest", description = "A dense and lush forest.",
+            name = "Forest Forest Forest", description = "A dense and lush forest.",
 
             stage = Stage.MID.toString(),
             imageUrl = "",

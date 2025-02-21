@@ -58,7 +58,7 @@ class BossesViewModel @Inject constructor(
         }
     }
 
-    fun refetchBiomes() {
+    fun refetchBosses() {
         _bossUIState.value = _bossUIState.value.copy(isLoading = true, error = null)
         viewModelScope.launch {
             try {

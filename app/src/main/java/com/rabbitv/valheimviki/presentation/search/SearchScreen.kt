@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.intro
+package com.rabbitv.valheimviki.presentation.search
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.Text
@@ -7,16 +7,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
-fun SecondScreen(
+fun SearchScreen(
     modifier: Modifier = Modifier
 ) {
     Box(modifier) {
-        Text(text = "SecondPage")
+        Text(text = "SearchScreen")
     }
 }
 
-@Preview(name = "SecondPage")
+@Preview(name = "SearchScreen")
 @Composable
-private fun PreviewSecondPage() {
-    SecondScreen()
+private fun PreviewSearchScreen() {
+    SearchScreen()
 }
