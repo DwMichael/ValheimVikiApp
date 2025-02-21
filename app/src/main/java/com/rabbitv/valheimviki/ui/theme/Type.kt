@@ -40,7 +40,7 @@ val Typography = Typography(
     titleLarge = TextStyle(
         fontFamily = IMFellEnglishFontFamily,
         fontWeight = FontWeight.Bold,
-        fontSize = 28.sp,
+        fontSize = 32.sp,
         lineHeight = 45.sp,
         letterSpacing = 0.15.sp
     ),

@@ -27,7 +27,7 @@ import com.rabbitv.valheimviki.presentation.common.EmptyScreen
 import com.rabbitv.valheimviki.presentation.common.GridContent
 import com.rabbitv.valheimviki.presentation.components.LoadingIndicator
 import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_TWO_COLUMNS
-import com.rabbitv.valheimviki.utils.Constants.BOSS_GRID_COLUMNS
+import com.rabbitv.valheimviki.utils.Constants.NORMAL_SIZE_GRID
 import kotlinx.coroutines.launch
 
 
@@ -78,7 +78,7 @@ fun BossScreen(
                                 }
                             },
                             isRefreshing = refreshing,
-                            numbersOfColumns = BOSS_GRID_COLUMNS,
+                            numbersOfColumns = NORMAL_SIZE_GRID,
                             height = ITEM_HEIGHT_TWO_COLUMNS
                         )
                     }
