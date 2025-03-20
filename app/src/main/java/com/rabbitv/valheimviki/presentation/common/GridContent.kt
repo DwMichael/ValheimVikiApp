@@ -175,7 +175,7 @@ private fun PreviewGridItem() {
     val item = BiomeDtoX(
         id = "123",
         stage = Stage.EARLY.toString(),
-        imageUrl = "https://http://192.168.1.130:8100/Creatures/images/creatures/bosses/Fader.png",
+        imageUrl = "https://i.redd.it/l6vyacdepct71.jpg",
         name = "TestImagesasdasdasdassdas dasdasdasdasdasd",
         description = "ImageTest",
         order = 1
