@@ -11,11 +11,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.navigation.Screen
+import com.rabbitv.valheimviki.presentation.settings.SettingsScreen
 
 
 @Composable
@@ -46,3 +49,8 @@ fun SplashScreen(
     )
 }
 
+@Preview(name = "SplashScreen")
+@Composable
+private fun PreviewSettingsScreen() {
+    SplashScreen(navController = NavHostController(LocalContext.current))
+}

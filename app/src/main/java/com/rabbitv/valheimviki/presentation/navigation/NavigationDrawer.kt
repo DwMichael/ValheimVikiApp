@@ -2,6 +2,7 @@ package com.rabbitv.valheimviki.presentation.navigation
 
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -30,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -72,17 +74,23 @@ fun NavigationDrawer(
                 drawerContainerColor = ForestGreen40Dark,
             ) {
                 Column(
-                    Modifier.verticalScroll(rememberScrollState())
+                    Modifier.verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+
                 ) {
+                    Spacer(Modifier.height(12.dp))
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(start = 12.dp, top = 0.dp, end = 12.dp),
-                        verticalAlignment = Alignment.Bottom
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Start
+
                     ) {
                         Image(
                             modifier = Modifier
-                                .size(60.dp),
+                                .size(42.dp),
                             painter = painterResource(R.drawable.viking),
                             contentDescription = "DrawerLogoImage",
                             contentScale = ContentScale.FillBounds,
@@ -92,8 +100,7 @@ fun NavigationDrawer(
                             text = "ValheimViki",
                             fontFamily = IMFellEnglishFontFamily,
                             fontWeight = FontWeight.Medium,
-                            fontSize = 36.sp,
-                            lineHeight = 45.sp,
+                            fontSize = 28.sp,
                             color = MaterialTheme.colorScheme.onPrimaryContainer,
                         )
                     }
@@ -102,7 +109,15 @@ fun NavigationDrawer(
                     Spacer(Modifier.height(12.dp))
                     items.forEach { item ->
                         NavigationDrawerItem(
-                            colors = NavigationDrawerItemDefaults.colors(ForestGreen10Dark),
+//                            ForestGreen10Dark
+                            colors = NavigationDrawerItemDefaults.colors(
+                                selectedIconColor = Color.Black,
+                                selectedTextColor = Color.Black,
+                                selectedContainerColor = ForestGreen10Dark,
+                                unselectedIconColor = MaterialTheme.colorScheme.primary,
+                                unselectedTextColor =  MaterialTheme.colorScheme.primary,
+                                unselectedContainerColor = Color.Transparent,
+                                ),
                             icon = {
                                 if (item.iconPainter != null) {
                                     Icon(
@@ -120,7 +135,14 @@ fun NavigationDrawer(
                                     }
                                 }
                             },
-                            label = { Text(item.label) },
+                            label = { Text(
+                                item.label,
+                                fontFamily = IMFellEnglishFontFamily,
+                                fontWeight = FontWeight.Normal,
+                                lineHeight = 20.sp,
+                                fontSize = 16.sp,
+
+                            ) },
                             selected = (item == selectedItem.value),
                             onClick = {
                                 childNavController.navigate(item.route) {
@@ -133,7 +155,12 @@ fun NavigationDrawer(
                                 selectedItem.value = item
                                 scope.launch { drawerState.close() }
                             },
-                            modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                            modifier = Modifier
+                                .height(48.dp)
+                                .padding(
+                                    NavigationDrawerItemDefaults
+                                        .ItemPadding
+                                )
                         )
                     }
                 }
