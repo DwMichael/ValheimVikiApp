@@ -32,27 +32,27 @@ class CreatureRepositoryImpl @Inject constructor(
 
             return if (response.success) {
                 CreatureDto(
-                    creatures = response.creatures,
-                    error = null,
                     success = true,
-                    errorDetails = null
+                    error = response.error,
+                    message = response.message,
+                    creatures = response.creatures,
                 )
             } else {
                 CreatureDto(
-                    creatures = emptyList(),
-                    error = response.error,
                     success = false,
-                    errorDetails = response.errorDetails
+                    error = response.error,
+                    message = response.message,
+                    creatures = emptyList(),
                 )
             }
 
         } catch (e: Exception) {
             val networkException = NetworkExceptionHandler.handleException(e)
             return CreatureDto(
-                creatures = emptyList(),
-                error = networkException.error,
                 success = networkException.success,
-                errorDetails = networkException.errorDetails
+                error = networkException.error,
+                message = networkException.message,
+                creatures = emptyList(),
             )
         }
     }

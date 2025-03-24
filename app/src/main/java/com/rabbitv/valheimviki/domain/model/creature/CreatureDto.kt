@@ -14,9 +14,9 @@ data class CreatureDto(
     @SerializedName("success")
     override val success: Boolean,
     @SerializedName("message")
-    override val error: String?,
+    override val message: String?,
     @SerializedName("error")
-    override val errorDetails: String?,
+    override val error: String?,
     @SerializedName("creatures")
     val creatures: List<CreatureDtoX>
 ) : ErrorResponseDto

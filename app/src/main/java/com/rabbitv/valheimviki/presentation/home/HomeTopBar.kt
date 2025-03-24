@@ -1,14 +1,9 @@
 package com.rabbitv.valheimviki.presentation.home
 
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -23,7 +18,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.ui.theme.ICON_CLICK_DIM
 import com.rabbitv.valheimviki.ui.theme.ICON_SIZE
@@ -64,7 +58,8 @@ fun HomeTopBar(
         title = {
             Text(
                 "ValheimViki",
-                color = MaterialTheme.colorScheme.onPrimaryContainer
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                style = MaterialTheme.typography.headlineLarge,
             )
         },
         actions = {
@@ -79,7 +74,7 @@ fun HomeTopBar(
                     modifier = Modifier.size(ICON_SIZE)
                 )
             }
-           IconButton(
+            IconButton(
                 onClick = { /*TODO*/ },
                 modifier = Modifier
                     .size(ICON_CLICK_DIM)

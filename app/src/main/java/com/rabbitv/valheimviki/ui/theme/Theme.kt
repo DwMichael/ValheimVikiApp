@@ -48,7 +48,7 @@ fun ValheimVikiAppTheme(
 
     MaterialTheme(
         colorScheme = DarkColorScheme,
-        typography = Typography,
+        typography = AppTypography,
         content = content
     )
 }
