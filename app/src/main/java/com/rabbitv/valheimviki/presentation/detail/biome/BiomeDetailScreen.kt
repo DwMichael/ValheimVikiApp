@@ -20,7 +20,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.wear.compose.material.ContentAlpha
-import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.ui.theme.MEDIUM_PADDING
 
 
@@ -31,7 +30,7 @@ fun BiomeDetailScreen(
     paddingValues: PaddingValues
 ) {
 
-    val biome: Biome by viewModel.
+//    val biome: Biome by viewModel.
 
     Box(
         modifier = Modifier
@@ -52,7 +51,8 @@ fun BiomeDetailScreen(
             color = Color.Black.copy(alpha = ContentAlpha.medium),
         ) {
             Text(
-                text = biome.name,
+//                text = biome.name
+                text = "LOL",
                 color = Color.White,
                 style = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier
