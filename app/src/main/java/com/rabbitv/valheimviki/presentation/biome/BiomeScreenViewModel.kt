@@ -3,7 +3,7 @@ package com.rabbitv.valheimviki.presentation.biome
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.exceptions.FetchException
-import com.rabbitv.valheimviki.domain.model.biome.BiomeDtoX
+import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +15,7 @@ import org.jetbrains.annotations.VisibleForTesting
 import javax.inject.Inject
 
 data class BiomesUIState(
-    val biomes: List<BiomeDtoX> = emptyList(),
+    val biomes: List<Biome> = emptyList(),
     val error: String? = null,
     val isLoading: Boolean = false
 )

@@ -1,6 +1,5 @@
 package com.rabbitv.valheimviki.utils
 
-import com.rabbitv.valheimviki.domain.model.biome.Stage
 import com.rabbitv.valheimviki.domain.model.creature.Type
 
 object Constants {
@@ -18,11 +17,7 @@ object Constants {
 
     const val BIOME_ARGUMENT_KEY = "biomeId"
     const val CREATURE_ARGUMENT_KEY = "creatureId"
-    val STAGE_ORDER_MAP = mapOf(
-        Stage.EARLY.toString() to 1,
-        Stage.MID.toString() to 2,
-        Stage.LATE.toString() to 3
-    )
+
 
     val TYPE_ORDER_MAP = mapOf(
         Type.BOSS.toString() to 1,

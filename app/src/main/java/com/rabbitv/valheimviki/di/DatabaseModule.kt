@@ -21,7 +21,7 @@ object DatabaseModule {
             ValheimVikiDatabase::class.java,
             "valheimViki_database"
         )
-//            .fallbackToDestructiveMigration() for migration only
+            .fallbackToDestructiveMigration()//for migration only
             .build()
     }
 

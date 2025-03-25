@@ -1,12 +1,9 @@
 package com.rabbitv.valheimviki.ui.theme
 
 import androidx.compose.material3.Typography
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.googlefonts.Font
 import androidx.compose.ui.text.googlefonts.GoogleFont
-import androidx.compose.ui.unit.sp
 import com.rabbitv.valheimviki.R
 
 
@@ -18,40 +15,75 @@ val provider = GoogleFont.Provider(
 
 val IMFellEnglish = GoogleFont("IM Fell English SC")
 val robotoSlab = GoogleFont("Roboto Slab")
+val tinos = GoogleFont("Tinos")
 
-val IMFellEnglishFontFamily = FontFamily(
-    Font(googleFont = IMFellEnglish, fontProvider = provider)
+val bodyFontFamily = FontFamily(
+    Font(
+        googleFont = GoogleFont("Tinos"),
+        fontProvider = provider,
+    )
 )
 
-val robotoFontFamily = FontFamily(
-    Font(googleFont = robotoSlab, fontProvider = provider)
+val displayFontFamily = FontFamily(
+    Font(
+        googleFont = GoogleFont("IM Fell English SC"),
+        fontProvider = provider,
+    )
 )
+
+//val IMFellEnglishFontFamily = FontFamily(
+//    Font(googleFont = IMFellEnglish, fontProvider = provider)
+//)
+
+//val robotoFontFamily = FontFamily(
+//    Font(googleFont = robotoSlab, fontProvider = provider)
+//)
 
 // Set of Material typography styles to start with
-val Typography = Typography(
-    bodyLarge = TextStyle(
-        fontFamily = IMFellEnglishFontFamily,
-        fontWeight = FontWeight.Bold,
-        fontSize = 21.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
-    ),
+//val Typography = Typography(
+//    bodyLarge = TextStyle(
+//        fontFamily = IMFellEnglishFontFamily,
+//        fontWeight = FontWeight.Bold,
+//        fontSize = 21.sp,
+//        lineHeight = 24.sp,
+//        letterSpacing = 0.5.sp
+//    ),
+//
+//    titleLarge = TextStyle(
+//        fontFamily = IMFellEnglishFontFamily,
+//        fontWeight = FontWeight.Bold,
+//        fontSize = 22.sp,
+//        lineHeight = 28.sp,
+//        letterSpacing = 0.15.sp
+//    ),
+//
+//
+//    labelSmall = TextStyle(
+//        fontFamily = robotoFontFamily,
+//        fontWeight = FontWeight.Normal,
+//        fontSize = 16.sp,
+//        lineHeight = 32.sp,
+//        color = TextWhite
+//    )
+//
+//)
 
-    titleLarge = TextStyle(
-        fontFamily = IMFellEnglishFontFamily,
-        fontWeight = FontWeight.Bold,
-        fontSize = 32.sp,
-        lineHeight = 45.sp,
-        letterSpacing = 0.15.sp
-    ),
+val baseline = Typography()
 
-
-    labelSmall = TextStyle(
-        fontFamily = robotoFontFamily,
-        fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
-        lineHeight = 32.sp,
-        color = TextWhite
-    )
-
+val AppTypography = Typography(
+    displayLarge = baseline.displayLarge.copy(fontFamily = displayFontFamily),
+    displayMedium = baseline.displayMedium.copy(fontFamily = displayFontFamily),
+    displaySmall = baseline.displaySmall.copy(fontFamily = displayFontFamily),
+    headlineLarge = baseline.headlineLarge.copy(fontFamily = displayFontFamily),
+    headlineMedium = baseline.headlineMedium.copy(fontFamily = displayFontFamily),
+    headlineSmall = baseline.headlineSmall.copy(fontFamily = displayFontFamily),
+    titleLarge = baseline.titleLarge.copy(fontFamily = displayFontFamily),
+    titleMedium = baseline.titleMedium.copy(fontFamily = displayFontFamily),
+    titleSmall = baseline.titleSmall.copy(fontFamily = displayFontFamily),
+    bodyLarge = baseline.bodyLarge.copy(fontFamily = bodyFontFamily),
+    bodyMedium = baseline.bodyMedium.copy(fontFamily = bodyFontFamily),
+    bodySmall = baseline.bodySmall.copy(fontFamily = bodyFontFamily),
+    labelLarge = baseline.labelLarge.copy(fontFamily = bodyFontFamily),
+    labelMedium = baseline.labelMedium.copy(fontFamily = bodyFontFamily),
+    labelSmall = baseline.labelSmall.copy(fontFamily = bodyFontFamily),
 )

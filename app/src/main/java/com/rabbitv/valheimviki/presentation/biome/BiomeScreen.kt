@@ -51,6 +51,7 @@ fun BiomeScreen(
             CircularProgressIndicator(modifier = Modifier.testTag("LoadingIndicator"))
         }
     } else {
+
         Surface(
             color = Color.Transparent,
             modifier = Modifier

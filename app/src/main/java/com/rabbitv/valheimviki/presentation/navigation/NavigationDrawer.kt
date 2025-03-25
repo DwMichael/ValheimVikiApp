@@ -48,7 +48,7 @@ import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.navigation.Screen
 import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
 import com.rabbitv.valheimviki.ui.theme.ForestGreen40Dark
-import com.rabbitv.valheimviki.ui.theme.IMFellEnglishFontFamily
+//import com.rabbitv.valheimviki.ui.theme.IMFellEnglishFontFamily
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -98,7 +98,6 @@ fun NavigationDrawer(
                         Spacer(modifier.padding(12.dp))
                         Text(
                             text = "ValheimViki",
-                            fontFamily = IMFellEnglishFontFamily,
                             fontWeight = FontWeight.Medium,
                             fontSize = 28.sp,
                             color = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -115,9 +114,9 @@ fun NavigationDrawer(
                                 selectedTextColor = Color.Black,
                                 selectedContainerColor = ForestGreen10Dark,
                                 unselectedIconColor = MaterialTheme.colorScheme.primary,
-                                unselectedTextColor =  MaterialTheme.colorScheme.primary,
+                                unselectedTextColor = MaterialTheme.colorScheme.primary,
                                 unselectedContainerColor = Color.Transparent,
-                                ),
+                            ),
                             icon = {
                                 if (item.iconPainter != null) {
                                     Icon(
@@ -135,14 +134,15 @@ fun NavigationDrawer(
                                     }
                                 }
                             },
-                            label = { Text(
-                                item.label,
-                                fontFamily = IMFellEnglishFontFamily,
-                                fontWeight = FontWeight.Normal,
-                                lineHeight = 20.sp,
-                                fontSize = 16.sp,
+                            label = {
+                                Text(
+                                    item.label,
+                                    fontWeight = FontWeight.Normal,
+                                    lineHeight = 20.sp,
+                                    fontSize = 16.sp,
 
-                            ) },
+                                    )
+                            },
                             selected = (item == selectedItem.value),
                             onClick = {
                                 childNavController.navigate(item.route) {

@@ -7,10 +7,10 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.rabbitv.valheimviki.data.local.dao.BiomeDao
 import com.rabbitv.valheimviki.data.local.dao.CreatureDao
-import com.rabbitv.valheimviki.domain.model.biome.BiomeDtoX
+import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.CreatureDtoX
 
-@Database(entities = [BiomeDtoX::class, CreatureDtoX::class], version = 3)
+@Database(entities = [Biome::class, CreatureDtoX::class], version = 5)
 abstract class ValheimVikiDatabase : RoomDatabase() {
 
     companion object {

@@ -40,14 +40,11 @@ import coil3.request.ImageRequest
 import coil3.request.error
 import coil3.request.placeholder
 import com.rabbitv.valheimviki.R
-import com.rabbitv.valheimviki.domain.model.biome.BiomeDtoX
-import com.rabbitv.valheimviki.domain.model.biome.Stage
+import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.repository.ItemData
 import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_TWO_COLUMNS
 import com.rabbitv.valheimviki.ui.theme.MEDIUM_PADDING
-import com.rabbitv.valheimviki.ui.theme.TextWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
-import com.rabbitv.valheimviki.utils.Constants.BASE_URL
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -111,7 +108,7 @@ fun GridItem(
     val sizeResolver = rememberConstraintsSizeResolver()
     val painter = rememberAsyncImagePainter(
         ImageRequest.Builder(LocalPlatformContext.current)
-            .data("$BASE_URL${item.imageUrl}")
+            .data(item.imageUrl.toString())
             .placeholder(R.drawable.ic_placeholder)
             .error(R.drawable.ic_placeholder)
             .size(sizeResolver)
@@ -157,12 +154,12 @@ fun GridItem(
         ) {
             Text(
                 text = item.name,
-                color = TextWhite,
-                style = MaterialTheme.typography.bodyLarge,
+                color = Color.White,
+                style = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier
                     .wrapContentHeight(align = Alignment.CenterVertically)
                     .padding
-                        (horizontal = 8.dp, vertical = 8.dp),
+                        (horizontal = 8.dp),
             )
         }
     }
@@ -172,9 +169,9 @@ fun GridItem(
 @Preview(name = "GridItem", showBackground = true)
 @Composable
 private fun PreviewGridItem() {
-    val item = BiomeDtoX(
+    val item = Biome(
         id = "123",
-        stage = Stage.EARLY.toString(),
+        category = "BIOME",
         imageUrl = "https://i.redd.it/l6vyacdepct71.jpg",
         name = "TestImagesasdasdasdassdas dasdasdasdasdasd",
         description = "ImageTest",
@@ -195,19 +192,17 @@ private fun PreviewGridItem() {
 private fun PreviewContentGrid() {
 
     val sampleBiomes = listOf(
-        BiomeDtoX(
+        Biome(
             id = "123123",
+            category = "BIOME",
             name = "Forest Forest Forest", description = "A dense and lush forest.",
-
-            stage = Stage.MID.toString(),
             imageUrl = "",
             order = 1
         ),
-        BiomeDtoX(
+        Biome(
             id = "123123",
+            category = "BIOME",
             name = "Desert", description = "A vast and arid desert.",
-
-            stage = Stage.EARLY.toString(),
             imageUrl = "",
             order = 2
         ),
