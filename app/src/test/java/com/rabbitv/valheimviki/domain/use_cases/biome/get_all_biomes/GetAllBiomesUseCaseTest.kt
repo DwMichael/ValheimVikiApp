@@ -1,8 +1,8 @@
 package com.rabbitv.valheimviki.domain.use_cases.biome.get_all_biomes
 
 import com.rabbitv.valheimviki.domain.exceptions.FetchException
-import com.rabbitv.valheimviki.domain.model.biome.BiomeDto
-import com.rabbitv.valheimviki.domain.model.biome.BiomeDtoX
+import com.rabbitv.valheimviki.domain.model.api_response.ApiResponse
+import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.repository.BiomeRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -31,16 +31,16 @@ class GetAllBiomesUseCaseTest {
     private val testDispatcher = StandardTestDispatcher()
     private val mockApiBiomes =
         listOf(
-            BiomeDtoX(
+            Biome(
                 id = "biome1-id",
-                stage = "Stage 1",
+                category = "BIOME",
                 imageUrl = "https://example.com/biome1.jpg",
                 name = "Temperate Forest",
                 description = "A forest characterized by moderate rainfall and distinct seasons.",
                 order = 1
-            ), BiomeDtoX(
+            ), Biome(
                 id = "biome2-id",
-                stage = "Stage 2",
+                category = "BIOME",
                 imageUrl = "https://example.com/biome2.png",
                 name = "Tropical Rainforest",
                 description = "A hot, moist biome found near Earth's equator.",
@@ -71,16 +71,16 @@ class GetAllBiomesUseCaseTest {
     fun `invoke returns sorted biomes when local data is available`() = runTest(testDispatcher) {
         val mockLocalBiomes = flowOf(
             listOf(
-                BiomeDtoX(
+                Biome(
                     id = "biome1-id",
-                    stage = "Stage 1",
+                    category = "BIOME",
                     imageUrl = "https://example.com/biome1.jpg",
                     name = "Temperate Forest local",
                     description = "A forest characterized by moderate rainfall and distinct seasons.",
                     order = 1
-                ), BiomeDtoX(
+                ), Biome(
                     id = "biome2-id",
-                    stage = "Stage 2",
+                    category = "BIOME",
                     imageUrl = "https://example.com/biome2.png",
                     name = "Tropical Rainforest",
                     description = "A hot, moist biome found near Earth's equator.",
@@ -90,7 +90,7 @@ class GetAllBiomesUseCaseTest {
         )
         whenever(biomeRepository.getAllBiomes()).thenReturn(mockLocalBiomes)
         whenever(biomeRepository.fetchBiomes("en")).thenReturn(
-            BiomeDto(
+            ApiResponse<Biome>(
                 false,
                 null,
                 null,
@@ -100,16 +100,16 @@ class GetAllBiomesUseCaseTest {
         whenever(biomeRepository.storeBiomes(mockApiBiomes)).thenReturn(Unit)
 
         val expected = listOf(
-            BiomeDtoX(
+            Biome(
                 id = "biome1-id",
-                stage = "Stage 1",
+                category = "BIOME",
                 imageUrl = "https://example.com/biome1.jpg",
                 name = "Temperate Forest local",
                 description = "A forest characterized by moderate rainfall and distinct seasons.",
                 order = 1
-            ), BiomeDtoX(
+            ), Biome(
                 id = "biome2-id",
-                stage = "Stage 2",
+                category = "BIOME",
                 imageUrl = "https://example.com/biome2.png",
                 name = "Tropical Rainforest",
                 description = "A hot, moist biome found near Earth's equator.",
@@ -133,25 +133,25 @@ class GetAllBiomesUseCaseTest {
                 flowOf(mockApiBiomes)
             )
             whenever(biomeRepository.fetchBiomes("en")).thenReturn(
-                BiomeDto(
+                ApiResponse<Biome>(
                     success = true,
                     error = null,
-                    errorDetails = null,
-                    biomes = mockApiBiomes
+                    message = null,
+                    data = mockApiBiomes
                 )
             )
             whenever(biomeRepository.storeBiomes(mockApiBiomes)).thenReturn(Unit)
             val expected = listOf(
-                BiomeDtoX(
+                Biome(
                     id = "biome1-id",
-                    stage = "Stage 1",
+                    category = "BIOME",
                     imageUrl = "https://example.com/biome1.jpg",
                     name = "Temperate Forest",
                     description = "A forest characterized by moderate rainfall and distinct seasons.",
                     order = 1
-                ), BiomeDtoX(
+                ), Biome(
                     id = "biome2-id",
-                    stage = "Stage 2",
+                    category = "BIOME",
                     imageUrl = "https://example.com/biome2.png",
                     name = "Tropical Rainforest",
                     description = "A hot, moist biome found near Earth's equator.",
@@ -173,7 +173,7 @@ class GetAllBiomesUseCaseTest {
     fun `invoke throws FetchException when local is empty and remote fetch fails`() =
         runTest(testDispatcher) {
             val errorMessage = "No local data available and failed to fetch from internet."
-            val mockEmptyLocalBiomes = flowOf(emptyList<BiomeDtoX>())
+            val mockEmptyLocalBiomes = flowOf(emptyList<Biome>())
             whenever(biomeRepository.getAllBiomes()).thenReturn(mockEmptyLocalBiomes)
             whenever(biomeRepository.fetchBiomes("en")).thenThrow(RuntimeException("Remote fetch failed"))
 

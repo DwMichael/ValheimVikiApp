@@ -1,7 +1,7 @@
 package com.rabbitv.valheimviki.domain.use_cases.biome.refetch_biomes
 
-import com.rabbitv.valheimviki.domain.model.biome.BiomeDto
-import com.rabbitv.valheimviki.domain.model.biome.BiomeDtoX
+import com.rabbitv.valheimviki.domain.model.api_response.ApiResponse
+import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.repository.BiomeRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -28,16 +28,16 @@ class RefetchBiomesUseCaseTest {
     private val testDispatcher = StandardTestDispatcher()
     private val mockListBiomes =
         listOf(
-            BiomeDtoX(
+            Biome(
                 id = "biome1-id",
-                stage = "Stage 1",
+                category = "BIOME",
                 imageUrl = "https://example.com/biome1.jpg",
                 name = "Temperate Forest",
                 description = "A forest characterized by moderate rainfall and distinct seasons.",
                 order = 1
-            ), BiomeDtoX(
+            ), Biome(
                 id = "biome2-id",
-                stage = "Stage 2",
+                category = "BIOME",
                 imageUrl = "https://example.com/biome2.png",
                 name = "Tropical Rainforest",
                 description = "A hot, moist biome found near Earth's equator.",
@@ -69,7 +69,7 @@ class RefetchBiomesUseCaseTest {
     fun `invoke returns sorted list of biomes`() = runTest(testDispatcher) {
         whenever(biomeRepository.getAllBiomes()).thenReturn(flowOf(mockListBiomes))
         whenever(biomeRepository.fetchBiomes("en")).thenReturn(
-            BiomeDto(
+            ApiResponse<Biome>(
                 true,
                 null,
                 null,
@@ -79,16 +79,16 @@ class RefetchBiomesUseCaseTest {
         whenever(biomeRepository.storeBiomes(mockListBiomes)).thenReturn(Unit)
 
         val expected = listOf(
-            BiomeDtoX(
+            Biome(
                 id = "biome1-id",
-                stage = "Stage 1",
+                category = "BIOME",
                 imageUrl = "https://example.com/biome1.jpg",
                 name = "Temperate Forest",
                 description = "A forest characterized by moderate rainfall and distinct seasons.",
                 order = 1
-            ), BiomeDtoX(
+            ),Biome(
                 id = "biome2-id",
-                stage = "Stage 2",
+                category = "BIOME",
                 imageUrl = "https://example.com/biome2.png",
                 name = "Tropical Rainforest",
                 description = "A hot, moist biome found near Earth's equator.",
@@ -111,7 +111,7 @@ class RefetchBiomesUseCaseTest {
             val errorMessage = "No internet connection"
             whenever(biomeRepository.getAllBiomes()).thenReturn(flowOf(mockListBiomes))
             whenever(biomeRepository.fetchBiomes("en")).thenReturn(
-                BiomeDto(
+                ApiResponse<Biome>(
                     false,
                     errorMessage,
                     "$errorMessage and not local data",

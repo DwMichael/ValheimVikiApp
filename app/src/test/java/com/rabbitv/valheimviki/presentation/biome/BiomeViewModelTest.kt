@@ -2,7 +2,7 @@ package com.rabbitv.valheimviki.presentation.biome
 
 
 import com.rabbitv.valheimviki.domain.exceptions.FetchException
-import com.rabbitv.valheimviki.domain.model.biome.BiomeDtoX
+import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.biome.get_all_biomes.GetAllBiomesUseCase
 import com.rabbitv.valheimviki.domain.use_cases.biome.refetch_biomes.RefetchBiomesUseCase
@@ -32,16 +32,16 @@ import kotlin.test.assertTrue
 @RunWith(MockitoJUnitRunner::class)
 class BiomeViewModelTest {
     private val mockBiomes = listOf(
-        BiomeDtoX(
+        Biome(
             id = "biome1-id",
-            stage = "Stage 1",
+            category = "BIOME",
             imageUrl = "https://example.com/biome1.jpg",
             name = "Temperate Forest",
             description = "A forest characterized by moderate rainfall and distinct seasons.",
             order = 1
-        ), BiomeDtoX(
+        ), Biome(
             id = "biome2-id",
-            stage = "Stage 2",
+            category = "BIOME",
             imageUrl = "https://example.com/biome2.png",
             name = "Tropical Rainforest",
             description = "A hot, moist biome found near Earth's equator.",
@@ -87,7 +87,7 @@ class BiomeViewModelTest {
         val biomeViewModel = BiomeScreenViewModel(biomeUseCases)
         val initialState =
             biomeViewModel.biomeUIState.value
-        val listBiome: List<BiomeDtoX> = emptyList()
+        val listBiome: List<Biome> = emptyList()
         assertTrue(initialState.isLoading, "Loading should be true")
         assertNull("Error should be null", initialState.error)
         assertEquals("List of Biome is not the same", listBiome, initialState.biomes)
@@ -107,7 +107,7 @@ class BiomeViewModelTest {
         val biomeViewModel = BiomeScreenViewModel(biomeUseCases)
         val initialState =
             biomeViewModel.biomeUIState.value
-        val listBiome: List<BiomeDtoX> = emptyList()
+        val listBiome: List<Biome> = emptyList()
         val errorMessage = "No local data available and failed to fetch from internet."
         whenever(getAllBiomesUseCase.invoke("en")).thenReturn(flow {
             throw FetchException(
@@ -136,7 +136,7 @@ class BiomeViewModelTest {
         val viewModel = BiomeScreenViewModel(biomeUseCases)
         val initialUiState =
             viewModel.biomeUIState.value
-        val emptyBiomes: List<BiomeDtoX> = emptyList()
+        val emptyBiomes: List<Biome> = emptyList()
         whenever(refetchBiomesUseCase.invoke("en"))
             .thenReturn(flowOf(mockBiomes))
         advanceUntilIdle()
