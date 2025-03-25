@@ -17,12 +17,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
@@ -58,8 +55,7 @@ import coil3.request.ImageRequest
 import coil3.request.error
 import coil3.request.placeholder
 import com.rabbitv.valheimviki.R
-import com.rabbitv.valheimviki.domain.model.biome.BiomeDtoX
-import com.rabbitv.valheimviki.domain.model.biome.Stage
+import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.repository.ItemData
 import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
 import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_ONE_COLUMNS
@@ -78,11 +74,11 @@ fun SearchTopBar(
     var expanded by rememberSaveable { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
 
-    val exampleItem: ItemData = BiomeDtoX(
+    val exampleItem: ItemData = Biome(
         id = "1",
+        category = "BIOME",
         name = "Meadowns Meadowns Meadowns Meadowns",
         imageUrl = "https://img2.storyblok.com/fit-in/1920x1080/f/157036/1920x1080/cb5e84b647/valheim2.png",
-        stage = Stage.EARLY.toString(),
         description = "SSSSS",
         order = 1
     )
@@ -195,7 +191,8 @@ fun SearchListItem(
             .height(height)
             .clickable {
                 clickToNavigate(item)
-            }.padding(horizontal = 16.dp, vertical = 4.dp),
+            }
+            .padding(horizontal = 16.dp, vertical = 4.dp),
 //            .fillMaxWidth()
 //            .padding(horizontal = 16.dp, vertical = 4.dp),
         contentAlignment = Alignment.BottomStart
@@ -250,11 +247,11 @@ fun SearchListItem(
 private fun PreviewSearchListItem() {
     val navigation = NavHostController(LocalContext.current)
 
-    val exampleItem: ItemData = BiomeDtoX(
+    val exampleItem: ItemData = Biome(
         id = "1",
+        category = "BIOME",
         name = "Meadowns Meadowns Meadowns Meadowns",
         imageUrl = "https://img2.storyblok.com/fit-in/1920x1080/f/157036/1920x1080/cb5e84b647/valheim2.png",
-        stage = Stage.EARLY.toString(),
         description = "SSSSS",
         order = 1
     )

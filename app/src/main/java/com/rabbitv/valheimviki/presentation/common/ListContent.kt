@@ -10,14 +10,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshState
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
@@ -27,8 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.rabbitv.valheimviki.domain.model.biome.BiomeDtoX
-import com.rabbitv.valheimviki.domain.model.biome.Stage
+import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.repository.ItemData
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
@@ -107,9 +104,9 @@ fun ListItem(
 @Preview(name = "ListItem", showBackground = true)
 @Composable
 private fun PreviewListItem() {
-    val item = BiomeDtoX(
+    val item = Biome(
         id = "123",
-        stage = Stage.EARLY.toString(),
+        category = "BIOME",
         imageUrl = "https://stackoverflow.com/questions/27963555/display-image-in-jsp-using-image-url",
         name = "TestImage",
         description = "ImageTest",
@@ -130,19 +127,17 @@ private fun PreviewListItem() {
 private fun PreviewContentList2() {
 
     val sampleBiomes = listOf(
-        BiomeDtoX(
+        Biome(
             id = "123123",
+            category = "BIOME",
             name = "Forest", description = "A dense and lush forest.",
-
-            stage = Stage.MID.toString(),
             imageUrl = "",
             order = 1
         ),
-        BiomeDtoX(
+        Biome(
             id = "123123",
+            category = "BIOME",
             name = "Desert", description = "A vast and arid desert.",
-
-            stage = Stage.EARLY.toString(),
             imageUrl = "",
             order = 2
         ),

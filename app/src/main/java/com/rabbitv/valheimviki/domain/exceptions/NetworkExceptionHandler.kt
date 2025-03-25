@@ -10,26 +10,26 @@ object NetworkExceptionHandler {
     fun handleException(e: Exception): ErrorResponseDtoImpl {
         val errorMessage: String
         val isSuccess: Boolean
-        val errorDetails: String
+        val error: String
 
         when (e) {
             is UnknownHostException -> {
                 errorMessage = "No internet connection. Please check your internet connection."
                 isSuccess = false
-                errorDetails = "UnknownHostException: ${e.message}"
+                error = "UnknownHostException: ${e.message}"
             }
 
             is ConnectException -> {
                 errorMessage =
                     "Cannot connect to the server. Please check if the server is available."
                 isSuccess = false
-                errorDetails = "ConnectException: ${e.message}"
+                error = "ConnectException: ${e.message}"
             }
 
             is HttpException -> {
                 errorMessage = "Server error. HTTP status code: ${e.code()}"
                 isSuccess = false
-                errorDetails = "HttpException: ${
+                error = "HttpException: ${
                     e.response()?.raw()?.request?.url
                 } - Code: ${e.code()} - Message: ${e.message()}"
             }
@@ -37,13 +37,15 @@ object NetworkExceptionHandler {
             else -> {
                 errorMessage = "An unknown error occurred while fetching data."
                 isSuccess = false
-                errorDetails = "Unknown error: ${e.message}"
+                error = "Unknown error: ${e.message}"
             }
         }
+        
         return ErrorResponseDtoImpl(
-            error = errorMessage,
             success = isSuccess,
-            errorDetails = errorDetails
+            error = error,
+            message = errorMessage
+
         )
     }
 }

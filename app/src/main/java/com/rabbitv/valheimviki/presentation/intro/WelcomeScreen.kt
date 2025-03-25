@@ -50,7 +50,7 @@ import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.welcome.OnBoardingPage
 import com.rabbitv.valheimviki.navigation.Screen
 import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
-import com.rabbitv.valheimviki.ui.theme.IMFellEnglishFontFamily
+//import com.rabbitv.valheimviki.ui.theme.IMFellEnglishFontFamily
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.Constants.LAST_ON_BOARDING_PAGE
 import kotlinx.coroutines.CoroutineScope
@@ -155,22 +155,24 @@ fun PagerScreen(onBoardingPage: OnBoardingPage, position: Int, horizontalPadding
         Text(
             modifier = Modifier.testTag("AppTitle"),
             text = onBoardingPage.title,
-            style = TextStyle(
-                color = Color.White,
-                fontSize = 48.sp,
-                fontFamily = IMFellEnglishFontFamily,
-                fontWeight = FontWeight(800),
-                letterSpacing = 0.15.sp,
-                lineHeight = 62.sp,
-                textAlign = TextAlign.Center
-            )
+            style = MaterialTheme.typography.displayLarge,
+            color = Color.White
+//            style = TextStyle(
+//                color = Color.White,
+//                fontSize = 48.sp,
+//                fontWeight = FontWeight(800),
+//                letterSpacing = 0.15.sp,
+//                lineHeight = 62.sp,
+//                textAlign = TextAlign.Center
+//            )
         )
         Spacer(modifier = Modifier.height(18.dp))
         Text(
             text = onBoardingPage.description,
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.labelSmall // Now style is correctly used
-        )
+            style = MaterialTheme.typography.labelLarge, // Now style is correctly used
+            color = Color.White
+            )
 
 
     }
@@ -216,7 +218,6 @@ fun NavigationButton(
             style = TextStyle(
                 color = Color.White,
                 fontSize = 16.sp,
-                fontFamily = IMFellEnglishFontFamily,
                 fontWeight = FontWeight(600),
                 letterSpacing = 0.6.sp,
                 lineHeight = 22.sp,
