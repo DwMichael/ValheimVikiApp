@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("com.google.devtools.ksp")
-    kotlin("plugin.serialization") version "2.1.0"
+    kotlin("plugin.serialization") version "2.1.20"
     id("com.google.dagger.hilt.android")
 }
 
@@ -19,6 +19,10 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "com.rabbitv.valheimviki.CustomTestRunner"
+    }
+
+    base{
+        archivesName = "Translator -v${defaultConfig.versionCode}"
     }
 
     buildTypes {
