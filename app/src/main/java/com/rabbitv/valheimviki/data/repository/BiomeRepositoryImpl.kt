@@ -3,8 +3,8 @@ package com.rabbitv.valheimviki.data.repository
 import com.rabbitv.valheimviki.data.local.dao.BiomeDao
 import com.rabbitv.valheimviki.data.remote.api.ApiBiomeService
 import com.rabbitv.valheimviki.domain.exceptions.NetworkExceptionHandler
-import com.rabbitv.valheimviki.domain.model.biome.BiomeDto
-import com.rabbitv.valheimviki.domain.model.biome.BiomeDtoX
+import com.rabbitv.valheimviki.domain.model.api_response.ApiResponse
+import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.repository.BiomeRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -13,49 +13,48 @@ class BiomeRepositoryImpl @Inject constructor(
     private val apiService: ApiBiomeService,
     private val biomeDao: BiomeDao,
 ) : BiomeRepository {
-    override fun getAllBiomes(): Flow<List<BiomeDtoX>> {
+    override fun getAllBiomes(): Flow<List<Biome>> {
         return biomeDao.getAllBiomes()
     }
 
-    override fun getBiomeById(biomeId: String): Flow<BiomeDtoX> {
+    override fun getBiomeById(biomeId: String): Flow<Biome> {
         return biomeDao.getBiomeById(biomeId)
     }
 
-    override suspend fun fetchBiomes(lang: String): BiomeDto {
+    override suspend fun fetchBiomes(lang: String): ApiResponse<Biome> {
         try {
             val response = apiService.getAllBiomes(lang)
-            val filteredBiomes = response.biomes.filter {
-                it.id != "00000000-0000-0000-0000-000000000000"
-            }
+
 
             return if (response.success) {
-                BiomeDto(
-                    biomes = filteredBiomes,
-                    error = null,
+                ApiResponse(
                     success = true,
-                    errorDetails = null
+                    message = "OK",
+                    error = null,
+                    data = response.data,
                 )
             } else {
-                BiomeDto(
-                    biomes = emptyList(),
-                    error = response.error,
+                ApiResponse(
                     success = false,
-                    errorDetails = response.errorDetails
+                    error = response.error,
+                    message = response.message,
+                    data = emptyList(),
                 )
             }
 
         } catch (e: Exception) {
             val networkException = NetworkExceptionHandler.handleException(e)
-            return BiomeDto(
-                biomes = emptyList(),
-                error = networkException.error,
+            return ApiResponse(
+                data = emptyList(),
+                message = networkException.message,
                 success = networkException.success,
-                errorDetails = networkException.errorDetails
+                error = networkException.error
             )
         }
     }
 
-    override suspend fun storeBiomes(biomes: List<BiomeDtoX>) {
+    override suspend fun storeBiomes(biomes: List<Biome>) {
+
         if (biomes.isNotEmpty()) {
             biomeDao.insertAllBiomes(biomes)
         }
