@@ -91,6 +91,6 @@ androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version = "2.1.0" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version = "2.1.20" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 
