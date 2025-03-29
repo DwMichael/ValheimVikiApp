@@ -1,6 +1,5 @@
 package com.rabbitv.valheimviki.data.remote.api
 
-import com.rabbitv.valheimviki.domain.model.api_response.ApiResponseSecond
 import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
 import retrofit2.Response
 import retrofit2.http.GET
@@ -10,6 +9,6 @@ interface ApiCreatureService {
     @GET("Bosses")
     suspend fun fetchMainBosses(
         @Query("lang") lang: String = "en"
-    ): Response<ApiResponseSecond<MainBoss>>
+    ): Response<List<MainBoss>>
 
 }

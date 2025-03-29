@@ -18,8 +18,9 @@ import com.rabbitv.valheimviki.presentation.creatures.mini_bosses.MiniBossScreen
 import com.rabbitv.valheimviki.presentation.detail.biome.BiomeDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.creature.CreatureDetailScreen
 import com.rabbitv.valheimviki.utils.Constants.BIOME_ARGUMENT_KEY
-import com.rabbitv.valheimviki.utils.Constants.CREATURE_ARGUMENT_KEY
+
 import com.rabbitv.valheimviki.utils.Constants.DETAIL_ROUTE_GRAPH
+import com.rabbitv.valheimviki.utils.Constants.MAIN_BOSS_ARGUMENT_KEY
 import com.rabbitv.valheimviki.utils.Constants.MAIN_ROUTE_GRAPH
 
 @Composable
@@ -76,7 +77,7 @@ fun ChildNavGraph(
 
             composable(
                 route = Screen.CreatureDetail.route,
-                arguments = listOf(navArgument(CREATURE_ARGUMENT_KEY)
+                arguments = listOf(navArgument(MAIN_BOSS_ARGUMENT_KEY)
                 { type = NavType.StringType }
                 )
             ) {

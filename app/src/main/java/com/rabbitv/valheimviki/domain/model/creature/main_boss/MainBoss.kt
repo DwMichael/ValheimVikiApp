@@ -10,12 +10,12 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class MainBoss(
     @PrimaryKey(autoGenerate = false)
-    @SerializedName("creatureId")
+    @SerializedName("id")
     override val id: String,
-    @SerializedName("biomeId")
-    val biomeId: String,
     @SerializedName("category")
     val category: String,
+    @SerializedName("subCategory")
+    val subCategory: String,
     @SerializedName("imageUrl")
     override val imageUrl: String,
     @SerializedName("name")

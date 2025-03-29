@@ -65,12 +65,7 @@ fun CreatureScreen(
                             modifier = Modifier,
                             items = creatureUIState.creatures,
                             clickToNavigate = { item ->
-                                navController.navigate(
-                                    Screen.CreatureDetail.passCreatureId(
-                                        creatureId = item
-                                            .id
-                                    )
-                                )
+                                navController.navigate(Screen.CreatureDetail.passCreatureId(mainBossId = item.id))
                             },
                             state = refreshState,
                             onRefresh = {

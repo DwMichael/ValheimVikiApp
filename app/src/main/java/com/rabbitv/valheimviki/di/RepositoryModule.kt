@@ -17,6 +17,7 @@ import com.rabbitv.valheimviki.domain.use_cases.biome.get_all_biomes.GetAllBiome
 import com.rabbitv.valheimviki.domain.use_cases.biome.get_biome_by_id.GetBiomeByIdUseCase
 import com.rabbitv.valheimviki.domain.use_cases.biome.refetch_biomes.RefetchBiomesUseCase
 import com.rabbitv.valheimviki.domain.use_cases.creatures.CreatureUseCases
+import com.rabbitv.valheimviki.domain.use_cases.creatures.get_main_boss_by_id.GetMainBossByIdUseCase
 import com.rabbitv.valheimviki.domain.use_cases.creatures.get_main_bosses.GetMainBossesUseCase
 import com.rabbitv.valheimviki.domain.use_cases.creatures.refetch_creatures.RefetchCreaturesUseCase
 import com.rabbitv.valheimviki.domain.use_cases.datastore.DataStoreUseCases
@@ -74,6 +75,7 @@ object RepositoryModule {
     fun provideCreatureUseCases(creatureRepository: CreaturesRepository): CreatureUseCases {
         return CreatureUseCases(
             getMainBossesUseCase = GetMainBossesUseCase(creatureRepository),
+            getMainBossesByIdUseCase = GetMainBossByIdUseCase(creatureRepository),
             refetchCreaturesUseCase = RefetchCreaturesUseCase(creatureRepository)
         )
     }

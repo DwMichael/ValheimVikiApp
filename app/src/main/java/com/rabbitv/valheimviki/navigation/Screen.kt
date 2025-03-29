@@ -1,7 +1,8 @@
 package com.rabbitv.valheimviki.navigation
 
 import com.rabbitv.valheimviki.utils.Constants.BIOME_ARGUMENT_KEY
-import com.rabbitv.valheimviki.utils.Constants.CREATURE_ARGUMENT_KEY
+import com.rabbitv.valheimviki.utils.Constants.MAIN_BOSS_ARGUMENT_KEY
+
 
 import kotlinx.serialization.Serializable
 
@@ -29,9 +30,9 @@ sealed class Screen(val route: String) {
     object MiniBoss : Screen("mini_boss_screen/")
 
     @Serializable
-    object CreatureDetail : Screen("creature_screen/{$CREATURE_ARGUMENT_KEY}") {
-        fun passCreatureId(creatureId: String): String {
-            return "creature_screen/$creatureId"
+    object CreatureDetail : Screen("creature_screen/{$MAIN_BOSS_ARGUMENT_KEY}") {
+        fun passCreatureId(mainBossId: String): String {
+            return "creature_screen/$mainBossId"
         }
     }
 

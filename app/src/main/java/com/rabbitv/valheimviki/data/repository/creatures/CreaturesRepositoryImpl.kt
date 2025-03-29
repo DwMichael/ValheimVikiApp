@@ -3,9 +3,9 @@ package com.rabbitv.valheimviki.data.repository.creatures
 import android.util.Log
 import com.rabbitv.valheimviki.data.local.dao.CreatureDao
 import com.rabbitv.valheimviki.data.remote.api.ApiCreatureService
-import com.rabbitv.valheimviki.domain.model.api_response.ApiResponseSecond
 import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
 import com.rabbitv.valheimviki.domain.repository.CreaturesRepository
+import com.rabbitv.valheimviki.utils.bodyList
 import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 import javax.inject.Inject
@@ -22,22 +22,17 @@ class CreaturesRepositoryImpl @Inject constructor(
     }
 
     override fun getMainBossById(id: String): Flow<MainBoss> {
-        TODO("Not yet implemented")
+        return creatureDao.getMainBossById(id)
     }
 
     override suspend fun fetchMainBosses(lang: String): List<MainBoss> {
 
         try {
-            val response: Response<ApiResponseSecond<MainBoss>> =  apiService.fetchMainBosses(lang)
-
-            if (response.isSuccessful) {
-                val mainBossResponse = response.body()
-                val mainBossList = mainBossResponse?.data ?: emptyList()
-
-                return mainBossList
+            val response: Response<List<MainBoss>> =  apiService.fetchMainBosses(lang)
+            return if (response.isSuccessful) {
+                response.bodyList()
             } else {
-                println("FETCH: Unsuccessful response, code=${response.code()}")
-                return emptyList()
+                emptyList()
             }
         } catch (exception: Exception) {
             Log.i("EXEPTION FETCH MAIN BOSSES", exception.message.toString())

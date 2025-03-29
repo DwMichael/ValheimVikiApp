@@ -10,7 +10,7 @@ import com.rabbitv.valheimviki.data.local.dao.CreatureDao
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
 
-@Database(entities = [Biome::class, MainBoss::class], version = 1, exportSchema = false)
+@Database(entities = [Biome::class, MainBoss::class], version = 2, exportSchema = false)
 abstract class ValheimVikiDatabase : RoomDatabase() {
 
     companion object {

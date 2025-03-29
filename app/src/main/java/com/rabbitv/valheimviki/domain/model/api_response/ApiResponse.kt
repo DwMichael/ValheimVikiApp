@@ -11,7 +11,7 @@ data class ApiResponse<T>(
     override val message: String?,
     @SerializedName("error")
     override val error: String?,
-    @SerializedName("list")
+    @SerializedName("data")
     val data: List<T>
 ) : ErrorResponseDto
 
