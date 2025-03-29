@@ -36,14 +36,10 @@ fun ChildNavGraph(
             )
         }
         composable(
-            route = Screen.BiomeDetail.route,
-            arguments = listOf(navArgument(BIOME_ARGUMENT_KEY)
-            { type = NavType.StringType }
-            )
+            Screen.BiomeDetail.route,
+            arguments = listOf(navArgument(BIOME_ARGUMENT_KEY) { type = NavType.StringType })
         ) {
-            BiomeDetailScreen(
-                paddingValues = paddingValues,
-            )
+            BiomeDetailScreen(paddingValues = paddingValues)
         }
         composable(Screen.Boss.route) {
             BossScreen(
