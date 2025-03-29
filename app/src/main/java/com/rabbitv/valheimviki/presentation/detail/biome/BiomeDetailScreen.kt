@@ -12,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -19,7 +20,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.wear.compose.material.ContentAlpha
+import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.ui.theme.MEDIUM_PADDING
 
 
@@ -30,7 +33,7 @@ fun BiomeDetailScreen(
     paddingValues: PaddingValues
 ) {
 
-//    val biome: Biome by viewModel.
+    val biome: Biome? by viewModel.biomeInfo.collectAsStateWithLifecycle()
 
     Box(
         modifier = Modifier
@@ -51,8 +54,7 @@ fun BiomeDetailScreen(
             color = Color.Black.copy(alpha = ContentAlpha.medium),
         ) {
             Text(
-//                text = biome.name
-                text = "LOL",
+                text = biome?.name.toString(),
                 color = Color.White,
                 style = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier

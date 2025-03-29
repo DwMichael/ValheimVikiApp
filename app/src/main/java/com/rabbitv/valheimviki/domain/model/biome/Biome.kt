@@ -18,9 +18,9 @@ data class Biome(
     override val imageUrl: String,
     @SerializedName("category")
     val category: String,
-    @SerializedName("nameContent")
+    @SerializedName("name")
     override val name: String,
-    @SerializedName("descriptionContent")
+    @SerializedName("description")
     val description: String,
     @SerializedName("order")
     val order: Int

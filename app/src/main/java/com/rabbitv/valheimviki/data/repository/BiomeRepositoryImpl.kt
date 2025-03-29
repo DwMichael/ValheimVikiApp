@@ -13,7 +13,8 @@ class BiomeRepositoryImpl @Inject constructor(
     private val apiService: ApiBiomeService,
     private val biomeDao: BiomeDao,
 ) : BiomeRepository {
-    override fun getAllBiomes(): Flow<List<Biome>> {
+
+    override fun getLocalBiomes(): Flow<List<Biome>> {
         return biomeDao.getAllBiomes()
     }
 

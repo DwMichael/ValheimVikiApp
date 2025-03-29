@@ -105,6 +105,7 @@ fun GridItem(
     clickToNavigate: (item: ItemData) -> Unit,
     height: Dp
 ) {
+
     val sizeResolver = rememberConstraintsSizeResolver()
     val painter = rememberAsyncImagePainter(
         ImageRequest.Builder(LocalPlatformContext.current)

@@ -18,7 +18,7 @@ class RefetchBiomesUseCase @Inject constructor(private val biomeRepository: Biom
 
         biomeRepository.storeBiomes(response.data)
 
-        return biomeRepository.getAllBiomes()
+        return biomeRepository.getLocalBiomes()
             .map { biomes ->
                 biomes.sortedWith(
                     compareBy { it.order }

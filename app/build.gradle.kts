@@ -82,7 +82,10 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.2.1")
     implementation("com.composables:icons-lucide:1.1.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.1")
+
     implementation("io.coil-kt.coil3:coil-compose:3.1.0")
+    implementation("io.coil-kt.coil3:coil-network-okhttp:3.1.0")
+
     implementation("androidx.compose.ui:ui-text-google-fonts:1.7.8")
     implementation("androidx.datastore:datastore-preferences:1.1.3")
     implementation("androidx.room:room-runtime:2.6.1")

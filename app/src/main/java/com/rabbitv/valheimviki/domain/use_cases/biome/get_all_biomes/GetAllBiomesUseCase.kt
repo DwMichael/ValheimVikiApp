@@ -13,27 +13,21 @@ import javax.inject.Inject
 
 class GetAllBiomesUseCase @Inject constructor(private val biomeRepository: BiomeRepository) {
     @OptIn(ExperimentalCoroutinesApi::class)
-    operator fun invoke(language: String): Flow<List<Biome>> {
+    operator fun invoke(language: String): Flow<List<Biome>>  {
 
-
-        return biomeRepository.getAllBiomes()
+        return biomeRepository.getLocalBiomes()
             .flatMapConcat { localBiomes ->
-                if (localBiomes.isEmpty()) {
+                if (localBiomes.isNotEmpty()) {
+                    flowOf(localBiomes)
+                } else {
                     try {
                         val response = biomeRepository.fetchBiomes(language)
                         biomeRepository.storeBiomes(response.data)
-                        biomeRepository.getAllBiomes()
+                        biomeRepository.getLocalBiomes()
                     } catch (e: Exception) {
                         throw FetchException("No local data available and failed to fetch from internet.")
                     }
-                } else {
-                    flowOf(localBiomes)
                 }
-            }
-            .map { biomes ->
-                biomes.sortedWith(
-                    compareBy { it.order }
-                )
-            }
+            }.map { biomes -> biomes.sortedBy { it.order } }
     }
 }
