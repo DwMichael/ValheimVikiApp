@@ -2,7 +2,6 @@ package com.rabbitv.valheimviki.domain.use_cases.creatures.refetch_creatures
 
 import com.rabbitv.valheimviki.data.Creatures.mockCreaturesApi
 import com.rabbitv.valheimviki.domain.exceptions.FetchException
-import com.rabbitv.valheimviki.domain.model.creature.CreatureDto
 import com.rabbitv.valheimviki.domain.model.creature.CreatureDtoX
 import com.rabbitv.valheimviki.domain.model.creature.RefetchUseCases
 import com.rabbitv.valheimviki.domain.repository.CreatureRepository

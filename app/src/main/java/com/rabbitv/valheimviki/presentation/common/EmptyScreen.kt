@@ -59,7 +59,7 @@ fun EmptyScreen(
                     contentDescription = stringResource(R.string.no_internet_connection),
                 )
                 Text(
-                    "Server Unavailable",
+                    errorMessage,
                     textAlign = TextAlign.Center
                 )
             }

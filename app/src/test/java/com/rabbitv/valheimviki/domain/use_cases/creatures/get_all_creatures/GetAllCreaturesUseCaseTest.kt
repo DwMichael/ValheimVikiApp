@@ -5,7 +5,6 @@ import com.rabbitv.valheimviki.data.Creatures.expectedMockLocalCreatures
 import com.rabbitv.valheimviki.data.Creatures.mockCreaturesApi
 import com.rabbitv.valheimviki.data.Creatures.mockCreaturesLocal
 import com.rabbitv.valheimviki.domain.exceptions.FetchException
-import com.rabbitv.valheimviki.domain.model.creature.CreatureDto
 import com.rabbitv.valheimviki.domain.model.creature.CreatureDtoX
 import com.rabbitv.valheimviki.domain.repository.CreatureRepository
 import kotlinx.coroutines.Dispatchers

@@ -3,9 +3,10 @@ package com.rabbitv.valheimviki.presentation.creatures.bosses
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.exceptions.FetchException
-import com.rabbitv.valheimviki.domain.model.creature.CreatureDtoX
 import com.rabbitv.valheimviki.domain.model.creature.RefetchUseCases
+import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
 import com.rabbitv.valheimviki.domain.use_cases.creatures.CreatureUseCases
+import com.rabbitv.valheimviki.utils.Constants.DEFAULT_LANG
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,7 +16,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class BossUIState(
-    val bosses: List<CreatureDtoX> = emptyList(),
+    val bosses: List<MainBoss> = emptyList(),
     val error: String? = null,
     val isLoading: Boolean = false
 )
@@ -43,7 +44,7 @@ class BossesViewModel @Inject constructor(
         _bossUIState.value = _bossUIState.value.copy(isLoading = true, error = null)
         viewModelScope.launch {
             try {
-                creatureUseCases.getBossesUseCase("en").collect { bosses ->
+                creatureUseCases.getMainBossesUseCase(DEFAULT_LANG).collect { bosses ->
                     _bossUIState.update { current ->
                         current.copy(bosses = bosses, isLoading = false)
                     }
@@ -62,7 +63,7 @@ class BossesViewModel @Inject constructor(
         _bossUIState.value = _bossUIState.value.copy(isLoading = true, error = null)
         viewModelScope.launch {
             try {
-                creatureUseCases.refetchCreaturesUseCase("en", RefetchUseCases.GET_BOSSES)
+                creatureUseCases.refetchCreaturesUseCase(DEFAULT_LANG, RefetchUseCases.GET_BOSSES)
                     .collect { sortedBosses ->
                         _bossUIState.update { current ->
                             current.copy(bosses = sortedBosses, isLoading = false)

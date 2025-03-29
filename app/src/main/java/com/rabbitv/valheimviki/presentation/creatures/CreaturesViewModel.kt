@@ -3,8 +3,8 @@ package com.rabbitv.valheimviki.presentation.creatures
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.exceptions.FetchException
-import com.rabbitv.valheimviki.domain.model.creature.CreatureDtoX
 import com.rabbitv.valheimviki.domain.model.creature.RefetchUseCases
+import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
 import com.rabbitv.valheimviki.domain.use_cases.creatures.CreatureUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class CreaturesUIState(
-    val creatures: List<CreatureDtoX> = emptyList(),
+    val creatures: List<MainBoss> = emptyList(),
     val error: String? = null,
     val isLoading: Boolean = false
 )
@@ -43,7 +43,7 @@ class CreaturesViewModel @Inject constructor(
         _creatureUIState.value = _creatureUIState.value.copy(isLoading = true, error = null)
         viewModelScope.launch {
             try {
-                creatureUseCases.getAllCreaturesUseCase("en").collect { sortedCreatures ->
+                creatureUseCases.getMainBossesUseCase("en").collect { sortedCreatures ->
                     _creatureUIState.update { current ->
                         current.copy(
                             creatures = sortedCreatures,

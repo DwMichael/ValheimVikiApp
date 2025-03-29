@@ -3,8 +3,8 @@ package com.rabbitv.valheimviki.presentation.creatures.mini_bosses
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.exceptions.FetchException
-import com.rabbitv.valheimviki.domain.model.creature.CreatureDtoX
 import com.rabbitv.valheimviki.domain.model.creature.RefetchUseCases
+import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
 import com.rabbitv.valheimviki.domain.use_cases.creatures.CreatureUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class MiniBossesUIState(
-    val miniBosses: List<CreatureDtoX> = emptyList(),
+    val miniBosses: List<MainBoss> = emptyList(),
     val error: String? = null,
     val isLoading: Boolean = false
 )
@@ -43,7 +43,7 @@ class MiniBossesViewModel @Inject constructor(
         _miniBossesUIState.value = _miniBossesUIState.value.copy(isLoading = true, error = null)
         viewModelScope.launch {
             try {
-                creatureUseCases.getMiniBossesUseCase("en").collect { miniBoss ->
+                creatureUseCases.getMainBossesUseCase("en").collect { miniBoss ->
                     _miniBossesUIState.update { current ->
                         current.copy(miniBosses = miniBoss, isLoading = false)
                     }

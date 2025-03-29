@@ -4,24 +4,23 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.rabbitv.valheimviki.domain.model.creature.CreatureDtoX
+import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CreatureDao {
-    @Query("SELECT * FROM creatures")
-    fun getAllCreatures(): Flow<List<CreatureDtoX>>
-
-    @Query("SELECT * FROM creatures WHERE type = 'BOSS'")
-    fun getMainBosses(): Flow<List<CreatureDtoX>>
 
 
-    @Query("SELECT * FROM creatures WHERE type = 'MINI_BOSS'")
-    fun getMiniBosses(): Flow<List<CreatureDtoX>>
+    @Query("SELECT * FROM bosses")
+    fun getLocalMainBosses(): Flow<List<MainBoss>>
+
+
+    @Query("SELECT * FROM bosses WHERE id = :id")
+    fun getMainBossById(id: String): Flow<MainBoss>
 
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAllCreatures(creatures: List<CreatureDtoX>)
+    suspend fun insertMainBosses(creatures: List<MainBoss>)
 
 
 }

@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.data.repository
+package com.rabbitv.valheimviki.data.repository.biome
 
 import com.rabbitv.valheimviki.data.local.dao.BiomeDao
 import com.rabbitv.valheimviki.data.remote.api.ApiBiomeService
@@ -24,7 +24,7 @@ class BiomeRepositoryImpl @Inject constructor(
 
     override suspend fun fetchBiomes(lang: String): ApiResponse<Biome> {
         try {
-            val response = apiService.getAllBiomes(lang)
+            val response = apiService.fetchBiomes(lang)
 
 
             return if (response.success) {
