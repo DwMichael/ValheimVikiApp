@@ -29,7 +29,5 @@ class BiomeDetailScreenViewModel @Inject constructor(
         }
     }
 
-
-
-
 }
+
