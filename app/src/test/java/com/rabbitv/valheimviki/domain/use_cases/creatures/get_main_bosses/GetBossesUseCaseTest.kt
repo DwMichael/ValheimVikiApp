@@ -1,10 +1,9 @@
-package com.rabbitv.valheimviki.domain.use_cases.creatures.get_bosses
+package com.rabbitv.valheimviki.domain.use_cases.creatures.get_main_bosses
 
 import com.rabbitv.valheimviki.data.Creatures.expectedBossList
 import com.rabbitv.valheimviki.data.Creatures.expectedMockApiCreatures
 import com.rabbitv.valheimviki.data.Creatures.mockCreaturesApi
 import com.rabbitv.valheimviki.domain.exceptions.FetchException
-import com.rabbitv.valheimviki.domain.model.creature.CreatureDto
 import com.rabbitv.valheimviki.domain.model.creature.CreatureDtoX
 import com.rabbitv.valheimviki.domain.repository.CreatureRepository
 import kotlinx.coroutines.Dispatchers
@@ -35,7 +34,7 @@ class GetBossesUseCaseTest {
 
     @Mock
     private lateinit var creatureRepository: CreatureRepository
-    private lateinit var useCase: GetBossesUseCase
+    private lateinit var useCase: GetMainBossesUseCase
 
 
     @Before
@@ -43,7 +42,7 @@ class GetBossesUseCaseTest {
         Dispatchers.setMain(testDispatcher)
 
         creatureRepository = mock()
-        useCase = GetBossesUseCase(creatureRepository)
+        useCase = GetMainBossesUseCase(creatureRepository)
 
     }
 

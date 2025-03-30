@@ -63,13 +63,7 @@ fun MiniBossScreen(
                         GridContent(
                             modifier = Modifier,
                             items = miniBossesUIState.miniBosses,
-                            clickToNavigate = { item ->
-                                navController.navigate(
-                                    Screen.CreatureDetail.passCreatureId(
-                                        creatureId = item
-                                            .id
-                                    )
-                                )
+                            clickToNavigate = { item -> navController.navigate(Screen.CreatureDetail.passCreatureId(mainBossId = item.id))
                             },
                             state = refreshState,
                             onRefresh = {

@@ -8,9 +8,9 @@ import androidx.room.RoomDatabase
 import com.rabbitv.valheimviki.data.local.dao.BiomeDao
 import com.rabbitv.valheimviki.data.local.dao.CreatureDao
 import com.rabbitv.valheimviki.domain.model.biome.Biome
-import com.rabbitv.valheimviki.domain.model.creature.CreatureDtoX
+import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
 
-@Database(entities = [Biome::class, CreatureDtoX::class], version = 5)
+@Database(entities = [Biome::class, MainBoss::class], version = 2, exportSchema = false)
 abstract class ValheimVikiDatabase : RoomDatabase() {
 
     companion object {

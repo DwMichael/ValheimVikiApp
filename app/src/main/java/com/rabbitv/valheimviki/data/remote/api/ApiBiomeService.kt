@@ -7,7 +7,7 @@ import retrofit2.http.Query
 
 interface ApiBiomeService {
     @GET("Biomes")
-    suspend fun getAllBiomes(
+    suspend fun fetchBiomes(
         @Query("lang") lang: String = "en"
     ): ApiResponse<Biome>
 }

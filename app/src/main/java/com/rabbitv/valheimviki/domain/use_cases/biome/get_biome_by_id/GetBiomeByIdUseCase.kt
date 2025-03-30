@@ -10,8 +10,6 @@ import javax.inject.Inject
 class GetBiomeByIdUseCase @Inject constructor(private val biomeRepository: BiomeRepository) {
     @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(biomeId:String): Flow<Biome>  {
-
         return biomeRepository.getBiomeById(biomeId)
-
     }
 }
