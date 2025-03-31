@@ -1,5 +1,6 @@
 package com.rabbitv.valheimviki.navigation
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -38,32 +39,47 @@ fun ChildNavGraph(
             route=MAIN_ROUTE_GRAPH
         ) {
             composable(Screen.Biome.route) {
-                BiomeScreen(
-                    paddingValues = paddingValues,
-                    navController = navHostController
-                )
+                Box(
+                    modifier = Modifier.padding(10.dp)
+                ) {
+                    BiomeScreen(
+                        paddingValues = paddingValues,
+                        navController = navHostController
+                    )
+                }
             }
             composable(Screen.Creature.route) {
-                CreatureScreen(
-                    paddingValues = paddingValues,
-                    navController = navHostController
-                )
+                Box(
+                    modifier = Modifier.padding(10.dp)
+                ) {
+                    CreatureScreen(
+                        paddingValues = paddingValues,
+                        navController = navHostController
+                    )
+                }
             }
 
             composable(Screen.Boss.route) {
-                BossScreen(
-                    paddingValues = paddingValues,
-                    navController = navHostController
-                )
+                Box(
+                    modifier = Modifier.padding(10.dp)
+                ) {
+                    BossScreen(
+                        paddingValues = paddingValues,
+                        navController = navHostController
+                    )
+                }
             }
             composable(Screen.MiniBoss.route) {
-                MiniBossScreen(
-                    paddingValues = paddingValues,
-                    navController = navHostController
-                )
+                Box(
+                    modifier = Modifier.padding(10.dp)
+                ) {
+                    MiniBossScreen(
+                        paddingValues = paddingValues,
+                        navController = navHostController
+                    )
+                }
             }
         }
-
         navigation(
             startDestination = Screen.Biome.route,
             route=DETAIL_ROUTE_GRAPH,
@@ -86,12 +102,5 @@ fun ChildNavGraph(
                 )
             }
         }
-
-
-
-
-
-
-
     }
 }
