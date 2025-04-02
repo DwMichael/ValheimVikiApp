@@ -7,10 +7,12 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.rabbitv.valheimviki.data.local.dao.BiomeDao
 import com.rabbitv.valheimviki.data.local.dao.CreatureDao
+import com.rabbitv.valheimviki.data.local.dao.RelationDao
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
+import com.rabbitv.valheimviki.domain.model.relation.Relation
 
-@Database(entities = [Biome::class, MainBoss::class], version = 2, exportSchema = false)
+@Database(entities = [Biome::class, MainBoss::class, Relation::class], version = 3, exportSchema = false)
 abstract class ValheimVikiDatabase : RoomDatabase() {
 
     companion object {
@@ -26,4 +28,5 @@ abstract class ValheimVikiDatabase : RoomDatabase() {
 
     abstract fun biomeDao(): BiomeDao
     abstract fun creatureDao(): CreatureDao
+    abstract fun relationDao(): RelationDao
 }

@@ -32,4 +32,6 @@ object DatabaseModule {
     @Provides
     fun provideCreatureDao(appDatabase: ValheimVikiDatabase) = appDatabase.creatureDao()
 
+    @Provides
+    fun provideRelationDao(appDatabase: ValheimVikiDatabase) = appDatabase.relationDao()
 }

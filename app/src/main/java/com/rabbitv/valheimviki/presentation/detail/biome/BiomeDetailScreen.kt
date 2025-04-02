@@ -77,9 +77,49 @@ fun BiomeDetailScreen(
                 DetailExpandableText(
                     text = biome?.description.toString(),
                 )
+
             }
         }
     )
+}
+
+
+@Composable
+fun ImageHeaderSection(bossId:String){
+
+
+    Box(
+        modifier = Modifier
+            .heightIn(min = 200.dp, max = 320.dp),
+        contentAlignment = Alignment.BottomStart
+    ) {
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(imageUrl)
+                .crossfade(true)
+                .build(),
+            placeholder = painterResource(R.drawable.ic_placeholder),
+            contentDescription = stringResource(R.string.item_grid_image),
+            contentScale = ContentScale.Crop,
+        )
+        Surface(
+            modifier = Modifier
+                .fillMaxHeight(0.2f)
+                .fillMaxWidth(),
+            tonalElevation = 0.dp,
+            color = Color.Black.copy(alpha = ContentAlpha.medium),
+        ) {
+            Text(
+                text = nameOfItem,
+                color = Color.White,
+                style = MaterialTheme.typography.displaySmall,
+                modifier = Modifier
+                    .wrapContentHeight(align = Alignment.CenterVertically)
+                    .padding
+                        (horizontal = 8.dp),
+            )
+        }
+    }
 }
 
 @Composable
@@ -176,7 +216,6 @@ fun DetailImage(imageUrl:String, nameOfItem: String) {
                 )
             }
         }
-
 }
 
 @Preview(name = "DetailImage", showBackground = true)
