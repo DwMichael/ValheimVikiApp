@@ -5,7 +5,7 @@ import com.rabbitv.valheimviki.domain.exceptions.FetchException
 import com.rabbitv.valheimviki.domain.model.creature.CreatureDtoX
 import com.rabbitv.valheimviki.domain.model.creature.RefetchUseCases
 import com.rabbitv.valheimviki.domain.repository.CreatureRepository
-import com.rabbitv.valheimviki.utils.Constants.TYPE_ORDER_MAP
+import com.rabbitv.valheimviki.utils.Constants.CreatureTYPE_ORDER_MAP
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -97,7 +97,7 @@ class RefetchCreaturesUseCaseTest {
 
         val expectedList = mockCreaturesApi.sortedWith(
             compareBy<CreatureDtoX> { creature ->
-                TYPE_ORDER_MAP.getOrElse(creature.typeName) { Int.MAX_VALUE }
+                CreatureTYPE_ORDER_MAP.getOrElse(creature.typeName) { Int.MAX_VALUE }
             }.thenBy { it.order }
         )
         assertEquals(expectedList, resultList)
@@ -128,7 +128,7 @@ class RefetchCreaturesUseCaseTest {
 
         val expectedList = mockCreaturesApi.sortedWith(
             compareBy<CreatureDtoX> { creature ->
-                TYPE_ORDER_MAP.getOrElse(creature.typeName) { Int.MAX_VALUE }
+                CreatureTYPE_ORDER_MAP.getOrElse(creature.typeName) { Int.MAX_VALUE }
             }.thenBy { it.order }
         )
         assertEquals(expectedList, resultList)
@@ -158,7 +158,7 @@ class RefetchCreaturesUseCaseTest {
 
         val expectedList = mockCreaturesApi.sortedWith(
             compareBy<CreatureDtoX> { creature ->
-                TYPE_ORDER_MAP.getOrElse(creature.typeName) { Int.MAX_VALUE }
+                CreatureTYPE_ORDER_MAP.getOrElse(creature.typeName) { Int.MAX_VALUE }
             }.thenBy { it.order }
         )
         assertEquals(expectedList, resultList)

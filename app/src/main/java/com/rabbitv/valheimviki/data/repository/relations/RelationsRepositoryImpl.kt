@@ -6,7 +6,6 @@ import com.rabbitv.valheimviki.data.remote.api.ApiRelationsService
 import com.rabbitv.valheimviki.domain.model.relation.Relation
 import com.rabbitv.valheimviki.domain.repository.RelationsRepository
 import kotlinx.coroutines.flow.Flow
-import retrofit2.HttpException
 import retrofit2.Response
 
 class RelationsRepositoryImpl (
@@ -28,9 +27,9 @@ class RelationsRepositoryImpl (
     override suspend fun fetchRelations(): Response<List<Relation>> {
         try {
             return apiService.fetchRelations()
-        }catch (e: HttpException)
+        }catch (exception: Exception)
         {
-            throw HttpException(e)
+            throw exception
         }
 
     }

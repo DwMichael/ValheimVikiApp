@@ -4,8 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.model.biome.Biome
-import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
+import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.creatures.CreatureUseCases
 import com.rabbitv.valheimviki.utils.Constants.BIOME_ARGUMENT_KEY
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -32,9 +32,9 @@ class BiomeDetailScreenViewModel @Inject constructor(
         viewModelScope.launch {
             biomeUseCases.getBiomeByIdUseCase(_biomeId).collect {
                  _biome.value = it
-                _mainBossId.value = it.
+
             }
-            creaturesUse.getMainBossesByIdUseCase()
+
         }
     }
 
@@ -42,5 +42,5 @@ class BiomeDetailScreenViewModel @Inject constructor(
 
     }
 
-}
+
 

@@ -2,6 +2,7 @@ package com.rabbitv.valheimviki.di
 
 import com.rabbitv.valheimviki.data.remote.api.ApiBiomeService
 import com.rabbitv.valheimviki.data.remote.api.ApiCreatureService
+import com.rabbitv.valheimviki.data.remote.api.ApiRelationsService
 import com.rabbitv.valheimviki.utils.Constants.BASE_URL
 import dagger.Module
 import dagger.Provides
@@ -51,6 +52,13 @@ object NetWorkModule {
     fun provideApiCreatureService(retrofit: Retrofit): ApiCreatureService {
         return retrofit.create(ApiCreatureService::class.java)
     }
+
+    @Singleton
+    @Provides
+    fun provideApiRelationService(retrofit: Retrofit): ApiRelationsService {
+        return retrofit.create(ApiRelationsService::class.java)
+    }
+
 
 
 }

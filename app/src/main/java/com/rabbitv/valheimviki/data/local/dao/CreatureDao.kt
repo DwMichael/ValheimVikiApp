@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
 import kotlinx.coroutines.flow.Flow
 
@@ -20,7 +21,7 @@ interface CreatureDao {
 
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertMainBosses(creatures: List<MainBoss>)
+    suspend fun insertCreatures(creatures: List<Creature>)
 
 
 }

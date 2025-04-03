@@ -3,6 +3,7 @@ package com.rabbitv.valheimviki.data.repository.creatures
 import android.util.Log
 import com.rabbitv.valheimviki.data.local.dao.CreatureDao
 import com.rabbitv.valheimviki.data.remote.api.ApiCreatureService
+import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
 import com.rabbitv.valheimviki.domain.repository.CreaturesRepository
 import com.rabbitv.valheimviki.utils.bodyList
@@ -26,7 +27,6 @@ class CreaturesRepositoryImpl @Inject constructor(
     }
 
     override suspend fun fetchMainBosses(lang: String): List<MainBoss> {
-
         try {
             val response: Response<List<MainBoss>> =  apiService.fetchMainBosses(lang)
             return if (response.isSuccessful) {
@@ -40,14 +40,11 @@ class CreaturesRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun storeMainBosses(mainBosses: List<MainBoss>) {
-        println(mainBosses)
-        if (mainBosses.isNotEmpty()) {
-            creatureDao.insertMainBosses(mainBosses)
+    override suspend fun insertLocalCreatures(creatures: List<Creature>) {
+        if (creatures.isNotEmpty()) {
+            creatureDao.insertCreatures(creatures)
         }
     }
-
-
 }
 
 //override suspend fun fetchBoss(lang: String): ApiResponse<MainBoss> {

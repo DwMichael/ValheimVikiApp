@@ -1,6 +1,7 @@
 package com.rabbitv.valheimviki.domain.use_cases.creatures.get_main_bosses
 
 
+import com.rabbitv.valheimviki.data.mappers.toCreatures
 import com.rabbitv.valheimviki.domain.exceptions.FetchException
 import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
 import com.rabbitv.valheimviki.domain.repository.CreaturesRepository
@@ -24,7 +25,8 @@ class GetMainBossesUseCase @Inject constructor(private val creatureRepository: C
                {
                    try {
                        val mainBossList = creatureRepository.fetchMainBosses(language)
-                       creatureRepository.storeMainBosses(mainBossList)
+                       val creatureList = mainBossList.toCreatures()
+                       creatureRepository.insertLocalCreatures(creatureList)
                        creatureRepository.getLocalMainBosses()
                    } catch (e: Exception)
                    {
