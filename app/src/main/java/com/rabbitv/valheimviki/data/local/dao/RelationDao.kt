@@ -12,8 +12,15 @@ interface RelationDao {
     @Query("SELECT * FROM relations")
     fun getLocalRelations(): Flow<List<Relation>>
 
-    @Query("SELECT CASE WHEN mainItemId = :queryId THEN relatedItemId WHEN relatedItemId = :queryId THEN mainItemId END AS oppositeId FROM relations WHERE mainItemId = :queryId OR relatedItemId = :queryId")
-    fun getItemIdInRelation(queryId: String): Flow<String>
+    @Query("""
+        SELECT CASE 
+            WHEN mainItemId = :queryId THEN relatedItemId 
+            WHEN relatedItemId = :queryId THEN mainItemId 
+        END AS oppositeId
+        FROM relations
+        WHERE mainItemId = :queryId OR relatedItemId = :queryId
+    """)
+    fun getRelatedIds(queryId: String): Flow<List<String>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRelations(relations: List<Relation>)

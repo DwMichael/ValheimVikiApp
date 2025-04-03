@@ -12,11 +12,11 @@ import kotlinx.coroutines.flow.Flow
 interface CreatureDao {
 
 
-    @Query("SELECT * FROM bosses")
+    @Query("SELECT * FROM creatures WHERE subCategory = 'BOSS' ")
     fun getLocalMainBosses(): Flow<List<MainBoss>>
 
 
-    @Query("SELECT * FROM bosses WHERE id = :id")
+    @Query("SELECT * FROM creatures WHERE subCategory = 'BOSS' and id = :id")
     fun getMainBossById(id: String): Flow<MainBoss>
 
 

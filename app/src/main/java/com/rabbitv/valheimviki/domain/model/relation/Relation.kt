@@ -12,5 +12,6 @@ data class Relation(
     @PrimaryKey(autoGenerate = false)
     val id:String,
     @SerializedName("main_item_id") val mainItemId:String,
-    @SerializedName("related_item_id") val relatedItemId:String
+    @SerializedName("related_item_id") val relatedItemId:String,
+    @SerializedName("quantity") val quantity:Int? = null
 )

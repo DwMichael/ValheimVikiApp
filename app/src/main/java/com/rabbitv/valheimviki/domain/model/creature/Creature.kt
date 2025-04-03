@@ -2,11 +2,13 @@ package com.rabbitv.valheimviki.domain.model.creature
 
 
 import androidx.room.Entity
+import androidx.room.PrimaryKey
 import kotlinx.serialization.Serializable
 
 @Entity(tableName = "creatures")
 @Serializable
 data class Creature(
+    @PrimaryKey (autoGenerate = false)
     val id: String,
     val category: String? = null,
     val subCategory: String? = null,

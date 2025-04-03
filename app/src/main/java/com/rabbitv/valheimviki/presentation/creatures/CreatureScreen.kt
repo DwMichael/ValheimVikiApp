@@ -21,7 +21,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import com.rabbitv.valheimviki.domain.model.creature.CreatureDtoX
+import com.rabbitv.valheimviki.domain.model.creature.Creature
+
 import com.rabbitv.valheimviki.navigation.Screen
 import com.rabbitv.valheimviki.presentation.common.EmptyScreen
 import com.rabbitv.valheimviki.presentation.common.GridContent
@@ -109,7 +110,7 @@ fun CreatureScreen(
 @Preview(showBackground = true)
 @Composable
 fun PreviewCreatureScreen() {
-    val sampleCreatures = emptyList<CreatureDtoX>()
+    val sampleCreatures = emptyList<Creature>()
 
 
     Scaffold(

@@ -16,8 +16,8 @@ class RelationsRepositoryImpl (
         return relationDao.getLocalRelations()
     }
 
-    override fun getItemIdInRelation(queryId: String): Flow<String> {
-        return relationDao.getItemIdInRelation(queryId)
+    override fun getRelatedIds(queryId: String): Flow<List<String>> {
+        return relationDao.getRelatedIds(queryId)
     }
 
     override suspend fun insertRelations(relations: List<Relation>) {
