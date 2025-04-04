@@ -21,13 +21,10 @@ sealed class Screen(val route: String) {
     object Biome : Screen("biome_list_screen")
 
     @Serializable
-    object Creature : Screen("creature_list_screen")
+    object Boss : Screen("boss_screen_list_screen")
 
     @Serializable
-    object Boss : Screen("boss_screen")
-
-    @Serializable
-    object MiniBoss : Screen("mini_boss_screen/")
+    object MiniBoss : Screen("mini_boss_screen_list_screen")
 
     @Serializable
     object CreatureDetail : Screen("creature_screen/{$MAIN_BOSS_ARGUMENT_KEY}") {

@@ -5,23 +5,24 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.rabbitv.valheimviki.domain.model.creature.Creature
-import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CreatureDao {
 
+    @Query("SELECT * FROM creatures WHERE category='CREATURE' AND subCategory = :subCategory ")
+    fun getCreaturesBySubCategory(subCategory:String): Flow<List<Creature>>
 
-    @Query("SELECT * FROM creatures WHERE subCategory = 'BOSS' ")
-    fun getLocalMainBosses(): Flow<List<MainBoss>>
+    @Query("SELECT * FROM creatures WHERE category='CREATURE' AND subCategory = :subCategory AND id = :creatureId")
+    fun getCreatureByIdAndSubCategory(creatureId: String, subCategory:String): Flow<Creature>
 
+    @Query("SELECT * FROM creatures WHERE category='CREATURE' AND id = :creatureId")
+    fun getCreatureById(creatureId: String): Flow<Creature>
 
-    @Query("SELECT * FROM creatures WHERE subCategory = 'BOSS' and id = :id")
-    fun getMainBossById(id: String): Flow<MainBoss>
+    @Query("SELECT * FROM creatures WHERE category='CREATURE' AND subCategory != 'BOSS' AND id IN (:ids)")
+    fun getCreaturesByIds(ids: List<String>): Flow<List<Creature>>
 
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCreatures(creatures: List<Creature>)
-
-
 }

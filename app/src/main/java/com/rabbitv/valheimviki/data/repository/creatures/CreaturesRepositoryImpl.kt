@@ -4,7 +4,7 @@ import android.util.Log
 import com.rabbitv.valheimviki.data.local.dao.CreatureDao
 import com.rabbitv.valheimviki.data.remote.api.ApiCreatureService
 import com.rabbitv.valheimviki.domain.model.creature.Creature
-import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
+import com.rabbitv.valheimviki.domain.model.creature.CreatureType
 import com.rabbitv.valheimviki.domain.repository.CreaturesRepository
 import com.rabbitv.valheimviki.utils.bodyList
 import kotlinx.coroutines.flow.Flow
@@ -17,28 +17,48 @@ class CreaturesRepositoryImpl @Inject constructor(
 ) : CreaturesRepository {
 
 
-
-    override fun getLocalMainBosses(): Flow<List<MainBoss>>  {
-        return creatureDao.getLocalMainBosses()
+    private fun checkResponse(response: Response<List<Creature>>): List<Creature> {
+        return if (response.isSuccessful) {
+            response.bodyList()
+        } else {
+            emptyList()
+        }
     }
 
-    override fun getMainBossById(id: String): Flow<MainBoss> {
-        return creatureDao.getMainBossById(id)
+    override fun getCreaturesBySubCategory(subCategory: String): Flow<List<Creature>> {
+        return creatureDao.getCreaturesBySubCategory(subCategory)
     }
 
-    override suspend fun fetchMainBosses(lang: String): List<MainBoss> {
+    override fun getCreatureByIdAndSubCategory(id: String, subCategory: String): Flow<Creature> {
+        return creatureDao.getCreatureByIdAndSubCategory(id, subCategory)
+    }
+
+    override fun getCreaturesByIds(ids: List<String>): Flow<List<Creature>> {
+        return creatureDao.getCreaturesByIds(ids)
+    }
+
+    override fun getCreatureById(id: String): Flow<Creature> {
+        return creatureDao.getCreatureById(id)
+    }
+
+    override suspend fun fetchCreatureByType(
+        lang: String,
+        creatureType: CreatureType
+    ): List<Creature> {
         try {
-            val response: Response<List<MainBoss>> =  apiService.fetchMainBosses(lang)
-            return if (response.isSuccessful) {
-                response.bodyList()
-            } else {
-                emptyList()
+            return when(creatureType) {
+                CreatureType.BOSS -> checkResponse(apiService.fetchMainBosses(lang))
+                CreatureType.MINI_BOSS -> checkResponse(apiService.fetchMiniBosses(lang))
+                CreatureType.AGGRESSIVE_CREATURE -> checkResponse(apiService.fetchAggressiveCreatures(lang))
+                CreatureType.PASSIVE_CREATURE -> checkResponse(apiService.fetchPassiveCreature(lang))
+                CreatureType.NPC -> checkResponse(apiService.fetchNPCs(lang))
             }
         } catch (exception: Exception) {
-            Log.i("EXEPTION FETCH MAIN BOSSES", exception.message.toString())
+            Log.i("EXEPTION FETCH", exception.message.toString())
             return emptyList()
         }
     }
+
 
     override suspend fun insertLocalCreatures(creatures: List<Creature>) {
         if (creatures.isNotEmpty()) {
@@ -46,35 +66,3 @@ class CreaturesRepositoryImpl @Inject constructor(
         }
     }
 }
-
-//override suspend fun fetchBoss(lang: String): ApiResponse<MainBoss> {
-//    try {
-//
-//        val response = apiService.getAllCreatures(lang)
-//
-//        return if (response.success) {
-//            ApiResponse<MainBoss>(
-//                success = true,
-//                error = response.error,
-//                message = response.message,
-//                creatures = response.creatures,
-//            )
-//        } else {
-//            ApiResponse<MainBoss>(
-//                success = false,
-//                error = response.error,
-//                message = response.message,
-//                creatures = emptyList(),
-//            )
-//        }
-//
-//    } catch (e: Exception) {
-//        val networkException = NetworkExceptionHandler.handleException(e)
-//        return ApiResponse<MainBoss>(
-//            success = networkException.success,
-//            error = networkException.error,
-//            message = networkException.message,
-//            creatures = emptyList(),
-//        )
-//    }
-//}

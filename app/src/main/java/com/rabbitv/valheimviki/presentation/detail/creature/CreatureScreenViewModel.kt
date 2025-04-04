@@ -3,6 +3,7 @@ package com.rabbitv.valheimviki.presentation.detail.creature
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rabbitv.valheimviki.domain.mapper.CreatureFactory.createFromCreature
 import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
 import com.rabbitv.valheimviki.domain.use_cases.creatures.CreatureUseCases
 import com.rabbitv.valheimviki.utils.Constants.MAIN_BOSS_ARGUMENT_KEY
@@ -23,8 +24,8 @@ class CreatureScreenViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            creatureUseCases.getMainBossesByIdUseCase(mainBossId).collect {
-                _mainBoss.value = it
+            creatureUseCases.getCreatureById(mainBossId).collect {
+                _mainBoss.value = createFromCreature(it)
             }
         }
     }

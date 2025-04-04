@@ -29,7 +29,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.MountainSnow
-import com.composables.icons.lucide.Rabbit
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.navigation.ChildNavGraph
 import com.rabbitv.valheimviki.navigation.Screen
@@ -125,12 +124,6 @@ private fun getDrawerItems():List<DrawerItem>{
            label = stringResource(R.string.minibosses),
            contentDescription = stringResource(R.string.minibosses_section),
            route = Screen.MiniBoss.route
-       ),
-       DrawerItem(
-           icon = Lucide.Rabbit,
-           label = stringResource(R.string.creatures),
-           contentDescription = stringResource(R.string.creatures_section),
-           route = Screen.Creature.route
        ),
    )
 }

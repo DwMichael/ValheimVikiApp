@@ -20,8 +20,10 @@ class RelationsRepositoryImpl (
         return relationDao.getRelatedIds(queryId)
     }
 
-    override suspend fun insertRelations(relations: List<Relation>) {
-        return relationDao.insertRelations(relations)
+    override suspend fun insertRelations(relations: List<Relation>?) {
+        if (relations != null ) {
+            return relationDao.insertRelations(relations)
+        }
     }
 
     override suspend fun fetchRelations(): Response<List<Relation>> {

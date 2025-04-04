@@ -14,9 +14,7 @@ data class Creature(
     val subCategory: String? = null,
     val imageUrl: String? = null,
     val name: String? = null,
-    val nameContent: String? = null,
     val description: String? = null,
-    val descriptionContent: String? = null,
     val order: Int,
     // Common stats fields
     val levels: Int? = null,

@@ -1,21 +1,22 @@
-package com.rabbitv.valheimviki.domain.use_cases.creatures.get_mini_bosses
+package com.rabbitv.valheimviki.domain.use_cases.creatures.get_aggressive_creatures
 
-import com.rabbitv.valheimviki.data.mappers.toMiniBosses
+import com.rabbitv.valheimviki.data.mappers.toAggressiveCreatures
 import com.rabbitv.valheimviki.domain.exceptions.FetchException
 import com.rabbitv.valheimviki.domain.model.creature.CreatureType
-import com.rabbitv.valheimviki.domain.model.creature.mini_boss.MiniBoss
+import com.rabbitv.valheimviki.domain.model.creature.aggresive.AggressiveCreature
 import com.rabbitv.valheimviki.domain.repository.CreaturesRepository
-import jakarta.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
-class GetMiniBossesUseCase @Inject constructor(private val creatureRepository: CreaturesRepository) {
+class GetAggressiveCreatures@Inject constructor(private val creatureRepository: CreaturesRepository) {
     @OptIn(ExperimentalCoroutinesApi::class)
-    operator fun invoke(language: String): Flow<List<MiniBoss>> {
-        val creatureType = CreatureType.MINI_BOSS
+    operator fun invoke(language: String): Flow<List<AggressiveCreature>> {
+
+        val creatureType = CreatureType.AGGRESSIVE_CREATURE
         return creatureRepository.getCreaturesBySubCategory(creatureType.toString())
             .flatMapConcat {localMainBoss ->
                 if(localMainBoss.isNotEmpty())
@@ -32,6 +33,7 @@ class GetMiniBossesUseCase @Inject constructor(private val creatureRepository: C
                         throw FetchException("No local data available and failed to fetch from internet.")
                     }
                 }
-            }.map { mainBosses -> mainBosses.toMiniBosses().sortedBy { it.order } }
+            }.map { mainBosses -> mainBosses.toAggressiveCreatures().sortedBy { it.order } }
+
     }
 }

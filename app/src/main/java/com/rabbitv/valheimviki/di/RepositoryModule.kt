@@ -3,26 +3,39 @@ package com.rabbitv.valheimviki.di
 import android.content.Context
 import com.rabbitv.valheimviki.data.local.dao.BiomeDao
 import com.rabbitv.valheimviki.data.local.dao.CreatureDao
+import com.rabbitv.valheimviki.data.local.dao.RelationDao
 import com.rabbitv.valheimviki.data.remote.api.ApiBiomeService
 import com.rabbitv.valheimviki.data.remote.api.ApiCreatureService
+import com.rabbitv.valheimviki.data.remote.api.ApiRelationsService
 import com.rabbitv.valheimviki.data.repository.DataStoreOperationsImpl
 import com.rabbitv.valheimviki.data.repository.DataStoreRepository
 import com.rabbitv.valheimviki.data.repository.biome.BiomeRepositoryImpl
 import com.rabbitv.valheimviki.data.repository.creatures.CreaturesRepositoryImpl
+import com.rabbitv.valheimviki.data.repository.relations.RelationsRepositoryImpl
 import com.rabbitv.valheimviki.domain.repository.BiomeRepository
 import com.rabbitv.valheimviki.domain.repository.CreaturesRepository
 import com.rabbitv.valheimviki.domain.repository.DataStoreOperations
+import com.rabbitv.valheimviki.domain.repository.RelationsRepository
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.biome.get_all_biomes.GetAllBiomesUseCase
 import com.rabbitv.valheimviki.domain.use_cases.biome.get_biome_by_id.GetBiomeByIdUseCase
 import com.rabbitv.valheimviki.domain.use_cases.biome.refetch_biomes.RefetchBiomesUseCase
 import com.rabbitv.valheimviki.domain.use_cases.creatures.CreatureUseCases
-import com.rabbitv.valheimviki.domain.use_cases.creatures.get_main_boss_by_id.GetMainBossByIdUseCase
+import com.rabbitv.valheimviki.domain.use_cases.creatures.get_aggressive_creatures.GetAggressiveCreatures
+import com.rabbitv.valheimviki.domain.use_cases.creatures.get_creature_by_id.GetCreatureByIdUseCase
+import com.rabbitv.valheimviki.domain.use_cases.creatures.get_creature_by_id_and_subcategory.GetCreatureByIdAndSubCategoryUseCase
+import com.rabbitv.valheimviki.domain.use_cases.creatures.get_creatures_by_ids.GetCreaturesByIdsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.creatures.get_main_bosses.GetMainBossesUseCase
+import com.rabbitv.valheimviki.domain.use_cases.creatures.get_mini_bosses.GetMiniBossesUseCase
+import com.rabbitv.valheimviki.domain.use_cases.creatures.get_npcs.GetNPCsUseCase
+import com.rabbitv.valheimviki.domain.use_cases.creatures.get_passive_creatures.GetPassiveCreature
 import com.rabbitv.valheimviki.domain.use_cases.creatures.refetch_creatures.RefetchCreaturesUseCase
 import com.rabbitv.valheimviki.domain.use_cases.datastore.DataStoreUseCases
 import com.rabbitv.valheimviki.domain.use_cases.datastore.get_onboarding_state.ReadOnBoardingState
 import com.rabbitv.valheimviki.domain.use_cases.datastore.save_onboarding_state.SaveOnBoardingState
+import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
+import com.rabbitv.valheimviki.domain.use_cases.relation.fetch_relations.FetchRelationsUseCase
+import com.rabbitv.valheimviki.domain.use_cases.relation.insert_relations.InsertRelationsUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -62,6 +75,15 @@ object RepositoryModule {
 
     @Provides
     @Singleton
+    fun provideRelationRepositoryImpl(
+        apiService: ApiRelationsService,
+        relationDao: RelationDao
+    ): RelationsRepository {
+        return RelationsRepositoryImpl(apiService, relationDao)
+    }
+
+    @Provides
+    @Singleton
     fun provideBiomeUseCases(biomeRepository: BiomeRepository): BiomeUseCases {
         return BiomeUseCases(
             getAllBiomesUseCase = GetAllBiomesUseCase(biomeRepository),
@@ -74,9 +96,24 @@ object RepositoryModule {
     @Singleton
     fun provideCreatureUseCases(creatureRepository: CreaturesRepository): CreatureUseCases {
         return CreatureUseCases(
+            getCreaturesByIds = GetCreaturesByIdsUseCase(creatureRepository),
+            getCreatureById = GetCreatureByIdUseCase(creatureRepository),
+            getCreatureByIdAndSubCategoryUseCase = GetCreatureByIdAndSubCategoryUseCase(creatureRepository),
             getMainBossesUseCase = GetMainBossesUseCase(creatureRepository),
-            getMainBossesByIdUseCase = GetMainBossByIdUseCase(creatureRepository),
-            refetchCreaturesUseCase = RefetchCreaturesUseCase(creatureRepository)
+            getMiniBossesUseCase = GetMiniBossesUseCase(creatureRepository),
+            getAggressiveCreatures = GetAggressiveCreatures(creatureRepository),
+            getPassiveCreature = GetPassiveCreature(creatureRepository),
+            getNPCsUseCase = GetNPCsUseCase(creatureRepository),
+            refetchCreaturesUseCase = RefetchCreaturesUseCase(creatureRepository),
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideRelationUseCases(relationsRepository: RelationsRepository): RelationUseCases {
+        return RelationUseCases(
+            fetchRelationsUseCase = FetchRelationsUseCase(relationsRepository),
+            insertRelationsUseCase = InsertRelationsUseCase(relationsRepository)
         )
     }
 

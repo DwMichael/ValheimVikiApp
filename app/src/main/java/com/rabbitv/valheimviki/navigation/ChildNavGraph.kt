@@ -13,13 +13,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.rabbitv.valheimviki.presentation.biome.BiomeScreen
-import com.rabbitv.valheimviki.presentation.biome.CreatureScreen
 import com.rabbitv.valheimviki.presentation.creatures.bosses.BossScreen
 import com.rabbitv.valheimviki.presentation.creatures.mini_bosses.MiniBossScreen
 import com.rabbitv.valheimviki.presentation.detail.biome.BiomeDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.creature.CreatureDetailScreen
 import com.rabbitv.valheimviki.utils.Constants.BIOME_ARGUMENT_KEY
-
 import com.rabbitv.valheimviki.utils.Constants.DETAIL_ROUTE_GRAPH
 import com.rabbitv.valheimviki.utils.Constants.MAIN_BOSS_ARGUMENT_KEY
 import com.rabbitv.valheimviki.utils.Constants.MAIN_ROUTE_GRAPH
@@ -43,16 +41,6 @@ fun ChildNavGraph(
                     modifier = Modifier.padding(10.dp)
                 ) {
                     BiomeScreen(
-                        paddingValues = paddingValues,
-                        navController = navHostController
-                    )
-                }
-            }
-            composable(Screen.Creature.route) {
-                Box(
-                    modifier = Modifier.padding(10.dp)
-                ) {
-                    CreatureScreen(
                         paddingValues = paddingValues,
                         navController = navHostController
                     )

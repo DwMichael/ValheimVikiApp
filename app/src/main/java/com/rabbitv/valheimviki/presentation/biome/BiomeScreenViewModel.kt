@@ -22,6 +22,7 @@ data class BiomesUIState(
 
 @HiltViewModel
 class BiomeScreenViewModel @Inject constructor(
+
     private val biomeUseCases: BiomeUseCases
 ) : ViewModel() {
 
@@ -47,6 +48,7 @@ class BiomeScreenViewModel @Inject constructor(
                         current.copy(biomes = sortedBiomes, isLoading = false)
                     }
                 }
+
             } catch (e: FetchException) {
                 _biomeUIState.value = _biomeUIState.value.copy(isLoading = false, error = e.message)
             } catch (e: Exception) {

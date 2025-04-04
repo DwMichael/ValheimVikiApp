@@ -4,10 +4,11 @@ import android.util.Log
 import com.rabbitv.valheimviki.domain.model.relation.Relation
 import com.rabbitv.valheimviki.domain.repository.RelationsRepository
 import com.rabbitv.valheimviki.utils.bodyList
+import jakarta.inject.Inject
 import retrofit2.Response
 
 
-class FetchRelationsUseCase(
+class FetchRelationsUseCase @Inject constructor(
     private val relationsRepository: RelationsRepository
 ) {
     suspend operator fun invoke():List<Relation>{

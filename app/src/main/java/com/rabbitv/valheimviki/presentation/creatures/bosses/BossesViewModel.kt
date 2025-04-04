@@ -2,6 +2,7 @@ package com.rabbitv.valheimviki.presentation.creatures.bosses
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rabbitv.valheimviki.data.mappers.toMainBosses
 import com.rabbitv.valheimviki.domain.exceptions.FetchException
 import com.rabbitv.valheimviki.domain.model.creature.RefetchUseCases
 import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
@@ -66,7 +67,7 @@ class BossesViewModel @Inject constructor(
                 creatureUseCases.refetchCreaturesUseCase(DEFAULT_LANG, RefetchUseCases.GET_BOSSES)
                     .collect { sortedBosses ->
                         _bossUIState.update { current ->
-                            current.copy(bosses = sortedBosses, isLoading = false)
+                            current.copy(bosses = sortedBosses.toMainBosses(), isLoading = false)
                         }
                     }
             } catch (e: FetchException) {

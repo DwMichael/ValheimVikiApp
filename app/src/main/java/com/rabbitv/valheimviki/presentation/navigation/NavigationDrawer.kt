@@ -1,5 +1,6 @@
 package com.rabbitv.valheimviki.presentation.navigation
 
+//import com.rabbitv.valheimviki.ui.theme.IMFellEnglishFontFamily
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -43,12 +44,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.MountainSnow
-import com.composables.icons.lucide.Rabbit
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.navigation.Screen
 import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
 import com.rabbitv.valheimviki.ui.theme.ForestGreen40Dark
-//import com.rabbitv.valheimviki.ui.theme.IMFellEnglishFontFamily
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -213,12 +212,6 @@ private fun PreviewNavigationDrawer() {
             label = "MiniBosses",
             contentDescription = "Creatures section",
             route = Screen.MiniBoss.route
-        ),
-        DrawerItem(
-            icon = Lucide.Rabbit,
-            label = "Creatures",
-            contentDescription = "Creatures section",
-            route = Screen.Creature.route
         ),
 
         )
