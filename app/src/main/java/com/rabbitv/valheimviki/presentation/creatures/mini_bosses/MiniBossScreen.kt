@@ -66,14 +66,6 @@ fun MiniBossScreen(
                             items = miniBossesUIState.miniBosses,
                             clickToNavigate = { item -> navController.navigate(Screen.CreatureDetail.passCreatureId(mainBossId = item.id))
                             },
-                            state = refreshState,
-                            onRefresh = {
-                                viewModel.refetchBiomes()
-                                scope.launch {
-                                    refreshState.animateToHidden()
-                                }
-                            },
-                            isRefreshing = refreshing,
                             numbersOfColumns = NORMAL_SIZE_GRID,
                             height = ITEM_HEIGHT_TWO_COLUMNS
                         )
@@ -110,7 +102,6 @@ fun MiniBossScreen(
 @Composable
 fun PreviewMiniBossListScreen() {
     val sampleCreatures = emptyList<Creature>()
-
 
     Scaffold(
         topBar = {

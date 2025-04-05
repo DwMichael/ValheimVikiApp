@@ -24,5 +24,4 @@ interface RelationDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRelations(relations: List<Relation>)
-
 }

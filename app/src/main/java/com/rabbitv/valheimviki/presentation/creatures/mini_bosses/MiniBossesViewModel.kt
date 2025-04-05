@@ -8,6 +8,7 @@ import com.rabbitv.valheimviki.domain.model.creature.RefetchUseCases
 import com.rabbitv.valheimviki.domain.model.creature.mini_boss.MiniBoss
 import com.rabbitv.valheimviki.domain.use_cases.creatures.CreatureUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -42,7 +43,7 @@ class MiniBossesViewModel @Inject constructor(
 
     private fun load() {
         _miniBossesUIState.value = _miniBossesUIState.value.copy(isLoading = true, error = null)
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             try {
                 creatureUseCases.getMiniBossesUseCase("en").collect { miniBoss ->
                     println("miniBoss: $miniBoss")
@@ -64,7 +65,7 @@ class MiniBossesViewModel @Inject constructor(
 
     fun refetchBiomes() {
         _miniBossesUIState.value = _miniBossesUIState.value.copy(isLoading = true, error = null)
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             try {
                 creatureUseCases.refetchCreaturesUseCase("en", RefetchUseCases.GET_MINI_BOSSES)
                     .collect { sortedMiniBosses ->

@@ -9,6 +9,7 @@ import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
 import com.rabbitv.valheimviki.domain.use_cases.creatures.CreatureUseCases
 import com.rabbitv.valheimviki.utils.Constants.DEFAULT_LANG
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -43,7 +44,7 @@ class BossesViewModel @Inject constructor(
 
     private fun load() {
         _bossUIState.value = _bossUIState.value.copy(isLoading = true, error = null)
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             try {
                 creatureUseCases.getMainBossesUseCase(DEFAULT_LANG).collect { bosses ->
                     _bossUIState.update { current ->
@@ -62,7 +63,7 @@ class BossesViewModel @Inject constructor(
 
     fun refetchBosses() {
         _bossUIState.value = _bossUIState.value.copy(isLoading = true, error = null)
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             try {
                 creatureUseCases.refetchCreaturesUseCase(DEFAULT_LANG, RefetchUseCases.GET_BOSSES)
                     .collect { sortedBosses ->

@@ -6,6 +6,7 @@ import com.rabbitv.valheimviki.data.remote.api.ApiRelationsService
 import com.rabbitv.valheimviki.domain.model.relation.Relation
 import com.rabbitv.valheimviki.domain.repository.RelationsRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import retrofit2.Response
 
 class RelationsRepositoryImpl (
@@ -20,10 +21,8 @@ class RelationsRepositoryImpl (
         return relationDao.getRelatedIds(queryId)
     }
 
-    override suspend fun insertRelations(relations: List<Relation>?) {
-        if (relations != null ) {
-            return relationDao.insertRelations(relations)
-        }
+    override suspend fun insertRelations(relations: List<Relation>) {
+            relationDao.insertRelations(relations)
     }
 
     override suspend fun fetchRelations(): Response<List<Relation>> {
@@ -33,6 +32,17 @@ class RelationsRepositoryImpl (
         {
             throw exception
         }
+    }
 
+    override suspend fun fetchAndInsertRelations() {
+        val localRelations = getLocalRelations().first()
+        if (localRelations.isEmpty()) {
+            val response = fetchRelations()
+            val relationsList = response.body()
+
+            if (response.isSuccessful && relationsList != null) {
+                insertRelations(relationsList)
+            }
+        }
     }
 }

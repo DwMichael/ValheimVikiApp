@@ -34,7 +34,9 @@ import com.rabbitv.valheimviki.domain.use_cases.datastore.DataStoreUseCases
 import com.rabbitv.valheimviki.domain.use_cases.datastore.get_onboarding_state.ReadOnBoardingState
 import com.rabbitv.valheimviki.domain.use_cases.datastore.save_onboarding_state.SaveOnBoardingState
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
+import com.rabbitv.valheimviki.domain.use_cases.relation.fetch_and_insert.FetchAndInsertRelationsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.relation.fetch_relations.FetchRelationsUseCase
+import com.rabbitv.valheimviki.domain.use_cases.relation.get_local_relations.GetLocalRelationsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.relation.insert_relations.InsertRelationsUseCase
 import dagger.Module
 import dagger.Provides
@@ -84,17 +86,17 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideBiomeUseCases(biomeRepository: BiomeRepository): BiomeUseCases {
+    fun provideBiomeUseCases(biomeRepository: BiomeRepository,relationsRepository: RelationsRepository): BiomeUseCases {
         return BiomeUseCases(
             getAllBiomesUseCase = GetAllBiomesUseCase(biomeRepository),
             getBiomeByIdUseCase = GetBiomeByIdUseCase(biomeRepository),
-            refetchBiomesUseCase = RefetchBiomesUseCase(biomeRepository)
+            refetchBiomesUseCase = RefetchBiomesUseCase(biomeRepository,relationsRepository)
         )
     }
 
     @Provides
     @Singleton
-    fun provideCreatureUseCases(creatureRepository: CreaturesRepository): CreatureUseCases {
+    fun provideCreatureUseCases(creatureRepository: CreaturesRepository,relationsRepository: RelationsRepository): CreatureUseCases {
         return CreatureUseCases(
             getCreaturesByIds = GetCreaturesByIdsUseCase(creatureRepository),
             getCreatureById = GetCreatureByIdUseCase(creatureRepository),
@@ -104,7 +106,7 @@ object RepositoryModule {
             getAggressiveCreatures = GetAggressiveCreatures(creatureRepository),
             getPassiveCreature = GetPassiveCreature(creatureRepository),
             getNPCsUseCase = GetNPCsUseCase(creatureRepository),
-            refetchCreaturesUseCase = RefetchCreaturesUseCase(creatureRepository),
+            refetchCreaturesUseCase = RefetchCreaturesUseCase(creatureRepository,relationsRepository),
         )
     }
 
@@ -113,7 +115,10 @@ object RepositoryModule {
     fun provideRelationUseCases(relationsRepository: RelationsRepository): RelationUseCases {
         return RelationUseCases(
             fetchRelationsUseCase = FetchRelationsUseCase(relationsRepository),
-            insertRelationsUseCase = InsertRelationsUseCase(relationsRepository)
+            insertRelationsUseCase = InsertRelationsUseCase(relationsRepository),
+            getLocalRelationsUseCase = GetLocalRelationsUseCase(relationsRepository),
+            fetchAndInsertRelationsUseCase = FetchAndInsertRelationsUseCase(relationsRepository),
+
         )
     }
 

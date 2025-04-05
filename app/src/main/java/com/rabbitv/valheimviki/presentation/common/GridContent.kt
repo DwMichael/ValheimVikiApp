@@ -18,9 +18,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.PullToRefreshState
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,18 +50,11 @@ fun GridContent(
     modifier: Modifier,
     items: List<ItemData>,
     clickToNavigate: (item: ItemData) -> Unit,
-    state: PullToRefreshState,
-    isRefreshing: Boolean,
-    onRefresh: () -> Unit,
     numbersOfColumns: Int,
     height: Dp,
 ) {
 
-    PullToRefreshBox(
-        state = state,
-        isRefreshing = isRefreshing,
-        onRefresh = onRefresh,
-    ) {
+
         LazyVerticalGrid(
             columns = GridCells.Fixed(numbersOfColumns),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -76,7 +66,6 @@ fun GridContent(
                     Text(
                         text = "Sprawdź połączenie z internetem",
                         color = Color.Red,
-                        modifier = Modifier.align(Alignment.Center)
                     )
                 }
             } else {
@@ -97,7 +86,10 @@ fun GridContent(
 
         }
     }
-}
+
+
+
+
 
 @Composable
 fun GridItem(
@@ -215,9 +207,6 @@ private fun PreviewContentGrid() {
             modifier = Modifier,
             items = sampleBiomes,
             clickToNavigate = { item -> {} },
-            state = rememberPullToRefreshState(),
-            onRefresh = {},
-            isRefreshing = false,
             numbersOfColumns = 2,
             height = ITEM_HEIGHT_TWO_COLUMNS
         )

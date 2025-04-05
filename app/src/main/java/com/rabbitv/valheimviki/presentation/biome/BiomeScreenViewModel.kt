@@ -1,11 +1,16 @@
 package com.rabbitv.valheimviki.presentation.biome
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.exceptions.FetchException
 import com.rabbitv.valheimviki.domain.model.biome.Biome
+import com.rabbitv.valheimviki.domain.repository.RelationsRepository
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
+import com.rabbitv.valheimviki.utils.isNetworkAvailable
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,8 +27,9 @@ data class BiomesUIState(
 
 @HiltViewModel
 class BiomeScreenViewModel @Inject constructor(
-
-    private val biomeUseCases: BiomeUseCases
+    private val relationsRepository: RelationsRepository,
+    private val biomeUseCases: BiomeUseCases,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
 
     private val _isRefreshing = MutableStateFlow(false)
@@ -41,14 +47,16 @@ class BiomeScreenViewModel @Inject constructor(
     @VisibleForTesting
     internal fun load() {
         _biomeUIState.value = _biomeUIState.value.copy(isLoading = true, error = null)
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             try {
+
+
                 biomeUseCases.getAllBiomesUseCase("en").collect { sortedBiomes ->
                     _biomeUIState.update { current ->
                         current.copy(biomes = sortedBiomes, isLoading = false)
                     }
                 }
-
+                relationsRepository.fetchAndInsertRelations()
             } catch (e: FetchException) {
                 _biomeUIState.value = _biomeUIState.value.copy(isLoading = false, error = e.message)
             } catch (e: Exception) {
@@ -59,7 +67,16 @@ class BiomeScreenViewModel @Inject constructor(
 
     fun refetchBiomes() {
         _biomeUIState.value = _biomeUIState.value.copy(isLoading = true, error = null)
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
+            if (!isNetworkAvailable(context)) {
+                _biomeUIState.value = _biomeUIState.value.copy(
+                    isLoading = false,
+                    error = "No internet connection"
+                )
+                _isRefreshing.emit(false)
+                return@launch
+            }
+
             try {
                 biomeUseCases.refetchBiomesUseCase("en").collect { sortedBiomes ->
                     _biomeUIState.update { current ->
