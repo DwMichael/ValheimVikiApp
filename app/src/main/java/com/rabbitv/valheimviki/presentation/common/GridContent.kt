@@ -1,6 +1,5 @@
 package com.rabbitv.valheimviki.presentation.common
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,18 +23,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.ContentAlpha
-import coil3.compose.LocalPlatformContext
-import coil3.compose.rememberAsyncImagePainter
+import coil3.compose.AsyncImage
 import coil3.compose.rememberConstraintsSizeResolver
 import coil3.request.ImageRequest
-import coil3.request.error
-import coil3.request.placeholder
+import coil3.request.crossfade
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.repository.ItemData
@@ -99,14 +98,7 @@ fun GridItem(
 ) {
 
     val sizeResolver = rememberConstraintsSizeResolver()
-    val painter = rememberAsyncImagePainter(
-        ImageRequest.Builder(LocalPlatformContext.current)
-            .data(item.imageUrl.toString())
-            .placeholder(R.drawable.ic_placeholder)
-            .error(R.drawable.ic_placeholder)
-            .size(sizeResolver)
-            .build(),
-    )
+
 
     Box(
         modifier = Modifier
@@ -117,21 +109,21 @@ fun GridItem(
 
         contentAlignment = Alignment.BottomStart
     ) {
-        Surface(
-            color = Color.Transparent,
-            shape = RoundedCornerShape(
-                size = MEDIUM_PADDING
-            ),
-        ) {
-            Image(
-                painter = painter,
+            AsyncImage(
+                modifier = Modifier.
+                    fillMaxSize().
+                clip(
+                    RoundedCornerShape(MEDIUM_PADDING,)
+                ),
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(item.imageUrl.toString())
+                    .crossfade(true)
+                    .build(),
+                placeholder = painterResource(R.drawable.ic_placeholder),
                 contentDescription = stringResource(R.string.item_grid_image),
                 contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .then(sizeResolver),
             )
-        }
+
         Surface(
             modifier = Modifier
                 .fillMaxHeight(0.2f)
