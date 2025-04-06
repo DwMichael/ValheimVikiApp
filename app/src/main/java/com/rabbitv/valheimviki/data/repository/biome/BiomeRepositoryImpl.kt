@@ -18,7 +18,7 @@ class BiomeRepositoryImpl @Inject constructor(
         return biomeDao.getAllBiomes()
     }
 
-    override fun getBiomeById(biomeId: String): Flow<Biome> {
+    override fun getBiomeById(biomeId: String): Biome {
         return biomeDao.getBiomeById(biomeId)
     }
 

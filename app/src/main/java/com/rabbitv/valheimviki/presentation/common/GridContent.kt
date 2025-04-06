@@ -50,13 +50,14 @@ import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
-fun SharedTransitionScope.GridContent(
+fun GridContent(
     modifier: Modifier,
     items: List<ItemData>,
     onItemClick: (String, String) -> Unit,
     numbersOfColumns: Int,
     height: Dp,
     animatedVisibilityScope: AnimatedVisibilityScope,
+    sharedTransitionScope :SharedTransitionScope,
 ) {
 
     LazyVerticalGrid(
@@ -82,6 +83,7 @@ fun SharedTransitionScope.GridContent(
                         item = item,
                         onItemClick = onItemClick,
                         height = height,
+                        sharedTransitionScope = sharedTransitionScope,
                         animatedVisibilityScope = animatedVisibilityScope
                     )
                 }
@@ -94,66 +96,69 @@ fun SharedTransitionScope.GridContent(
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun SharedTransitionScope.GridItem(
+fun GridItem(
     item: ItemData,
     onItemClick: (String, String) -> Unit,
     height: Dp,
+    sharedTransitionScope :SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope
 ) {
-    Box(
-        modifier = Modifier
-            .height(height)
-            .clickable {
-                 onItemClick(item.id,item.name)
-            },
-        contentAlignment = Alignment.BottomStart
-    ) {
-        AsyncImage(
+    with(sharedTransitionScope) {
+        Box(
             modifier = Modifier
-                .fillMaxSize()
-                .clip(RoundedCornerShape(MEDIUM_PADDING))
-                .sharedElement(
-                    state = rememberSharedContentState(key = "image-${item.id}"),
-                    animatedVisibilityScope = animatedVisibilityScope,
-                ),
-            model = ImageRequest.Builder(context = LocalContext.current)
-                .data(item.imageUrl.toString())
-                .crossfade(true)
-                .build(),
-            error = painterResource(R.drawable.ic_placeholder),
-            placeholder = painterResource(R.drawable.ic_placeholder),
-            contentDescription = stringResource(R.string.item_grid_image),
-            contentScale = ContentScale.Crop,
-
-            )
-
-        Surface(
-            modifier = Modifier
-                .fillMaxHeight(0.2f)
-                .fillMaxWidth()
-                .clip(
-                    RoundedCornerShape(
-                        bottomStart = MEDIUM_PADDING,
-                        bottomEnd = MEDIUM_PADDING
-                    )
-                ),
-            tonalElevation = 0.dp,
-            color = Color.Black.copy(alpha = ContentAlpha.medium),
+                .height(height)
+                .clickable {
+                    onItemClick(item.id, item.name)
+                },
+            contentAlignment = Alignment.BottomStart
         ) {
-            Text(
+            AsyncImage(
                 modifier = Modifier
-                    .wrapContentHeight(align = Alignment.CenterVertically)
-                    .padding
-                        (horizontal = 8.dp)
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(MEDIUM_PADDING))
                     .sharedElement(
-                        state = rememberSharedContentState(key = "text-${item.name}"),
+                        state = rememberSharedContentState(key = "image-${item.id}"),
                         animatedVisibilityScope = animatedVisibilityScope,
                     ),
-                text = item.name,
-                color = Color.White,
-                style = MaterialTheme.typography.headlineSmall,
-                overflow = TextOverflow.Ellipsis,
-            )
+                model = ImageRequest.Builder(context = LocalContext.current)
+                    .data(item.imageUrl.toString())
+                    .crossfade(true)
+                    .build(),
+                error = painterResource(R.drawable.ic_placeholder),
+                placeholder = painterResource(R.drawable.ic_placeholder),
+                contentDescription = stringResource(R.string.item_grid_image),
+                contentScale = ContentScale.Crop,
+
+                )
+
+            Surface(
+                modifier = Modifier
+                    .fillMaxHeight(0.2f)
+                    .fillMaxWidth()
+                    .clip(
+                        RoundedCornerShape(
+                            bottomStart = MEDIUM_PADDING,
+                            bottomEnd = MEDIUM_PADDING
+                        )
+                    ),
+                tonalElevation = 0.dp,
+                color = Color.Black.copy(alpha = ContentAlpha.medium),
+            ) {
+                Text(
+                    modifier = Modifier
+                        .wrapContentHeight(align = Alignment.CenterVertically)
+                        .padding
+                            (horizontal = 8.dp)
+                        .sharedElement(
+                            state = rememberSharedContentState(key = "text-${item.name}"),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                        ),
+                    text = item.name,
+                    color = Color.White,
+                    style = MaterialTheme.typography.headlineSmall,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
         }
     }
 }
@@ -179,6 +184,7 @@ private fun PreviewGridItem() {
                     item = item,
                     onItemClick = { _, _ -> },
                     height = ITEM_HEIGHT_TWO_COLUMNS,
+                    sharedTransitionScope = this@SharedTransitionLayout,
                     animatedVisibilityScope = this,
                 )
             }
@@ -218,6 +224,7 @@ private fun PreviewContentGrid() {
                     onItemClick = { _,_ -> {} },
                     numbersOfColumns = 2,
                     height = ITEM_HEIGHT_TWO_COLUMNS,
+                    sharedTransitionScope = this@SharedTransitionLayout,
                     animatedVisibilityScope = this
                 )
             }

@@ -42,6 +42,7 @@ fun ChildNavGraph(
             ) {
                 composable(Screen.Biome.route) {
                         BiomeScreen(
+                            sharedTransitionScope = this@SharedTransitionLayout,
                             animatedVisibilityScope = this,
                             modifier = Modifier.padding(10.dp),
                             onItemClick = { itemId, text ->
@@ -55,6 +56,7 @@ fun ChildNavGraph(
 
                 composable(Screen.Boss.route) {
                         BossScreen(
+                            sharedTransitionScope = this@SharedTransitionLayout,
                             animatedVisibilityScope = this,
                             modifier = Modifier.padding(10.dp),
                             onItemClick = { itemId, text ->
@@ -67,6 +69,7 @@ fun ChildNavGraph(
                 }
                 composable(Screen.MiniBoss.route) {
                         MiniBossScreen(
+                            sharedTransitionScope = this@SharedTransitionLayout,
                             animatedVisibilityScope = this,
                             modifier = Modifier.padding(10.dp),
                             onItemClick = { itemId, text ->
@@ -89,8 +92,12 @@ fun ChildNavGraph(
                         navArgument(BIOME_ARGUMENT_KEY) { type = NavType.StringType },
                         navArgument(TEXT_ARGUMENT_KEY) { type = NavType.StringType }
                     )
-                ) {
+                ) {backStackEntry ->
+
+
                     BiomeDetailScreen(
+                        onBack = { navHostController.popBackStack() },
+                        sharedTransitionScope = this@SharedTransitionLayout,
                         animatedVisibilityScope = this,
                         paddingValues = paddingValues
                     )

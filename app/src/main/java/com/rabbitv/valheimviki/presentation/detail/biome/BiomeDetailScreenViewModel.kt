@@ -9,7 +9,6 @@ import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.creatures.CreatureUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.utils.Constants.BIOME_ARGUMENT_KEY
-import com.rabbitv.valheimviki.utils.Constants.TEXT_ARGUMENT_KEY
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,15 +23,7 @@ class BiomeDetailScreenViewModel @Inject constructor(
     private val creaturesUse: CreatureUseCases,
     private val relationsUse: RelationUseCases
 ) : ViewModel() {
-    private val _biomeId: String = checkNotNull(savedStateHandle[BIOME_ARGUMENT_KEY])
-    private val _textId: String = checkNotNull(savedStateHandle[TEXT_ARGUMENT_KEY])
     private val _biome = MutableStateFlow<Biome?>(null)
-
-    val biomeId : String
-        get() =_biomeId
-    val textId : String
-        get() = _textId
-
     val biome: StateFlow<Biome?> = _biome
 
     private  val _mainBossId = MutableStateFlow<MainBoss?>(null)
@@ -41,9 +32,8 @@ class BiomeDetailScreenViewModel @Inject constructor(
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            biomeUseCases.getBiomeByIdUseCase(_biomeId).collect {
-                 _biome.value = it
-            }
+            val biomeId = savedStateHandle.get<String>(BIOME_ARGUMENT_KEY)
+            _biome.value = biomeId?.let { biomeUseCases.getBiomeByIdUseCase(biomeId = biomeId) }
         }
 
     }

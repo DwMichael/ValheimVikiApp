@@ -31,7 +31,8 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
-fun SharedTransitionScope.BiomeScreen(
+fun BiomeScreen(
+    sharedTransitionScope :SharedTransitionScope,
     animatedVisibilityScope:AnimatedVisibilityScope,
     modifier: Modifier,
     onItemClick : (String, String) -> Unit,
@@ -90,6 +91,7 @@ fun SharedTransitionScope.BiomeScreen(
                             onItemClick = onItemClick,
                             numbersOfColumns = BIOME_GRID_COLUMNS,
                             height = ITEM_HEIGHT_TWO_COLUMNS,
+                            sharedTransitionScope =sharedTransitionScope,
                             animatedVisibilityScope = animatedVisibilityScope
                         )
                     }

@@ -7,6 +7,6 @@ import kotlinx.coroutines.flow.Flow
 interface BiomeRepository {
     fun getLocalBiomes(): Flow<List<Biome>>
     suspend fun fetchBiomes(lang: String): ApiResponse<Biome>
-    fun getBiomeById(biomeId: String): Flow<Biome>
+    fun getBiomeById(biomeId: String): Biome
     suspend fun storeBiomes(biomes: List<Biome>)
 }

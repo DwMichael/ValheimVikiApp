@@ -20,9 +20,7 @@ import org.jetbrains.annotations.VisibleForTesting
 import javax.inject.Inject
 
 data class BiomesUIState(
-    val biomes: List<Biome> = emptyList(),
-    val error: String? = null,
-    val isLoading: Boolean = false
+    val biomes: List<Biome> = emptyList(), val error: String? = null, val isLoading: Boolean = false
 )
 
 @HiltViewModel
@@ -70,8 +68,7 @@ class BiomeScreenViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             if (!isNetworkAvailable(context)) {
                 _biomeUIState.value = _biomeUIState.value.copy(
-                    isLoading = false,
-                    error = "No internet connection"
+                    isLoading = false, error = "No internet connection"
                 )
                 _isRefreshing.emit(false)
                 return@launch
@@ -92,6 +89,4 @@ class BiomeScreenViewModel @Inject constructor(
             }
         }
     }
-
-
 }

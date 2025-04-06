@@ -34,7 +34,8 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
-fun SharedTransitionScope.BossScreen(
+fun BossScreen(
+    sharedTransitionScope :SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
     modifier: Modifier,
     onItemClick : (String, String) -> Unit,
@@ -71,7 +72,9 @@ fun SharedTransitionScope.BossScreen(
                                 onItemClick = onItemClick,
                                 numbersOfColumns = NORMAL_SIZE_GRID,
                                 height = ITEM_HEIGHT_TWO_COLUMNS,
+                                sharedTransitionScope = sharedTransitionScope,
                                 animatedVisibilityScope = animatedVisibilityScope,
+
                             )
                         }
                     }

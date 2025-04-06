@@ -62,97 +62,107 @@ import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
 const val DEFAULT_MINIMUM_TEXT_LINE = 4
 const val BODY_CONTENT_PADDING = 10
+
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun SharedTransitionScope.BiomeDetailScreen(
+fun BiomeDetailScreen(
+    onBack : () -> Unit,
+    sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
     viewModel: BiomeDetailScreenViewModel = hiltViewModel(),
     paddingValues: PaddingValues,
 
-) {
+    ) {
     val biome by viewModel.biome.collectAsStateWithLifecycle()
-    val biomeId = viewModel.biomeId
-    val textId = viewModel.textId
 
-    Scaffold(
-        content = {
-            Column(
-                modifier = Modifier.testTag("BiomeDetailScreen").
-                fillMaxSize().
-                padding(it)
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.Top,
-                horizontalAlignment = Alignment.Start,
-            ) {
-                DetailImage(
-                    animatedVisibilityScope = animatedVisibilityScope,
-                    biomeId = biomeId,
-                    textId = textId,
-                    biome = biome
-                )
-                DetailExpandableText(
-                    text = biome?.description.toString(),
-                )
+    biome?.let { biome ->
+        Scaffold(
+            content = {
+                Column(
+                    modifier = Modifier
+                        .testTag("BiomeDetailScreen")
+                        .fillMaxSize()
+                        .padding(it)
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.Top,
+                    horizontalAlignment = Alignment.Start,
+                ) {
+                    DetailImage(
+                        onBack = onBack,
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        biome = biome,
+                        sharedTransitionScope = sharedTransitionScope
+                    )
+                    DetailExpandableText(
+                        text = biome.description.toString(),
+                    )
 
+                }
             }
-        }
-    )
-}
+        )
+    }
 
+}
 
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun SharedTransitionScope.DetailImage(
+fun DetailImage(
+    onBack : () -> Unit,
+    sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
-    biomeId :String,
-    textId: String,
-    biome: Biome?,
+    biome: Biome,
 ) {
-    Box(
-        modifier = Modifier
-            .heightIn(min = 200.dp, max = 320.dp),
-        contentAlignment = Alignment.BottomStart
-    ) {
-        AsyncImage(
-            modifier = Modifier.sharedElement(
-                state = rememberSharedContentState(key = "image-${biomeId}"),
-                animatedVisibilityScope = animatedVisibilityScope,
-                boundsTransform = {_,_ ->
-                    tween(durationMillis = 10000)
-                }
-            ),
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(biome?.imageUrl)
-                .crossfade(true)
-                .build(),
-            placeholder = painterResource(R.drawable.ic_placeholder),
-            contentDescription = stringResource(R.string.item_grid_image),
-            contentScale = ContentScale.Crop,
-        )
-        Surface(
+    with(sharedTransitionScope) {
+        Box(
             modifier = Modifier
-                .fillMaxHeight(0.2f)
-                .fillMaxWidth(),
-            tonalElevation = 0.dp,
-            color = Color.Black.copy(alpha = ContentAlpha.medium),
+                .heightIn(min = 200.dp, max = 320.dp),
+            contentAlignment = Alignment.BottomStart
         ) {
-            Text(
-                modifier = Modifier
-                .wrapContentHeight(align = Alignment.CenterVertically)
-                .padding
-                    (horizontal = 8.dp).sharedElement(
-                    state = rememberSharedContentState(key = "text-${textId}"),
+            AsyncImage(
+                modifier = Modifier.sharedElement(
+                    state = rememberSharedContentState(key = "image-${biome.id}"),
                     animatedVisibilityScope = animatedVisibilityScope,
-                    boundsTransform = {_,_ ->
+                    boundsTransform = { _, _ ->
                         tween(durationMillis = 10000)
                     }
-                ),
-                text = textId,
-                color = Color.White,
-                style = MaterialTheme.typography.displaySmall,
-
+                ).clickable{
+                    onBack()
+                }
+                ,
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(biome.imageUrl)
+                    .crossfade(true)
+                    .build(),
+                placeholder = painterResource(R.drawable.ic_placeholder),
+                contentDescription = stringResource(R.string.item_grid_image),
+                contentScale = ContentScale.Crop,
             )
+            Surface(
+                modifier = Modifier
+                    .fillMaxHeight(0.2f)
+                    .fillMaxWidth(),
+                tonalElevation = 0.dp,
+                color = Color.Black.copy(alpha = ContentAlpha.medium),
+            ) {
+                Text(
+                    modifier = Modifier
+                        .wrapContentHeight(align = Alignment.CenterVertically)
+                        .padding
+                            (horizontal = 8.dp)
+                        .sharedElement(
+                            state = rememberSharedContentState(key = "text-${biome.name}"),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                            boundsTransform = { _, _ ->
+                                tween(durationMillis = 10000)
+                            }
+                        ),
+                    text = biome.name,
+                    color = Color.White,
+                    style = MaterialTheme.typography.displaySmall,
+
+                    )
+            }
         }
     }
 }
@@ -173,11 +183,13 @@ fun DetailExpandableText(
     var clickable by remember { mutableStateOf(false) }
     var lastCharIndex by remember { mutableStateOf(0) }
 
-    Box(modifier = Modifier.padding(BODY_CONTENT_PADDING.dp)
-        .clickable(clickable) {
-            isExpanded = !isExpanded
-        }
-        .then(modifier)
+    Box(
+        modifier = Modifier
+            .padding(BODY_CONTENT_PADDING.dp)
+            .clickable(clickable) {
+                isExpanded = !isExpanded
+            }
+            .then(modifier)
     ) {
         Text(
             modifier = textModifier
@@ -202,7 +214,7 @@ fun DetailExpandableText(
 
             maxLines = if (isExpanded) Int.MAX_VALUE else collapsedMaxLine,
             onTextLayout = { textLayoutResult ->
-                if (!isExpanded && textLayoutResult.hasVisualOverflow ) {
+                if (!isExpanded && textLayoutResult.hasVisualOverflow) {
                     clickable = true
                     lastCharIndex = textLayoutResult.getLineEnd(collapsedMaxLine - 1)
                 }
@@ -253,11 +265,10 @@ fun DetailExpandableText(
 //}
 
 
-
 @Preview(name = "DetailImage", showBackground = true)
 @Composable
 fun PreviewDetailExpandableText() {
-    DetailExpandableText(text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed rutrum vel quam id luctus. Aenean leo ex, pharetra quis consequat ac, luctus vel leo. Curabitur a justo id arcu eleifend vehicula. Sed odio leo, tempus id metus sit amet, laoreet auctor nunc. Etiam sagittis euismod pretium. Nunc et molestie elit, non fermentum nisl. Mauris quis massa quis dolor viverra ultricies et sit amet risus. Proin ac elit sed turpis mattis varius. Pellentesque tincidunt ligula in ante ornare, vel ullamcorper risus volutpat")
+    DetailExpandableText(text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed rutrum vel quam id luctus. Aenean leo ex, pharetra quis consequat ac, luctus vel leo. Curabitur a justo id arcu eleifend vehicula. Sed odio leo, tempus id metus sit amet, laoreet auctor nunc. Etiam sagittis euismod pretium. Nunc et molestie elit, non fermentum nisl. Mauris quis massa quis dolor viverra ultricies et sit amet risus. Proin ac elit sed turpis mattis varius. Pellentesque tincidunt ligula in ante ornare, vel ullamcorper risus volutpat")
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -268,20 +279,20 @@ private fun PreviewDetailImage() {
         AnimatedVisibility(visible = true) {
             DetailImage(
                 animatedVisibilityScope = this,
-                biomeId = "SSS",
-                textId = "MEADOWS",
                 biome = Biome(
                     id = "SSS",
                     category = "SSSSS",
                     imageUrl = "https://s3.eu-central-1.amazonaws.com/cdn.psy.pl-migration/down_syndrome_in_dogs_e1621852707104_73c6b22e93.jpg",
                     name = "MEADOWS",
                     description = "MEADOWS",
-                    order =1
+                    order = 1
                 ),
+                onBack = {},
+                sharedTransitionScope = this@SharedTransitionLayout
             )
-        }}
         }
-
+    }
+}
 
 
 @Preview(name = "BiomeDetail", showBackground = true)
@@ -296,7 +307,7 @@ private fun PreviewBiomeDetail() {
         order = 5
     )
 
-    ValheimVikiAppTheme{
+    ValheimVikiAppTheme {
 
         val painter = rememberAsyncImagePainter(
             ImageRequest.Builder(LocalPlatformContext.current)
