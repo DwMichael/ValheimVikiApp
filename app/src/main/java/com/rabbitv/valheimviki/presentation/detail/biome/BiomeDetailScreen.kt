@@ -1,6 +1,12 @@
 package com.rabbitv.valheimviki.presentation.detail.biome
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -56,12 +62,17 @@ import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
 const val DEFAULT_MINIMUM_TEXT_LINE = 4
 const val BODY_CONTENT_PADDING = 10
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun BiomeDetailScreen(
+fun SharedTransitionScope.BiomeDetailScreen(
+    animatedVisibilityScope: AnimatedVisibilityScope,
     viewModel: BiomeDetailScreenViewModel = hiltViewModel(),
-    paddingValues: PaddingValues
+    paddingValues: PaddingValues,
+
 ) {
     val biome by viewModel.biome.collectAsStateWithLifecycle()
+    val biomeId = viewModel.biomeId
+    val textId = viewModel.textId
 
     Scaffold(
         content = {
@@ -73,7 +84,12 @@ fun BiomeDetailScreen(
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.Start,
             ) {
-                DetailImage(biome?.imageUrl.toString(), biome?.name.toString())
+                DetailImage(
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    biomeId = biomeId,
+                    textId = textId,
+                    biome = biome
+                )
                 DetailExpandableText(
                     text = biome?.description.toString(),
                 )
@@ -85,16 +101,29 @@ fun BiomeDetailScreen(
 
 
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun DetailImage(imageUrl:String, nameOfItem: String) {
+fun SharedTransitionScope.DetailImage(
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    biomeId :String,
+    textId: String,
+    biome: Biome?,
+) {
     Box(
         modifier = Modifier
             .heightIn(min = 200.dp, max = 320.dp),
         contentAlignment = Alignment.BottomStart
     ) {
         AsyncImage(
+            modifier = Modifier.sharedElement(
+                state = rememberSharedContentState(key = "image-${biomeId}"),
+                animatedVisibilityScope = animatedVisibilityScope,
+                boundsTransform = {_,_ ->
+                    tween(durationMillis = 10000)
+                }
+            ),
             model = ImageRequest.Builder(LocalContext.current)
-                .data(imageUrl)
+                .data(biome?.imageUrl)
                 .crossfade(true)
                 .build(),
             placeholder = painterResource(R.drawable.ic_placeholder),
@@ -109,13 +138,20 @@ fun DetailImage(imageUrl:String, nameOfItem: String) {
             color = Color.Black.copy(alpha = ContentAlpha.medium),
         ) {
             Text(
-                text = nameOfItem,
+                modifier = Modifier
+                .wrapContentHeight(align = Alignment.CenterVertically)
+                .padding
+                    (horizontal = 8.dp).sharedElement(
+                    state = rememberSharedContentState(key = "text-${textId}"),
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    boundsTransform = {_,_ ->
+                        tween(durationMillis = 10000)
+                    }
+                ),
+                text = textId,
                 color = Color.White,
                 style = MaterialTheme.typography.displaySmall,
-                modifier = Modifier
-                    .wrapContentHeight(align = Alignment.CenterVertically)
-                    .padding
-                        (horizontal = 8.dp),
+
             )
         }
     }
@@ -224,11 +260,28 @@ fun PreviewDetailExpandableText() {
     DetailExpandableText(text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed rutrum vel quam id luctus. Aenean leo ex, pharetra quis consequat ac, luctus vel leo. Curabitur a justo id arcu eleifend vehicula. Sed odio leo, tempus id metus sit amet, laoreet auctor nunc. Etiam sagittis euismod pretium. Nunc et molestie elit, non fermentum nisl. Mauris quis massa quis dolor viverra ultricies et sit amet risus. Proin ac elit sed turpis mattis varius. Pellentesque tincidunt ligula in ante ornare, vel ullamcorper risus volutpat")
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Preview(name = "DetailImage", showBackground = true)
 @Composable
 private fun PreviewDetailImage() {
-    DetailImage("https://s3.eu-central-1.amazonaws.com/cdn.psy.pl-migration/down_syndrome_in_dogs_e1621852707104_73c6b22e93.jpg", "MEADOWS")
-}
+    SharedTransitionLayout {
+        AnimatedVisibility(visible = true) {
+            DetailImage(
+                animatedVisibilityScope = this,
+                biomeId = "SSS",
+                textId = "MEADOWS",
+                biome = Biome(
+                    id = "SSS",
+                    category = "SSSSS",
+                    imageUrl = "https://s3.eu-central-1.amazonaws.com/cdn.psy.pl-migration/down_syndrome_in_dogs_e1621852707104_73c6b22e93.jpg",
+                    name = "MEADOWS",
+                    description = "MEADOWS",
+                    order =1
+                ),
+            )
+        }}
+        }
+
 
 
 @Preview(name = "BiomeDetail", showBackground = true)

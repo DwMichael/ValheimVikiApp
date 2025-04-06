@@ -1,6 +1,9 @@
 package com.rabbitv.valheimviki.presentation.biome
 
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,8 +20,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavHostController
-import com.rabbitv.valheimviki.navigation.Screen
 import com.rabbitv.valheimviki.presentation.common.EmptyScreen
 import com.rabbitv.valheimviki.presentation.common.GridContent
 import com.rabbitv.valheimviki.presentation.components.ShimmerEffect
@@ -28,13 +29,14 @@ import com.rabbitv.valheimviki.utils.isNetworkAvailable
 import kotlinx.coroutines.launch
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
-fun BiomeScreen(
+fun SharedTransitionScope.BiomeScreen(
+    animatedVisibilityScope:AnimatedVisibilityScope,
+    modifier: Modifier,
+    onItemClick : (String, String) -> Unit,
     paddingValues: PaddingValues,
     viewModel: BiomeScreenViewModel = hiltViewModel(),
-    navController: NavHostController,
-
     ) {
     val scope = rememberCoroutineScope()
     val refreshState = rememberPullToRefreshState()
@@ -43,70 +45,73 @@ fun BiomeScreen(
     val isConnection: Boolean = isNetworkAvailable(LocalContext.current)
 
 
-    Surface(
-        color = Color.Transparent,
-        modifier = Modifier
-            .testTag("BiomeSurface")
-            .fillMaxSize()
-            .padding(paddingValues)
-
+    Box(
+        modifier = modifier
     ) {
-        when {
-            biomeUIState.isLoading -> {
-                ShimmerEffect()
-            }
+        Surface(
+            color = Color.Transparent,
+            modifier = Modifier
+                .testTag("BiomeSurface")
+                .fillMaxSize()
+                .padding(paddingValues)
 
-            biomeUIState.error != null -> {
-                Box(
-                    modifier = Modifier.testTag("EmptyScreenBiome"),
-                ) {
-                    EmptyScreen(
-                        modifier = Modifier,
-                        state = refreshState,
-                        isRefreshing = refreshing,
-                        onRefresh = {
-                            viewModel.refetchBiomes()
-                            scope.launch {
-                                refreshState.animateToHidden()
-                            }
-                        },
-                        errorMessage = "Can't fetch data from server try later"
-                    )
+        ) {
+            when {
+                biomeUIState.isLoading -> {
+                    ShimmerEffect()
                 }
-            }
 
-            biomeUIState.biomes.isNotEmpty() -> {
-                Box(
-                    modifier = Modifier.testTag("BiomeGrid"),
-                ) {
-                    GridContent(
-                        modifier = Modifier,
-                        items = biomeUIState.biomes,
-                        clickToNavigate = { item ->
-                            navController.navigate(Screen.BiomeDetail.passBiomeId(biomeId = item.id))
-                        },
-                        numbersOfColumns = BIOME_GRID_COLUMNS,
-                        height = ITEM_HEIGHT_TWO_COLUMNS
-                    )
+                biomeUIState.error != null -> {
+                    Box(
+                        modifier = Modifier.testTag("EmptyScreenBiome"),
+                    ) {
+                        EmptyScreen(
+                            modifier = Modifier,
+                            state = refreshState,
+                            isRefreshing = refreshing,
+                            onRefresh = {
+                                viewModel.refetchBiomes()
+                                scope.launch {
+                                    refreshState.animateToHidden()
+                                }
+                            },
+                            errorMessage = "Can't fetch data from server try later"
+                        )
+                    }
                 }
-            }
 
-            else -> {
-                Box(
-                    modifier = Modifier.testTag("EmptyScreenBiome"),
-                ) {
-                    EmptyScreen(
-                        modifier = Modifier,
-                        state = refreshState,
-                        isRefreshing = refreshing,
-                        onRefresh = {
-                            viewModel.refetchBiomes()
-                            scope.launch {
-                                refreshState.animateToHidden()
-                            }
-                        },
-                        errorMessage = if (!isConnection) "No internet connection" else "Can't fetch data from server try later"
-                    )
+                biomeUIState.biomes.isNotEmpty() -> {
+                    Box(
+                        modifier = Modifier.testTag("BiomeGrid"),
+                    ) {
+                        GridContent(
+                            modifier = Modifier,
+                            items = biomeUIState.biomes,
+                            onItemClick = onItemClick,
+                            numbersOfColumns = BIOME_GRID_COLUMNS,
+                            height = ITEM_HEIGHT_TWO_COLUMNS,
+                            animatedVisibilityScope = animatedVisibilityScope
+                        )
+                    }
+                }
+
+                else -> {
+                    Box(
+                        modifier = Modifier.testTag("EmptyScreenBiome"),
+                    ) {
+                        EmptyScreen(
+                            modifier = Modifier,
+                            state = refreshState,
+                            isRefreshing = refreshing,
+                            onRefresh = {
+                                viewModel.refetchBiomes()
+                                scope.launch {
+                                    refreshState.animateToHidden()
+                                }
+                            },
+                            errorMessage = if (!isConnection) "No internet connection" else "Can't fetch data from server try later"
+                        )
+                    }
                 }
             }
         }

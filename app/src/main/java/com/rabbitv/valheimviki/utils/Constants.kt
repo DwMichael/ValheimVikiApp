@@ -22,6 +22,7 @@ object Constants {
 
     //DATA NAVIGATION ARGUMENT KEYS
     const val BIOME_ARGUMENT_KEY = "biomeId"
+    const val TEXT_ARGUMENT_KEY = "text"
     const val MAIN_BOSS_ARGUMENT_KEY = "mainBossId"
 
     //GROUP ROUTE NAMES

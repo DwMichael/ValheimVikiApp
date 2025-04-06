@@ -1,10 +1,13 @@
 package com.rabbitv.valheimviki.presentation.common
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -45,16 +48,17 @@ import com.rabbitv.valheimviki.ui.theme.MEDIUM_PADDING
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
-fun GridContent(
+fun SharedTransitionScope.GridContent(
     modifier: Modifier,
     items: List<ItemData>,
-    clickToNavigate: (item: ItemData) -> Unit,
+    onItemClick: (String, String) -> Unit,
     numbersOfColumns: Int,
     height: Dp,
+    animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
-    
+
     LazyVerticalGrid(
         columns = GridCells.Fixed(numbersOfColumns),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -71,15 +75,16 @@ fun GridContent(
         } else {
 
             items(items, key = { item -> item.id }) { item ->
-                    Box(
-                        modifier = modifier.testTag("GirdItem ${item.name}")
-                    ) {
-                        GridItem(
-                            item = item,
-                            clickToNavigate = clickToNavigate,
-                            height = height,
-                        )
-                    }
+                Box(
+                    modifier = modifier.testTag("GirdItem ${item.name}")
+                ) {
+                    GridItem(
+                        item = item,
+                        onItemClick = onItemClick,
+                        height = height,
+                        animatedVisibilityScope = animatedVisibilityScope
+                    )
+                }
             }
         }
 
@@ -87,25 +92,30 @@ fun GridContent(
 }
 
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun GridItem(
+fun SharedTransitionScope.GridItem(
     item: ItemData,
-    clickToNavigate: (item: ItemData) -> Unit,
-    height: Dp
+    onItemClick: (String, String) -> Unit,
+    height: Dp,
+    animatedVisibilityScope: AnimatedVisibilityScope
 ) {
     Box(
         modifier = Modifier
             .height(height)
             .clickable {
-                clickToNavigate(item)
-            }
-            .aspectRatio(1f),
+                 onItemClick(item.id,item.name)
+            },
         contentAlignment = Alignment.BottomStart
     ) {
         AsyncImage(
             modifier = Modifier
                 .fillMaxSize()
-                .clip(RoundedCornerShape(MEDIUM_PADDING)),
+                .clip(RoundedCornerShape(MEDIUM_PADDING))
+                .sharedElement(
+                    state = rememberSharedContentState(key = "image-${item.id}"),
+                    animatedVisibilityScope = animatedVisibilityScope,
+                ),
             model = ImageRequest.Builder(context = LocalContext.current)
                 .data(item.imageUrl.toString())
                 .crossfade(true)
@@ -131,22 +141,29 @@ fun GridItem(
             color = Color.Black.copy(alpha = ContentAlpha.medium),
         ) {
             Text(
+                modifier = Modifier
+                    .wrapContentHeight(align = Alignment.CenterVertically)
+                    .padding
+                        (horizontal = 8.dp)
+                    .sharedElement(
+                        state = rememberSharedContentState(key = "text-${item.name}"),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                    ),
                 text = item.name,
                 color = Color.White,
                 style = MaterialTheme.typography.headlineSmall,
                 overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.wrapContentHeight(align = Alignment.CenterVertically)
-                .padding
-            (horizontal = 8.dp),
             )
         }
     }
 }
 
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Preview(name = "GridItem", showBackground = true)
 @Composable
 private fun PreviewGridItem() {
+
     val item = Biome(
         id = "123",
         category = "BIOME",
@@ -156,11 +173,16 @@ private fun PreviewGridItem() {
         order = 1
     )
     ValheimVikiAppTheme {
-        GridItem(
-            item = item,
-            clickToNavigate = {},
-            height = ITEM_HEIGHT_TWO_COLUMNS,
-        )
+        SharedTransitionLayout {
+            AnimatedVisibility(visible = true) {
+                GridItem(
+                    item = item,
+                    onItemClick = { _, _ -> },
+                    height = ITEM_HEIGHT_TWO_COLUMNS,
+                    animatedVisibilityScope = this,
+                )
+            }
+        }
     }
 }
 
@@ -188,13 +210,17 @@ private fun PreviewContentGrid() {
 
 
     ValheimVikiAppTheme {
-            GridContent(
-                modifier = Modifier,
-                items = sampleBiomes,
-                clickToNavigate = { item -> {} },
-                numbersOfColumns = 2,
-                height = ITEM_HEIGHT_TWO_COLUMNS,
-            )
-
+        SharedTransitionLayout {
+            AnimatedVisibility(visible = true) {
+                GridContent(
+                    modifier = Modifier,
+                    items = sampleBiomes,
+                    onItemClick = { _,_ -> {} },
+                    numbersOfColumns = 2,
+                    height = ITEM_HEIGHT_TWO_COLUMNS,
+                    animatedVisibilityScope = this
+                )
+            }
+        }
     }
 }

@@ -2,7 +2,6 @@ package com.rabbitv.valheimviki.navigation
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -23,6 +22,7 @@ import com.rabbitv.valheimviki.utils.Constants.BIOME_ARGUMENT_KEY
 import com.rabbitv.valheimviki.utils.Constants.DETAIL_ROUTE_GRAPH
 import com.rabbitv.valheimviki.utils.Constants.MAIN_BOSS_ARGUMENT_KEY
 import com.rabbitv.valheimviki.utils.Constants.MAIN_ROUTE_GRAPH
+import com.rabbitv.valheimviki.utils.Constants.TEXT_ARGUMENT_KEY
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -41,33 +41,41 @@ fun ChildNavGraph(
                 route = MAIN_ROUTE_GRAPH
             ) {
                 composable(Screen.Biome.route) {
-                    Box(modifier = Modifier.padding(10.dp)) {
                         BiomeScreen(
-                            paddingValues = paddingValues,
-                            navController = navHostController
+                            animatedVisibilityScope = this,
+                            modifier = Modifier.padding(10.dp),
+                            onItemClick = { itemId, text ->
+                                navHostController.navigate(
+                                    Screen.BiomeDetail.passBiomeIdAndText(itemId, text)
+                                )
+                            },
+                            paddingValues = paddingValues
                         )
-                    }
                 }
 
                 composable(Screen.Boss.route) {
-                    Box(
-                        modifier = Modifier.padding(10.dp)
-                    ) {
                         BossScreen(
-                            paddingValues = paddingValues,
-                            navController = navHostController
+                            animatedVisibilityScope = this,
+                            modifier = Modifier.padding(10.dp),
+                            onItemClick = { itemId, text ->
+                                navHostController.navigate(
+                                 Screen.CreatureDetail.passCreatureId(itemId, text)
+                                )
+                            },
+                            paddingValues = paddingValues
                         )
-                    }
                 }
                 composable(Screen.MiniBoss.route) {
-                    Box(
-                        modifier = Modifier.padding(10.dp)
-                    ) {
                         MiniBossScreen(
-                            paddingValues = paddingValues,
-                            navController = navHostController
+                            animatedVisibilityScope = this,
+                            modifier = Modifier.padding(10.dp),
+                            onItemClick = { itemId, text ->
+                                navHostController.navigate(
+                                    Screen.CreatureDetail.passCreatureId(itemId, text)
+                                )
+                            },
+                            paddingValues = paddingValues
                         )
-                    }
                 }
             }
 
@@ -78,22 +86,24 @@ fun ChildNavGraph(
                 composable(
                     Screen.BiomeDetail.route,
                     arguments = listOf(
-                        navArgument(BIOME_ARGUMENT_KEY) {
-                            type = NavType.StringType
-                        }
+                        navArgument(BIOME_ARGUMENT_KEY) { type = NavType.StringType },
+                        navArgument(TEXT_ARGUMENT_KEY) { type = NavType.StringType }
                     )
                 ) {
                     BiomeDetailScreen(
+                        animatedVisibilityScope = this,
                         paddingValues = paddingValues
                     )
                 }
                 composable(
                     route = Screen.CreatureDetail.route,
                     arguments = listOf(
-                        navArgument(MAIN_BOSS_ARGUMENT_KEY) { type = NavType.StringType }
+                        navArgument(MAIN_BOSS_ARGUMENT_KEY) { type = NavType.StringType },
+                        navArgument(TEXT_ARGUMENT_KEY) { type = NavType.StringType }
                     )
                 ) {
                     CreatureDetailScreen(
+                        animatedVisibilityScope = this,
                         paddingValues = paddingValues,
                     )
                 }

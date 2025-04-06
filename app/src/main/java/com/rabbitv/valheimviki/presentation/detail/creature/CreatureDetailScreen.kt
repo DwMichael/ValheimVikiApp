@@ -1,6 +1,10 @@
 package com.rabbitv.valheimviki.presentation.detail.creature
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
@@ -15,7 +19,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun CreatureDetailScreen(
+fun SharedTransitionScope.CreatureDetailScreen(
+    animatedVisibilityScope : AnimatedVisibilityScope,
     viewModel: CreatureScreenViewModel = hiltViewModel(),
     paddingValues: PaddingValues
 ) {
@@ -28,11 +33,19 @@ fun CreatureDetailScreen(
 
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Preview(
     name = "CreatureDetail",
     showBackground = true
     )
 @Composable
 private fun PreviewCreatureDetail() {
-    CreatureDetailScreen(paddingValues = PaddingValues(0.dp))
+    SharedTransitionLayout {
+        AnimatedVisibility(visible = true){
+            CreatureDetailScreen(
+                animatedVisibilityScope = this,
+                paddingValues = PaddingValues(0.dp))
+        }
+    }
+
 }
