@@ -1,5 +1,6 @@
 package com.rabbitv.valheimviki.presentation.detail.creature
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
@@ -12,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun CreatureDetailScreen(
     viewModel: CreatureScreenViewModel = hiltViewModel(),

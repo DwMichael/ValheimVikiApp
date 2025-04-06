@@ -24,6 +24,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -60,6 +61,8 @@ fun HomeScreen(
             if (item != null) {
                 selectedItem.value = item
             }
+        }else{
+            val kolo = DrawerLayout.LOCK_MODE_LOCKED_CLOSED
         }
     }
 
@@ -70,7 +73,7 @@ fun HomeScreen(
         childNavController = childNavController,
         items = items,
         selectedItem = selectedItem,
-
+        isDetailScreen = isDetailScreen
     ) {
 
         Box(
@@ -79,7 +82,6 @@ fun HomeScreen(
                 .fillMaxSize()
         ) {
             if (isDetailScreen) {
-                // For detail screens, just show the content without TopBar
                 Image(
                     painter = painterResource(id = R.drawable.main_background),
                     contentDescription = "BackgroundImage",
@@ -88,11 +90,10 @@ fun HomeScreen(
                 )
 
                 ChildNavGraph(
-                    paddingValues = PaddingValues(0.dp),  // No padding from TopBar
+                    paddingValues = PaddingValues(0.dp),
                     navHostController = childNavController
                 )
             } else {
-                // For main screens, show HomeContent with TopBar
                 HomeContent(
                     drawerState = drawerState,
                     scope = scope,

@@ -60,13 +60,16 @@ fun NavigationDrawer(
     childNavController: NavHostController,
     items: List<DrawerItem>,
     selectedItem: MutableState<DrawerItem>,
+    isDetailScreen: Boolean,
     content: @Composable () -> Unit
 ) {
     ModalNavigationDrawer(
+
         modifier = modifier
             .fillMaxSize()
             .testTag("NavigationDrawer"),
         drawerState = drawerState,
+        gesturesEnabled = !isDetailScreen,
         drawerContent = {
             ModalDrawerSheet(
                 modifier = Modifier.fillMaxWidth(0.92f),
@@ -223,7 +226,8 @@ private fun PreviewNavigationDrawer() {
             childNavController = rememberNavController(),
             items = items,
             selectedItem = remember { mutableStateOf(items[0]) },
-            content = {}
+            content = {},
+            isDetailScreen = false
         )
     }
 }

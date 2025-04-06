@@ -22,7 +22,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.rabbitv.valheimviki.domain.model.creature.Creature
-
 import com.rabbitv.valheimviki.navigation.Screen
 import com.rabbitv.valheimviki.presentation.common.EmptyScreen
 import com.rabbitv.valheimviki.presentation.common.GridContent
@@ -35,6 +34,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MiniBossScreen(
+
     paddingValues: PaddingValues,
     viewModel: MiniBossesViewModel = hiltViewModel(),
     navController: NavHostController
@@ -67,7 +67,7 @@ fun MiniBossScreen(
                             clickToNavigate = { item -> navController.navigate(Screen.CreatureDetail.passCreatureId(mainBossId = item.id))
                             },
                             numbersOfColumns = NORMAL_SIZE_GRID,
-                            height = ITEM_HEIGHT_TWO_COLUMNS
+                            height = ITEM_HEIGHT_TWO_COLUMNS,
                         )
                     }
                 }
