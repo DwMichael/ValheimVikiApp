@@ -1,7 +1,7 @@
 package com.rabbitv.valheimviki.navigation
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -27,10 +27,10 @@ import com.rabbitv.valheimviki.utils.Constants.TEXT_ARGUMENT_KEY
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun ChildNavGraph(
+    sharedTransitionScope :SharedTransitionScope,
     paddingValues: PaddingValues,
     navHostController: NavHostController
 ) {
-    SharedTransitionLayout {
         NavHost(
             navController = navHostController,
             startDestination = MAIN_ROUTE_GRAPH,
@@ -42,7 +42,7 @@ fun ChildNavGraph(
             ) {
                 composable(Screen.Biome.route) {
                         BiomeScreen(
-                            sharedTransitionScope = this@SharedTransitionLayout,
+                            sharedTransitionScope = sharedTransitionScope,
                             animatedVisibilityScope = this,
                             modifier = Modifier.padding(10.dp),
                             onItemClick = { itemId, text ->
@@ -56,7 +56,7 @@ fun ChildNavGraph(
 
                 composable(Screen.Boss.route) {
                         BossScreen(
-                            sharedTransitionScope = this@SharedTransitionLayout,
+                            sharedTransitionScope = sharedTransitionScope,
                             animatedVisibilityScope = this,
                             modifier = Modifier.padding(10.dp),
                             onItemClick = { itemId, text ->
@@ -69,7 +69,7 @@ fun ChildNavGraph(
                 }
                 composable(Screen.MiniBoss.route) {
                         MiniBossScreen(
-                            sharedTransitionScope = this@SharedTransitionLayout,
+                            sharedTransitionScope = sharedTransitionScope,
                             animatedVisibilityScope = this,
                             modifier = Modifier.padding(10.dp),
                             onItemClick = { itemId, text ->
@@ -97,7 +97,7 @@ fun ChildNavGraph(
 
                     BiomeDetailScreen(
                         onBack = { navHostController.popBackStack() },
-                        sharedTransitionScope = this@SharedTransitionLayout,
+                        sharedTransitionScope = sharedTransitionScope,
                         animatedVisibilityScope = this,
                         paddingValues = paddingValues
                     )
@@ -110,11 +110,12 @@ fun ChildNavGraph(
                     )
                 ) {
                     CreatureDetailScreen(
+                        sharedTransitionScope = sharedTransitionScope,
                         animatedVisibilityScope = this,
                         paddingValues = paddingValues,
                     )
                 }
             }
         }
-    }
+
 }

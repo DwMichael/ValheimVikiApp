@@ -2,6 +2,9 @@ package com.rabbitv.valheimviki.presentation.home
 
 
 import android.content.res.Configuration
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -37,71 +40,75 @@ import com.rabbitv.valheimviki.presentation.navigation.DrawerItem
 import com.rabbitv.valheimviki.presentation.navigation.NavigationDrawer
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun HomeScreen(
+    sharedTransitionScope :SharedTransitionScope,
     modifier: Modifier = Modifier,
-    childNavController: NavHostController = rememberNavController()
+    childNavController : NavHostController ,
 ) {
-    val drawerState = rememberDrawerState(DrawerValue.Closed)
-    val scope = rememberCoroutineScope()
-    val items = getDrawerItems()
-    val selectedItem: MutableState<DrawerItem> = remember { mutableStateOf(items[0]) }
-    val navBackStackEntry by childNavController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
+
+        val drawerState = rememberDrawerState(DrawerValue.Closed)
+        val scope = rememberCoroutineScope()
+        val items = getDrawerItems()
+        val selectedItem: MutableState<DrawerItem> = remember { mutableStateOf(items[0]) }
+        val navBackStackEntry by childNavController.currentBackStackEntryAsState()
+        val currentRoute = navBackStackEntry?.destination?.route
 
 
-    val isDetailScreen = currentRoute?.let { route ->
-        route.startsWith(Screen.BiomeDetail.route.substringBefore("{")) ||
-                route.startsWith(Screen.CreatureDetail.route.substringBefore("{"))
-    } == true
+        val isDetailScreen = currentRoute?.let { route ->
+            route.startsWith(Screen.BiomeDetail.route.substringBefore("{")) ||
+                    route.startsWith(Screen.CreatureDetail.route.substringBefore("{"))
+        } == true
 
-    LaunchedEffect(currentRoute) {
-        if (!isDetailScreen) {
-            val item = items.find { it.route == currentRoute }
-            if (item != null) {
-                selectedItem.value = item
-            }
-        }else{
-            val kolo = DrawerLayout.LOCK_MODE_LOCKED_CLOSED
-        }
-    }
-
-    NavigationDrawer(
-        modifier = modifier,
-        drawerState = drawerState,
-        scope = scope,
-        childNavController = childNavController,
-        items = items,
-        selectedItem = selectedItem,
-        isDetailScreen = isDetailScreen
-    ) {
-
-        Box(
-            modifier = Modifier
-                .testTag("HomeContent")
-                .fillMaxSize()
-        ) {
-            if (isDetailScreen) {
-                Image(
-                    painter = painterResource(id = R.drawable.main_background),
-                    contentDescription = "BackgroundImage",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize(),
-                )
-
-                ChildNavGraph(
-                    paddingValues = PaddingValues(0.dp),
-                    navHostController = childNavController
-                )
+        LaunchedEffect(currentRoute) {
+            if (!isDetailScreen) {
+                val item = items.find { it.route == currentRoute }
+                if (item != null) {
+                    selectedItem.value = item
+                }
             } else {
-                HomeContent(
-                    drawerState = drawerState,
-                    scope = scope,
-                    childNavController = childNavController,
-                )
+                val kolo = DrawerLayout.LOCK_MODE_LOCKED_CLOSED
             }
         }
-    }
+
+        NavigationDrawer(
+            modifier = modifier,
+            drawerState = drawerState,
+            scope = scope,
+            childNavController = childNavController,
+            items = items,
+            selectedItem = selectedItem,
+            isDetailScreen = isDetailScreen
+        ) {
+
+            Box(
+                modifier = Modifier
+                    .testTag("HomeContent")
+                    .fillMaxSize()
+            ) {
+                if (isDetailScreen) {
+                    Image(
+                        painter = painterResource(id = R.drawable.main_background),
+                        contentDescription = "BackgroundImage",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                    ChildNavGraph(
+                        sharedTransitionScope = sharedTransitionScope,
+                        paddingValues = PaddingValues(0.dp),
+                        navHostController = childNavController
+                    )
+                } else {
+                    HomeContent(
+                        sharedTransitionScope = sharedTransitionScope,
+                        drawerState = drawerState,
+                        scope = scope,
+                        childNavController = childNavController,
+                    )
+                }
+            }
+        }
 }
 
 
@@ -131,6 +138,7 @@ private fun getDrawerItems():List<DrawerItem>{
 
 
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Preview(
     uiMode = Configuration.UI_MODE_NIGHT_YES,
     showBackground = true,
@@ -141,11 +149,16 @@ private fun PreviewHomeScreenContent() {
 
     CompositionLocalProvider {
         ValheimVikiAppTheme {
-            HomeContent(
-                drawerState = DrawerState(DrawerValue.Closed),
-                scope = rememberCoroutineScope(),
-                childNavController = rememberNavController(),
-            )
+            SharedTransitionScope {
+                AnimatedVisibility(true) {
+                HomeContent(
+                    drawerState = DrawerState(DrawerValue.Closed),
+                    scope = rememberCoroutineScope(),
+                    childNavController = rememberNavController(),
+                    sharedTransitionScope = this@SharedTransitionScope,
+                )
+                }
+            }
         }
     }
 

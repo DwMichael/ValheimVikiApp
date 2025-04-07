@@ -19,7 +19,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun SharedTransitionScope.CreatureDetailScreen(
+fun CreatureDetailScreen(
+    sharedTransitionScope : SharedTransitionScope,
     animatedVisibilityScope : AnimatedVisibilityScope,
     viewModel: CreatureScreenViewModel = hiltViewModel(),
     paddingValues: PaddingValues
@@ -43,6 +44,7 @@ private fun PreviewCreatureDetail() {
     SharedTransitionLayout {
         AnimatedVisibility(visible = true){
             CreatureDetailScreen(
+                sharedTransitionScope = this@SharedTransitionLayout,
                 animatedVisibilityScope = this,
                 paddingValues = PaddingValues(0.dp))
         }

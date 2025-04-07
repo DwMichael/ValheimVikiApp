@@ -66,7 +66,7 @@ const val BODY_CONTENT_PADDING = 10
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun BiomeDetailScreen(
-    onBack : () -> Unit,
+    onBack: () -> Unit,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
     viewModel: BiomeDetailScreenViewModel = hiltViewModel(),
@@ -108,28 +108,30 @@ fun BiomeDetailScreen(
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun DetailImage(
-    onBack : () -> Unit,
+    onBack: () -> Unit,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
     biome: Biome,
 ) {
-    with(sharedTransitionScope) {
-        Box(
-            modifier = Modifier
-                .heightIn(min = 200.dp, max = 320.dp),
-            contentAlignment = Alignment.BottomStart
-        ) {
+
+    Box(
+        modifier = Modifier
+            .heightIn(min = 200.dp, max = 320.dp),
+        contentAlignment = Alignment.BottomStart
+    ) {
+        with(sharedTransitionScope) {
             AsyncImage(
-                modifier = Modifier.sharedElement(
-                    state = rememberSharedContentState(key = "image-${biome.id}"),
-                    animatedVisibilityScope = animatedVisibilityScope,
-                    boundsTransform = { _, _ ->
-                        tween(durationMillis = 10000)
-                    }
-                ).clickable{
-                    onBack()
-                }
-                ,
+                modifier = Modifier
+                    .sharedElement(
+                        state = rememberSharedContentState(key = "image-${biome.id}"),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        boundsTransform = { _, _ ->
+                            tween(durationMillis = 300)
+                        }
+                    )
+                    .clickable {
+                        onBack()
+                    },
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(biome.imageUrl)
                     .crossfade(true)
@@ -138,13 +140,15 @@ fun DetailImage(
                 contentDescription = stringResource(R.string.item_grid_image),
                 contentScale = ContentScale.Crop,
             )
-            Surface(
-                modifier = Modifier
-                    .fillMaxHeight(0.2f)
-                    .fillMaxWidth(),
-                tonalElevation = 0.dp,
-                color = Color.Black.copy(alpha = ContentAlpha.medium),
-            ) {
+        }
+        Surface(
+            modifier = Modifier
+                .fillMaxHeight(0.2f)
+                .fillMaxWidth(),
+            tonalElevation = 0.dp,
+            color = Color.Black.copy(alpha = ContentAlpha.medium),
+        ) {
+            with(sharedTransitionScope) {
                 Text(
                     modifier = Modifier
                         .wrapContentHeight(align = Alignment.CenterVertically)
@@ -154,7 +158,7 @@ fun DetailImage(
                             state = rememberSharedContentState(key = "text-${biome.name}"),
                             animatedVisibilityScope = animatedVisibilityScope,
                             boundsTransform = { _, _ ->
-                                tween(durationMillis = 10000)
+                                tween(durationMillis = 300)
                             }
                         ),
                     text = biome.name,
