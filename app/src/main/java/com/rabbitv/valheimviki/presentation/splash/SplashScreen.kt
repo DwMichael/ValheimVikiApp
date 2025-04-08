@@ -18,7 +18,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.navigation.Screen
-import com.rabbitv.valheimviki.presentation.settings.SettingsScreen
 
 
 @Composable
@@ -36,7 +35,7 @@ fun SplashScreen(
             )
         )
         val destination =
-            if (hasOnboarded) Screen.Home.route else Screen.Welcome.route
+            if (hasOnboarded) Screen.Biome.route else Screen.Welcome.route
         navController.navigate(destination) {
             popUpTo(0) { inclusive = true }
         }

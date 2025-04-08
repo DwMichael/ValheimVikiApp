@@ -195,7 +195,7 @@ fun NavigationButton(
                 } else {
                     welcomeViewModel.saveOnBoardingState(completed = true)
                     navController.popBackStack()
-                    navController.navigate(Screen.Home.route)
+                    navController.navigate(Screen.Biome.route)
                 }
             }
         },

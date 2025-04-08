@@ -3,7 +3,6 @@ package com.rabbitv.valheimviki.presentation.creatures.bosses
 
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,12 +34,11 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun BossScreen(
-    sharedTransitionScope :SharedTransitionScope,
-    animatedVisibilityScope: AnimatedVisibilityScope,
     modifier: Modifier,
     onItemClick : (String, String) -> Unit,
     paddingValues: PaddingValues,
     viewModel: BossesViewModel = hiltViewModel(),
+    animatedVisibilityScope: AnimatedVisibilityScope
 ) {
     val scope = rememberCoroutineScope()
     val refreshState = rememberPullToRefreshState()
@@ -72,8 +70,7 @@ fun BossScreen(
                                 onItemClick = onItemClick,
                                 numbersOfColumns = NORMAL_SIZE_GRID,
                                 height = ITEM_HEIGHT_TWO_COLUMNS,
-                                sharedTransitionScope = sharedTransitionScope,
-                                animatedVisibilityScope = animatedVisibilityScope,
+                                animatedVisibilityScope = animatedVisibilityScope
 
                             )
                         }

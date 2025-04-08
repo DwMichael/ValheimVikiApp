@@ -2,8 +2,6 @@ package com.rabbitv.valheimviki.presentation.biome
 
 
 import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,15 +27,14 @@ import com.rabbitv.valheimviki.utils.isNetworkAvailable
 import kotlinx.coroutines.launch
 
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BiomeScreen(
-    sharedTransitionScope :SharedTransitionScope,
-    animatedVisibilityScope:AnimatedVisibilityScope,
     modifier: Modifier,
     onItemClick : (String, String) -> Unit,
     paddingValues: PaddingValues,
     viewModel: BiomeScreenViewModel = hiltViewModel(),
+    animatedVisibilityScope: AnimatedVisibilityScope
     ) {
     val scope = rememberCoroutineScope()
     val refreshState = rememberPullToRefreshState()
@@ -91,7 +88,6 @@ fun BiomeScreen(
                             onItemClick = onItemClick,
                             numbersOfColumns = BIOME_GRID_COLUMNS,
                             height = ITEM_HEIGHT_TWO_COLUMNS,
-                            sharedTransitionScope =sharedTransitionScope,
                             animatedVisibilityScope = animatedVisibilityScope
                         )
                     }

@@ -3,7 +3,6 @@ package com.rabbitv.valheimviki.presentation.creatures.mini_bosses
 
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,12 +34,12 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun MiniBossScreen(
-    sharedTransitionScope :SharedTransitionScope,
-    animatedVisibilityScope: AnimatedVisibilityScope,
     modifier : Modifier,
     onItemClick :(String,String)-> Unit,
     paddingValues: PaddingValues,
-    viewModel: MiniBossesViewModel = hiltViewModel()
+    viewModel: MiniBossesViewModel = hiltViewModel(),
+    animatedVisibilityScope: AnimatedVisibilityScope
+
 ) {
     val scope = rememberCoroutineScope()
     val refreshState = rememberPullToRefreshState()
@@ -73,8 +72,7 @@ fun MiniBossScreen(
                                 onItemClick = onItemClick ,
                                 numbersOfColumns = NORMAL_SIZE_GRID,
                                 height = ITEM_HEIGHT_TWO_COLUMNS,
-                                sharedTransitionScope = sharedTransitionScope,
-                                animatedVisibilityScope = animatedVisibilityScope,
+                                animatedVisibilityScope = animatedVisibilityScope
                             )
                         }
                     }
