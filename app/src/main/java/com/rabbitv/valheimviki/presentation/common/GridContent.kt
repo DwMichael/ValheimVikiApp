@@ -2,7 +2,12 @@ package com.rabbitv.valheimviki.presentation.common
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.BoundsTransform
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.core.ArcMode
+import androidx.compose.animation.core.ExperimentalAnimationSpecApi
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.keyframes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -46,7 +51,7 @@ import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_TWO_COLUMNS
 import com.rabbitv.valheimviki.ui.theme.MEDIUM_PADDING
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
-
+private const val boundsAnimationDurationMillis = 500
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GridContent(
@@ -91,7 +96,7 @@ fun GridContent(
 }
 
 
-@OptIn(ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalAnimationSpecApi::class)
 @Composable
 fun GridItem(
     item: ItemData,
@@ -118,6 +123,7 @@ fun GridItem(
                     .clip(RoundedCornerShape(MEDIUM_PADDING))
                     .sharedElement(
                         state = rememberSharedContentState(key = "image-${item.id}"),
+
                         animatedVisibilityScope = animatedVisibilityScope,
                     ),
                 model = ImageRequest.Builder(context = LocalContext.current)
@@ -151,6 +157,13 @@ fun GridItem(
                             (horizontal = 8.dp)
                         .sharedElement(
                             state = rememberSharedContentState(key = "text-${item.name}"),
+                            boundsTransform = BoundsTransform{initialBounds, targetBounds ->
+                                keyframes {
+                                    durationMillis = boundsAnimationDurationMillis
+                                    initialBounds at 0 using ArcMode.ArcBelow using FastOutSlowInEasing
+                                    targetBounds at boundsAnimationDurationMillis
+                                }
+                            },
                             animatedVisibilityScope = animatedVisibilityScope,
                         ),
                     text = item.name,

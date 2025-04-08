@@ -4,10 +4,15 @@
 
 package com.rabbitv.valheimviki
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Scaffold
@@ -50,6 +55,7 @@ import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.Constants.BIOME_ARGUMENT_KEY
 import com.rabbitv.valheimviki.utils.Constants.MAIN_BOSS_ARGUMENT_KEY
 import com.rabbitv.valheimviki.utils.Constants.TEXT_ARGUMENT_KEY
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Preview
@@ -89,14 +95,19 @@ fun MainContainer(
                 route.startsWith(Screen.CreatureDetail.route.substringBefore("{"))
     } == false
 
+    val isNavigating = remember { mutableStateOf(false) }
+    val topBarVisible = remember { mutableStateOf(showTopAppBar) }
     LaunchedEffect(currentRoute) {
-        if (showTopAppBar) {
-            val item = items.find { it.route == currentRoute }
-            if (item != null) {
-                selectedItem.value = item
-            }
+        if (!showTopAppBar) {
+            isNavigating.value = true
+            delay(250)
+            topBarVisible.value = false
+            isNavigating.value = false
+        } else {
+            topBarVisible.value = true
         }
     }
+
 
     NavigationDrawer(
         modifier = modifier,
@@ -109,17 +120,17 @@ fun MainContainer(
     ) {
         Scaffold(
             topBar = {
-//                AnimatedVisibility(
-//                    visible = showTopAppBar,
-////                    enter = slideInVertically(
-////                        initialOffsetY = { -it },
-////                        animationSpec = tween(durationMillis = 600)
-////                    ) + fadeIn(animationSpec = tween(durationMillis = 300)),
-////                    exit = slideOutVertically(
-////                        targetOffsetY = { -it },
-////                        animationSpec = tween(durationMillis = 300)
-////                    ) + fadeOut(animationSpec = tween(durationMillis = 300))
-//                ) {
+                AnimatedVisibility (
+                    visible = topBarVisible.value ,
+                    enter = slideInVertically(
+                        initialOffsetY = { -it },
+                        animationSpec = tween(durationMillis = 300)
+                    ) ,
+                    exit = slideOutVertically(
+                        targetOffsetY = { -it },
+                        animationSpec = tween(durationMillis = 300)
+                    ) + fadeOut(animationSpec = tween(durationMillis = 300))
+                ) {
                     HomeTopBar(
                         onSearchBarClick = {},
                         onMenuClick = { scope.launch { drawerState.open() } },
@@ -127,13 +138,13 @@ fun MainContainer(
                         scope = scope,
                         drawerState = drawerState
                     )
-//                }
+                }
             },
             content = { innerPadding ->
                 with(sharedTransitionScope) {
                     NavHost(
                         navController = valheimVikiNavController,
-                        startDestination = Screen.Splash.route
+                        startDestination = Screen.Splash.route,
                     ) {
                         composable(route = Screen.Splash.route) {
                             SplashScreen(valheimVikiNavController)

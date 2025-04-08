@@ -65,6 +65,7 @@ const val BODY_CONTENT_PADDING = 10
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun BiomeDetailScreen(
+
     onBack: () -> Unit,
     viewModel: BiomeDetailScreenViewModel = hiltViewModel(),
     animatedVisibilityScope: AnimatedVisibilityScope
