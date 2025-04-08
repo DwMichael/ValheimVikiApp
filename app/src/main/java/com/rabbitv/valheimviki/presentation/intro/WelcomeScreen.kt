@@ -80,7 +80,7 @@ fun WelcomeScreen(
             .paint(
                 painterResource(id = pages[currentPage].image),
                 contentScale = ContentScale.Crop
-            )
+            ).padding(bottom = 50.dp)
     ) {
         HorizontalPager(
             state = pagerState,
