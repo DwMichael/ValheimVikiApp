@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -31,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -57,6 +59,7 @@ import coil3.request.placeholder
 import com.rabbitv.valheimviki.LocalSharedTransitionScope
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.biome.Biome
+import com.rabbitv.valheimviki.ui.theme.SMALL_PADDING
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
 const val DEFAULT_MINIMUM_TEXT_LINE = 4
@@ -69,7 +72,7 @@ fun BiomeDetailScreen(
     onBack: () -> Unit,
     viewModel: BiomeDetailScreenViewModel = hiltViewModel(),
     animatedVisibilityScope: AnimatedVisibilityScope
-    ) {
+) {
     val biome by viewModel.biome.collectAsStateWithLifecycle()
 
     biome?.let { biome ->
@@ -87,7 +90,7 @@ fun BiomeDetailScreen(
                     DetailImage(
                         onBack = onBack,
                         biome = biome,
-                        animatedVisibilityScope= animatedVisibilityScope
+                        animatedVisibilityScope = animatedVisibilityScope
                     )
                     DetailExpandableText(
                         text = biome.description.toString(),
@@ -110,22 +113,29 @@ fun DetailImage(
 ) {
     val sharedTransitionScope = LocalSharedTransitionScope.current
         ?: throw IllegalStateException("No Scope found")
+    with(sharedTransitionScope) {
+        Box(
+            modifier = Modifier
+                .heightIn(min = 200.dp, max = 320.dp),
 
-    Box(
-        modifier = Modifier
-            .heightIn(min = 200.dp, max = 320.dp),
-        contentAlignment = Alignment.BottomStart
-    ) {
-        with(sharedTransitionScope) {
+            contentAlignment = Alignment.BottomStart
+        ) {
+
             AsyncImage(
-                modifier = Modifier
-                    .sharedElement(
-                        state = rememberSharedContentState(key = "image-${biome.id}"),
-                        animatedVisibilityScope = animatedVisibilityScope,
-                        boundsTransform = { _, _ ->
-                            tween(durationMillis = 600)
-                        }
+                modifier = Modifier.sharedElement(
+                    state = rememberSharedContentState(key = "image-${biome.id}"),
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    boundsTransform = { _, _ ->
+                        tween(durationMillis = 600)
+                    }
+                )
+                    .clip(
+                        RoundedCornerShape(
+                            bottomStart = SMALL_PADDING,
+                            bottomEnd = SMALL_PADDING
+                        )
                     )
+
                     .clickable {
                         onBack()
                     },
@@ -137,32 +147,45 @@ fun DetailImage(
                 contentDescription = stringResource(R.string.item_grid_image),
                 contentScale = ContentScale.Crop,
             )
-        }
-        Surface(
-            modifier = Modifier
-                .fillMaxHeight(0.2f)
-                .fillMaxWidth(),
-            tonalElevation = 0.dp,
-            color = Color.Black.copy(alpha = ContentAlpha.medium),
-        ) {
-            with(sharedTransitionScope) {
+            Surface(
+                modifier = Modifier
+                    .sharedElement(
+                        state = rememberSharedContentState(key = "Surface-${biome.id}"),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        boundsTransform = { _, _ ->
+                            tween(durationMillis = 600)
+                        }
+                    )
+                    .fillMaxHeight(0.2f)
+                    .fillMaxWidth()  .clip(
+                        RoundedCornerShape(
+                            bottomStart = SMALL_PADDING,
+                            bottomEnd = SMALL_PADDING
+                        )
+                    ),
+                tonalElevation = 0.dp,
+                color = Color.Black.copy(alpha = ContentAlpha.medium),
+            ) {
+
                 Text(
                     modifier = Modifier
-                        .wrapContentHeight(align = Alignment.CenterVertically)
-                        .padding
-                            (horizontal = 8.dp)
                         .sharedElement(
                             state = rememberSharedContentState(key = "text-${biome.name}"),
                             animatedVisibilityScope = animatedVisibilityScope,
                             boundsTransform = { _, _ ->
                                 tween(durationMillis = 600)
                             }
-                        ),
+                        )
+                        .wrapContentHeight(align = Alignment.CenterVertically)
+                        .padding
+                            (horizontal = 8.dp)
+                        ,
                     text = biome.name,
                     color = Color.White,
                     style = MaterialTheme.typography.displaySmall,
 
                     )
+
             }
         }
     }
@@ -296,6 +319,7 @@ private fun PreviewDetailImage() {
 
 
 @Preview(name = "BiomeDetail", showBackground = true)
+
 @Composable
 private fun PreviewBiomeDetail() {
     val biome = Biome(
@@ -346,7 +370,6 @@ private fun PreviewBiomeDetail() {
                         modifier = Modifier
                             .fillMaxHeight(0.2f)
                             .fillMaxWidth(),
-                        tonalElevation = 0.dp,
                         color = Color.Black.copy(alpha = ContentAlpha.medium),
                     ) {
                         Text(

@@ -118,14 +118,13 @@ fun GridItem(
             contentAlignment = Alignment.BottomStart
         ) {
             AsyncImage(
-                modifier = Modifier
+                modifier = Modifier.sharedElement(
+                    state = rememberSharedContentState(key = "image-${item.id}"),
+                    animatedVisibilityScope = animatedVisibilityScope,
+                )
                     .fillMaxSize()
                     .clip(RoundedCornerShape(MEDIUM_PADDING))
-                    .sharedElement(
-                        state = rememberSharedContentState(key = "image-${item.id}"),
-
-                        animatedVisibilityScope = animatedVisibilityScope,
-                    ),
+                    ,
                 model = ImageRequest.Builder(context = LocalContext.current)
                     .data(item.imageUrl.toString())
                     .crossfade(true)
@@ -139,6 +138,10 @@ fun GridItem(
 
             Surface(
                 modifier = Modifier
+                    .sharedElement(
+                        state = rememberSharedContentState(key = "Surface-${item.id}"),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                    )
                     .fillMaxHeight(0.2f)
                     .fillMaxWidth()
                     .clip(
@@ -152,9 +155,6 @@ fun GridItem(
             ) {
                 Text(
                     modifier = Modifier
-                        .wrapContentHeight(align = Alignment.CenterVertically)
-                        .padding
-                            (horizontal = 8.dp)
                         .sharedElement(
                             state = rememberSharedContentState(key = "text-${item.name}"),
                             boundsTransform = BoundsTransform{initialBounds, targetBounds ->
@@ -165,7 +165,11 @@ fun GridItem(
                                 }
                             },
                             animatedVisibilityScope = animatedVisibilityScope,
-                        ),
+                        )
+                        .wrapContentHeight(align = Alignment.CenterVertically)
+                        .padding
+                            (horizontal = 8.dp)
+                        ,
                     text = item.name,
                     color = Color.White,
                     style = MaterialTheme.typography.headlineSmall,
