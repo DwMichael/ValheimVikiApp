@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -12,7 +11,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -37,7 +35,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -58,6 +55,7 @@ import coil3.request.error
 import coil3.request.placeholder
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.biome.Biome
+import com.rabbitv.valheimviki.navigation.LocalSharedTransitionScope
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
 const val DEFAULT_MINIMUM_TEXT_LINE = 4
@@ -66,13 +64,11 @@ const val BODY_CONTENT_PADDING = 10
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun BiomeDetailScreen(
-    onBack: () -> Unit,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedVisibilityScope: AnimatedVisibilityScope,
-    viewModel: BiomeDetailScreenViewModel = hiltViewModel(),
-    paddingValues: PaddingValues,
 
-    ) {
+    onBack: () -> Unit,
+    viewModel: BiomeDetailScreenViewModel = hiltViewModel(),
+    animatedVisibilityScope: AnimatedVisibilityScope
+) {
     val biome by viewModel.biome.collectAsStateWithLifecycle()
 
     biome?.let { biome ->
@@ -89,9 +85,8 @@ fun BiomeDetailScreen(
                 ) {
                     DetailImage(
                         onBack = onBack,
-                        animatedVisibilityScope = animatedVisibilityScope,
                         biome = biome,
-                        sharedTransitionScope = sharedTransitionScope
+                        animatedVisibilityScope = animatedVisibilityScope
                     )
                     DetailExpandableText(
                         text = biome.description.toString(),
@@ -109,63 +104,66 @@ fun BiomeDetailScreen(
 @Composable
 fun DetailImage(
     onBack: () -> Unit,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedVisibilityScope: AnimatedVisibilityScope,
     biome: Biome,
+    animatedVisibilityScope: AnimatedVisibilityScope
 ) {
+    val sharedTransitionScope = LocalSharedTransitionScope.current
+        ?: throw IllegalStateException("No Scope found")
+    with(sharedTransitionScope) {
+        Box(
+            modifier = Modifier
+                .heightIn(min = 200.dp, max = 320.dp),
 
-    Box(
-        modifier = Modifier
-            .heightIn(min = 200.dp, max = 320.dp),
-        contentAlignment = Alignment.BottomStart
-    ) {
-        with(sharedTransitionScope) {
+            contentAlignment = Alignment.BottomStart
+        ) {
+
             AsyncImage(
-                modifier = Modifier
-                    .sharedElement(
-                        state = rememberSharedContentState(key = "image-${biome.id}"),
-                        animatedVisibilityScope = animatedVisibilityScope,
-                        boundsTransform = { _, _ ->
-                            tween(durationMillis = 300)
-                        }
-                    )
-                    .clickable {
+                modifier = Modifier.sharedElement(
+                    state = rememberSharedContentState(key = "image-${biome.id}"),
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    boundsTransform = { _, _ ->
+                        tween(durationMillis = 600)
+                    }
+                ).fillMaxSize().clickable {
                         onBack()
                     },
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(biome.imageUrl)
                     .crossfade(true)
                     .build(),
-                placeholder = painterResource(R.drawable.ic_placeholder),
                 contentDescription = stringResource(R.string.item_grid_image),
                 contentScale = ContentScale.Crop,
             )
-        }
-        Surface(
-            modifier = Modifier
-                .fillMaxHeight(0.2f)
-                .fillMaxWidth(),
-            tonalElevation = 0.dp,
-            color = Color.Black.copy(alpha = ContentAlpha.medium),
-        ) {
-            with(sharedTransitionScope) {
+            Surface(
+                modifier = Modifier
+                    .sharedElement(
+                        state = rememberSharedContentState(key = "Surface-${biome.id}"),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        boundsTransform = { _, _ ->
+                            tween(durationMillis = 600)
+                        }
+                    )
+                    .fillMaxHeight(0.2f)
+                    .fillMaxWidth(),
+                tonalElevation = 0.dp,
+                color = Color.Black.copy(alpha = ContentAlpha.medium),
+            ) {
+
                 Text(
-                    modifier = Modifier
-                        .wrapContentHeight(align = Alignment.CenterVertically)
-                        .padding
+                    modifier = Modifier.padding
                             (horizontal = 8.dp)
                         .sharedElement(
                             state = rememberSharedContentState(key = "text-${biome.name}"),
                             animatedVisibilityScope = animatedVisibilityScope,
                             boundsTransform = { _, _ ->
-                                tween(durationMillis = 300)
+                                tween(durationMillis = 600)
                             }
-                        ),
+                        ).wrapContentHeight(align = Alignment.CenterVertically),
                     text = biome.name,
                     color = Color.White,
                     style = MaterialTheme.typography.displaySmall,
-
                     )
+
             }
         }
     }
@@ -292,7 +290,6 @@ private fun PreviewDetailImage() {
                     order = 1
                 ),
                 onBack = {},
-                sharedTransitionScope = this@SharedTransitionLayout
             )
         }
     }
@@ -300,6 +297,7 @@ private fun PreviewDetailImage() {
 
 
 @Preview(name = "BiomeDetail", showBackground = true)
+
 @Composable
 private fun PreviewBiomeDetail() {
     val biome = Biome(
@@ -350,7 +348,6 @@ private fun PreviewBiomeDetail() {
                         modifier = Modifier
                             .fillMaxHeight(0.2f)
                             .fillMaxWidth(),
-                        tonalElevation = 0.dp,
                         color = Color.Black.copy(alpha = ContentAlpha.medium),
                     ) {
                         Text(

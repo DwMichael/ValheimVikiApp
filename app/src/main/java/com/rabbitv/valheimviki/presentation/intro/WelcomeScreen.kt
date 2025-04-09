@@ -80,7 +80,7 @@ fun WelcomeScreen(
             .paint(
                 painterResource(id = pages[currentPage].image),
                 contentScale = ContentScale.Crop
-            )
+            ).padding(bottom = 50.dp)
     ) {
         HorizontalPager(
             state = pagerState,
@@ -195,7 +195,7 @@ fun NavigationButton(
                 } else {
                     welcomeViewModel.saveOnBoardingState(completed = true)
                     navController.popBackStack()
-                    navController.navigate(Screen.Home.route)
+                    navController.navigate(Screen.Biome.route)
                 }
             }
         },

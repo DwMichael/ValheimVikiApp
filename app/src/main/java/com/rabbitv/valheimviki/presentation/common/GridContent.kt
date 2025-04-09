@@ -3,8 +3,8 @@ package com.rabbitv.valheimviki.presentation.common
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionLayout
-import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.ExperimentalAnimationSpecApi
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -43,12 +43,14 @@ import coil3.request.crossfade
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.repository.ItemData
+import com.rabbitv.valheimviki.navigation.LocalSharedTransitionScope
 import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_TWO_COLUMNS
 import com.rabbitv.valheimviki.ui.theme.MEDIUM_PADDING
+import com.rabbitv.valheimviki.ui.theme.SMALL_PADDING
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
-
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
+private const val boundsAnimationDurationMillis = 500
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GridContent(
     modifier: Modifier,
@@ -56,8 +58,7 @@ fun GridContent(
     onItemClick: (String, String) -> Unit,
     numbersOfColumns: Int,
     height: Dp,
-    animatedVisibilityScope: AnimatedVisibilityScope,
-    sharedTransitionScope :SharedTransitionScope,
+    animatedVisibilityScope:AnimatedVisibilityScope,
 ) {
 
     LazyVerticalGrid(
@@ -83,7 +84,6 @@ fun GridContent(
                         item = item,
                         onItemClick = onItemClick,
                         height = height,
-                        sharedTransitionScope = sharedTransitionScope,
                         animatedVisibilityScope = animatedVisibilityScope
                     )
                 }
@@ -94,15 +94,18 @@ fun GridContent(
 }
 
 
-@OptIn(ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalAnimationSpecApi::class)
 @Composable
 fun GridItem(
     item: ItemData,
     onItemClick: (String, String) -> Unit,
     height: Dp,
-    sharedTransitionScope :SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope
 ) {
+    val sharedTransitionScope = LocalSharedTransitionScope.current
+        ?: throw IllegalStateException("No Scope found")
+
+
     with(sharedTransitionScope) {
         Box(
             modifier = Modifier
@@ -113,13 +116,11 @@ fun GridItem(
             contentAlignment = Alignment.BottomStart
         ) {
             AsyncImage(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clip(RoundedCornerShape(MEDIUM_PADDING))
-                    .sharedElement(
-                        state = rememberSharedContentState(key = "image-${item.id}"),
-                        animatedVisibilityScope = animatedVisibilityScope,
-                    ),
+                modifier = Modifier.sharedElement(
+                    state = rememberSharedContentState(key = "image-${item.id}"),
+                    animatedVisibilityScope = animatedVisibilityScope,
+                ).fillMaxSize().clip(RoundedCornerShape(MEDIUM_PADDING))
+                    ,
                 model = ImageRequest.Builder(context = LocalContext.current)
                     .data(item.imageUrl.toString())
                     .crossfade(true)
@@ -133,26 +134,33 @@ fun GridItem(
 
             Surface(
                 modifier = Modifier
+                    .sharedElement(
+                        state = rememberSharedContentState(key = "Surface-${item.id}"),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                    )
                     .fillMaxHeight(0.2f)
                     .fillMaxWidth()
-                    .clip(
-                        RoundedCornerShape(
-                            bottomStart = MEDIUM_PADDING,
-                            bottomEnd = MEDIUM_PADDING
-                        )
-                    ),
+                    .clip(RoundedCornerShape(bottomStart = SMALL_PADDING, bottomEnd = SMALL_PADDING)),
                 tonalElevation = 0.dp,
                 color = Color.Black.copy(alpha = ContentAlpha.medium),
             ) {
                 Text(
-                    modifier = Modifier
-                        .wrapContentHeight(align = Alignment.CenterVertically)
-                        .padding
-                            (horizontal = 8.dp)
+                    modifier = Modifier.padding
+                        (horizontal = 8.dp)
                         .sharedElement(
                             state = rememberSharedContentState(key = "text-${item.name}"),
+                            boundsTransform = { _, _ ->
+                                tween(durationMillis = 600)
+                            },
+//                            boundsTransform = BoundsTransform{initialBounds, targetBounds ->
+//                                keyframes {
+//                                    durationMillis = boundsAnimationDurationMillis
+//                                    initialBounds at 0 using ArcMode.ArcBelow using FastOutSlowInEasing
+//                                    targetBounds at boundsAnimationDurationMillis
+//                                }
+//                            },
                             animatedVisibilityScope = animatedVisibilityScope,
-                        ),
+                        ).wrapContentHeight(align = Alignment.CenterVertically),
                     text = item.name,
                     color = Color.White,
                     style = MaterialTheme.typography.headlineSmall,
@@ -178,18 +186,16 @@ private fun PreviewGridItem() {
         order = 1
     )
     ValheimVikiAppTheme {
-        SharedTransitionLayout {
-            AnimatedVisibility(visible = true) {
+                AnimatedVisibility(true) {
                 GridItem(
                     item = item,
                     onItemClick = { _, _ -> },
                     height = ITEM_HEIGHT_TWO_COLUMNS,
-                    sharedTransitionScope = this@SharedTransitionLayout,
                     animatedVisibilityScope = this,
                 )
+                }
             }
-        }
-    }
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
@@ -216,18 +222,15 @@ private fun PreviewContentGrid() {
 
 
     ValheimVikiAppTheme {
-        SharedTransitionLayout {
-            AnimatedVisibility(visible = true) {
-                GridContent(
-                    modifier = Modifier,
-                    items = sampleBiomes,
-                    onItemClick = { _,_ -> {} },
-                    numbersOfColumns = 2,
-                    height = ITEM_HEIGHT_TWO_COLUMNS,
-                    sharedTransitionScope = this@SharedTransitionLayout,
-                    animatedVisibilityScope = this
-                )
-            }
+        AnimatedVisibility(true) {
+            GridContent(
+                modifier = Modifier,
+                items = sampleBiomes,
+                onItemClick = { _, _ -> {} },
+                numbersOfColumns = 2,
+                height = ITEM_HEIGHT_TWO_COLUMNS,
+                this
+            )
         }
     }
 }

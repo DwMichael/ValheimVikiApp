@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.navigation
+package com.rabbitv.valheimviki.presentation.components
 
 //import com.rabbitv.valheimviki.ui.theme.IMFellEnglishFontFamily
 import android.content.res.Configuration
@@ -33,6 +33,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -40,6 +42,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.composables.icons.lucide.Lucide
@@ -51,6 +54,13 @@ import com.rabbitv.valheimviki.ui.theme.ForestGreen40Dark
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+data class DrawerItem(
+    val iconPainter: Painter? = null,
+    val icon: ImageVector? = null,
+    val label: String,
+    val contentDescription: String,
+    val route: String = label
+)
 
 @Composable
 fun NavigationDrawer(
@@ -148,7 +158,7 @@ fun NavigationDrawer(
                             selected = (item == selectedItem.value),
                             onClick = {
                                 childNavController.navigate(item.route) {
-                                    popUpTo(childNavController.graph.startDestinationId) {
+                                    popUpTo(childNavController.graph.findStartDestination().id) {
                                         saveState = true
                                     }
                                     launchSingleTop = true

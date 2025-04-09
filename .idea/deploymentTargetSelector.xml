@@ -4,7 +4,7 @@
     <selectionStates>
       <SelectionState runConfigName="ValheimVikiApp">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-04-06T08:04:52.608835900Z">
+        <DropdownSelection timestamp="2025-04-09T16:39:41.708748600Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\Legio\.android\avd\Pixel_Fold_API_35.avd" />
@@ -14,6 +14,9 @@
         <DialogSelection />
       </SelectionState>
       <SelectionState runConfigName="PreviewShimmerItem">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="PreviewBiomeDetail">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

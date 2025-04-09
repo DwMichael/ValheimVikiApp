@@ -19,6 +19,8 @@ import com.composables.icons.lucide.MountainSnow
 import com.composables.icons.lucide.Rabbit
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.navigation.Screen
+import com.rabbitv.valheimviki.presentation.components.DrawerItem
+import com.rabbitv.valheimviki.presentation.components.NavigationDrawer
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
