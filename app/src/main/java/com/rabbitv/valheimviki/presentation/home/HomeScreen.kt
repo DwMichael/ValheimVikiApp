@@ -36,8 +36,8 @@
 //import com.rabbitv.valheimviki.R
 //import com.rabbitv.valheimviki.navigation.ChildNavGraph
 //import com.rabbitv.valheimviki.navigation.Screen
-//import com.rabbitv.valheimviki.presentation.navigation.DrawerItem
-//import com.rabbitv.valheimviki.presentation.navigation.NavigationDrawer
+//import com.rabbitv.valheimviki.presentation.components.DrawerItem
+//import com.rabbitv.valheimviki.presentation.components.NavigationDrawer
 //import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 //
 //@OptIn(ExperimentalSharedTransitionApi::class)

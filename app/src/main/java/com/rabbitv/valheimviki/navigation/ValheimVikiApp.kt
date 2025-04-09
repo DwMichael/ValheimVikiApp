@@ -2,7 +2,7 @@
     ExperimentalSharedTransitionApi::class
 )
 
-package com.rabbitv.valheimviki
+package com.rabbitv.valheimviki.navigation
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
@@ -40,16 +40,16 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.MountainSnow
-import com.rabbitv.valheimviki.navigation.Screen
+import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.presentation.biome.BiomeScreen
+import com.rabbitv.valheimviki.presentation.components.DrawerItem
+import com.rabbitv.valheimviki.presentation.components.NavigationDrawer
 import com.rabbitv.valheimviki.presentation.creatures.bosses.BossScreen
 import com.rabbitv.valheimviki.presentation.creatures.mini_bosses.MiniBossScreen
 import com.rabbitv.valheimviki.presentation.detail.biome.BiomeDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.creature.CreatureDetailScreen
 import com.rabbitv.valheimviki.presentation.home.HomeTopBar
 import com.rabbitv.valheimviki.presentation.intro.WelcomeScreen
-import com.rabbitv.valheimviki.presentation.navigation.DrawerItem
-import com.rabbitv.valheimviki.presentation.navigation.NavigationDrawer
 import com.rabbitv.valheimviki.presentation.splash.SplashScreen
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.Constants.BIOME_ARGUMENT_KEY
@@ -85,8 +85,6 @@ fun MainContainer(
     val navBackStackEntry by valheimVikiNavController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    val sharedTransitionScope = LocalSharedTransitionScope.current
-        ?: throw IllegalStateException("No SharedElementScope found")
 
     val showTopAppBar = currentRoute?.let { route ->
         route.startsWith(Screen.Splash.route.substringBefore("{")) ||
@@ -141,7 +139,6 @@ fun MainContainer(
                 }
             },
             content = { innerPadding ->
-                with(sharedTransitionScope) {
                     NavHost(
                         navController = valheimVikiNavController,
                         startDestination = Screen.Splash.route,
@@ -198,7 +195,9 @@ fun MainContainer(
                             )
                         ) { backStackEntry ->
                             BiomeDetailScreen(
-                                onBack = { valheimVikiNavController.popBackStack() },
+                                onBack = { valheimVikiNavController.navigate(route = Screen.Biome.route) {
+                                    popUpTo(route = Screen.Biome.route) { inclusive = true }
+                                } },
                                 animatedVisibilityScope = this@composable
                             )
                         }
@@ -211,10 +210,7 @@ fun MainContainer(
                         ) {
                             CreatureDetailScreen()
                         }
-
-
                     }
-                }
             }
         )
     }

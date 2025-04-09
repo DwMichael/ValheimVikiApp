@@ -2,12 +2,9 @@ package com.rabbitv.valheimviki.presentation.common
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.BoundsTransform
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.core.ArcMode
 import androidx.compose.animation.core.ExperimentalAnimationSpecApi
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.keyframes
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -43,12 +40,13 @@ import androidx.wear.compose.material.ContentAlpha
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
-import com.rabbitv.valheimviki.LocalSharedTransitionScope
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.repository.ItemData
+import com.rabbitv.valheimviki.navigation.LocalSharedTransitionScope
 import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_TWO_COLUMNS
 import com.rabbitv.valheimviki.ui.theme.MEDIUM_PADDING
+import com.rabbitv.valheimviki.ui.theme.SMALL_PADDING
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
 private const val boundsAnimationDurationMillis = 500
@@ -121,9 +119,7 @@ fun GridItem(
                 modifier = Modifier.sharedElement(
                     state = rememberSharedContentState(key = "image-${item.id}"),
                     animatedVisibilityScope = animatedVisibilityScope,
-                )
-                    .fillMaxSize()
-                    .clip(RoundedCornerShape(MEDIUM_PADDING))
+                ).fillMaxSize().clip(RoundedCornerShape(MEDIUM_PADDING))
                     ,
                 model = ImageRequest.Builder(context = LocalContext.current)
                     .data(item.imageUrl.toString())
@@ -144,32 +140,27 @@ fun GridItem(
                     )
                     .fillMaxHeight(0.2f)
                     .fillMaxWidth()
-                    .clip(
-                        RoundedCornerShape(
-                            bottomStart = MEDIUM_PADDING,
-                            bottomEnd = MEDIUM_PADDING
-                        )
-                    ),
+                    .clip(RoundedCornerShape(bottomStart = SMALL_PADDING, bottomEnd = SMALL_PADDING)),
                 tonalElevation = 0.dp,
                 color = Color.Black.copy(alpha = ContentAlpha.medium),
             ) {
                 Text(
-                    modifier = Modifier
+                    modifier = Modifier.padding
+                        (horizontal = 8.dp)
                         .sharedElement(
                             state = rememberSharedContentState(key = "text-${item.name}"),
-                            boundsTransform = BoundsTransform{initialBounds, targetBounds ->
-                                keyframes {
-                                    durationMillis = boundsAnimationDurationMillis
-                                    initialBounds at 0 using ArcMode.ArcBelow using FastOutSlowInEasing
-                                    targetBounds at boundsAnimationDurationMillis
-                                }
+                            boundsTransform = { _, _ ->
+                                tween(durationMillis = 600)
                             },
+//                            boundsTransform = BoundsTransform{initialBounds, targetBounds ->
+//                                keyframes {
+//                                    durationMillis = boundsAnimationDurationMillis
+//                                    initialBounds at 0 using ArcMode.ArcBelow using FastOutSlowInEasing
+//                                    targetBounds at boundsAnimationDurationMillis
+//                                }
+//                            },
                             animatedVisibilityScope = animatedVisibilityScope,
-                        )
-                        .wrapContentHeight(align = Alignment.CenterVertically)
-                        .padding
-                            (horizontal = 8.dp)
-                        ,
+                        ).wrapContentHeight(align = Alignment.CenterVertically),
                     text = item.name,
                     color = Color.White,
                     style = MaterialTheme.typography.headlineSmall,

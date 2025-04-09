@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -32,12 +31,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -56,10 +53,9 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import coil3.request.error
 import coil3.request.placeholder
-import com.rabbitv.valheimviki.LocalSharedTransitionScope
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.biome.Biome
-import com.rabbitv.valheimviki.ui.theme.SMALL_PADDING
+import com.rabbitv.valheimviki.navigation.LocalSharedTransitionScope
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
 const val DEFAULT_MINIMUM_TEXT_LINE = 4
@@ -128,22 +124,13 @@ fun DetailImage(
                     boundsTransform = { _, _ ->
                         tween(durationMillis = 600)
                     }
-                )
-                    .clip(
-                        RoundedCornerShape(
-                            bottomStart = SMALL_PADDING,
-                            bottomEnd = SMALL_PADDING
-                        )
-                    )
-
-                    .clickable {
+                ).fillMaxSize().clickable {
                         onBack()
                     },
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(biome.imageUrl)
                     .crossfade(true)
                     .build(),
-                placeholder = painterResource(R.drawable.ic_placeholder),
                 contentDescription = stringResource(R.string.item_grid_image),
                 contentScale = ContentScale.Crop,
             )
@@ -157,33 +144,24 @@ fun DetailImage(
                         }
                     )
                     .fillMaxHeight(0.2f)
-                    .fillMaxWidth()  .clip(
-                        RoundedCornerShape(
-                            bottomStart = SMALL_PADDING,
-                            bottomEnd = SMALL_PADDING
-                        )
-                    ),
+                    .fillMaxWidth(),
                 tonalElevation = 0.dp,
                 color = Color.Black.copy(alpha = ContentAlpha.medium),
             ) {
 
                 Text(
-                    modifier = Modifier
+                    modifier = Modifier.padding
+                            (horizontal = 8.dp)
                         .sharedElement(
                             state = rememberSharedContentState(key = "text-${biome.name}"),
                             animatedVisibilityScope = animatedVisibilityScope,
                             boundsTransform = { _, _ ->
                                 tween(durationMillis = 600)
                             }
-                        )
-                        .wrapContentHeight(align = Alignment.CenterVertically)
-                        .padding
-                            (horizontal = 8.dp)
-                        ,
+                        ).wrapContentHeight(align = Alignment.CenterVertically),
                     text = biome.name,
                     color = Color.White,
                     style = MaterialTheme.typography.displaySmall,
-
                     )
 
             }
