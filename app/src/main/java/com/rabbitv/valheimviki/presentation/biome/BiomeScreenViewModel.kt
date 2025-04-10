@@ -67,6 +67,7 @@ class BiomeScreenViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             relationsRepository.fetchAndInsertRelationsUseCase()
         }
+
     }
 
     fun refetchBiomes() {

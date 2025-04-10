@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.data.mappers.toMainBoss
 import com.rabbitv.valheimviki.domain.model.biome.Biome
+import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.creatures.CreatureUseCases
@@ -23,14 +24,17 @@ import javax.inject.Inject
 class BiomeDetailScreenViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val biomeUseCases: BiomeUseCases,
-    private val creaturesUse: CreatureUseCases,
-    private val relationsUse: RelationUseCases
+    private val creaturesUseCase: CreatureUseCases,
+    private val relationsUseCase: RelationUseCases
 ) : ViewModel() {
     private val _biome = MutableStateFlow<Biome?>(null)
     val biome: StateFlow<Biome?> = _biome
 
     private  val _mainBoss = MutableStateFlow<MainBoss?>(null)
     val mainBoss : StateFlow<MainBoss?> = _mainBoss
+
+    private  val _relatedCreatures = MutableStateFlow<List<Creature>>(emptyList())
+    val relatedCreatures : StateFlow<List<Creature>> = _relatedCreatures
 
 
     init {
@@ -44,20 +48,25 @@ class BiomeDetailScreenViewModel @Inject constructor(
             _biome.value = biomeId.let { biomeUseCases.getBiomeByIdUseCase(biomeId = biomeId) }
 
             val deferredMainBoss: Deferred<String> = async {
-                biomeId.let { relationsUse.getRelatedIdUseCase(it) }
+                biomeId.let { relationsUseCase.getRelatedIdUseCase(it) }
             }
 
             val deferredRelation: Deferred<List<String>> = async {
-                biomeId.let { relationsUse.getRelatedIdsUseCase(it) }
+                biomeId.let { relationsUseCase.getRelatedIdsUseCase(it) }
             }
 
             val mainBossId: String? = deferredMainBoss.await()
             val relatedObjects: List<String> = deferredRelation.await()
 
             mainBossId?.let { id ->
-                creaturesUse.getCreatureById(id)?.toMainBoss()?.let { boss ->
+                creaturesUseCase.getCreatureById(id).toMainBoss().let { boss ->
                     _mainBoss.value = boss
                 }
+            }
+            viewModelScope.launch(Dispatchers.IO) {
+               creaturesUseCase.getCreaturesByIds(relatedObjects).let { creatures ->
+                   _relatedCreatures.value = creatures
+               }
             }
 
         }
