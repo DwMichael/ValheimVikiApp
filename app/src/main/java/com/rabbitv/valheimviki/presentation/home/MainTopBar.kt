@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeTopBar(
+fun MainAppBar(
     onSearchBarClick: () -> Unit = {},
     onMenuClick: () -> Unit = {},
     onBookMarkClick: () -> Unit = {},
@@ -97,7 +97,7 @@ fun HomeTopBar(
 @Composable
 private fun PreviewHomeTopBar() {
     ValheimVikiAppTheme { // Ensure your app theme is applied
-        HomeTopBar(
+        MainAppBar(
             onSearchBarClick = {},
             onMenuClick = {},
             onBookMarkClick = {},

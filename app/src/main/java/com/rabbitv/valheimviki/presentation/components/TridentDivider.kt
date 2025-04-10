@@ -1,10 +1,9 @@
 package com.rabbitv.valheimviki.presentation.components
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -17,12 +16,14 @@ import androidx.compose.ui.unit.dp
 import com.rabbitv.valheimviki.ui.theme.ThirdGrey
 
 @Composable
-fun TridentDivider() {
+fun TridentDivider(
+    modifier: Modifier = Modifier
+) {
     Canvas(
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = modifier
             .height(24.dp)
-            .padding(horizontal = 16.dp)
+            .fillMaxWidth()
+
     ) {
         val centerY = size.height / 2
         val centerX = size.width / 2
@@ -89,10 +90,9 @@ fun TridentDivider() {
 @Preview(showBackground = true)
 @Composable
 fun PreviewTridentDivider() {
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 16.dp)
     ) {
         TridentDivider()
     }

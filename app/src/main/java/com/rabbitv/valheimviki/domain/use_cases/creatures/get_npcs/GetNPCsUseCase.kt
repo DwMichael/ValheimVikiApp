@@ -6,11 +6,13 @@ import com.rabbitv.valheimviki.domain.model.creature.CreatureType
 import com.rabbitv.valheimviki.domain.model.creature.npc.NPC
 import com.rabbitv.valheimviki.domain.repository.CreaturesRepository
 import jakarta.inject.Inject
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 
 
 class GetNPCsUseCase @Inject constructor(private val creatureRepository: CreaturesRepository) {
@@ -25,8 +27,9 @@ class GetNPCsUseCase @Inject constructor(private val creatureRepository: Creatur
                 }else
                 {
                     try {
-                        val creatureList = creatureRepository.fetchCreatureByType(language, creatureType)
-                        creatureRepository.insertLocalCreatures(creatureList)
+                        withContext(Dispatchers.IO) {
+                            creatureRepository.fetchCreatureAndInsert(language)
+                        }
                         creatureRepository.getCreaturesBySubCategory(creatureType.toString())
                     } catch (e: Exception)
                     {

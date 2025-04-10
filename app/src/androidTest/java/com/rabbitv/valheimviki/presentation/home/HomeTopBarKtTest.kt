@@ -5,13 +5,11 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.test.assertHeightIsEqualTo
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertLeftPositionInRootIsEqualTo
 import androidx.compose.ui.test.assertWidthIsEqualTo
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.rabbitv.valheimviki.ui.theme.ICON_CLICK_DIM
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
@@ -37,7 +35,7 @@ class HomeTopBarKtTest {
         hiltRule.inject()
         composeTestRule.setContent {
             ValheimVikiAppTheme {
-                HomeTopBar(
+                MainAppBar(
                     onSearchBarClick = {},
                     onMenuClick = {},
                     onBookMarkClick = {},

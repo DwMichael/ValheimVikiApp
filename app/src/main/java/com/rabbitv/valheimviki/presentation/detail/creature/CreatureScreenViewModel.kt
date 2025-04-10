@@ -25,8 +25,8 @@ class CreatureScreenViewModel @Inject constructor(
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            creatureUseCases.getCreatureById(mainBossId).collect {
-                _mainBoss.value = createFromCreature(it)
+            creatureUseCases.getCreatureById(mainBossId).let {
+                    _mainBoss.value = createFromCreature(it)
             }
         }
     }

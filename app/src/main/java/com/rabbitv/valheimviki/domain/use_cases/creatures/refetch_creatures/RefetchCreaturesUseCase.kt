@@ -33,16 +33,17 @@ class RefetchCreaturesUseCase @Inject constructor(private val creatureRepository
 //                    )
 //                }
             RefetchUseCases.GET_BOSSES -> {
-                val creatureList = creatureRepository.fetchCreatureByType(language,CreatureType.BOSS)
-                creatureRepository.insertLocalCreatures(creatureList)
+                    withContext(Dispatchers.IO) {
+                        creatureRepository.fetchCreatureAndInsert(language)
+                    }
                 return creatureRepository.getCreaturesBySubCategory(CreatureType.BOSS.toString())
                 .map { mainBossList -> mainBossList.sortedBy { it.order } }}
 
             RefetchUseCases.GET_ALL_CREATURES -> TODO()
             RefetchUseCases.GET_MINI_BOSSES -> {
-                val creatureList = creatureRepository.fetchCreatureByType(language,CreatureType.MINI_BOSS)
-                println(creatureList)
-                creatureRepository.insertLocalCreatures(creatureList)
+                withContext(Dispatchers.IO) {
+                    creatureRepository.fetchCreatureAndInsert(language)
+                }
                 return creatureRepository.getCreaturesBySubCategory(CreatureType.MINI_BOSS.toString())
                     .map { mainBossList -> mainBossList.sortedBy { it.order } }}
         }

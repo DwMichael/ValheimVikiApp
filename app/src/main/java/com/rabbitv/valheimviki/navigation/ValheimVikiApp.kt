@@ -5,7 +5,6 @@
 package com.rabbitv.valheimviki.navigation
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
@@ -13,6 +12,8 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Scaffold
@@ -27,6 +28,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -48,7 +50,7 @@ import com.rabbitv.valheimviki.presentation.creatures.bosses.BossScreen
 import com.rabbitv.valheimviki.presentation.creatures.mini_bosses.MiniBossScreen
 import com.rabbitv.valheimviki.presentation.detail.biome.BiomeDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.creature.CreatureDetailScreen
-import com.rabbitv.valheimviki.presentation.home.HomeTopBar
+import com.rabbitv.valheimviki.presentation.home.MainAppBar
 import com.rabbitv.valheimviki.presentation.intro.WelcomeScreen
 import com.rabbitv.valheimviki.presentation.splash.SplashScreen
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
@@ -129,7 +131,7 @@ fun MainContainer(
                         animationSpec = tween(durationMillis = 300)
                     ) + fadeOut(animationSpec = tween(durationMillis = 300))
                 ) {
-                    HomeTopBar(
+                    MainAppBar(
                         onSearchBarClick = {},
                         onMenuClick = { scope.launch { drawerState.open() } },
                         onBookMarkClick = {},
@@ -139,6 +141,12 @@ fun MainContainer(
                 }
             },
             content = { innerPadding ->
+                Image(
+                    painter = painterResource(id = R.drawable.main_background),
+                    contentDescription = "BackgroundImage",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize(),
+                )
                     NavHost(
                         navController = valheimVikiNavController,
                         startDestination = Screen.Splash.route,
@@ -241,5 +249,5 @@ private fun getDrawerItems(): List<DrawerItem> {
     )
 }
 
-val LocalNavAnimatedVisibilityScope = compositionLocalOf<AnimatedVisibilityScope?> { null }
+
 val LocalSharedTransitionScope = compositionLocalOf<SharedTransitionScope?> { null }

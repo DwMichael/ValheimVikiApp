@@ -5,8 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.exceptions.FetchException
 import com.rabbitv.valheimviki.domain.model.biome.Biome
-import com.rabbitv.valheimviki.domain.repository.RelationsRepository
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
+import com.rabbitv.valheimviki.domain.use_cases.creatures.CreatureUseCases
+import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.utils.isNetworkAvailable
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -25,7 +26,8 @@ data class BiomesUIState(
 
 @HiltViewModel
 class BiomeScreenViewModel @Inject constructor(
-    private val relationsRepository: RelationsRepository,
+    private val relationsRepository: RelationUseCases,
+    private val creatureUseCases: CreatureUseCases,
     private val biomeUseCases: BiomeUseCases,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
@@ -47,19 +49,23 @@ class BiomeScreenViewModel @Inject constructor(
         _biomeUIState.value = _biomeUIState.value.copy(isLoading = true, error = null)
         viewModelScope.launch(Dispatchers.IO) {
             try {
-
-
                 biomeUseCases.getAllBiomesUseCase("en").collect { sortedBiomes ->
                     _biomeUIState.update { current ->
                         current.copy(biomes = sortedBiomes, isLoading = false)
                     }
                 }
-                relationsRepository.fetchAndInsertRelations()
+
             } catch (e: FetchException) {
                 _biomeUIState.value = _biomeUIState.value.copy(isLoading = false, error = e.message)
             } catch (e: Exception) {
                 _biomeUIState.value = _biomeUIState.value.copy(isLoading = false, error = e.message)
             }
+        }
+        viewModelScope.launch(Dispatchers.IO) {
+            creatureUseCases.fetchCreatureAndInsertUseCase("en")
+        }
+        viewModelScope.launch(Dispatchers.IO) {
+            relationsRepository.fetchAndInsertRelationsUseCase()
         }
     }
 

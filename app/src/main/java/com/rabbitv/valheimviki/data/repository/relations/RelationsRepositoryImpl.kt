@@ -17,7 +17,11 @@ class RelationsRepositoryImpl (
         return relationDao.getLocalRelations()
     }
 
-    override fun getRelatedIds(queryId: String): Flow<List<String>> {
+    override fun getRelatedId(queryId: String): String {
+        return relationDao.getRelatedId(queryId)
+    }
+
+    override fun getRelatedIds(queryId: String): List<String> {
         return relationDao.getRelatedIds(queryId)
     }
 
@@ -36,6 +40,7 @@ class RelationsRepositoryImpl (
 
     override suspend fun fetchAndInsertRelations() {
         val localRelations = getLocalRelations().first()
+
         if (localRelations.isEmpty()) {
             val response = fetchRelations()
             val relationsList = response.body()

@@ -21,6 +21,7 @@ import com.rabbitv.valheimviki.domain.use_cases.biome.get_all_biomes.GetAllBiome
 import com.rabbitv.valheimviki.domain.use_cases.biome.get_biome_by_id.GetBiomeByIdUseCase
 import com.rabbitv.valheimviki.domain.use_cases.biome.refetch_biomes.RefetchBiomesUseCase
 import com.rabbitv.valheimviki.domain.use_cases.creatures.CreatureUseCases
+import com.rabbitv.valheimviki.domain.use_cases.creatures.fetchCreaturesAndInsert.FetchCreaturesAndInsertUseCase
 import com.rabbitv.valheimviki.domain.use_cases.creatures.get_aggressive_creatures.GetAggressiveCreatures
 import com.rabbitv.valheimviki.domain.use_cases.creatures.get_creature_by_id.GetCreatureByIdUseCase
 import com.rabbitv.valheimviki.domain.use_cases.creatures.get_creature_by_id_and_subcategory.GetCreatureByIdAndSubCategoryUseCase
@@ -36,6 +37,8 @@ import com.rabbitv.valheimviki.domain.use_cases.datastore.save_onboarding_state.
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.fetch_and_insert.FetchAndInsertRelationsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.relation.fetch_relations.FetchRelationsUseCase
+import com.rabbitv.valheimviki.domain.use_cases.relation.get_item_id_in_relation.GetRelatedIdsRelationUseCase
+import com.rabbitv.valheimviki.domain.use_cases.relation.get_item_related_by_id.GetItemRelatedById
 import com.rabbitv.valheimviki.domain.use_cases.relation.get_local_relations.GetLocalRelationsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.relation.insert_relations.InsertRelationsUseCase
 import dagger.Module
@@ -100,13 +103,19 @@ object RepositoryModule {
         return CreatureUseCases(
             getCreaturesByIds = GetCreaturesByIdsUseCase(creatureRepository),
             getCreatureById = GetCreatureByIdUseCase(creatureRepository),
-            getCreatureByIdAndSubCategoryUseCase = GetCreatureByIdAndSubCategoryUseCase(creatureRepository),
+            getCreatureByIdAndSubCategoryUseCase = GetCreatureByIdAndSubCategoryUseCase(
+                creatureRepository
+            ),
             getMainBossesUseCase = GetMainBossesUseCase(creatureRepository),
             getMiniBossesUseCase = GetMiniBossesUseCase(creatureRepository),
             getAggressiveCreatures = GetAggressiveCreatures(creatureRepository),
             getPassiveCreature = GetPassiveCreature(creatureRepository),
             getNPCsUseCase = GetNPCsUseCase(creatureRepository),
-            refetchCreaturesUseCase = RefetchCreaturesUseCase(creatureRepository,relationsRepository),
+            fetchCreatureAndInsertUseCase = FetchCreaturesAndInsertUseCase(creatureRepository),
+            refetchCreaturesUseCase = RefetchCreaturesUseCase(
+                creatureRepository,
+                relationsRepository
+            ),
         )
     }
 
@@ -116,9 +125,10 @@ object RepositoryModule {
         return RelationUseCases(
             fetchRelationsUseCase = FetchRelationsUseCase(relationsRepository),
             insertRelationsUseCase = InsertRelationsUseCase(relationsRepository),
+            getRelatedIdUseCase = GetItemRelatedById(relationsRepository),
+            getRelatedIdsUseCase = GetRelatedIdsRelationUseCase(relationsRepository),
             getLocalRelationsUseCase = GetLocalRelationsUseCase(relationsRepository),
             fetchAndInsertRelationsUseCase = FetchAndInsertRelationsUseCase(relationsRepository),
-
         )
     }
 

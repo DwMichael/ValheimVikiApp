@@ -4,9 +4,11 @@ import android.util.Log
 import com.rabbitv.valheimviki.data.local.dao.CreatureDao
 import com.rabbitv.valheimviki.data.remote.api.ApiCreatureService
 import com.rabbitv.valheimviki.domain.model.creature.Creature
-import com.rabbitv.valheimviki.domain.model.creature.CreatureType
 import com.rabbitv.valheimviki.domain.repository.CreaturesRepository
-import com.rabbitv.valheimviki.utils.bodyList
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 import javax.inject.Inject
@@ -17,52 +19,55 @@ class CreaturesRepositoryImpl @Inject constructor(
 ) : CreaturesRepository {
 
 
-    private fun checkResponse(response: Response<List<Creature>>): List<Creature> {
-        return if (response.isSuccessful) {
-            response.bodyList()
-        } else {
-            emptyList()
-        }
+
+    override fun getAllCreatures(): List<Creature> {
+        return creatureDao.getAllCreatures()
     }
 
     override fun getCreaturesBySubCategory(subCategory: String): Flow<List<Creature>> {
         return creatureDao.getCreaturesBySubCategory(subCategory)
     }
 
-    override fun getCreatureByIdAndSubCategory(id: String, subCategory: String): Flow<Creature> {
+    override fun getCreatureByIdAndSubCategory(id: String, subCategory: String): Creature {
         return creatureDao.getCreatureByIdAndSubCategory(id, subCategory)
     }
 
-    override fun getCreaturesByIds(ids: List<String>): Flow<List<Creature>> {
+    override fun getCreaturesByIds(ids: List<String>): List<Creature> {
         return creatureDao.getCreaturesByIds(ids)
     }
 
-    override fun getCreatureById(id: String): Flow<Creature> {
+    override fun getCreatureById(id: String): Creature {
         return creatureDao.getCreatureById(id)
     }
 
-    override suspend fun fetchCreatureByType(
-        lang: String,
-        creatureType: CreatureType
-    ): List<Creature> {
-        try {
-            return when(creatureType) {
-                CreatureType.BOSS -> checkResponse(apiService.fetchMainBosses(lang))
-                CreatureType.MINI_BOSS -> checkResponse(apiService.fetchMiniBosses(lang))
-                CreatureType.AGGRESSIVE_CREATURE -> checkResponse(apiService.fetchAggressiveCreatures(lang))
-                CreatureType.PASSIVE_CREATURE -> checkResponse(apiService.fetchPassiveCreature(lang))
-                CreatureType.NPC -> checkResponse(apiService.fetchNPCs(lang))
-            }
-        } catch (exception: Exception) {
-            Log.i("EXEPTION FETCH", exception.message.toString())
-            return emptyList()
-        }
-    }
-
-
-    override suspend fun insertLocalCreatures(creatures: List<Creature>) {
+    override suspend fun insertCreatures(creatures: List<Creature>) {
         if (creatures.isNotEmpty()) {
             creatureDao.insertCreatures(creatures)
         }
     }
+
+    override suspend fun fetchCreature(lang: String): Response<List<Creature>> {
+        try {
+            return apiService.fetchCreatures(lang)
+        } catch (exception: Exception) {
+            Log.i("EXEPTION FETCH", exception.message.toString())
+            throw exception
+        }
+    }
+
+    override suspend fun fetchCreatureAndInsert(lang: String) = coroutineScope {
+        val deferred : Deferred<List<Creature>> = async(Dispatchers.IO) {
+                getAllCreatures()
+        }
+            val creatureList = deferred.await()
+        if(creatureList.size != 71) {
+            val response = fetchCreature(lang)
+            val creaturesList = response.body()
+
+            if (response.isSuccessful && creaturesList != null) {
+                insertCreatures(creaturesList)
+            }
+        }
+    }
+
 }
