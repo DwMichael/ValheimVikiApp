@@ -1,7 +1,9 @@
 package com.rabbitv.valheimviki.domain.use_cases.biome.refetch_biomes
 
-import com.rabbitv.valheimviki.domain.exceptions.FetchException
-import com.rabbitv.valheimviki.domain.model.api_response.ApiResponse
+import android.util.Log
+import com.rabbitv.valheimviki.domain.exceptions.BiomeFetchException
+import com.rabbitv.valheimviki.domain.exceptions.BiomesInsertException
+import com.rabbitv.valheimviki.domain.exceptions.RelationFetchAndInsertException
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.repository.BiomeRepository
 import com.rabbitv.valheimviki.domain.repository.RelationsRepository
@@ -11,6 +13,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import retrofit2.Response
 import javax.inject.Inject
 
 class RefetchBiomesUseCase @Inject constructor(
@@ -19,21 +22,37 @@ class RefetchBiomesUseCase @Inject constructor(
 ) {
 
     suspend operator fun invoke(language: String): Flow<List<Biome>> = coroutineScope {
-        val response: ApiResponse<Biome> = biomeRepository.fetchBiomes(language)
-        print(response)
-        if (response.error != null) {
-            throw FetchException(response.error)
-        }
 
-        val deferred = async(Dispatchers.IO) {
-            biomeRepository.storeBiomes(response.data)
-        }
+        try {
+            val response: Response<List<Biome>> = biomeRepository.fetchBiomes(language)
+            val responseBody = response.body()
+            if (response.isSuccessful && responseBody != null) {
+                val deferred = async(Dispatchers.IO) {
+                    try {
+                        biomeRepository.storeBiomes(responseBody)
+                    } catch (e: Exception) {
+                        throw BiomesInsertException("Insert Biomes failed: ${e.message}")
+                    }
+                }
+                launch(Dispatchers.IO) {
+                    try {
+                        repository.fetchAndInsertRelations()
+                    } catch (e: Exception) {
+                        Log.e("RelationsError", "Failed to fetch relations", e)
+                        throw RelationFetchAndInsertException("Fetching relations and Inserting failed: ${e.message}")
+                    }
+                }
 
-        launch(Dispatchers.IO) {
-            repository.fetchAndInsertRelations()
+                deferred.await()
+            }else {
+                val errorCode = response.code()
+                val errorBody = response.errorBody()?.string() ?: "No error body"
+                throw BiomeFetchException("API request failed with code $errorCode: $errorBody")
+            }
+        } catch (e: Exception) {
+            Log.e("BiomeError", "Failed to process biomes", e)
+            throw BiomeFetchException("Fetching biomes failed: ${e.message}")
         }
-
-        deferred.await()
 
         return@coroutineScope biomeRepository.getLocalBiomes()
             .map { biomes ->

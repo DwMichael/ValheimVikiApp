@@ -3,16 +3,18 @@ package com.rabbitv.valheimviki.data.repository.relations
 
 import com.rabbitv.valheimviki.data.local.dao.RelationDao
 import com.rabbitv.valheimviki.data.remote.api.ApiRelationsService
+import com.rabbitv.valheimviki.domain.exceptions.RelationFetchAndInsertException
+import com.rabbitv.valheimviki.domain.exceptions.RelationFetchException
 import com.rabbitv.valheimviki.domain.model.relation.Relation
 import com.rabbitv.valheimviki.domain.repository.RelationsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import retrofit2.Response
 
-class RelationsRepositoryImpl (
+class RelationsRepositoryImpl(
     private val apiService: ApiRelationsService,
     private val relationDao: RelationDao
-) : RelationsRepository{
+) : RelationsRepository {
     override fun getLocalRelations(): Flow<List<Relation>> {
         return relationDao.getLocalRelations()
     }
@@ -26,27 +28,38 @@ class RelationsRepositoryImpl (
     }
 
     override suspend fun insertRelations(relations: List<Relation>) {
-            relationDao.insertRelations(relations)
+        check(relations.isNotEmpty()) { "Relation list cannot be empty, cannot insert ${relations.size} relations" }
+        relationDao.insertRelations(relations)
     }
 
     override suspend fun fetchRelations(): Response<List<Relation>> {
         try {
             return apiService.fetchRelations()
-        }catch (exception: Exception)
-        {
-            throw exception
+        } catch (e: Exception) {
+            throw RelationFetchException("Error fetching relations: ${e.message}")
         }
     }
+
 
     override suspend fun fetchAndInsertRelations() {
         val localRelations = getLocalRelations().first()
 
         if (localRelations.isEmpty()) {
-            val response = fetchRelations()
-            val relationsList = response.body()
+            try {
+                val response = fetchRelations()
+                val relationsList = response.body()
 
-            if (response.isSuccessful && relationsList != null) {
-                insertRelations(relationsList)
+                if (response.isSuccessful && relationsList?.isNotEmpty() == true) {
+                    try {
+                        insertRelations(relationsList)
+                    } catch (e: Exception) {
+                        throw RelationFetchException("Error inserting relations: ${e.message}")
+                    }
+                } else {
+                    throw RelationFetchException("FetchAndInsertRelations failed : ${response.errorBody()}")
+                }
+            } catch (e: Exception) {
+                throw RelationFetchAndInsertException("Error fetching and inserting relations: ${e.message}")
             }
         }
     }

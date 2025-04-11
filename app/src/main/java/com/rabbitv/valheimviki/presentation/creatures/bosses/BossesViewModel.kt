@@ -3,6 +3,7 @@ package com.rabbitv.valheimviki.presentation.creatures.bosses
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.data.mappers.toMainBosses
+import com.rabbitv.valheimviki.domain.exceptions.CreatureFetchException
 import com.rabbitv.valheimviki.domain.exceptions.FetchException
 import com.rabbitv.valheimviki.domain.model.creature.RefetchUseCases
 import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
@@ -51,7 +52,10 @@ class BossesViewModel @Inject constructor(
                         current.copy(bosses = bosses, isLoading = false)
                     }
                 }
-            } catch (e: FetchException) {
+            }catch (e: CreatureFetchException) {
+                _bossUIState.value = _bossUIState.value.copy(isLoading = false, error = e.message)
+            }
+            catch (e: FetchException) {
                 _bossUIState.value = _bossUIState.value.copy(isLoading = false, error = e.message)
             } catch (e: Exception) {
                 _bossUIState.value = _bossUIState.value.copy(isLoading = false, error = e.message)

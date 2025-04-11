@@ -2,11 +2,10 @@ package com.rabbitv.valheimviki.data.repository.biome
 
 import com.rabbitv.valheimviki.data.local.dao.BiomeDao
 import com.rabbitv.valheimviki.data.remote.api.ApiBiomeService
-import com.rabbitv.valheimviki.domain.exceptions.NetworkExceptionHandler
-import com.rabbitv.valheimviki.domain.model.api_response.ApiResponse
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.repository.BiomeRepository
 import kotlinx.coroutines.flow.Flow
+import retrofit2.Response
 import javax.inject.Inject
 
 class BiomeRepositoryImpl @Inject constructor(
@@ -22,42 +21,12 @@ class BiomeRepositoryImpl @Inject constructor(
         return biomeDao.getBiomeById(biomeId)
     }
 
-    override suspend fun fetchBiomes(lang: String): ApiResponse<Biome> {
-        try {
-            val response = apiService.fetchBiomes(lang)
-
-
-            return if (response.success) {
-                ApiResponse(
-                    success = true,
-                    message = "OK",
-                    error = null,
-                    data = response.data,
-                )
-            } else {
-                ApiResponse(
-                    success = false,
-                    error = response.error,
-                    message = response.message,
-                    data = emptyList(),
-                )
-            }
-
-        } catch (e: Exception) {
-            val networkException = NetworkExceptionHandler.handleException(e)
-            return ApiResponse(
-                data = emptyList(),
-                message = networkException.message,
-                success = networkException.success,
-                error = networkException.error
-            )
-        }
+    override suspend fun fetchBiomes(lang: String): Response<List<Biome>>  {
+            return apiService.fetchBiomes(lang)
     }
 
     override suspend fun storeBiomes(biomes: List<Biome>) {
-
-        if (biomes.isNotEmpty()) {
-            biomeDao.insertAllBiomes(biomes)
-        }
+        check(biomes.isNotEmpty()) { "Biome list cannot be empty , cannot insert ${biomes.size} biomes" }
+        biomeDao.insertAllBiomes(biomes)
     }
 }

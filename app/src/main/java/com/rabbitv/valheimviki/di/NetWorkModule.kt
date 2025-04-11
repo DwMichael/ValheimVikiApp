@@ -23,7 +23,6 @@ object NetWorkModule {
     @Provides
     @Singleton
     fun provideHttpClient(): OkHttpClient {
-
         return OkHttpClient.Builder()
             .connectTimeout(4, TimeUnit.SECONDS)
             .readTimeout(5, TimeUnit.SECONDS)

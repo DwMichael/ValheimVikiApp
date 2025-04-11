@@ -1,8 +1,9 @@
 package com.rabbitv.valheimviki.data.repository.creatures
 
-import android.util.Log
 import com.rabbitv.valheimviki.data.local.dao.CreatureDao
 import com.rabbitv.valheimviki.data.remote.api.ApiCreatureService
+import com.rabbitv.valheimviki.domain.exceptions.CreatureFetchAndInsertException
+import com.rabbitv.valheimviki.domain.exceptions.CreatureFetchException
 import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.repository.CreaturesRepository
 import kotlinx.coroutines.Deferred
@@ -41,33 +42,37 @@ class CreaturesRepositoryImpl @Inject constructor(
     }
 
     override suspend fun insertCreatures(creatures: List<Creature>) {
-        if (creatures.isNotEmpty()) {
-            creatureDao.insertCreatures(creatures)
-        }
+        check(creatures.isNotEmpty()){"Creature list cannot be empty , cannot insert ${creatures.size} creatures"}
+        creatureDao.insertCreatures(creatures)
     }
 
     override suspend fun fetchCreature(lang: String): Response<List<Creature>> {
-        try {
             return apiService.fetchCreatures(lang)
-        } catch (exception: Exception) {
-            Log.i("EXEPTION FETCH", exception.message.toString())
-            throw exception
-        }
     }
 
     override suspend fun fetchCreatureAndInsert(lang: String) = coroutineScope {
-        val deferred : Deferred<List<Creature>> = async(Dispatchers.IO) {
-                getAllCreatures()
-        }
-            val creatureList = deferred.await()
-        if(creatureList.size != 71) {
-            val response = fetchCreature(lang)
-            val creaturesList = response.body()
 
-            if (response.isSuccessful && creaturesList != null) {
-                insertCreatures(creaturesList)
+        val deferred : Deferred<List<Creature>> = async(Dispatchers.IO) {
+            getAllCreatures()
+        }
+        val creatureList = deferred.await()
+        if (creatureList.size != 81) {
+            try {
+                val response = fetchCreature(lang)
+                val relationsList = response.body()
+
+                if (response.isSuccessful && relationsList?.isNotEmpty() == true) {
+                    try {
+                        insertCreatures(relationsList)
+                    } catch (e: Exception) {
+                        throw CreatureFetchException("Error inserting creatures: ${e.message}")
+                    }
+                } else {
+                    throw CreatureFetchException("Fetching creatures failed : ${response.errorBody()}")
+                }
+            } catch (e: Exception) {
+                throw CreatureFetchAndInsertException("Error fetching and inserting creatures: ${e.message}")
             }
         }
     }
-
 }

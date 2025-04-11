@@ -59,7 +59,7 @@ fun BiomeScreen(
                     ShimmerEffect()
                 }
 
-                biomeUIState.error != null -> {
+                biomeUIState.error != null && biomeUIState.biomes.isEmpty() -> {
                     Box(
                         modifier = Modifier.testTag("EmptyScreenBiome"),
                     ) {
@@ -91,9 +91,7 @@ fun BiomeScreen(
                             animatedVisibilityScope = animatedVisibilityScope
                         )
                     }
-                }
-
-                else -> {
+                }else -> {
                     Box(
                         modifier = Modifier.testTag("EmptyScreenBiome"),
                     ) {

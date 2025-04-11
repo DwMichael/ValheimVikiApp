@@ -1,3 +1,7 @@
 package com.rabbitv.valheimviki.domain.exceptions
 
-class FetchException(message: String) : Exception(message)
+open class FetchException(message: String) : Exception(message)
+
+class CreatureFetchException(message: String) : FetchException(message)
+class BiomeFetchException(message: String) : FetchException(message)
+class RelationFetchException(message: String) : FetchException(message)
