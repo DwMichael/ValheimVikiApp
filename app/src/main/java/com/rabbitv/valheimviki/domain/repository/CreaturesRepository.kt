@@ -6,7 +6,7 @@ import retrofit2.Response
 
 
 interface CreaturesRepository {
-    fun getAllCreatures(): Flow<List<Creature>>
+    fun getLocalCreatures(): Flow<List<Creature>>
     fun getCreaturesBySubCategory(subCategory: String): Flow<List<Creature>>
     fun getCreatureByIdAndSubCategory(id:String,subCategory: String): Creature
     fun getCreaturesByIds(ids: List<String>): List<Creature>

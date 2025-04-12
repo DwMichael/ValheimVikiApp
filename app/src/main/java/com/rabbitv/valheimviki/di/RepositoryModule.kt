@@ -30,9 +30,10 @@ import com.rabbitv.valheimviki.domain.use_cases.creatures.get_npcs.GetNPCsUseCas
 import com.rabbitv.valheimviki.domain.use_cases.creatures.get_or_fetch_creatures.GetOrFetchCreaturesUseCase
 import com.rabbitv.valheimviki.domain.use_cases.creatures.get_passive_creatures.GetPassiveCreature
 import com.rabbitv.valheimviki.domain.use_cases.creatures.refetch_creatures.RefetchCreaturesUseCase
+import com.rabbitv.valheimviki.domain.use_cases.data_refetch.DataRefetchUseCase
 import com.rabbitv.valheimviki.domain.use_cases.datastore.DataStoreUseCases
-import com.rabbitv.valheimviki.domain.use_cases.datastore.get_language_state.GetLanguageState
 import com.rabbitv.valheimviki.domain.use_cases.datastore.get_onboarding_state.ReadOnBoardingState
+import com.rabbitv.valheimviki.domain.use_cases.datastore.language_state_provider.LanguageProvider
 import com.rabbitv.valheimviki.domain.use_cases.datastore.save_onboarding_state.SaveOnBoardingState
 import com.rabbitv.valheimviki.domain.use_cases.datastore.saved_language_state.SaveLanguageState
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
@@ -90,6 +91,21 @@ object RepositoryModule {
 
     @Provides
     @Singleton
+    fun provideRefetchUseCase(
+        biomeRepository: BiomeRepository,
+        creatureRepository: CreaturesRepository,
+        relationsRepository: RelationsRepository,
+        dataStoreUseCases: DataStoreUseCases
+    ): DataRefetchUseCase {
+        return DataRefetchUseCase(
+            creatureRepository = creatureRepository,
+            relationsRepository = relationsRepository,
+            biomeRepository = biomeRepository,
+            dataStoreUseCases = dataStoreUseCases,
+        )
+    }
+    @Provides
+    @Singleton
     fun provideBiomeUseCases(biomeRepository: BiomeRepository): BiomeUseCases {
         return BiomeUseCases(
             getOrFetchBiomesUseCase = GetOrFetchBiomesUseCase(biomeRepository),
@@ -138,7 +154,7 @@ object RepositoryModule {
         return DataStoreUseCases(
             saveOnBoardingState = SaveOnBoardingState(dataStoreRepository),
             readOnBoardingUseCase = ReadOnBoardingState(dataStoreRepository),
-            languageProvider = GetLanguageState(dataStoreRepository),
+            languageProvider = LanguageProvider(dataStoreRepository),
             saveLanguageState = SaveLanguageState(dataStoreRepository),
         )
     }

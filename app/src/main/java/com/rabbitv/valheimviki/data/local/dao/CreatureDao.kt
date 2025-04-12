@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface CreatureDao {
     @Query("SELECT * FROM creatures WHERE category='CREATURE' ")
-    fun getAllCreatures(): Flow<List<Creature>>
+    fun getLocalCreatures(): Flow<List<Creature>>
 
     @Query("SELECT * FROM creatures WHERE category='CREATURE' AND subCategory = :subCategory ")
     fun getCreaturesBySubCategory(subCategory:String): Flow<List<Creature>>

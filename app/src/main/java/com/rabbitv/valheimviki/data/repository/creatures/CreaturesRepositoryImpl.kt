@@ -15,8 +15,8 @@ class CreaturesRepositoryImpl @Inject constructor(
 
 
 
-    override fun getAllCreatures(): Flow<List<Creature>> {
-        return creatureDao.getAllCreatures()
+    override fun getLocalCreatures(): Flow<List<Creature>> {
+        return creatureDao.getLocalCreatures()
     }
 
     override fun getCreaturesBySubCategory(subCategory: String): Flow<List<Creature>> {
