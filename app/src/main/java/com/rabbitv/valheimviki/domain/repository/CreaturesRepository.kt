@@ -13,5 +13,5 @@ interface CreaturesRepository {
     fun getCreatureById(id: String): Creature?
 
     suspend fun insertCreatures(creatures: List<Creature>)
-    suspend fun fetchCreature(lang: String): Response<List<Creature>>
+    suspend fun fetchCreatures(lang: String): Response<List<Creature>>
 }

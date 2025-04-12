@@ -28,7 +28,7 @@ class GetMiniBossesUseCase @Inject constructor(private val creatureRepository: C
                 } else {
                     try {
                         withContext(Dispatchers.IO) {
-                            val response = creatureRepository.fetchCreature(language)
+                            val response = creatureRepository.fetchCreatures(language)
                             val responseBody = response.body()
                             if (response.isSuccessful && responseBody?.isNotEmpty() == true) {
                                 try {

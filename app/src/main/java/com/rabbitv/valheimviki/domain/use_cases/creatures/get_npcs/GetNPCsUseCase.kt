@@ -31,7 +31,7 @@ class GetNPCsUseCase @Inject constructor(private val creatureRepository: Creatur
                 {
                     try {
                         withContext(Dispatchers.IO) {
-                            val response = creatureRepository.fetchCreature(language)
+                            val response = creatureRepository.fetchCreatures(language)
                             val responseBody = response.body()
                             if(response.isSuccessful && responseBody?.isNotEmpty() == true) {
                                 try {

@@ -40,7 +40,7 @@ class CreaturesRepositoryImpl @Inject constructor(
         creatureDao.insertCreatures(creatures)
     }
 
-    override suspend fun fetchCreature(lang: String): Response<List<Creature>> {
+    override suspend fun fetchCreatures(lang: String): Response<List<Creature>> {
             return apiService.fetchCreatures(lang)
     }
 

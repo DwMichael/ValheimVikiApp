@@ -22,7 +22,7 @@ class RefetchCreaturesUseCase @Inject constructor(private val creatureRepository
         when (refetchUseCase) {
             RefetchUseCases.GET_BOSSES -> {
                 withContext(Dispatchers.IO) {
-                    val response = creatureRepository.fetchCreature(language)
+                    val response = creatureRepository.fetchCreatures(language)
                     val responseBody = response.body()
                     if (response.isSuccessful && responseBody?.isNotEmpty() == true) {
                         try {
@@ -41,7 +41,7 @@ class RefetchCreaturesUseCase @Inject constructor(private val creatureRepository
 
             RefetchUseCases.GET_MINI_BOSSES -> {
                 withContext(Dispatchers.IO) {
-                    val response = creatureRepository.fetchCreature(language)
+                    val response = creatureRepository.fetchCreatures(language)
                     val responseBody = response.body()
                     if (response.isSuccessful && responseBody?.isNotEmpty() == true) {
                         try {

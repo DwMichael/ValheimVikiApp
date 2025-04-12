@@ -24,7 +24,7 @@ class GetOrFetchCreaturesUseCase @Inject constructor(private val creatureReposit
                 } else {
                     try {
                         withContext(Dispatchers.IO) {
-                            val response = creatureRepository.fetchCreature(lang)
+                            val response = creatureRepository.fetchCreatures(lang)
                             val responseBody = response.body()
                             if (response.isSuccessful && responseBody?.isNotEmpty() == true) {
                                 try {
