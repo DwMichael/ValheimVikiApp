@@ -157,7 +157,10 @@ fun BiomeDetailContent(
                     ImageHeaderSection(mainBoss = mainBoss, errorPainter = errorPainter)
                 }
                 RowTwoTridentDividers()
-                CreatureHorizontalPagerSection(pagerState, relatedCreatures)
+                if(relatedCreatures.isNotEmpty()) {
+                    CreatureHorizontalPagerSection(pagerState, relatedCreatures)
+                }
+
             }
         }
     )

@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.Flow
 class GetLocalRelationsUseCase@Inject constructor(
     private val relationsRepository: RelationsRepository
 ) {
-
     operator fun invoke():Flow<List<Relation>>{
         return relationsRepository.getLocalRelations()
     }

@@ -1,8 +1,8 @@
-package com.rabbitv.valheimviki.domain.use_cases.biome.get_all_biomes
+package com.rabbitv.valheimviki.domain.use_cases.biome.get_or_fetch_biomes
 
 import com.rabbitv.valheimviki.domain.exceptions.BiomeFetchException
-import com.rabbitv.valheimviki.domain.exceptions.CreaturesInsertException
-import com.rabbitv.valheimviki.domain.exceptions.FetchException
+import com.rabbitv.valheimviki.domain.exceptions.BiomesFetchLocalException
+import com.rabbitv.valheimviki.domain.exceptions.BiomesInsertException
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.repository.BiomeRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 
-class GetAllBiomesUseCase @Inject constructor(private val biomeRepository: BiomeRepository) {
+class GetOrFetchBiomesUseCase @Inject constructor(private val biomeRepository: BiomeRepository) {
     @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(language: String): Flow<List<Biome>>  {
 
@@ -30,21 +30,20 @@ class GetAllBiomesUseCase @Inject constructor(private val biomeRepository: Biome
                                 biomeRepository.storeBiomes(responseBody)
                             }catch (e: Exception)
                             {
-                                throw CreaturesInsertException("Insert Creatures failed : ${e.message}")
+                                throw BiomesInsertException("Insert Biomes failed : ${e.message}")
                             }
                             biomeRepository.getLocalBiomes()
                         }else {
                             val errorCode = response.code()
                             val errorBody = response.errorBody()?.string() ?: "No error body"
-                            throw BiomeFetchException("API request failed with code $errorCode: $errorBody")
+                            throw BiomeFetchException("API BIOMES request failed with code $errorCode: $errorBody")
                         }
                     }catch (e: BiomeFetchException) {
                         throw e
-                    } catch (e: CreaturesInsertException) {
+                    } catch (e: BiomesInsertException) {
                         throw e
-                    }
-                    catch (e: Exception) {
-                        throw FetchException("No local data available and failed to fetch from internet.")
+                    } catch (e: Exception) {
+                        throw BiomesFetchLocalException("No local data available and failed to fetch from internet.")
                     }
                 }
             }.map { biomes -> biomes.sortedBy { it.order } }

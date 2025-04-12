@@ -6,13 +6,12 @@ import retrofit2.Response
 
 
 interface CreaturesRepository {
-    fun getAllCreatures(): List<Creature>
+    fun getAllCreatures(): Flow<List<Creature>>
     fun getCreaturesBySubCategory(subCategory: String): Flow<List<Creature>>
     fun getCreatureByIdAndSubCategory(id:String,subCategory: String): Creature
     fun getCreaturesByIds(ids: List<String>): List<Creature>
-    fun getCreatureById(id: String): Creature
+    fun getCreatureById(id: String): Creature?
 
     suspend fun insertCreatures(creatures: List<Creature>)
     suspend fun fetchCreature(lang: String): Response<List<Creature>>
-    suspend fun fetchCreatureAndInsert(lang: String)
 }

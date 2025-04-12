@@ -10,5 +10,4 @@ interface RelationsRepository {
     fun getRelatedIds(queryId: String): List<String>
     suspend fun insertRelations(relations: List<Relation>)
     suspend fun fetchRelations(): Response<List<Relation>>
-    suspend fun fetchAndInsertRelations()
 }

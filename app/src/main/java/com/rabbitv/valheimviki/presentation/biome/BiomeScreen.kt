@@ -55,7 +55,7 @@ fun BiomeScreen(
 
         ) {
             when {
-                biomeUIState.isLoading -> {
+                biomeUIState.isLoading  -> {
                     ShimmerEffect()
                 }
 
@@ -73,7 +73,7 @@ fun BiomeScreen(
                                     refreshState.animateToHidden()
                                 }
                             },
-                            errorMessage = "Can't fetch data from server try later"
+                            errorMessage = biomeUIState.error.toString()
                         )
                     }
                 }

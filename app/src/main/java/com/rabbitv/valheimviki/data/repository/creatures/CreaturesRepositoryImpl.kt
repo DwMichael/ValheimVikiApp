@@ -2,14 +2,8 @@ package com.rabbitv.valheimviki.data.repository.creatures
 
 import com.rabbitv.valheimviki.data.local.dao.CreatureDao
 import com.rabbitv.valheimviki.data.remote.api.ApiCreatureService
-import com.rabbitv.valheimviki.domain.exceptions.CreatureFetchAndInsertException
-import com.rabbitv.valheimviki.domain.exceptions.CreatureFetchException
 import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.repository.CreaturesRepository
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 import javax.inject.Inject
@@ -21,7 +15,7 @@ class CreaturesRepositoryImpl @Inject constructor(
 
 
 
-    override fun getAllCreatures(): List<Creature> {
+    override fun getAllCreatures(): Flow<List<Creature>> {
         return creatureDao.getAllCreatures()
     }
 
@@ -37,7 +31,7 @@ class CreaturesRepositoryImpl @Inject constructor(
         return creatureDao.getCreaturesByIds(ids)
     }
 
-    override fun getCreatureById(id: String): Creature {
+    override fun getCreatureById(id: String): Creature? {
         return creatureDao.getCreatureById(id)
     }
 
@@ -50,29 +44,5 @@ class CreaturesRepositoryImpl @Inject constructor(
             return apiService.fetchCreatures(lang)
     }
 
-    override suspend fun fetchCreatureAndInsert(lang: String) = coroutineScope {
 
-        val deferred : Deferred<List<Creature>> = async(Dispatchers.IO) {
-            getAllCreatures()
-        }
-        val creatureList = deferred.await()
-        if (creatureList.size != 81) {
-            try {
-                val response = fetchCreature(lang)
-                val relationsList = response.body()
-
-                if (response.isSuccessful && relationsList?.isNotEmpty() == true) {
-                    try {
-                        insertCreatures(relationsList)
-                    } catch (e: Exception) {
-                        throw CreatureFetchException("Error inserting creatures: ${e.message}")
-                    }
-                } else {
-                    throw CreatureFetchException("Fetching creatures failed : ${response.errorBody()}")
-                }
-            } catch (e: Exception) {
-                throw CreatureFetchAndInsertException("Error fetching and inserting creatures: ${e.message}")
-            }
-        }
-    }
 }

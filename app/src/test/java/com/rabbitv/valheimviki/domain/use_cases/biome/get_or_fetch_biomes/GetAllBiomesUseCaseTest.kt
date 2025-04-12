@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.domain.use_cases.biome.get_all_biomes
+package com.rabbitv.valheimviki.domain.use_cases.biome.get_or_fetch_biomes
 
 import com.rabbitv.valheimviki.domain.exceptions.FetchException
 import com.rabbitv.valheimviki.domain.model.api_response.ApiResponse
@@ -50,7 +50,7 @@ class GetAllBiomesUseCaseTest {
 
     @Mock
     private lateinit var biomeRepository: BiomeRepository
-    private lateinit var useCase: GetAllBiomesUseCase
+    private lateinit var useCase: GetOrFetchBiomesUseCase
 
 
     @Before
@@ -58,7 +58,7 @@ class GetAllBiomesUseCaseTest {
         Dispatchers.setMain(testDispatcher)
 
         biomeRepository = mock()
-        useCase = GetAllBiomesUseCase(biomeRepository)
+        useCase = GetOrFetchBiomesUseCase(biomeRepository)
 
     }
 

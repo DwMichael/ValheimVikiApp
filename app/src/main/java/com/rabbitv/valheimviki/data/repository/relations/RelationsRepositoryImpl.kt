@@ -3,12 +3,9 @@ package com.rabbitv.valheimviki.data.repository.relations
 
 import com.rabbitv.valheimviki.data.local.dao.RelationDao
 import com.rabbitv.valheimviki.data.remote.api.ApiRelationsService
-import com.rabbitv.valheimviki.domain.exceptions.RelationFetchAndInsertException
-import com.rabbitv.valheimviki.domain.exceptions.RelationFetchException
 import com.rabbitv.valheimviki.domain.model.relation.Relation
 import com.rabbitv.valheimviki.domain.repository.RelationsRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import retrofit2.Response
 
 class RelationsRepositoryImpl(
@@ -33,34 +30,7 @@ class RelationsRepositoryImpl(
     }
 
     override suspend fun fetchRelations(): Response<List<Relation>> {
-        try {
             return apiService.fetchRelations()
-        } catch (e: Exception) {
-            throw RelationFetchException("Error fetching relations: ${e.message}")
-        }
     }
 
-
-    override suspend fun fetchAndInsertRelations() {
-        val localRelations = getLocalRelations().first()
-
-        if (localRelations.isEmpty()) {
-            try {
-                val response = fetchRelations()
-                val relationsList = response.body()
-
-                if (response.isSuccessful && relationsList?.isNotEmpty() == true) {
-                    try {
-                        insertRelations(relationsList)
-                    } catch (e: Exception) {
-                        throw RelationFetchException("Error inserting relations: ${e.message}")
-                    }
-                } else {
-                    throw RelationFetchException("FetchAndInsertRelations failed : ${response.errorBody()}")
-                }
-            } catch (e: Exception) {
-                throw RelationFetchAndInsertException("Error fetching and inserting relations: ${e.message}")
-            }
-        }
-    }
 }

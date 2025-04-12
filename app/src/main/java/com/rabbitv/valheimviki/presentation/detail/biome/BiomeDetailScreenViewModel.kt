@@ -1,9 +1,13 @@
 package com.rabbitv.valheimviki.presentation.detail.biome
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.data.mappers.toMainBoss
+import com.rabbitv.valheimviki.domain.exceptions.CreaturesByIdFetchLocalException
+import com.rabbitv.valheimviki.domain.exceptions.CreaturesByIdsFetchLocalException
+import com.rabbitv.valheimviki.domain.exceptions.RelationsFetchLocalException
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
@@ -40,35 +44,52 @@ class BiomeDetailScreenViewModel @Inject constructor(
     init {
 
         viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val biomeId = savedStateHandle.get<String>(BIOME_ARGUMENT_KEY).toString()
 
-            val biomeId = async {
-                savedStateHandle.get<String>(BIOME_ARGUMENT_KEY).toString()
-            }.await()
+                _biome.value = biomeId.let { biomeUseCases.getBiomeByIdUseCase(biomeId = biomeId) }
 
-            _biome.value = biomeId.let { biomeUseCases.getBiomeByIdUseCase(biomeId = biomeId) }
+                val deferredMainBoss: Deferred<String> = async {
+                    biomeId.let { relationsUseCase.getRelatedIdUseCase(it) }
+                }
 
-            val deferredMainBoss: Deferred<String> = async {
-                biomeId.let { relationsUseCase.getRelatedIdUseCase(it) }
-            }
+                val deferredRelation: Deferred<List<String>> = async {
+                    biomeId.let { relationsUseCase.getRelatedIdsUseCase(it) }
+                }
 
-            val deferredRelation: Deferred<List<String>> = async {
-                biomeId.let { relationsUseCase.getRelatedIdsUseCase(it) }
-            }
+                val mainBossId: String? = deferredMainBoss.await()
+                val relatedObjects: List<String> = deferredRelation.await()
 
-            val mainBossId: String? = deferredMainBoss.await()
-            val relatedObjects: List<String> = deferredRelation.await()
+                mainBossId?.let { id ->
+                    creaturesUseCase.getCreatureById(id).toMainBoss().let { boss ->
+                        _mainBoss.value = boss
+                    }
+                }
+                val creatures = creaturesUseCase.getCreaturesByIds(relatedObjects)
+                _relatedCreatures.value = creatures
 
-            mainBossId?.let { id ->
-                creaturesUseCase.getCreatureById(id).toMainBoss().let { boss ->
-                    _mainBoss.value = boss
+            } catch (e: Exception) {
+                when (e) {
+                    is RelationsFetchLocalException -> {Log.e(
+                        "RelationsFetchLocalException BiomeDetailViewModel ",
+                        e.message.toString())
+                        _relatedCreatures.value = emptyList()
+                    }
+
+                    is CreaturesByIdsFetchLocalException -> {Log.e(
+                        "CreaturesByIdsFetchLocalException BiomeDetailViewModel",
+                        e.message.toString())
+                        _relatedCreatures.value = emptyList()
+                    }
+
+                    is CreaturesByIdFetchLocalException -> {
+                        Log.e("CreaturesByIdFetchLocalException BiomeDetailViewModel", e.message.toString())
+                        _mainBoss.value = null
+                    }
+
+                    else -> Log.e("Unknown Exception BiomeDetailViewModel", e.message.toString())
                 }
             }
-            viewModelScope.launch(Dispatchers.IO) {
-               creaturesUseCase.getCreaturesByIds(relatedObjects).let { creatures ->
-                   _relatedCreatures.value = creatures
-               }
-            }
-
         }
     }
 }

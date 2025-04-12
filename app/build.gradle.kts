@@ -83,6 +83,9 @@ dependencies {
     implementation("com.composables:icons-lucide:1.1.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.1")
 
+    implementation("androidx.work:work-runtime-ktx:2.10.0")
+    androidTestImplementation("androidx.work:work-testing:2.10.0")
+
     implementation("io.coil-kt.coil3:coil-compose:3.1.0")
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.1.0")
 
