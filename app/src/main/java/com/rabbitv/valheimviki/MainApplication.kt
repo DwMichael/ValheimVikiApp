@@ -32,11 +32,10 @@ class FetchWorkerFactory @Inject constructor(
    private val biomeRepository: BiomeRepository,
    private val creatureRepository: CreaturesRepository,
    private val relationsRepository: RelationsRepository,
-    private val language: String,
 ): WorkerFactory(){
     override fun createWorker(
         appContext: Context,
         workerClassName: String,
         workerParameters: WorkerParameters
-    ): ListenableWorker? = FetchWorker(biomeRepository,creatureRepository,relationsRepository,language,appContext,workerParameters)
+    ): ListenableWorker? = FetchWorker(biomeRepository,creatureRepository,relationsRepository,appContext,workerParameters)
 }

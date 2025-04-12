@@ -17,8 +17,8 @@ import com.rabbitv.valheimviki.domain.repository.CreaturesRepository
 import com.rabbitv.valheimviki.domain.repository.DataStoreOperations
 import com.rabbitv.valheimviki.domain.repository.RelationsRepository
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
-import com.rabbitv.valheimviki.domain.use_cases.biome.get_or_fetch_biomes.GetOrFetchBiomesUseCase
 import com.rabbitv.valheimviki.domain.use_cases.biome.get_biome_by_id.GetBiomeByIdUseCase
+import com.rabbitv.valheimviki.domain.use_cases.biome.get_or_fetch_biomes.GetOrFetchBiomesUseCase
 import com.rabbitv.valheimviki.domain.use_cases.creatures.CreatureUseCases
 import com.rabbitv.valheimviki.domain.use_cases.creatures.get_aggressive_creatures.GetAggressiveCreatures
 import com.rabbitv.valheimviki.domain.use_cases.creatures.get_creature_by_id.GetCreatureByIdUseCase
@@ -31,8 +31,10 @@ import com.rabbitv.valheimviki.domain.use_cases.creatures.get_or_fetch_creatures
 import com.rabbitv.valheimviki.domain.use_cases.creatures.get_passive_creatures.GetPassiveCreature
 import com.rabbitv.valheimviki.domain.use_cases.creatures.refetch_creatures.RefetchCreaturesUseCase
 import com.rabbitv.valheimviki.domain.use_cases.datastore.DataStoreUseCases
+import com.rabbitv.valheimviki.domain.use_cases.datastore.get_language_state.GetLanguageState
 import com.rabbitv.valheimviki.domain.use_cases.datastore.get_onboarding_state.ReadOnBoardingState
 import com.rabbitv.valheimviki.domain.use_cases.datastore.save_onboarding_state.SaveOnBoardingState
+import com.rabbitv.valheimviki.domain.use_cases.datastore.saved_language_state.SaveLanguageState
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.fetch_relations.FetchRelationsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.relation.fetch_relations_and_insert.FetchRelationsAndInsertUseCase
@@ -136,6 +138,8 @@ object RepositoryModule {
         return DataStoreUseCases(
             saveOnBoardingState = SaveOnBoardingState(dataStoreRepository),
             readOnBoardingUseCase = ReadOnBoardingState(dataStoreRepository),
+            languageProvider = GetLanguageState(dataStoreRepository),
+            saveLanguageState = SaveLanguageState(dataStoreRepository),
         )
     }
 }

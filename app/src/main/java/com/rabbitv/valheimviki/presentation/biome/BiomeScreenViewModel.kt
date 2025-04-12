@@ -7,12 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.exceptions.BiomeFetchException
 import com.rabbitv.valheimviki.domain.exceptions.BiomesFetchLocalException
 import com.rabbitv.valheimviki.domain.exceptions.BiomesInsertException
-import com.rabbitv.valheimviki.domain.exceptions.CreatureFetchAndInsertException
-import com.rabbitv.valheimviki.domain.exceptions.CreatureFetchException
-import com.rabbitv.valheimviki.domain.exceptions.CreaturesInsertException
-import com.rabbitv.valheimviki.domain.exceptions.RelationFetchAndInsertException
 import com.rabbitv.valheimviki.domain.exceptions.RelationFetchException
-import com.rabbitv.valheimviki.domain.exceptions.RelationsInsertException
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.creatures.CreatureUseCases
@@ -32,7 +27,6 @@ import javax.inject.Inject
 data class BiomesUIState(
     val biomes: List<Biome> = emptyList(),
     val areCreatures: Boolean = false,
-    val areRelations: Boolean = false,
     val error: String? = null,
     val isLoading: Boolean = false
 )
@@ -75,36 +69,6 @@ class BiomeScreenViewModel @Inject constructor(
                     is BiomesInsertException -> Log.e("BiomesInsertException BiomeScreenViewModel", "${e.message}")
                     is BiomesFetchLocalException -> Log.e("BiomesFetchLocalException BiomeScreenViewModel", "${e.message}")
                     else ->  Log.e("Unexpected Exception occurred BiomeScreenViewModel", "${e.message}")
-                }
-                _biomeUIState.value = _biomeUIState.value.copy(isLoading = false, error = e.message)
-            }
-        }
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                creatureUseCases.getOrFetchCreaturesUseCase("en")
-                _biomeUIState.value = _biomeUIState.value.copy(areCreatures = true)
-            }catch(e: Exception){
-                when(e)
-                {
-                    is CreatureFetchException -> Log.e("CreatureFetchException BiomeScreenViewModel", "${e.message}")
-                    is CreaturesInsertException -> Log.e("CreaturesInsertException BiomeScreenViewModel", "${e.message}")
-                    is CreatureFetchAndInsertException -> Log.e("CreatureFetchAndInsertException BiomeScreenViewModel", "${e.message}")
-                    else ->  Log.e("Unexpected Exception occurred BiomeScreenViewModel", "${e.message}")
-                }
-                _biomeUIState.value = _biomeUIState.value.copy(isLoading = false, error = e.message)
-            }
-        }
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                relationsRepository.fetchRelationsAndInsertUseCase()
-                _biomeUIState.value = _biomeUIState.value.copy(areRelations = true)
-            } catch (e: Exception) {
-                when(e)
-                {
-                    is RelationFetchException -> Log.e("RelationFetchException BiomeScreenViewModel", "${e.message}")
-                    is RelationsInsertException -> Log.e("RelationsInsertException BiomeScreenViewModel", "${e.message}")
-                    is RelationFetchAndInsertException -> Log.e("RelationFetchAndInsertException BiomeScreenViewModel", "${e.message}")
-                    else ->  Log.e("Unexpected Exception occurred", "${e.message}")
                 }
                 _biomeUIState.value = _biomeUIState.value.copy(isLoading = false, error = e.message)
             }

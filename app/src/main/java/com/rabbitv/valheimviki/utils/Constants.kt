@@ -13,6 +13,7 @@ object Constants {
     //DataSource
     const val PREFERENCES_NAME = "valheimViki_preferences"
     const val PREFERENCES_KEY = "on_boarding_completed"
+    const val PREFERENCES_LANGUAGE_KEY = "language_saved"
 
     //GITDSIZE
     const val BIOME_GRID_COLUMNS = 2

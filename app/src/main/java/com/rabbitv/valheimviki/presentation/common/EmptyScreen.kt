@@ -33,11 +33,11 @@ fun EmptyScreen(
     onRefresh: () -> Unit,
     errorMessage: String,
 ) {
-    PullToRefreshBox(
-        state = state,
-        isRefreshing = isRefreshing,
-        onRefresh = onRefresh,
-    ) {
+//    PullToRefreshBox(
+//        state = state,
+//        isRefreshing = isRefreshing,
+//        onRefresh = onRefresh,
+//    ) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -65,7 +65,7 @@ fun EmptyScreen(
             }
 
         }
-    }
+//    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
