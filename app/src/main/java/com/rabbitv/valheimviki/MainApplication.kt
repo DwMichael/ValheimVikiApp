@@ -7,9 +7,7 @@ import androidx.work.Configuration
 import androidx.work.ListenableWorker
 import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
-import com.rabbitv.valheimviki.domain.repository.BiomeRepository
-import com.rabbitv.valheimviki.domain.repository.CreaturesRepository
-import com.rabbitv.valheimviki.domain.repository.RelationsRepository
+import com.rabbitv.valheimviki.domain.use_cases.data_refetch.DataRefetchUseCase
 import dagger.hilt.android.HiltAndroidApp
 import jakarta.inject.Inject
 
@@ -29,13 +27,11 @@ class MainApplication : Application(), Configuration.Provider {
 
 
 class FetchWorkerFactory @Inject constructor(
-   private val biomeRepository: BiomeRepository,
-   private val creatureRepository: CreaturesRepository,
-   private val relationsRepository: RelationsRepository,
+   private val refetchUseCase: DataRefetchUseCase,
 ): WorkerFactory(){
     override fun createWorker(
         appContext: Context,
         workerClassName: String,
         workerParameters: WorkerParameters
-    ): ListenableWorker? = FetchWorker(biomeRepository,creatureRepository,relationsRepository,appContext,workerParameters)
+    ): ListenableWorker? = FetchWorker(refetchUseCase,appContext,workerParameters)
 }

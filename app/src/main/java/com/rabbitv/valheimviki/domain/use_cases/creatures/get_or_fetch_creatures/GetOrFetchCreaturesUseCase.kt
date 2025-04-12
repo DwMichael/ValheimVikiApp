@@ -10,7 +10,7 @@ class GetOrFetchCreaturesUseCase @Inject constructor(private val creatureReposit
     @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(lang: String): Flow<List<Creature>> {
 
-        return creatureRepository.getAllCreatures()
+        return creatureRepository.getLocalCreatures()
 
     }
 }
