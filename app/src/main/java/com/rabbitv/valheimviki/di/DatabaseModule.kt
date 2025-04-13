@@ -34,4 +34,8 @@ object DatabaseModule {
 
     @Provides
     fun provideRelationDao(appDatabase: ValheimVikiDatabase) = appDatabase.relationDao()
+
+    @Provides
+    fun provideOreDepositDao(appDatabase: ValheimVikiDatabase) = appDatabase.oreDepositDao()
+
 }

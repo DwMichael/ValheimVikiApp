@@ -3,6 +3,7 @@ package com.rabbitv.valheimviki.domain.use_cases.creatures
 import com.rabbitv.valheimviki.domain.use_cases.creatures.get_aggressive_creatures.GetAggressiveCreatures
 import com.rabbitv.valheimviki.domain.use_cases.creatures.get_creature_by_id.GetCreatureByIdUseCase
 import com.rabbitv.valheimviki.domain.use_cases.creatures.get_creature_by_id_and_subcategory.GetCreatureByIdAndSubCategoryUseCase
+import com.rabbitv.valheimviki.domain.use_cases.creatures.get_creature_by_relation_and_sub_category.GetCreatureByRelationAndSubCategory
 import com.rabbitv.valheimviki.domain.use_cases.creatures.get_creatures_by_ids.GetCreaturesByIdsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.creatures.get_main_bosses.GetMainBossesUseCase
 import com.rabbitv.valheimviki.domain.use_cases.creatures.get_mini_bosses.GetMiniBossesUseCase
@@ -15,6 +16,7 @@ data class CreatureUseCases(
     val getCreaturesByIds: GetCreaturesByIdsUseCase,
     val getCreatureById: GetCreatureByIdUseCase,
     val getCreatureByIdAndSubCategoryUseCase: GetCreatureByIdAndSubCategoryUseCase,
+    val getCreatureByRelationAndSubCategory: GetCreatureByRelationAndSubCategory,
     val getMainBossesUseCase: GetMainBossesUseCase,
     val getMiniBossesUseCase: GetMiniBossesUseCase,
     val getAggressiveCreatures: GetAggressiveCreatures,

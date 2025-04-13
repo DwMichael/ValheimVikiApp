@@ -36,6 +36,7 @@ fun BiomeScreen(
     viewModel: BiomeScreenViewModel = hiltViewModel(),
     animatedVisibilityScope: AnimatedVisibilityScope
     ) {
+
     val scope = rememberCoroutineScope()
     val refreshState = rememberPullToRefreshState()
     val biomeUIState: BiomesUIState by viewModel.biomeUIState.collectAsStateWithLifecycle()
@@ -55,7 +56,7 @@ fun BiomeScreen(
 
         ) {
             when {
-                biomeUIState.isLoading  -> {
+                biomeUIState.isLoading || (biomeUIState.biomes.isEmpty() && isConnection)  -> {
                     ShimmerEffect()
                 }
 
@@ -73,7 +74,7 @@ fun BiomeScreen(
                                     refreshState.animateToHidden()
                                 }
                             },
-                            errorMessage = biomeUIState.error.toString()
+                            errorMessage = "Unexpected error occurred, pull down to refresh"
                         )
                     }
                 }
@@ -89,23 +90,6 @@ fun BiomeScreen(
                             numbersOfColumns = BIOME_GRID_COLUMNS,
                             height = ITEM_HEIGHT_TWO_COLUMNS,
                             animatedVisibilityScope = animatedVisibilityScope
-                        )
-                    }
-                }else -> {
-                    Box(
-                        modifier = Modifier.testTag("EmptyScreenBiome"),
-                    ) {
-                        EmptyScreen(
-                            modifier = Modifier,
-                            state = refreshState,
-                            isRefreshing = refreshing,
-                            onRefresh = {
-                                viewModel.refetchBiomes()
-                                scope.launch {
-                                    refreshState.animateToHidden()
-                                }
-                            },
-                            errorMessage = if (!isConnection) "No internet connection" else "Can't fetch data from server try later"
                         )
                     }
                 }

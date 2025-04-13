@@ -10,8 +10,7 @@ import javax.inject.Inject
 
 class GetOrFetchBiomesUseCase @Inject constructor(private val biomeRepository: BiomeRepository) {
     @OptIn(ExperimentalCoroutinesApi::class)
-    operator fun invoke(language: String): Flow<List<Biome>>  {
-
+    operator fun invoke(): Flow<List<Biome>>  {
         return biomeRepository.getLocalBiomes().map { biomes -> biomes.sortedBy { it.order } }
     }
 }

@@ -10,8 +10,6 @@ import com.rabbitv.valheimviki.domain.exceptions.BiomesInsertException
 import com.rabbitv.valheimviki.domain.exceptions.RelationFetchException
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
-import com.rabbitv.valheimviki.domain.use_cases.creatures.CreatureUseCases
-import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.utils.isNetworkAvailable
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -33,8 +31,6 @@ data class BiomesUIState(
 
 @HiltViewModel
 class BiomeScreenViewModel @Inject constructor(
-    private val relationsRepository: RelationUseCases,
-    private val creatureUseCases: CreatureUseCases,
     private val biomeUseCases: BiomeUseCases,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
@@ -55,22 +51,38 @@ class BiomeScreenViewModel @Inject constructor(
     internal fun load() {
         _biomeUIState.value = _biomeUIState.value.copy(isLoading = true, error = null)
 
+
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                biomeUseCases.getOrFetchBiomesUseCase("en").collect { sortedBiomes ->
+                biomeUseCases.getOrFetchBiomesUseCase().collect { sortedBiomes ->
                     _biomeUIState.update { current ->
-                        current.copy(biomes = sortedBiomes,isLoading = false)
+                            current.copy(biomes = sortedBiomes, isLoading = false)
                     }
                 }
             } catch (e: Exception) {
-                when(e)
-                {
-                    is BiomeFetchException -> Log.e("BiomeFetchException BiomeScreenViewModel", "${e.message}")
-                    is BiomesInsertException -> Log.e("BiomesInsertException BiomeScreenViewModel", "${e.message}")
-                    is BiomesFetchLocalException -> Log.e("BiomesFetchLocalException BiomeScreenViewModel", "${e.message}")
-                    else ->  Log.e("Unexpected Exception occurred BiomeScreenViewModel", "${e.message}")
+                when (e) {
+                    is BiomeFetchException -> Log.e(
+                        "BiomeFetchException BiomeScreenViewModel",
+                        "${e.message}"
+                    )
+
+                    is BiomesInsertException -> Log.e(
+                        "BiomesInsertException BiomeScreenViewModel",
+                        "${e.message}"
+                    )
+
+                    is BiomesFetchLocalException -> Log.e(
+                        "BiomesFetchLocalException BiomeScreenViewModel",
+                        "${e.message}"
+                    )
+
+                    else -> Log.e(
+                        "Unexpected Exception occurred BiomeScreenViewModel",
+                        "${e.message}"
+                    )
                 }
-                _biomeUIState.value = _biomeUIState.value.copy(isLoading = false, error = e.message)
+
+
             }
         }
 
@@ -89,18 +101,13 @@ class BiomeScreenViewModel @Inject constructor(
 
             try {
                 load()
-            }catch (e:BiomeFetchException)
-            {
+            } catch (e: BiomeFetchException) {
                 _biomeUIState.value = _biomeUIState.value.copy(isLoading = false, error = e.message)
-            }
-            catch (e: BiomesInsertException)
-            {
+            } catch (e: BiomesInsertException) {
                 _biomeUIState.value = _biomeUIState.value.copy(isLoading = false, error = e.message)
-            }
-            catch (e: RelationFetchException) {
+            } catch (e: RelationFetchException) {
                 _biomeUIState.value = _biomeUIState.value.copy(isLoading = false, error = e.message)
-            }
-            catch (e: Exception) {
+            } catch (e: Exception) {
                 _biomeUIState.value = _biomeUIState.value.copy(isLoading = false, error = e.message)
             } finally {
                 _isRefreshing.emit(false)

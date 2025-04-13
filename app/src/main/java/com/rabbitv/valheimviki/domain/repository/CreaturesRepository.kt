@@ -8,7 +8,8 @@ import retrofit2.Response
 interface CreaturesRepository {
     fun getLocalCreatures(): Flow<List<Creature>>
     fun getCreaturesBySubCategory(subCategory: String): Flow<List<Creature>>
-    fun getCreatureByIdAndSubCategory(id:String,subCategory: String): Creature
+    fun getCreatureByIdAndSubCategory(id:String,subCategory: String): Creature?
+    fun getCreatureByRelationAndSubCategory(creaturesIds: List<String>, subCategory: String): Creature?
     fun getCreaturesByIds(ids: List<String>): List<Creature>
     fun getCreatureById(id: String): Creature?
 

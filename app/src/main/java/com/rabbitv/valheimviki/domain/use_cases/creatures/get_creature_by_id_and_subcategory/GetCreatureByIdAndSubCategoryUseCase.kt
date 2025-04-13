@@ -8,7 +8,7 @@ import javax.inject.Inject
 
 class GetCreatureByIdAndSubCategoryUseCase @Inject constructor(private val creatureRepository: CreaturesRepository) {
     @OptIn(ExperimentalCoroutinesApi::class)
-    operator fun invoke(id: String, creatureType: CreatureType): Creature {
+    operator fun invoke(id: String, creatureType: CreatureType): Creature? {
         return creatureRepository.getCreatureByIdAndSubCategory(
             id,
             creatureType.toString()

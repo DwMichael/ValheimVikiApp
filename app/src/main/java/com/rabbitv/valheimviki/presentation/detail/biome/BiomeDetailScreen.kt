@@ -1,5 +1,6 @@
 package com.rabbitv.valheimviki.presentation.detail.biome
 
+import android.graphics.Path
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -7,6 +8,7 @@ import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -27,6 +29,8 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PageSize
+import androidx.compose.foundation.pager.PagerDefaults
+import androidx.compose.foundation.pager.PagerSnapDistance
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -49,10 +53,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -71,15 +80,21 @@ import androidx.wear.compose.material.ContentAlpha
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.PawPrint
+import com.composables.icons.lucide.Pickaxe
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
+import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
+import com.rabbitv.valheimviki.domain.repository.ItemData
 import com.rabbitv.valheimviki.navigation.LocalSharedTransitionScope
 import com.rabbitv.valheimviki.presentation.components.TridentDivider
 import com.rabbitv.valheimviki.ui.theme.DETAIL_ITEM_SHAPE_PADDING
 import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
+import com.rabbitv.valheimviki.utils.FakeData
 import kotlin.math.absoluteValue
 
 const val DEFAULT_MINIMUM_TEXT_LINE = 4
@@ -98,9 +113,11 @@ fun BiomeDetailScreen(
     val sharedTransitionScope = LocalSharedTransitionScope.current
         ?: throw IllegalStateException("No Scope found")
     val relatedCreatures by viewModel.relatedCreatures.collectAsStateWithLifecycle()
-    val pagerState = rememberPagerState(pageCount = {
-        relatedCreatures.size
-    })
+    val relatedOreDeposits by viewModel.relatedOreDeposits.collectAsStateWithLifecycle()
+    val pagerState = rememberPagerState(
+        initialPage = 1,
+        pageCount = { relatedCreatures.size })
+    val pagerState2 = rememberPagerState(pageCount = { relatedOreDeposits.size })
 
     biome?.let { biome ->
         BiomeDetailContent(
@@ -110,11 +127,15 @@ fun BiomeDetailScreen(
             sharedTransitionScope = sharedTransitionScope,
             animatedVisibilityScope = animatedVisibilityScope,
             pagerState = pagerState,
+            pagerState2 = pagerState2,
             relatedCreatures = relatedCreatures,
+            relatedOreDeposits = relatedOreDeposits
         )
     }
 
 }
+
+
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -123,7 +144,9 @@ fun BiomeDetailContent(
     mainBoss: MainBoss?,
     onBack: () -> Unit,
     pagerState: PagerState,
+    pagerState2: PagerState,
     relatedCreatures: List<Creature>,
+    relatedOreDeposits: List<OreDeposit>,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
     errorPainter: Painter? = null,
@@ -145,7 +168,7 @@ fun BiomeDetailContent(
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.Start,
             ) {
-                DetailImage(
+                MainDetailImage(
                     onBack = onBack,
                     biome = biome,
                     sharedTransitionScope = sharedTransitionScope,
@@ -154,23 +177,98 @@ fun BiomeDetailContent(
                 )
                 DetailExpandableText(text = biome.description.toString())
                 mainBoss?.let { mainBoss ->
-                    ImageHeaderSection(mainBoss = mainBoss, errorPainter = errorPainter)
+                    MainBossImageSection(mainBoss = mainBoss, errorPainter = errorPainter)
+                }
+                SlavicDivider()
+                if(relatedCreatures.isNotEmpty()) {
+                    HorizontalPagerSection(
+                        pagerState, relatedCreatures ,
+                        Lucide.PawPrint,
+                        "Creatures",
+                        "Creatures you may encounter in this biome"
+                    )
                 }
                 RowTwoTridentDividers()
-                if(relatedCreatures.isNotEmpty()) {
-                    CreatureHorizontalPagerSection(pagerState, relatedCreatures)
+                if(relatedOreDeposits.isNotEmpty()) {
+                    HorizontalPagerSection(
+                        pagerState2, relatedOreDeposits ,
+                        Lucide.Pickaxe,
+                        "Ore Deposits",
+                        "Ore Deposits you may encounter in this biome"
+                    )
                 }
-
             }
         }
     )
 }
 
 @Composable
-fun CreatureHorizontalPagerSection(
+fun SlavicDivider() {
+    val desiredHeight = 16.dp
+    Box(
+        modifier = Modifier.padding(vertical = BODY_CONTENT_PADDING.dp)
+            .fillMaxWidth()
+            .height(desiredHeight),
+        contentAlignment = Alignment.Center
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(modifier = Modifier.weight(1f).rotate(180f)) {
+                StraitWhiteLine()
+            }
+            Image(
+                painter = painterResource(id = R.drawable.divider_image),
+                contentDescription = "Divider Image",
+                contentScale = ContentScale.Fit,
+                modifier = Modifier.height(desiredHeight) // Adjust height as needed
+            )
+            Box(modifier = Modifier.weight(1f)) {
+                StraitWhiteLine()
+            }
+        }
+    }
+}
+
+
+@Composable
+fun StraitWhiteLine() {
+    Canvas(
+        modifier = Modifier.fillMaxWidth().fillMaxHeight()
+    ) {
+        val path = Path()
+        val startPoint = Offset(0f, size.height / 2)
+        val endPoint = Offset(size.width, size.height / 2)
+
+
+        val gradientBrush = Brush.linearGradient(
+            colors = listOf(Color.White, Color.White.copy(alpha = 0f)),
+            start = startPoint,
+            end = endPoint
+        )
+
+        // Draw the line using the gradient brush
+        drawLine(
+            brush = gradientBrush,
+            start = startPoint,
+            end = endPoint,
+            strokeWidth = 2.dp.toPx()
+        )
+    }
+}
+
+
+@Composable
+fun HorizontalPagerSection(
     pagerState: PagerState,
-    creaturesList: List<Creature>
+    list: List<ItemData>,
+    icon: ImageVector,
+    title:String,
+    subTitle:String,
 ) {
+    val pageWidth = 160.dp
+    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+    val horizontalPadding = (screenWidth - pageWidth) / 2
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -192,20 +290,20 @@ fun CreatureHorizontalPagerSection(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        painter = painterResource(id = R.drawable.pets_24),
+                        icon,
                         tint = Color.White,
                         contentDescription = "Rectangle section Icon",
                         modifier = Modifier.rotate(-25f)
                     )
                     Spacer(modifier = Modifier.width(11.dp))
                     Text(
-                        "Creatures",
+                        title,
                         style = MaterialTheme.typography.titleLarge,
                     )
                 }
                 Spacer(modifier = Modifier.padding(6.dp))
                 Text(
-                    "Creatures you may encounter in this biome",
+                    subTitle,
                     style = MaterialTheme.typography.titleSmall,
                 )
             }
@@ -213,8 +311,13 @@ fun CreatureHorizontalPagerSection(
             HorizontalPager(
                 state = pagerState,
                 modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(horizontal = 0.dp),
-                pageSize = PageSize.Fixed(160.dp)
+                contentPadding = PaddingValues(horizontal = horizontalPadding),
+                pageSize = PageSize.Fixed(pageWidth),
+                beyondViewportPageCount = list.size,
+                flingBehavior = PagerDefaults.flingBehavior(
+                    state = pagerState,
+                    pagerSnapDistance = PagerSnapDistance.atMost(list.size)
+                )
             ) { pageIndex ->
                 Card(
                     Modifier
@@ -224,15 +327,27 @@ fun CreatureHorizontalPagerSection(
                                     (pagerState.currentPage - pageIndex) + pagerState
                                         .currentPageOffsetFraction
                                     ).absoluteValue
+                            val scale = lerp(
+                                start = 0.8f,
+                                stop = 1f,
+                                fraction = 1f - pageOffset.coerceIn(0f, 1f)
+                            )
+                            scaleX = scale
+                            scaleY = scale
 
                             alpha = lerp(
                                 start = 0.5f,
                                 stop = 1f,
                                 fraction = 1f - pageOffset.coerceIn(0f, 1f)
                             )
-                        }
+                            cameraDistance = 8f * density
+                        }.shadow(
+                            elevation = 8.dp,
+                            shape = RoundedCornerShape(8.dp),
+                            spotColor = Color.Black.copy(alpha = 0.25f)
+                        )
                 ) {
-                    creaturesList.let {
+                    list.let {
                         Box(
                             modifier = Modifier
                                 .height(150.dp),
@@ -255,7 +370,7 @@ fun CreatureHorizontalPagerSection(
                                 color = ForestGreen10Dark,
                             ) {
                                 Text(
-                                    text = "$pageIndex",
+                                    text = "${pageIndex+1}",
                                     modifier = Modifier.fillMaxWidth(),
                                     textAlign = TextAlign.Center,
                                     color = Color.White,
@@ -313,7 +428,7 @@ fun RowTwoTridentDividers() {
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun DetailImage(
+fun MainDetailImage(
     onBack: () -> Unit = {},
     biome: Biome,
     sharedTransitionScope: SharedTransitionScope,
@@ -403,12 +518,7 @@ fun DetailExpandableText(
 
     Box(
         modifier = modifier
-            .padding(
-                start = BODY_CONTENT_PADDING.dp,
-                end = BODY_CONTENT_PADDING.dp,
-                bottom = BODY_CONTENT_PADDING.dp,
-                top = BODY_CONTENT_PADDING.dp
-            )
+            .padding(BODY_CONTENT_PADDING.dp)
             .clickable(clickable) {
                 isExpanded = !isExpanded
             }
@@ -449,20 +559,20 @@ fun DetailExpandableText(
 }
 
 @Composable
-fun ImageHeaderSection(
+fun MainBossImageSection(
     modifier: Modifier = Modifier,
     mainBoss: MainBoss,
     errorPainter: Painter? = null,
 ) {
     Box(
         modifier = modifier
+            .padding(BODY_CONTENT_PADDING.dp)
             .height(250.dp)
             .clip(RoundedCornerShape(DETAIL_ITEM_SHAPE_PADDING))
-            .padding(
-                start = BODY_CONTENT_PADDING.dp,
-                end = BODY_CONTENT_PADDING.dp,
-                bottom = BODY_CONTENT_PADDING.dp,
-                top = BODY_CONTENT_TOP_PADDING.dp
+            .shadow(
+                elevation = 8.dp,
+                shape = RoundedCornerShape(8.dp),
+                spotColor = Color.Black.copy(alpha = 0.25f)
             ),
         contentAlignment = Alignment.TopStart
     ) {
@@ -533,10 +643,13 @@ fun PreviewRectangleSectionHeader() {
         val pagerState = rememberPagerState(pageCount = {
             10
         })
-        val creatureList = generateFakeCreatures()
-        CreatureHorizontalPagerSection(
+        val creatureList = FakeData.generateFakeCreatures()
+        HorizontalPagerSection(
             pagerState = pagerState,
-            creaturesList = creatureList
+            list = creatureList
+            , Lucide.PawPrint,
+            "Creatuers",
+            "Creatures you may encounter in this biome"
         )
     }
 }
@@ -551,7 +664,7 @@ fun PreviewRowTwoTridentDividers() {
 
 // Preview przy użyciu statycznych danych
 @OptIn(ExperimentalSharedTransitionApi::class)
-@Preview("BiomeImageHeaderSection 50.dp", showBackground = true)
+@Preview("BiomeImageHeaderSection 50.dp", showBackground = false)
 @Composable
 fun PreviewBiomeImageHeaderSection50() {
 
@@ -572,7 +685,7 @@ fun PreviewBiomeImageHeaderSection50() {
         forsakenPower = "High"
     )
     ValheimVikiAppTheme {
-        ImageHeaderSection(
+        MainBossImageSection(
             errorPainter = painterResource(R.drawable.preview_image),
             mainBoss = fakeMainBoss,
         )
@@ -612,7 +725,11 @@ fun PreviewBiomeDetailContent() {
     val pagerState = rememberPagerState(pageCount = {
         10
     })
-    val creatureList = generateFakeCreatures()
+    val pagerState2 = rememberPagerState(pageCount = {
+        5
+    })
+    val creatureList = FakeData.generateFakeCreatures()
+    val oreDeposit = FakeData.generateFakeOreDeposits()
     ValheimVikiAppTheme {
         SharedTransitionLayout {
             AnimatedVisibility(visible = true) {
@@ -624,99 +741,12 @@ fun PreviewBiomeDetailContent() {
                     animatedVisibilityScope = this,
                     errorPainter = painterResource(R.drawable.preview_image),
                     pagerState = pagerState,
-                    relatedCreatures = creatureList
+                    pagerState2 = pagerState2,
+                    relatedCreatures = creatureList,
+                    relatedOreDeposits = oreDeposit
                 )
             }
         }
     }
 }
 
-fun generateFakeCreatures(): List<Creature> {
-    return listOf(
-        Creature(
-            id = "creature001",
-            category = "Boss",
-            subCategory = "Elder",
-            imageUrl = "https://example.com/meadows_troll.png",
-            name = "Meadows Troll",
-            description = "A massive troll that roams the peaceful meadows. Despite its size, it's known for its gentle nature unless provoked.",
-            order = 1,
-            levels = 3,
-            baseHP = 1000,
-            weakness = "Fire",
-            resistance = "Frost",
-            baseDamage = "100-150",
-            collapseImmune = "Yes",
-            forsakenPower = "Nature's Wrath",
-            imageStarOne = "https://example.com/meadows_troll_star1.png",
-            imageStarTwo = "https://example.com/meadows_troll_star2.png"
-        ),
-        Creature(
-            id = "creature002",
-            category = "Aggressive",
-            subCategory = "Undead",
-            imageUrl = "https://example.com/frost_draugr.png",
-            name = "Frost Draugr",
-            description = "An ancient warrior risen from the dead in the frozen mountains. Carries ice-encrusted weapons and armor.",
-            order = 2,
-            levels = 2,
-            baseHP = 150,
-            weakness = "Fire, Spirit",
-            resistance = "Frost, Poison",
-            baseDamage = "35-45",
-            imageStarOne = "https://example.com/frost_draugr_star1.png",
-            imageStarTwo = "https://example.com/frost_draugr_star2.png"
-        ),
-        Creature(
-            id = "creature003",
-            category = "Passive",
-            subCategory = "Wildlife",
-            imageUrl = "https://example.com/glowing_deer.png",
-            name = "Glowing Deer",
-            description = "A magical deer with bioluminescent antlers that light up the Black Forest at night. Its hide has alchemical properties.",
-            order = 3,
-            levels = 1,
-            baseHP = 60,
-            weakness = "Pierce",
-            resistance = "None",
-            baseDamage = "5-10",
-            abilities = "Night Vision, Swift Movement",
-            imageStarOne = null,
-            imageStarTwo = null
-        ),
-        Creature(
-            id = "creature004",
-            category = "MiniBoss",
-            subCategory = "Elemental",
-            imageUrl = "https://example.com/swamp_guardian.png",
-            name = "Swamp Guardian",
-            description = "A sentient mass of vines, mud, and ancient bones that protects the heart of the swamp. Can summon lesser creatures to its aid.",
-            order = 4,
-            levels = 2,
-            baseHP = 500,
-            weakness = "Fire, Slash",
-            resistance = "Blunt, Pierce, Poison",
-            baseDamage = "65-80",
-            collapseImmune = "Yes",
-            forsakenPower = null,
-            imageStarOne = "https://example.com/swamp_guardian_star1.png",
-            imageStarTwo = "https://example.com/swamp_guardian_star2.png"
-        ),
-        Creature(
-            id = "creature005",
-            category = "Aggressive",
-            subCategory = "Insect",
-            imageUrl = "https://example.com/plains_mantis.png",
-            name = "Plains Mantis",
-            description = "A gigantic praying mantis that camouflages in the tall grass of the plains. Known for its lightning-quick strikes and precise hunting.",
-            order = 5,
-            levels = 3,
-            baseHP = 220,
-            weakness = "Blunt, Frost",
-            resistance = "Pierce, Slash",
-            baseDamage = "75-85",
-            imageStarOne = "https://example.com/plains_mantis_star1.png",
-            imageStarTwo = "https://example.com/plains_mantis_star2.png"
-        )
-    )
-}

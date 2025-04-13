@@ -16,7 +16,10 @@ interface CreatureDao {
     fun getCreaturesBySubCategory(subCategory:String): Flow<List<Creature>>
 
     @Query("SELECT * FROM creatures WHERE category='CREATURE' AND subCategory = :subCategory AND id = :creatureId")
-    fun getCreatureByIdAndSubCategory(creatureId: String, subCategory:String): Creature
+    fun getCreatureByIdAndSubCategory(creatureId: String, subCategory:String): Creature?
+
+    @Query("SELECT * FROM creatures WHERE category='CREATURE' AND subCategory = :subCategory AND id IN(:creatureIds)")
+    fun getCreatureByRelationAndSubCategory(creatureIds: List<String>, subCategory:String): Creature?
 
     @Query("SELECT * FROM creatures WHERE category='CREATURE' AND id = :creatureId")
     fun getCreatureById(creatureId: String): Creature?

@@ -3,17 +3,18 @@ package com.rabbitv.valheimviki.domain.model.creature
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.rabbitv.valheimviki.domain.repository.ItemData
 import kotlinx.serialization.Serializable
 
 @Entity(tableName = "creatures")
 @Serializable
 data class Creature(
     @PrimaryKey (autoGenerate = false)
-    val id: String,
+    override val id: String,
     val category: String? = null,
     val subCategory: String? = null,
-    val imageUrl: String? = null,
-    val name: String? = null,
+    override val imageUrl: String,
+    override val name: String,
     val description: String? = null,
     val order: Int,
     // Common stats fields
@@ -30,5 +31,5 @@ data class Creature(
     val imageStarTwo: String? = null,
     // PassiveCreature specific field
     val abilities: String? = null,
-    )
+    ):ItemData
 

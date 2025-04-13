@@ -2,6 +2,7 @@ package com.rabbitv.valheimviki.di
 
 import com.rabbitv.valheimviki.data.remote.api.ApiBiomeService
 import com.rabbitv.valheimviki.data.remote.api.ApiCreatureService
+import com.rabbitv.valheimviki.data.remote.api.ApiOreDepositService
 import com.rabbitv.valheimviki.data.remote.api.ApiRelationsService
 import com.rabbitv.valheimviki.utils.Constants.BASE_URL
 import dagger.Module
@@ -11,7 +12,6 @@ import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
@@ -52,10 +52,16 @@ object NetWorkModule {
         return retrofit.create(ApiCreatureService::class.java)
     }
 
+
     @Singleton
     @Provides
     fun provideApiRelationService(retrofit: Retrofit): ApiRelationsService {
         return retrofit.create(ApiRelationsService::class.java)
+    }
+    @Singleton
+    @Provides
+    fun provideApiOreDepositService(retrofit: Retrofit): ApiOreDepositService {
+        return retrofit.create(ApiOreDepositService::class.java)
     }
 
 

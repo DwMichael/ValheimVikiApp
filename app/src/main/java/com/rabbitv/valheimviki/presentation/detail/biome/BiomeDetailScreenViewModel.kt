@@ -5,14 +5,14 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.data.mappers.toMainBoss
-import com.rabbitv.valheimviki.domain.exceptions.CreaturesByIdFetchLocalException
-import com.rabbitv.valheimviki.domain.exceptions.CreaturesByIdsFetchLocalException
-import com.rabbitv.valheimviki.domain.exceptions.RelationsFetchLocalException
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.Creature
+import com.rabbitv.valheimviki.domain.model.creature.CreatureType
 import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
+import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.creatures.CreatureUseCases
+import com.rabbitv.valheimviki.domain.use_cases.ore_deposit.OreDepositUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.utils.Constants.BIOME_ARGUMENT_KEY
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,7 +29,8 @@ class BiomeDetailScreenViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val biomeUseCases: BiomeUseCases,
     private val creaturesUseCase: CreatureUseCases,
-    private val relationsUseCase: RelationUseCases
+    private val relationsUseCase: RelationUseCases,
+    private val oreDepositUseCases: OreDepositUseCases
 ) : ViewModel() {
     private val _biome = MutableStateFlow<Biome?>(null)
     val biome: StateFlow<Biome?> = _biome
@@ -40,6 +41,8 @@ class BiomeDetailScreenViewModel @Inject constructor(
     private  val _relatedCreatures = MutableStateFlow<List<Creature>>(emptyList())
     val relatedCreatures : StateFlow<List<Creature>> = _relatedCreatures
 
+    private val _relatedOreDeposits = MutableStateFlow<List<OreDeposit>>(emptyList())
+    val relatedOreDeposits : StateFlow<List<OreDeposit>> = _relatedOreDeposits
 
     init {
 
@@ -49,46 +52,44 @@ class BiomeDetailScreenViewModel @Inject constructor(
 
                 _biome.value = biomeId.let { biomeUseCases.getBiomeByIdUseCase(biomeId = biomeId) }
 
-                val deferredMainBoss: Deferred<String> = async {
-                    biomeId.let { relationsUseCase.getRelatedIdUseCase(it) }
-                }
 
-                val deferredRelation: Deferred<List<String>> = async {
+                val deferredRelations: Deferred<List<String>> = async {
                     biomeId.let { relationsUseCase.getRelatedIdsUseCase(it) }
                 }
 
-                val mainBossId: String? = deferredMainBoss.await()
-                val relatedObjects: List<String> = deferredRelation.await()
+                val relatedObjects: List<String> = deferredRelations.await()
 
-                mainBossId?.let { id ->
-                    creaturesUseCase.getCreatureById(id).toMainBoss().let { boss ->
-                        _mainBoss.value = boss
+                try {
+                    relatedObjects.let { ids ->
+                        creaturesUseCase.getCreatureByRelationAndSubCategory(
+                            ids,
+                            CreatureType.BOSS)?.toMainBoss().let { boss ->
+                            _mainBoss.value = boss
+                        }
                     }
+                } catch (e: Exception) {
+                    Log.e("Boss fetch error BiomeDetailViewModel", e.message.toString())
+                    _mainBoss.value = null
                 }
-                val creatures = creaturesUseCase.getCreaturesByIds(relatedObjects)
-                _relatedCreatures.value = creatures
+
+                try {
+                    val creatures = creaturesUseCase.getCreaturesByIds(relatedObjects)
+                    _relatedCreatures.value = creatures
+                } catch (e: Exception) {
+                    Log.e("Creatures fetch error BiomeDetailViewModel", e.message.toString())
+                    _relatedCreatures.value = emptyList()
+                }
+
+                try {
+                    val oreDeposits = oreDepositUseCases.getOreDepositsByIdsUseCase(relatedObjects)
+                    _relatedOreDeposits.value = oreDeposits
+                } catch (e: Exception) {
+                    Log.e("Ore deposits fetch error BiomeDetailViewModel", e.message.toString())
+                    _relatedOreDeposits.value = emptyList()
+                }
 
             } catch (e: Exception) {
-                when (e) {
-                    is RelationsFetchLocalException -> {Log.e(
-                        "RelationsFetchLocalException BiomeDetailViewModel ",
-                        e.message.toString())
-                        _relatedCreatures.value = emptyList()
-                    }
-
-                    is CreaturesByIdsFetchLocalException -> {Log.e(
-                        "CreaturesByIdsFetchLocalException BiomeDetailViewModel",
-                        e.message.toString())
-                        _relatedCreatures.value = emptyList()
-                    }
-
-                    is CreaturesByIdFetchLocalException -> {
-                        Log.e("CreaturesByIdFetchLocalException BiomeDetailViewModel", e.message.toString())
-                        _mainBoss.value = null
-                    }
-
-                    else -> Log.e("Unknown Exception BiomeDetailViewModel", e.message.toString())
-                }
+                Log.e("General fetch error BiomeDetailViewModel", e.message.toString())
             }
         }
     }
