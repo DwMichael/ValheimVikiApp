@@ -87,6 +87,7 @@ import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
+import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
 import com.rabbitv.valheimviki.domain.repository.ItemData
 import com.rabbitv.valheimviki.navigation.LocalSharedTransitionScope
@@ -114,10 +115,12 @@ fun BiomeDetailScreen(
         ?: throw IllegalStateException("No Scope found")
     val relatedCreatures by viewModel.relatedCreatures.collectAsStateWithLifecycle()
     val relatedOreDeposits by viewModel.relatedOreDeposits.collectAsStateWithLifecycle()
+    val relatedMaterials by viewModel.relatedMaterials.collectAsStateWithLifecycle()
     val pagerState = rememberPagerState(
         initialPage = 1,
         pageCount = { relatedCreatures.size })
     val pagerState2 = rememberPagerState(pageCount = { relatedOreDeposits.size })
+    val pagerState3 = rememberPagerState(pageCount = { relatedMaterials.size })
 
     biome?.let { biome ->
         BiomeDetailContent(
@@ -128,8 +131,10 @@ fun BiomeDetailScreen(
             animatedVisibilityScope = animatedVisibilityScope,
             pagerState = pagerState,
             pagerState2 = pagerState2,
+            pagerState3 = pagerState3,
             relatedCreatures = relatedCreatures,
-            relatedOreDeposits = relatedOreDeposits
+            relatedOreDeposits = relatedOreDeposits,
+            relatedMaterials= relatedMaterials
         )
     }
 
@@ -145,8 +150,10 @@ fun BiomeDetailContent(
     onBack: () -> Unit,
     pagerState: PagerState,
     pagerState2: PagerState,
+    pagerState3: PagerState,
     relatedCreatures: List<Creature>,
     relatedOreDeposits: List<OreDeposit>,
+    relatedMaterials: List<Material>,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
     errorPainter: Painter? = null,
@@ -195,6 +202,15 @@ fun BiomeDetailContent(
                         Lucide.Pickaxe,
                         "Ore Deposits",
                         "Ore Deposits you may encounter in this biome"
+                    )
+                }
+                RowTwoTridentDividers()
+                if(relatedOreDeposits.isNotEmpty()) {
+                    HorizontalPagerSection(
+                        pagerState3, relatedOreDeposits ,
+                        Lucide.Pickaxe,
+                        "Materials",
+                        "Unique materials you may encounter in this biome"
                     )
                 }
             }
@@ -728,6 +744,9 @@ fun PreviewBiomeDetailContent() {
     val pagerState2 = rememberPagerState(pageCount = {
         5
     })
+    val pagerState3 = rememberPagerState(pageCount = {
+        5
+    })
     val creatureList = FakeData.generateFakeCreatures()
     val oreDeposit = FakeData.generateFakeOreDeposits()
     ValheimVikiAppTheme {
@@ -742,8 +761,10 @@ fun PreviewBiomeDetailContent() {
                     errorPainter = painterResource(R.drawable.preview_image),
                     pagerState = pagerState,
                     pagerState2 = pagerState2,
+                    pagerState3 = pagerState2,
                     relatedCreatures = creatureList,
-                    relatedOreDeposits = oreDeposit
+                    relatedOreDeposits = oreDeposit,
+                    relatedMaterials = emptyList()
                 )
             }
         }

@@ -4,12 +4,14 @@ import com.rabbitv.valheimviki.domain.exceptions.FetchException
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.model.data_refetch_result.DataRefetchResult
+import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
 import com.rabbitv.valheimviki.domain.model.relation.Relation
 import com.rabbitv.valheimviki.domain.repository.BiomeRepository
-import com.rabbitv.valheimviki.domain.repository.CreaturesRepository
+import com.rabbitv.valheimviki.domain.repository.CreatureRepository
+import com.rabbitv.valheimviki.domain.repository.MaterialRepository
 import com.rabbitv.valheimviki.domain.repository.OreDepositRepository
-import com.rabbitv.valheimviki.domain.repository.RelationsRepository
+import com.rabbitv.valheimviki.domain.repository.RelationRepository
 import com.rabbitv.valheimviki.domain.use_cases.datastore.DataStoreUseCases
 import jakarta.inject.Inject
 import kotlinx.coroutines.async
@@ -21,9 +23,10 @@ import java.net.UnknownHostException
 
 class DataRefetchUseCase @Inject constructor(
     private val biomeRepository: BiomeRepository,
-    private val creatureRepository: CreaturesRepository,
+    private val creatureRepository: CreatureRepository,
     private val oreDepositRepository: OreDepositRepository,
-    private val relationsRepository: RelationsRepository,
+    private val materialsRepository: MaterialRepository,
+    private val relationsRepository: RelationRepository,
     private val dataStoreUseCases: DataStoreUseCases,
 ) {
     suspend fun refetchAllData(): DataRefetchResult {
@@ -37,10 +40,13 @@ class DataRefetchUseCase @Inject constructor(
             val biomeResponse = biomeRepository.fetchBiomes(language)
             val creatureResponse = creatureRepository.fetchCreatures(language)
             val oreDepositResponse = oreDepositRepository.fetchOreDeposits(language)
+            val materialsResponse = materialsRepository.fetchMaterials(language)
             val relationResponse = relationsRepository.fetchRelations()
 
             if (biomeResponse.isSuccessful &&
                 creatureResponse.isSuccessful &&
+                oreDepositResponse.isSuccessful &&
+                materialsResponse.isSuccessful &&
                 relationResponse.isSuccessful
             ) {
 
@@ -68,6 +74,14 @@ class DataRefetchUseCase @Inject constructor(
                     }
                 } ?: return DataRefetchResult.Error("Null ore deposit data received")
 
+                materialsResponse.body()?.let {
+                    if (it.isNotEmpty()) {
+                        materialsRepository.insertMaterials(it)
+                    } else {
+                        return DataRefetchResult.Error("Empty materials data received")
+                    }
+                } ?: return DataRefetchResult.Error("Null materials data received")
+
                 relationResponse.body()?.let { relations ->
                     if (relations.isNotEmpty()) {
                         relationsRepository.insertRelations(relations)
@@ -81,7 +95,8 @@ class DataRefetchUseCase @Inject constructor(
                 val errorMessage = "API error: " +
                         (biomeResponse.errorBody()?.string() ?: "") +
                         (creatureResponse.errorBody()?.string() ?: "") +
-                        (oreDepositResponse.errorBody()?.string() ?: "")
+                        (oreDepositResponse.errorBody()?.string() ?: "")+
+                        (materialsResponse.errorBody()?.string() ?: "")
                 (relationResponse.errorBody()?.string() ?: "")
                 DataRefetchResult.NetworkError(errorMessage)
             }
@@ -102,6 +117,7 @@ class DataRefetchUseCase @Inject constructor(
         val hasBiomes = mutableListOf<Biome>()
         val hasCreatures = mutableListOf<Creature>()
         val hasOreDeposits = mutableListOf<OreDeposit>()
+        val hasMaterials = mutableListOf<Material>()
         val hasRelations = mutableListOf<Relation>()
 
         coroutineScope {
@@ -117,16 +133,21 @@ class DataRefetchUseCase @Inject constructor(
             val oreDeposit = async {
                 oreDepositRepository.getLocalOreDeposits().first()
             }
+            val materials = async {
+                materialsRepository.getLocalMaterials().first()
+            }
 
             hasBiomes.addAll(biome.await())
             hasCreatures.addAll(creature.await())
             hasOreDeposits.addAll(oreDeposit.await())
+            hasMaterials.addAll(materials.await())
             hasRelations.addAll(relations.await())
         }
 
         if ((hasBiomes.isNotEmpty() && hasCreatures.size == 9)
             || (hasCreatures.isNotEmpty() && hasCreatures.size == 83)
             || (hasOreDeposits.isNotEmpty() && hasOreDeposits.size == 9)
+            || (hasMaterials.isNotEmpty() && hasMaterials.size == 176)
             || (hasRelations.isNotEmpty() && hasCreatures.size == 92)
         ) {
             return false

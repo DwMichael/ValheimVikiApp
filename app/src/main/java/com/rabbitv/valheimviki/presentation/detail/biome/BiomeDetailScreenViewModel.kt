@@ -4,14 +4,16 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rabbitv.valheimviki.data.mappers.toMainBoss
+import com.rabbitv.valheimviki.data.mappers.creatures.toMainBoss
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.model.creature.CreatureType
 import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
+import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
-import com.rabbitv.valheimviki.domain.use_cases.creatures.CreatureUseCases
+import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
+import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.ore_deposit.OreDepositUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.utils.Constants.BIOME_ARGUMENT_KEY
@@ -30,6 +32,7 @@ class BiomeDetailScreenViewModel @Inject constructor(
     private val biomeUseCases: BiomeUseCases,
     private val creaturesUseCase: CreatureUseCases,
     private val relationsUseCase: RelationUseCases,
+    private val materialUseCases: MaterialUseCases,
     private val oreDepositUseCases: OreDepositUseCases
 ) : ViewModel() {
     private val _biome = MutableStateFlow<Biome?>(null)
@@ -43,6 +46,9 @@ class BiomeDetailScreenViewModel @Inject constructor(
 
     private val _relatedOreDeposits = MutableStateFlow<List<OreDeposit>>(emptyList())
     val relatedOreDeposits : StateFlow<List<OreDeposit>> = _relatedOreDeposits
+
+    private val _relatedMaterials = MutableStateFlow<List<Material>>(emptyList())
+    val relatedMaterials : StateFlow<List<Material>> = _relatedMaterials
 
     init {
 
@@ -86,6 +92,13 @@ class BiomeDetailScreenViewModel @Inject constructor(
                 } catch (e: Exception) {
                     Log.e("Ore deposits fetch error BiomeDetailViewModel", e.message.toString())
                     _relatedOreDeposits.value = emptyList()
+                }
+                try {
+                    val materials = materialUseCases.getMaterialsByIds(relatedObjects)
+                    _relatedMaterials.value = materials
+                } catch (e: Exception) {
+                    Log.e("Materials fetch error BiomeDetailViewModel", e.message.toString())
+                    _relatedMaterials.value = emptyList()
                 }
 
             } catch (e: Exception) {

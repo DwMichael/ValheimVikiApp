@@ -17,3 +17,8 @@ class BiomesFetchLocalException(message: String) : FetchLocalException(message)
 class OreDepositFetchLocalException(message: String) : FetchLocalException(message)
 class OreDepositByIdFetchLocalException(message: String) : FetchLocalException(message)
 class OreDepositsByIdsFetchLocalException(message: String) : FetchLocalException(message)
+
+//Materials
+class MaterialsFetchLocalException(message: String) : FetchLocalException(message)
+class MaterialsByIdFetchLocalException(message: String) : FetchLocalException(message)
+class MaterialsByIdsFetchLocalException(message: String) : FetchLocalException(message)

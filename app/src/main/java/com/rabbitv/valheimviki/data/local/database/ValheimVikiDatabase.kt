@@ -7,6 +7,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.rabbitv.valheimviki.data.local.dao.BiomeDao
 import com.rabbitv.valheimviki.data.local.dao.CreatureDao
+import com.rabbitv.valheimviki.data.local.dao.MaterialDao
 import com.rabbitv.valheimviki.data.local.dao.OreDepositDao
 import com.rabbitv.valheimviki.data.local.dao.RelationDao
 import com.rabbitv.valheimviki.domain.model.biome.Biome
@@ -32,4 +33,5 @@ abstract class ValheimVikiDatabase : RoomDatabase() {
     abstract fun creatureDao(): CreatureDao
     abstract fun relationDao(): RelationDao
     abstract fun oreDepositDao(): OreDepositDao
+    abstract fun materialDao(): MaterialDao
 }

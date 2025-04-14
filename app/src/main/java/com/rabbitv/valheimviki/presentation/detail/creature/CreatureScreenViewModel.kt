@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.mapper.CreatureFactory.createFromCreature
 import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
-import com.rabbitv.valheimviki.domain.use_cases.creatures.CreatureUseCases
+import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
 import com.rabbitv.valheimviki.utils.Constants.MAIN_BOSS_ARGUMENT_KEY
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers

@@ -2,12 +2,12 @@ package com.rabbitv.valheimviki.presentation.creatures.bosses
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rabbitv.valheimviki.data.mappers.toMainBosses
+import com.rabbitv.valheimviki.data.mappers.creatures.toMainBosses
 import com.rabbitv.valheimviki.domain.exceptions.CreatureFetchException
 import com.rabbitv.valheimviki.domain.exceptions.FetchException
 import com.rabbitv.valheimviki.domain.model.creature.RefetchUseCases
 import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
-import com.rabbitv.valheimviki.domain.use_cases.creatures.CreatureUseCases
+import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
 import com.rabbitv.valheimviki.utils.Constants.DEFAULT_LANG
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers

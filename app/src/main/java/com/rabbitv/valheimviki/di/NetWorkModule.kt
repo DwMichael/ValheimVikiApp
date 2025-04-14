@@ -2,6 +2,7 @@ package com.rabbitv.valheimviki.di
 
 import com.rabbitv.valheimviki.data.remote.api.ApiBiomeService
 import com.rabbitv.valheimviki.data.remote.api.ApiCreatureService
+import com.rabbitv.valheimviki.data.remote.api.ApiMaterialsService
 import com.rabbitv.valheimviki.data.remote.api.ApiOreDepositService
 import com.rabbitv.valheimviki.data.remote.api.ApiRelationsService
 import com.rabbitv.valheimviki.utils.Constants.BASE_URL
@@ -64,6 +65,11 @@ object NetWorkModule {
         return retrofit.create(ApiOreDepositService::class.java)
     }
 
+    @Singleton
+    @Provides
+    fun provideApiMaterialService(retrofit: Retrofit): ApiMaterialsService {
+        return retrofit.create(ApiMaterialsService::class.java)
+    }
 
 
 }

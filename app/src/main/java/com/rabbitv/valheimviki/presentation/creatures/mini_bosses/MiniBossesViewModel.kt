@@ -2,11 +2,11 @@ package com.rabbitv.valheimviki.presentation.creatures.mini_bosses
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rabbitv.valheimviki.data.mappers.toMiniBosses
+import com.rabbitv.valheimviki.data.mappers.creatures.toMiniBosses
 import com.rabbitv.valheimviki.domain.exceptions.FetchException
 import com.rabbitv.valheimviki.domain.model.creature.RefetchUseCases
 import com.rabbitv.valheimviki.domain.model.creature.mini_boss.MiniBoss
-import com.rabbitv.valheimviki.domain.use_cases.creatures.CreatureUseCases
+import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

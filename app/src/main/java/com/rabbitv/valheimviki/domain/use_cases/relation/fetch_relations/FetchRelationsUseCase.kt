@@ -3,14 +3,14 @@ package com.rabbitv.valheimviki.domain.use_cases.relation.fetch_relations
 import android.util.Log
 import com.rabbitv.valheimviki.domain.exceptions.RelationFetchException
 import com.rabbitv.valheimviki.domain.model.relation.Relation
-import com.rabbitv.valheimviki.domain.repository.RelationsRepository
+import com.rabbitv.valheimviki.domain.repository.RelationRepository
 import com.rabbitv.valheimviki.utils.bodyList
 import jakarta.inject.Inject
 import retrofit2.Response
 
 
 class FetchRelationsUseCase @Inject constructor(
-    private val relationsRepository: RelationsRepository
+    private val relationsRepository: RelationRepository
 ) {
     suspend operator fun invoke(): List<Relation> {
         try {

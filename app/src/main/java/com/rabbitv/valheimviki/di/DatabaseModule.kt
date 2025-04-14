@@ -38,4 +38,6 @@ object DatabaseModule {
     @Provides
     fun provideOreDepositDao(appDatabase: ValheimVikiDatabase) = appDatabase.oreDepositDao()
 
+    @Provides
+    fun provideMaterialDao(appDatabase: ValheimVikiDatabase) = appDatabase.materialDao()
 }

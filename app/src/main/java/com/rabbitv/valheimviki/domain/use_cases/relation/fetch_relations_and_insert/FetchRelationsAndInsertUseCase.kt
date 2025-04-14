@@ -3,13 +3,13 @@ package com.rabbitv.valheimviki.domain.use_cases.relation.fetch_relations_and_in
 import com.rabbitv.valheimviki.domain.exceptions.RelationFetchException
 import com.rabbitv.valheimviki.domain.exceptions.RelationsFetchLocalException
 import com.rabbitv.valheimviki.domain.exceptions.RelationsInsertException
-import com.rabbitv.valheimviki.domain.repository.RelationsRepository
+import com.rabbitv.valheimviki.domain.repository.RelationRepository
 import jakarta.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 
 
-class FetchRelationsAndInsertUseCase @Inject constructor(private val repository: RelationsRepository) {
+class FetchRelationsAndInsertUseCase @Inject constructor(private val repository: RelationRepository) {
     @OptIn(ExperimentalCoroutinesApi::class)
     suspend operator fun invoke(): Boolean {
 

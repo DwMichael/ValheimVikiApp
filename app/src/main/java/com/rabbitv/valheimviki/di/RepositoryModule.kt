@@ -3,38 +3,42 @@ package com.rabbitv.valheimviki.di
 import android.content.Context
 import com.rabbitv.valheimviki.data.local.dao.BiomeDao
 import com.rabbitv.valheimviki.data.local.dao.CreatureDao
+import com.rabbitv.valheimviki.data.local.dao.MaterialDao
 import com.rabbitv.valheimviki.data.local.dao.OreDepositDao
 import com.rabbitv.valheimviki.data.local.dao.RelationDao
 import com.rabbitv.valheimviki.data.remote.api.ApiBiomeService
 import com.rabbitv.valheimviki.data.remote.api.ApiCreatureService
+import com.rabbitv.valheimviki.data.remote.api.ApiMaterialsService
 import com.rabbitv.valheimviki.data.remote.api.ApiOreDepositService
 import com.rabbitv.valheimviki.data.remote.api.ApiRelationsService
 import com.rabbitv.valheimviki.data.repository.DataStoreOperationsImpl
 import com.rabbitv.valheimviki.data.repository.DataStoreRepository
 import com.rabbitv.valheimviki.data.repository.biome.BiomeRepositoryImpl
-import com.rabbitv.valheimviki.data.repository.creatures.CreaturesRepositoryImpl
+import com.rabbitv.valheimviki.data.repository.creature.CreatureRepositoryImpl
+import com.rabbitv.valheimviki.data.repository.material.MaterialRepositoryImpl
 import com.rabbitv.valheimviki.data.repository.ore_deposit.OreDepositRepositoryImpl
-import com.rabbitv.valheimviki.data.repository.relations.RelationsRepositoryImpl
+import com.rabbitv.valheimviki.data.repository.relation.RelationRepositoryImpl
 import com.rabbitv.valheimviki.domain.repository.BiomeRepository
-import com.rabbitv.valheimviki.domain.repository.CreaturesRepository
+import com.rabbitv.valheimviki.domain.repository.CreatureRepository
 import com.rabbitv.valheimviki.domain.repository.DataStoreOperations
+import com.rabbitv.valheimviki.domain.repository.MaterialRepository
 import com.rabbitv.valheimviki.domain.repository.OreDepositRepository
-import com.rabbitv.valheimviki.domain.repository.RelationsRepository
+import com.rabbitv.valheimviki.domain.repository.RelationRepository
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.biome.get_biome_by_id.GetBiomeByIdUseCase
 import com.rabbitv.valheimviki.domain.use_cases.biome.get_or_fetch_biomes.GetOrFetchBiomesUseCase
-import com.rabbitv.valheimviki.domain.use_cases.creatures.CreatureUseCases
-import com.rabbitv.valheimviki.domain.use_cases.creatures.get_aggressive_creatures.GetAggressiveCreatures
-import com.rabbitv.valheimviki.domain.use_cases.creatures.get_creature_by_id.GetCreatureByIdUseCase
-import com.rabbitv.valheimviki.domain.use_cases.creatures.get_creature_by_id_and_subcategory.GetCreatureByIdAndSubCategoryUseCase
-import com.rabbitv.valheimviki.domain.use_cases.creatures.get_creature_by_relation_and_sub_category.GetCreatureByRelationAndSubCategory
-import com.rabbitv.valheimviki.domain.use_cases.creatures.get_creatures_by_ids.GetCreaturesByIdsUseCase
-import com.rabbitv.valheimviki.domain.use_cases.creatures.get_main_bosses.GetMainBossesUseCase
-import com.rabbitv.valheimviki.domain.use_cases.creatures.get_mini_bosses.GetMiniBossesUseCase
-import com.rabbitv.valheimviki.domain.use_cases.creatures.get_npcs.GetNPCsUseCase
-import com.rabbitv.valheimviki.domain.use_cases.creatures.get_or_fetch_creatures.GetOrFetchCreaturesUseCase
-import com.rabbitv.valheimviki.domain.use_cases.creatures.get_passive_creatures.GetPassiveCreature
-import com.rabbitv.valheimviki.domain.use_cases.creatures.refetch_creatures.RefetchCreaturesUseCase
+import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
+import com.rabbitv.valheimviki.domain.use_cases.creature.get_aggressive_creatures.GetAggressiveCreatures
+import com.rabbitv.valheimviki.domain.use_cases.creature.get_creature_by_id.GetCreatureByIdUseCase
+import com.rabbitv.valheimviki.domain.use_cases.creature.get_creature_by_id_and_subcategory.GetCreatureByIdAndSubCategoryUseCase
+import com.rabbitv.valheimviki.domain.use_cases.creature.get_creature_by_relation_and_sub_category.GetCreatureByRelationAndSubCategory
+import com.rabbitv.valheimviki.domain.use_cases.creature.get_creatures_by_ids.GetCreaturesByIdsUseCase
+import com.rabbitv.valheimviki.domain.use_cases.creature.get_main_bosses.GetMainBossesUseCase
+import com.rabbitv.valheimviki.domain.use_cases.creature.get_mini_bosses.GetMiniBossesUseCase
+import com.rabbitv.valheimviki.domain.use_cases.creature.get_npcs.GetNPCsUseCase
+import com.rabbitv.valheimviki.domain.use_cases.creature.get_or_fetch_creatures.GetOrFetchCreaturesUseCase
+import com.rabbitv.valheimviki.domain.use_cases.creature.get_passive_creatures.GetPassiveCreature
+import com.rabbitv.valheimviki.domain.use_cases.creature.refetch_creatures.RefetchCreaturesUseCase
 import com.rabbitv.valheimviki.domain.use_cases.data_refetch.DataRefetchUseCase
 import com.rabbitv.valheimviki.domain.use_cases.datastore.DataStoreUseCases
 import com.rabbitv.valheimviki.domain.use_cases.datastore.get_onboarding_state.ReadOnBoardingState
@@ -86,8 +90,8 @@ object RepositoryModule {
     fun provideCreatureRepositoryImpl(
         apiService: ApiCreatureService,
         creatureDao: CreatureDao
-    ): CreaturesRepository {
-        return CreaturesRepositoryImpl(apiService, creatureDao)
+    ): CreatureRepository {
+        return CreatureRepositoryImpl(apiService, creatureDao)
     }
 
     @Provides
@@ -95,8 +99,8 @@ object RepositoryModule {
     fun provideRelationRepositoryImpl(
         apiService: ApiRelationsService,
         relationDao: RelationDao
-    ): RelationsRepository {
-        return RelationsRepositoryImpl(apiService, relationDao)
+    ): RelationRepository {
+        return RelationRepositoryImpl(apiService, relationDao)
     }
 
     @Provides
@@ -110,10 +114,20 @@ object RepositoryModule {
 
     @Provides
     @Singleton
+    fun provideMaterialsRepositoryImpl(
+        apiService: ApiMaterialsService,
+        materialDao: MaterialDao
+    ): MaterialRepository {
+        return MaterialRepositoryImpl(apiService, materialDao)
+    }
+
+
+    @Provides
+    @Singleton
     fun provideRefetchUseCase(
         biomeRepository: BiomeRepository,
-        creatureRepository: CreaturesRepository,
-        relationsRepository: RelationsRepository,
+        creatureRepository: CreatureRepository,
+        relationsRepository: RelationRepository,
         oreDepositRepository: OreDepositRepository,
         dataStoreUseCases: DataStoreUseCases
     ): DataRefetchUseCase {
@@ -125,6 +139,7 @@ object RepositoryModule {
             dataStoreUseCases = dataStoreUseCases,
         )
     }
+
     @Provides
     @Singleton
     fun provideBiomeUseCases(biomeRepository: BiomeRepository): BiomeUseCases {
@@ -136,7 +151,10 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideCreatureUseCases(creatureRepository: CreaturesRepository,relationsRepository: RelationsRepository): CreatureUseCases {
+    fun provideCreatureUseCases(
+        creatureRepository: CreatureRepository,
+        relationsRepository: RelationRepository
+    ): CreatureUseCases {
         return CreatureUseCases(
             getCreaturesByIds = GetCreaturesByIdsUseCase(creatureRepository),
             getCreatureById = GetCreatureByIdUseCase(creatureRepository),
@@ -149,7 +167,9 @@ object RepositoryModule {
             getPassiveCreature = GetPassiveCreature(creatureRepository),
             getNPCsUseCase = GetNPCsUseCase(creatureRepository),
             getOrFetchCreaturesUseCase = GetOrFetchCreaturesUseCase(creatureRepository),
-            getCreatureByRelationAndSubCategory = GetCreatureByRelationAndSubCategory(creatureRepository),
+            getCreatureByRelationAndSubCategory = GetCreatureByRelationAndSubCategory(
+                creatureRepository
+            ),
             refetchCreaturesUseCase = RefetchCreaturesUseCase(
                 creatureRepository,
                 relationsRepository
@@ -159,7 +179,7 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideRelationUseCases(relationsRepository: RelationsRepository): RelationUseCases {
+    fun provideRelationUseCases(relationsRepository: RelationRepository): RelationUseCases {
         return RelationUseCases(
             fetchRelationsUseCase = FetchRelationsUseCase(relationsRepository),
             insertRelationsUseCase = InsertRelationsUseCase(relationsRepository),
@@ -183,7 +203,7 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideOreDepositUseCases(oreDepositRepository: OreDepositRepository):OreDepositUseCases {
+    fun provideOreDepositUseCases(oreDepositRepository: OreDepositRepository): OreDepositUseCases {
         return OreDepositUseCases(
             getLocalOreDepositsUseCase = GetLocalOreDepositUseCase(oreDepositRepository),
             getOreDepositsByIdsUseCase = GetOreDepositsByIdsUseCase(oreDepositRepository),

@@ -40,6 +40,8 @@ object FakeData{
             )
         )
     }
+
+
     fun generateFakeCreatures(): List<Creature> {
         return listOf(
             Creature(

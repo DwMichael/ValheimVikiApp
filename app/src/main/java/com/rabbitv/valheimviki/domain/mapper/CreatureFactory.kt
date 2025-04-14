@@ -1,11 +1,11 @@
 package com.rabbitv.valheimviki.domain.mapper
 
-import com.rabbitv.valheimviki.data.mappers.toAggressiveCreature
-import com.rabbitv.valheimviki.data.mappers.toCreature
-import com.rabbitv.valheimviki.data.mappers.toMainBoss
-import com.rabbitv.valheimviki.data.mappers.toMiniBoss
-import com.rabbitv.valheimviki.data.mappers.toNPC
-import com.rabbitv.valheimviki.data.mappers.toPassiveCreature
+import com.rabbitv.valheimviki.data.mappers.creatures.toAggressiveCreature
+import com.rabbitv.valheimviki.data.mappers.creatures.toCreature
+import com.rabbitv.valheimviki.data.mappers.creatures.toMainBoss
+import com.rabbitv.valheimviki.data.mappers.creatures.toMiniBoss
+import com.rabbitv.valheimviki.data.mappers.creatures.toNPC
+import com.rabbitv.valheimviki.data.mappers.creatures.toPassiveCreature
 import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.model.creature.aggresive.AggressiveCreature
 import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
