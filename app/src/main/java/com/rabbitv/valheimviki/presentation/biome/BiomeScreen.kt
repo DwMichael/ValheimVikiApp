@@ -41,7 +41,7 @@ fun BiomeScreen(
     val refreshState = rememberPullToRefreshState()
     val biomeUIState: BiomesUIState by viewModel.biomeUIState.collectAsStateWithLifecycle()
     val refreshing: Boolean by viewModel.isRefreshing.collectAsStateWithLifecycle()
-    val isConnection: Boolean = isNetworkAvailable(LocalContext.current)
+    val isConnection: Boolean = viewModel.isConnection
 
 
     Box(

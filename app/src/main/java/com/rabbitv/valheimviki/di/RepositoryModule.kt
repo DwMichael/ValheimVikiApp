@@ -45,6 +45,13 @@ import com.rabbitv.valheimviki.domain.use_cases.datastore.get_onboarding_state.R
 import com.rabbitv.valheimviki.domain.use_cases.datastore.language_state_provider.LanguageProvider
 import com.rabbitv.valheimviki.domain.use_cases.datastore.save_onboarding_state.SaveOnBoardingState
 import com.rabbitv.valheimviki.domain.use_cases.datastore.saved_language_state.SaveLanguageState
+import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
+import com.rabbitv.valheimviki.domain.use_cases.material.get_local_Materials.GetLocalMaterialsUseCase
+import com.rabbitv.valheimviki.domain.use_cases.material.get_material_by_id.GetMaterialByIdUseCase
+import com.rabbitv.valheimviki.domain.use_cases.material.get_materials_by_ids.GetMaterialsByIdsUseCase
+import com.rabbitv.valheimviki.domain.use_cases.material.get_materials_by_subcategory.GetMaterialsBySubCategoryUseCase
+import com.rabbitv.valheimviki.domain.use_cases.material.get_materials_by_subcategory_and_subtype.GetMaterialsBySubCategoryAndSubTypeUseCase
+import com.rabbitv.valheimviki.domain.use_cases.material.insert_materials.InsertMaterialsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.ore_deposit.OreDepositUseCases
 import com.rabbitv.valheimviki.domain.use_cases.ore_deposit.get_local_ore_deposit.GetLocalOreDepositUseCase
 import com.rabbitv.valheimviki.domain.use_cases.ore_deposit.get_ore_deposit_by_id.GetOreDepositByIdUseCase
@@ -128,6 +135,7 @@ object RepositoryModule {
         biomeRepository: BiomeRepository,
         creatureRepository: CreatureRepository,
         relationsRepository: RelationRepository,
+        materialRepository: MaterialRepository,
         oreDepositRepository: OreDepositRepository,
         dataStoreUseCases: DataStoreUseCases
     ): DataRefetchUseCase {
@@ -137,6 +145,7 @@ object RepositoryModule {
             biomeRepository = biomeRepository,
             oreDepositRepository = oreDepositRepository,
             dataStoreUseCases = dataStoreUseCases,
+            materialsRepository =  materialRepository
         )
     }
 
@@ -209,6 +218,19 @@ object RepositoryModule {
             getOreDepositsByIdsUseCase = GetOreDepositsByIdsUseCase(oreDepositRepository),
             getOreDepositByIdUseCase = GetOreDepositByIdUseCase(oreDepositRepository),
             insertOreDepositUseCase = InsertOreDepositUseCase(oreDepositRepository),
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideMaterialUseCases(materialRepository: MaterialRepository): MaterialUseCases{
+        return MaterialUseCases(
+            getLocalMaterials = GetLocalMaterialsUseCase(materialRepository),
+            getMaterialsByIds = GetMaterialsByIdsUseCase(materialRepository),
+            getMaterialById = GetMaterialByIdUseCase(materialRepository),
+            getMaterialsBySubCategory = GetMaterialsBySubCategoryUseCase(materialRepository),
+            getMaterialsBySubCategoryAndSubType = GetMaterialsBySubCategoryAndSubTypeUseCase(materialRepository),
+            insertMaterials = InsertMaterialsUseCase(materialRepository)
         )
     }
 }

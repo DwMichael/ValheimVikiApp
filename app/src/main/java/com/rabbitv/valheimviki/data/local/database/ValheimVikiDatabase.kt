@@ -12,10 +12,11 @@ import com.rabbitv.valheimviki.data.local.dao.OreDepositDao
 import com.rabbitv.valheimviki.data.local.dao.RelationDao
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.Creature
+import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
 import com.rabbitv.valheimviki.domain.model.relation.Relation
 
-@Database(entities = [Biome::class, Creature::class, Relation::class, OreDeposit::class], version = 2, exportSchema = false)
+@Database(entities = [Biome::class, Creature::class, Relation::class, OreDeposit::class, Material::class], version = 3, exportSchema = false)
 abstract class ValheimVikiDatabase : RoomDatabase() {
 
     companion object {

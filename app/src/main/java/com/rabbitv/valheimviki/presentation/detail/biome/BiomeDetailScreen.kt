@@ -749,6 +749,7 @@ fun PreviewBiomeDetailContent() {
     })
     val creatureList = FakeData.generateFakeCreatures()
     val oreDeposit = FakeData.generateFakeOreDeposits()
+    val materials = FakeData.generateFakeMaterials()
     ValheimVikiAppTheme {
         SharedTransitionLayout {
             AnimatedVisibility(visible = true) {
@@ -764,7 +765,7 @@ fun PreviewBiomeDetailContent() {
                     pagerState3 = pagerState2,
                     relatedCreatures = creatureList,
                     relatedOreDeposits = oreDeposit,
-                    relatedMaterials = emptyList()
+                    relatedMaterials = materials
                 )
             }
         }

@@ -1,9 +1,80 @@
 package com.rabbitv.valheimviki.utils
 
 import com.rabbitv.valheimviki.domain.model.creature.Creature
+import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
 
 object FakeData{
+    fun generateFakeMaterials(): List<Material> {
+        return listOf(
+            Material(
+                id = "mat001",
+                imageUrl = "https://example.com/image1.jpg",
+                category = "Plant",
+                subCategory = "Herb",
+                name = "Basil",
+                description = "A common herb used in cooking.",
+                usage = "Culinary",
+                growthTime = "30 days",
+                needCultivatorGround = "Yes",
+                order = 1,
+                subType = "Leafy"
+            ),
+            Material(
+                id = "mat002",
+                imageUrl = "https://example.com/image2.jpg",
+                category = "Plant",
+                subCategory = "Vegetable",
+                name = "Carrot",
+                description = "Root vegetable rich in Vitamin A.",
+                usage = "Culinary",
+                growthTime = "70 days",
+                needCultivatorGround = "No",
+                order = 2,
+                subType = "Root"
+            ),
+            Material(
+                id = "mat003",
+                imageUrl = "https://example.com/image3.jpg",
+                category = "Soil",
+                subCategory = "Compost",
+                name = "Organic Compost",
+                description = "Nutrient-rich compost for plants.",
+                usage = "Soil Enrichment",
+                growthTime = null,
+                needCultivatorGround = "No",
+                order = 3,
+                subType = "Fertilizer"
+            ),
+            Material(
+                id = "mat004",
+                imageUrl = "https://example.com/image4.jpg",
+                category = "Tool",
+                subCategory = "Hand Tool",
+                name = "Trowel",
+                description = "Hand tool for digging and planting.",
+                usage = "Gardening",
+                growthTime = null,
+                needCultivatorGround = "No",
+                order = 4,
+                subType = "Digging"
+            ),
+            Material(
+                id = "mat005",
+                imageUrl = "https://example.com/image5.jpg",
+                category = "Plant",
+                subCategory = "Flower",
+                name = "Marigold",
+                description = "A flowering plant often used for decoration.",
+                usage = "Ornamental",
+                growthTime = "50 days",
+                needCultivatorGround = "Yes",
+                order = 5,
+                subType = "Bloom"
+            )
+        )
+    }
+
     fun generateFakeOreDeposits(): List<OreDeposit> {
         return listOf(
             OreDeposit(
