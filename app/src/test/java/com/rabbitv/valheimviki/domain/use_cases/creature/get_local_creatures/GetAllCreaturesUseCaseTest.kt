@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.domain.use_cases.creature.get_or_fetch_creatures
+package com.rabbitv.valheimviki.domain.use_cases.creature.get_local_creatures
 
 import com.rabbitv.valheimviki.data.Creatures.expectedMockApiCreatures
 import com.rabbitv.valheimviki.data.Creatures.expectedMockLocalCreatures
@@ -36,7 +36,7 @@ class GetAllCreaturesUseCaseTest {
 
     @Mock
     private lateinit var creatureRepository: CreatureRepository
-    private lateinit var useCase: GetOrFetchCreaturesUseCase
+    private lateinit var useCase: GetLocalCreaturesUseCase
 
 
     @Before
@@ -44,7 +44,7 @@ class GetAllCreaturesUseCaseTest {
         Dispatchers.setMain(testDispatcher)
 
         creatureRepository = mock()
-        useCase = GetOrFetchCreaturesUseCase(creatureRepository)
+        useCase = GetLocalCreaturesUseCase(creatureRepository)
 
     }
 

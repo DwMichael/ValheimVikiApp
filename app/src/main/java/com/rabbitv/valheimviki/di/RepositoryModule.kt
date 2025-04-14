@@ -26,7 +26,7 @@ import com.rabbitv.valheimviki.domain.repository.OreDepositRepository
 import com.rabbitv.valheimviki.domain.repository.RelationRepository
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.biome.get_biome_by_id.GetBiomeByIdUseCase
-import com.rabbitv.valheimviki.domain.use_cases.biome.get_or_fetch_biomes.GetOrFetchBiomesUseCase
+import com.rabbitv.valheimviki.domain.use_cases.biome.get_local_biomes.GetLocalBiomesUseCase
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
 import com.rabbitv.valheimviki.domain.use_cases.creature.get_aggressive_creatures.GetAggressiveCreatures
 import com.rabbitv.valheimviki.domain.use_cases.creature.get_creature_by_id.GetCreatureByIdUseCase
@@ -36,7 +36,7 @@ import com.rabbitv.valheimviki.domain.use_cases.creature.get_creatures_by_ids.Ge
 import com.rabbitv.valheimviki.domain.use_cases.creature.get_main_bosses.GetMainBossesUseCase
 import com.rabbitv.valheimviki.domain.use_cases.creature.get_mini_bosses.GetMiniBossesUseCase
 import com.rabbitv.valheimviki.domain.use_cases.creature.get_npcs.GetNPCsUseCase
-import com.rabbitv.valheimviki.domain.use_cases.creature.get_or_fetch_creatures.GetOrFetchCreaturesUseCase
+import com.rabbitv.valheimviki.domain.use_cases.creature.get_local_creatures.GetLocalCreaturesUseCase
 import com.rabbitv.valheimviki.domain.use_cases.creature.get_passive_creatures.GetPassiveCreature
 import com.rabbitv.valheimviki.domain.use_cases.creature.refetch_creatures.RefetchCreaturesUseCase
 import com.rabbitv.valheimviki.domain.use_cases.data_refetch.DataRefetchUseCase
@@ -58,8 +58,6 @@ import com.rabbitv.valheimviki.domain.use_cases.ore_deposit.get_ore_deposit_by_i
 import com.rabbitv.valheimviki.domain.use_cases.ore_deposit.get_ore_deposits_by_ids.GetOreDepositsByIdsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.ore_deposit.insert_ore_deposit.InsertOreDepositUseCase
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
-import com.rabbitv.valheimviki.domain.use_cases.relation.fetch_relations.FetchRelationsUseCase
-import com.rabbitv.valheimviki.domain.use_cases.relation.fetch_relations_and_insert.FetchRelationsAndInsertUseCase
 import com.rabbitv.valheimviki.domain.use_cases.relation.get_item_id_in_relation.GetRelatedIdsRelationUseCase
 import com.rabbitv.valheimviki.domain.use_cases.relation.get_item_related_by_id.GetItemRelatedById
 import com.rabbitv.valheimviki.domain.use_cases.relation.get_local_relations.GetLocalRelationsUseCase
@@ -153,7 +151,7 @@ object RepositoryModule {
     @Singleton
     fun provideBiomeUseCases(biomeRepository: BiomeRepository): BiomeUseCases {
         return BiomeUseCases(
-            getOrFetchBiomesUseCase = GetOrFetchBiomesUseCase(biomeRepository),
+            getLocalBiomesUseCase = GetLocalBiomesUseCase(biomeRepository),
             getBiomeByIdUseCase = GetBiomeByIdUseCase(biomeRepository),
         )
     }
@@ -175,7 +173,7 @@ object RepositoryModule {
             getAggressiveCreatures = GetAggressiveCreatures(creatureRepository),
             getPassiveCreature = GetPassiveCreature(creatureRepository),
             getNPCsUseCase = GetNPCsUseCase(creatureRepository),
-            getOrFetchCreaturesUseCase = GetOrFetchCreaturesUseCase(creatureRepository),
+            getLocalCreaturesUseCase = GetLocalCreaturesUseCase(creatureRepository),
             getCreatureByRelationAndSubCategory = GetCreatureByRelationAndSubCategory(
                 creatureRepository
             ),
@@ -190,12 +188,10 @@ object RepositoryModule {
     @Singleton
     fun provideRelationUseCases(relationsRepository: RelationRepository): RelationUseCases {
         return RelationUseCases(
-            fetchRelationsUseCase = FetchRelationsUseCase(relationsRepository),
             insertRelationsUseCase = InsertRelationsUseCase(relationsRepository),
             getRelatedIdUseCase = GetItemRelatedById(relationsRepository),
             getRelatedIdsUseCase = GetRelatedIdsRelationUseCase(relationsRepository),
             getLocalRelationsUseCase = GetLocalRelationsUseCase(relationsRepository),
-            fetchRelationsAndInsertUseCase = FetchRelationsAndInsertUseCase(relationsRepository),
         )
     }
 

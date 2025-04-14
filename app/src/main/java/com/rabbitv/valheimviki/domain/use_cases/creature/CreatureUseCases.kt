@@ -8,7 +8,7 @@ import com.rabbitv.valheimviki.domain.use_cases.creature.get_creatures_by_ids.Ge
 import com.rabbitv.valheimviki.domain.use_cases.creature.get_main_bosses.GetMainBossesUseCase
 import com.rabbitv.valheimviki.domain.use_cases.creature.get_mini_bosses.GetMiniBossesUseCase
 import com.rabbitv.valheimviki.domain.use_cases.creature.get_npcs.GetNPCsUseCase
-import com.rabbitv.valheimviki.domain.use_cases.creature.get_or_fetch_creatures.GetOrFetchCreaturesUseCase
+import com.rabbitv.valheimviki.domain.use_cases.creature.get_local_creatures.GetLocalCreaturesUseCase
 import com.rabbitv.valheimviki.domain.use_cases.creature.get_passive_creatures.GetPassiveCreature
 import com.rabbitv.valheimviki.domain.use_cases.creature.refetch_creatures.RefetchCreaturesUseCase
 
@@ -23,6 +23,6 @@ data class CreatureUseCases(
     val getPassiveCreature: GetPassiveCreature,
     val getNPCsUseCase: GetNPCsUseCase,
 
-    val getOrFetchCreaturesUseCase: GetOrFetchCreaturesUseCase,
+    val getLocalCreaturesUseCase: GetLocalCreaturesUseCase,
     val refetchCreaturesUseCase: RefetchCreaturesUseCase,
 )

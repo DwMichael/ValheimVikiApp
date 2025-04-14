@@ -22,40 +22,7 @@ class GetAggressiveCreatures@Inject constructor(private val creatureRepository: 
     operator fun invoke(language: String): Flow<List<AggressiveCreature>> {
 
         val creatureType = CreatureType.AGGRESSIVE_CREATURE
-        return creatureRepository.getCreaturesBySubCategory(creatureType.toString())
-            .flatMapConcat {localMainBoss ->
-                if(localMainBoss.isNotEmpty())
-                {
-                    flowOf(localMainBoss)
-                }else
-                { try {
-                        withContext(Dispatchers.IO) {
-                            val response = creatureRepository.fetchCreatures(language)
-                            val responseBody = response.body()
-                            if(response.isSuccessful && responseBody?.isNotEmpty() == true) {
-                                try {
-                                     creatureRepository.insertCreatures(responseBody)
-                                }catch (e: Exception)
-                                {
-                                    throw CreaturesInsertException("Insert Aggressive Creatures failed : ${e.message}")
-                                }
-                            }else{
-                                val errorCode = response.code()
-                                val errorBody = response.errorBody()?.string() ?: "No error body"
-                                throw CreaturesFetchLocalException("API Aggressive Creatures request failed with code $errorCode: $errorBody")
-                            }
-                        }
-                        creatureRepository.getCreaturesBySubCategory(creatureType.toString())
-                }catch (e: CreatureFetchException) {
-                    throw e
-                } catch (e: CreaturesInsertException) {
-                    throw e
-                }
-                catch (e: Exception) {
-                    throw FetchException("No local data available and failed to fetch from internet.")
-                }
-                }
-            }.map { mainBosses -> mainBosses.toAggressiveCreatures().sortedBy { it.order } }
+        return creatureRepository.getCreaturesBySubCategory(creatureType.toString()).map { mainBosses -> mainBosses.toAggressiveCreatures().sortedBy { it.order } }
 
     }
 }

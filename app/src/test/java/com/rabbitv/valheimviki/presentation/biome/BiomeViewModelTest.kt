@@ -4,7 +4,7 @@ package com.rabbitv.valheimviki.presentation.biome
 import com.rabbitv.valheimviki.domain.exceptions.FetchException
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
-import com.rabbitv.valheimviki.domain.use_cases.biome.get_or_fetch_biomes.GetOrFetchBiomesUseCase
+import com.rabbitv.valheimviki.domain.use_cases.biome.get_local_biomes.GetLocalBiomesUseCase
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertNull
@@ -51,7 +51,7 @@ class BiomeViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
 
     @Mock
-    private lateinit var getOrFetchBiomesUseCase: GetOrFetchBiomesUseCase
+    private lateinit var getLocalBiomesUseCase: GetLocalBiomesUseCase
 
     @Mock
     private lateinit var refetchBiomesUseCase: RefetchBiomesUseCase
@@ -66,10 +66,10 @@ class BiomeViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
 
-        whenever(getOrFetchBiomesUseCase.invoke("en"))
+        whenever(getLocalBiomesUseCase.invoke("en"))
             .thenReturn(flowOf(mockBiomes))
 
-        whenever(biomeUseCases.getOrFetchBiomesUseCase).thenReturn(getOrFetchBiomesUseCase)
+        whenever(biomeUseCases.getLocalBiomesUseCase).thenReturn(getLocalBiomesUseCase)
 
         whenever(biomeUseCases.refetchBiomesUseCase).thenReturn(refetchBiomesUseCase)
         viewModel = BiomeScreenViewModel(biomeUseCases)
@@ -108,7 +108,7 @@ class BiomeViewModelTest {
             biomeViewModel.biomeUIState.value
         val listBiome: List<Biome> = emptyList()
         val errorMessage = "No local data available and failed to fetch from internet."
-        whenever(getOrFetchBiomesUseCase.invoke("en")).thenReturn(flow {
+        whenever(getLocalBiomesUseCase.invoke("en")).thenReturn(flow {
             throw FetchException(
                 errorMessage
             )
@@ -174,7 +174,7 @@ class BiomeViewModelTest {
 
     @Test
     fun wrongRefetchingBiomesImpactsUiState() = runTest {
-        whenever(biomeUseCases.getOrFetchBiomesUseCase("en")).thenReturn(flowOf(mockBiomes))
+        whenever(biomeUseCases.getLocalBiomesUseCase("en")).thenReturn(flowOf(mockBiomes))
 
         val errorMessage = "No local data available and failed to fetch from internet."
         whenever(biomeUseCases.refetchBiomesUseCase("en")).thenReturn(flow {
