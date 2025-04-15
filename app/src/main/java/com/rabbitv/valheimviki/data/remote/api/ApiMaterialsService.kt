@@ -7,6 +7,6 @@ import retrofit2.http.Query
 
 interface ApiMaterialsService {
     @GET("/Materials")
-    suspend fun fetchMaterials( @Query("lang") lang: String = "en"): Response<List<Material>>
+    suspend fun fetchMaterials( @Query("lang") lang: String ): Response<List<Material>>
 
 }

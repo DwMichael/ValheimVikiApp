@@ -9,7 +9,7 @@ interface ApiCreatureService {
 
     @GET("Creatures")
     suspend fun fetchCreatures(
-        @Query("lang") lang: String = "en"
+        @Query("lang") lang: String
     ): Response<List<Creature>>
 
 //    @GET("Bosses")

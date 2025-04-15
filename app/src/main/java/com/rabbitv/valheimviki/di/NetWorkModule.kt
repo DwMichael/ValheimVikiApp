@@ -4,7 +4,9 @@ import com.rabbitv.valheimviki.data.remote.api.ApiBiomeService
 import com.rabbitv.valheimviki.data.remote.api.ApiCreatureService
 import com.rabbitv.valheimviki.data.remote.api.ApiMaterialsService
 import com.rabbitv.valheimviki.data.remote.api.ApiOreDepositService
+import com.rabbitv.valheimviki.data.remote.api.ApiPointOfInterestService
 import com.rabbitv.valheimviki.data.remote.api.ApiRelationsService
+import com.rabbitv.valheimviki.data.remote.api.ApiTreeService
 import com.rabbitv.valheimviki.utils.Constants.BASE_URL
 import dagger.Module
 import dagger.Provides
@@ -69,6 +71,18 @@ object NetWorkModule {
     @Provides
     fun provideApiMaterialService(retrofit: Retrofit): ApiMaterialsService {
         return retrofit.create(ApiMaterialsService::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideApiPointOfInterestService(retrofit: Retrofit): ApiPointOfInterestService {
+        return retrofit.create(ApiPointOfInterestService::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideApiTreeService(retrofit: Retrofit): ApiTreeService {
+        return retrofit.create(ApiTreeService::class.java)
     }
 
 

@@ -81,15 +81,19 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.composables.icons.lucide.Gem
+import com.composables.icons.lucide.House
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.PawPrint
 import com.composables.icons.lucide.Pickaxe
+import com.composables.icons.lucide.Trees
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
+import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
+import com.rabbitv.valheimviki.domain.model.tree.Tree
 import com.rabbitv.valheimviki.domain.repository.ItemData
 import com.rabbitv.valheimviki.navigation.LocalSharedTransitionScope
 import com.rabbitv.valheimviki.presentation.components.TridentDivider
@@ -117,6 +121,8 @@ fun BiomeDetailScreen(
     val relatedCreatures by viewModel.relatedCreatures.collectAsStateWithLifecycle()
     val relatedOreDeposits by viewModel.relatedOreDeposits.collectAsStateWithLifecycle()
     val relatedMaterials by viewModel.relatedMaterials.collectAsStateWithLifecycle()
+    val relatedPointOfInterest by viewModel.relatedPointOfInterest.collectAsStateWithLifecycle()
+    val relatedTrees by viewModel.relatedTrees.collectAsStateWithLifecycle()
     val pagerState = rememberPagerState(
         initialPage = 1,
         pageCount = { relatedCreatures.size })
@@ -126,6 +132,8 @@ fun BiomeDetailScreen(
     val pagerState3 = rememberPagerState(
         initialPage = 1,
         pageCount = { relatedMaterials.size })
+    val pagerState4 = rememberPagerState(initialPage = 1,pageCount = { relatedPointOfInterest.size })
+    val pagerState5 = rememberPagerState(initialPage = 1,pageCount = { relatedTrees.size })
 
     biome?.let { biome ->
         BiomeDetailContent(
@@ -137,9 +145,13 @@ fun BiomeDetailScreen(
             pagerState = pagerState,
             pagerState2 = pagerState2,
             pagerState3 = pagerState3,
+            pagerState4 = pagerState4,
+            pagerState5= pagerState5,
             relatedCreatures = relatedCreatures,
             relatedOreDeposits = relatedOreDeposits,
-            relatedMaterials= relatedMaterials
+            relatedMaterials= relatedMaterials,
+            relatedPointOfInterest = relatedPointOfInterest,
+            relatedTrees = relatedTrees
         )
     }
 
@@ -156,9 +168,13 @@ fun BiomeDetailContent(
     pagerState: PagerState,
     pagerState2: PagerState,
     pagerState3: PagerState,
+    pagerState4: PagerState,
+    pagerState5: PagerState,
     relatedCreatures: List<Creature>,
     relatedOreDeposits: List<OreDeposit>,
     relatedMaterials: List<Material>,
+    relatedPointOfInterest:List<PointOfInterest>,
+    relatedTrees:List<Tree>,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
     errorPainter: Painter? = null,
@@ -220,7 +236,30 @@ fun BiomeDetailContent(
                         Lucide.Gem,
                         "Materials",
                         "Unique materials you may encounter in this biome",
-                        ContentScale.None,
+                        ContentScale.Crop,
+                        iconModifier = Modifier
+                    )
+                }
+                if(relatedPointOfInterest.isNotEmpty()) {
+                    RowTwoTridentDividers()
+                    HorizontalPagerSection(
+                        pagerState4, relatedPointOfInterest ,
+                        Lucide.House,
+                        "Points Of Interest",
+                        "Points Of Interest you may encounter in this biome",
+                        ContentScale.Crop,
+                        iconModifier = Modifier
+                    )
+                }
+                if(relatedPointOfInterest.isNotEmpty()) {
+                    RowTwoTridentDividers()
+                    HorizontalPagerSection(
+                        pagerState5, relatedTrees ,
+                        Lucide.Trees,
+                        "Trees",
+                        "Trees you may encounter in this biome",
+                        ContentScale.Crop,
+                        iconModifier = Modifier
                     )
                 }
             }
@@ -290,7 +329,8 @@ fun HorizontalPagerSection(
     icon: ImageVector,
     title:String,
     subTitle:String,
-    contentScale: ContentScale
+    contentScale: ContentScale,
+    iconModifier: Modifier = Modifier.rotate(-85f)
 ) {
     val pageWidth = 160.dp
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
@@ -319,7 +359,7 @@ fun HorizontalPagerSection(
                         icon,
                         tint = Color.White,
                         contentDescription = "Rectangle section Icon",
-                        modifier = Modifier.rotate(-25f)
+                        modifier = iconModifier
                     )
                     Spacer(modifier = Modifier.width(11.dp))
                     Text(
@@ -370,7 +410,7 @@ fun HorizontalPagerSection(
                         }.shadow(
                             elevation = 8.dp,
                             shape = RoundedCornerShape(8.dp),
-                            spotColor = Color.Black.copy(alpha = 0.25f)
+                            spotColor = Color.White.copy(alpha = 0.25f)
                         )
                 ) {
                     list.let {
@@ -776,7 +816,11 @@ fun PreviewBiomeDetailContent() {
                     pagerState3 = pagerState3,
                     relatedCreatures = creatureList,
                     relatedOreDeposits = oreDeposit,
-                    relatedMaterials = materials
+                    relatedMaterials = materials,
+                    relatedPointOfInterest = emptyList(),
+                    pagerState4 = pagerState3,
+                    pagerState5 = pagerState2,
+                    relatedTrees = emptyList(),
                 )
             }
         }

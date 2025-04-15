@@ -9,14 +9,21 @@ import com.rabbitv.valheimviki.data.local.dao.BiomeDao
 import com.rabbitv.valheimviki.data.local.dao.CreatureDao
 import com.rabbitv.valheimviki.data.local.dao.MaterialDao
 import com.rabbitv.valheimviki.data.local.dao.OreDepositDao
+import com.rabbitv.valheimviki.data.local.dao.PointOfInterestDao
 import com.rabbitv.valheimviki.data.local.dao.RelationDao
+import com.rabbitv.valheimviki.data.local.dao.TreeDao
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
+import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
 import com.rabbitv.valheimviki.domain.model.relation.Relation
+import com.rabbitv.valheimviki.domain.model.tree.Tree
 
-@Database(entities = [Biome::class, Creature::class, Relation::class, OreDeposit::class, Material::class], version = 3, exportSchema = false)
+@Database(entities = [Biome::class, Creature::class,
+    Relation::class, OreDeposit::class,
+    Material::class, PointOfInterest::class,
+    Tree::class], version = 5, exportSchema = false)
 abstract class ValheimVikiDatabase : RoomDatabase() {
 
     companion object {
@@ -35,4 +42,6 @@ abstract class ValheimVikiDatabase : RoomDatabase() {
     abstract fun relationDao(): RelationDao
     abstract fun oreDepositDao(): OreDepositDao
     abstract fun materialDao(): MaterialDao
+    abstract fun pointOfInterestDao(): PointOfInterestDao
+    abstract fun treeDao(): TreeDao
 }

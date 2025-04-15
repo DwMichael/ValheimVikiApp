@@ -41,7 +41,7 @@ class MaterialRepositoryImpl @Inject constructor(
     }
 
     override suspend fun fetchMaterials(lang:String): Response<List<Material>> {
-        return apiService.fetchMaterials()
+        return apiService.fetchMaterials(lang)
     }
 
 

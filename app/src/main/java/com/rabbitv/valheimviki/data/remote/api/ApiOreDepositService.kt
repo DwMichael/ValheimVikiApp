@@ -8,6 +8,6 @@ import retrofit2.http.Query
 interface ApiOreDepositService {
     @GET("Ore_deposits")
     suspend fun fetchOreDeposits(
-        @Query("lang") lang: String = "en"
+        @Query("lang") lang: String
     ): Response<List<OreDeposit>>
 }

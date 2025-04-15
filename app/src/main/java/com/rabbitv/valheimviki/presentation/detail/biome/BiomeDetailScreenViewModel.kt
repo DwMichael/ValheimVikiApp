@@ -11,11 +11,15 @@ import com.rabbitv.valheimviki.domain.model.creature.CreatureType
 import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
+import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
+import com.rabbitv.valheimviki.domain.model.tree.Tree
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.ore_deposit.OreDepositUseCases
+import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.PointOfInterestUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
+import com.rabbitv.valheimviki.domain.use_cases.tree.TreeUseCases
 import com.rabbitv.valheimviki.utils.Constants.BIOME_ARGUMENT_KEY
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Deferred
@@ -33,6 +37,8 @@ class BiomeDetailScreenViewModel @Inject constructor(
     private val creaturesUseCase: CreatureUseCases,
     private val relationsUseCase: RelationUseCases,
     private val materialUseCases: MaterialUseCases,
+    private val pointOfInterestUseCases: PointOfInterestUseCases,
+    private val treeUseCases: TreeUseCases,
     private val oreDepositUseCases: OreDepositUseCases
 ) : ViewModel() {
     private val _biome = MutableStateFlow<Biome?>(null)
@@ -49,6 +55,12 @@ class BiomeDetailScreenViewModel @Inject constructor(
 
     private val _relatedMaterials = MutableStateFlow<List<Material>>(emptyList())
     val relatedMaterials : StateFlow<List<Material>> = _relatedMaterials
+
+    private val _relatedPointOfInterest = MutableStateFlow<List<PointOfInterest>>(emptyList())
+    val relatedPointOfInterest : StateFlow<List<PointOfInterest>> = _relatedPointOfInterest
+
+    private val _relatedTrees = MutableStateFlow<List<Tree>>(emptyList())
+    val relatedTrees : StateFlow<List<Tree>> = _relatedTrees
 
     init {
 
@@ -83,7 +95,6 @@ class BiomeDetailScreenViewModel @Inject constructor(
                     _relatedCreatures.value = creatures
                 } catch (e: Exception) {
                     Log.e("Creatures fetch error BiomeDetailViewModel", e.message.toString())
-                    _relatedCreatures.value = emptyList()
                 }
 
                 try {
@@ -91,14 +102,26 @@ class BiomeDetailScreenViewModel @Inject constructor(
                     _relatedOreDeposits.value = oreDeposits
                 } catch (e: Exception) {
                     Log.e("Ore deposits fetch error BiomeDetailViewModel", e.message.toString())
-                    _relatedOreDeposits.value = emptyList()
                 }
                 try {
                     val materials = materialUseCases.getMaterialsByIds(relatedObjects)
                     _relatedMaterials.value = materials
                 } catch (e: Exception) {
                     Log.e("Materials fetch error BiomeDetailViewModel", e.message.toString())
-                    _relatedMaterials.value = emptyList()
+                }
+
+                try {
+                    val pointOfInterest = pointOfInterestUseCases.getPointsOfInterestByIdsUseCase(relatedObjects)
+                    _relatedPointOfInterest.value = pointOfInterest
+                } catch (e: Exception) {
+                    Log.e("PointOfInterest fetch error BiomeDetailViewModel", e.message.toString())
+                }
+
+                try {
+                    val trees = treeUseCases.getTreesByIdsUseCase(relatedObjects)
+                    _relatedTrees.value = trees
+                } catch (e: Exception) {
+                    Log.e("Trees fetch error BiomeDetailViewModel", e.message.toString())
                 }
 
             } catch (e: Exception) {

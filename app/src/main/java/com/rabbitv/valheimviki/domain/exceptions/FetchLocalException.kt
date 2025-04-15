@@ -22,3 +22,13 @@ class OreDepositsByIdsFetchLocalException(message: String) : FetchLocalException
 class MaterialsFetchLocalException(message: String) : FetchLocalException(message)
 class MaterialsByIdFetchLocalException(message: String) : FetchLocalException(message)
 class MaterialsByIdsFetchLocalException(message: String) : FetchLocalException(message)
+//PointOfInterest
+class PointOfInterestFetchLocalException(message: String) : FetchLocalException(message)
+class PointOfInterestByIdFetchLocalException(message: String) : FetchLocalException(message)
+class PointOfInterestBySubCategoryFetchLocalException(message: String) : FetchLocalException(message)
+class PointOfInterestByIdsFetchLocalException(message: String) : FetchLocalException(message)
+class PointOfInterestBySubCategoryAndIdFetchLocalException(message: String) : FetchLocalException(message)
+//Trees
+class TreesFetchLocalException(message: String) : FetchLocalException(message)
+class TreesByIdFetchLocalException(message: String) : FetchLocalException(message)
+class TreesByIdsFetchLocalException(message: String) : FetchLocalException(message)
