@@ -13,10 +13,6 @@ val provider = GoogleFont.Provider(
     certificates = R.array.com_google_android_gms_fonts_certs
 )
 
-val IMFellEnglish = GoogleFont("IM Fell English SC")
-val robotoSlab = GoogleFont("Roboto Slab")
-val tinos = GoogleFont("Tinos")
-
 val bodyFontFamily = FontFamily(
     Font(
         googleFont = GoogleFont("Tinos"),
@@ -30,43 +26,6 @@ val displayFontFamily = FontFamily(
         fontProvider = provider,
     )
 )
-
-//val IMFellEnglishFontFamily = FontFamily(
-//    Font(googleFont = IMFellEnglish, fontProvider = provider)
-//)
-
-//val robotoFontFamily = FontFamily(
-//    Font(googleFont = robotoSlab, fontProvider = provider)
-//)
-
-// Set of Material typography styles to start with
-//val Typography = Typography(
-//    bodyLarge = TextStyle(
-//        fontFamily = IMFellEnglishFontFamily,
-//        fontWeight = FontWeight.Bold,
-//        fontSize = 21.sp,
-//        lineHeight = 24.sp,
-//        letterSpacing = 0.5.sp
-//    ),
-//
-//    titleLarge = TextStyle(
-//        fontFamily = IMFellEnglishFontFamily,
-//        fontWeight = FontWeight.Bold,
-//        fontSize = 22.sp,
-//        lineHeight = 28.sp,
-//        letterSpacing = 0.15.sp
-//    ),
-//
-//
-//    labelSmall = TextStyle(
-//        fontFamily = robotoFontFamily,
-//        fontWeight = FontWeight.Normal,
-//        fontSize = 16.sp,
-//        lineHeight = 32.sp,
-//        color = TextWhite
-//    )
-//
-//)
 
 val baseline = Typography()
 

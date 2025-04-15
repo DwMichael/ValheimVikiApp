@@ -2,12 +2,15 @@ package com.rabbitv.valheimviki.presentation.creatures.bosses
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rabbitv.valheimviki.data.mappers.creatures.toMainBosses
+import com.rabbitv.valheimviki.domain.exceptions.CreatureFetchException
 import com.rabbitv.valheimviki.domain.exceptions.FetchException
 import com.rabbitv.valheimviki.domain.model.creature.RefetchUseCases
 import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
-import com.rabbitv.valheimviki.domain.use_cases.creatures.CreatureUseCases
+import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
 import com.rabbitv.valheimviki.utils.Constants.DEFAULT_LANG
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -42,14 +45,17 @@ class BossesViewModel @Inject constructor(
 
     private fun load() {
         _bossUIState.value = _bossUIState.value.copy(isLoading = true, error = null)
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             try {
                 creatureUseCases.getMainBossesUseCase(DEFAULT_LANG).collect { bosses ->
                     _bossUIState.update { current ->
                         current.copy(bosses = bosses, isLoading = false)
                     }
                 }
-            } catch (e: FetchException) {
+            }catch (e: CreatureFetchException) {
+                _bossUIState.value = _bossUIState.value.copy(isLoading = false, error = e.message)
+            }
+            catch (e: FetchException) {
                 _bossUIState.value = _bossUIState.value.copy(isLoading = false, error = e.message)
             } catch (e: Exception) {
                 _bossUIState.value = _bossUIState.value.copy(isLoading = false, error = e.message)
@@ -61,12 +67,12 @@ class BossesViewModel @Inject constructor(
 
     fun refetchBosses() {
         _bossUIState.value = _bossUIState.value.copy(isLoading = true, error = null)
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             try {
                 creatureUseCases.refetchCreaturesUseCase(DEFAULT_LANG, RefetchUseCases.GET_BOSSES)
                     .collect { sortedBosses ->
                         _bossUIState.update { current ->
-                            current.copy(bosses = sortedBosses, isLoading = false)
+                            current.copy(bosses = sortedBosses.toMainBosses(), isLoading = false)
                         }
                     }
             } catch (e: FetchException) {

@@ -1,11 +1,19 @@
 package com.rabbitv.valheimviki.presentation.biome
 
+import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rabbitv.valheimviki.domain.exceptions.FetchException
+import com.rabbitv.valheimviki.domain.exceptions.BiomeFetchException
+import com.rabbitv.valheimviki.domain.exceptions.BiomesFetchLocalException
+import com.rabbitv.valheimviki.domain.exceptions.BiomesInsertException
+import com.rabbitv.valheimviki.domain.exceptions.RelationFetchException
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
+import com.rabbitv.valheimviki.utils.isNetworkAvailable
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,14 +24,18 @@ import javax.inject.Inject
 
 data class BiomesUIState(
     val biomes: List<Biome> = emptyList(),
+    val areCreatures: Boolean = false,
     val error: String? = null,
     val isLoading: Boolean = false
 )
 
 @HiltViewModel
 class BiomeScreenViewModel @Inject constructor(
-    private val biomeUseCases: BiomeUseCases
+    private val biomeUseCases: BiomeUseCases,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
+    val isConnection: Boolean = isNetworkAvailable(context)
+
 
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing: StateFlow<Boolean>
@@ -40,31 +52,63 @@ class BiomeScreenViewModel @Inject constructor(
     @VisibleForTesting
     internal fun load() {
         _biomeUIState.value = _biomeUIState.value.copy(isLoading = true, error = null)
-        viewModelScope.launch {
+
+
+        viewModelScope.launch(Dispatchers.IO) {
             try {
-                biomeUseCases.getAllBiomesUseCase("en").collect { sortedBiomes ->
+                biomeUseCases.getLocalBiomesUseCase().collect { sortedBiomes ->
                     _biomeUIState.update { current ->
-                        current.copy(biomes = sortedBiomes, isLoading = false)
+                            current.copy(biomes = sortedBiomes, isLoading = false)
                     }
                 }
-            } catch (e: FetchException) {
-                _biomeUIState.value = _biomeUIState.value.copy(isLoading = false, error = e.message)
             } catch (e: Exception) {
-                _biomeUIState.value = _biomeUIState.value.copy(isLoading = false, error = e.message)
+                when (e) {
+                    is BiomeFetchException -> Log.e(
+                        "BiomeFetchException BiomeScreenViewModel",
+                        "${e.message}"
+                    )
+
+                    is BiomesInsertException -> Log.e(
+                        "BiomesInsertException BiomeScreenViewModel",
+                        "${e.message}"
+                    )
+
+                    is BiomesFetchLocalException -> Log.e(
+                        "BiomesFetchLocalException BiomeScreenViewModel",
+                        "${e.message}"
+                    )
+
+                    else -> Log.e(
+                        "Unexpected Exception occurred BiomeScreenViewModel",
+                        "${e.message}"
+                    )
+                }
+
+
             }
         }
+
     }
+
 
     fun refetchBiomes() {
         _biomeUIState.value = _biomeUIState.value.copy(isLoading = true, error = null)
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
+            if (isConnection) {
+                _biomeUIState.value = _biomeUIState.value.copy(
+                    isLoading = false, error = "No internet connection"
+                )
+                _isRefreshing.emit(false)
+                return@launch
+            }
+
             try {
-                biomeUseCases.refetchBiomesUseCase("en").collect { sortedBiomes ->
-                    _biomeUIState.update { current ->
-                        current.copy(biomes = sortedBiomes, isLoading = false)
-                    }
-                }
-            } catch (e: FetchException) {
+                load()
+            } catch (e: BiomeFetchException) {
+                _biomeUIState.value = _biomeUIState.value.copy(isLoading = false, error = e.message)
+            } catch (e: BiomesInsertException) {
+                _biomeUIState.value = _biomeUIState.value.copy(isLoading = false, error = e.message)
+            } catch (e: RelationFetchException) {
                 _biomeUIState.value = _biomeUIState.value.copy(isLoading = false, error = e.message)
             } catch (e: Exception) {
                 _biomeUIState.value = _biomeUIState.value.copy(isLoading = false, error = e.message)
@@ -73,6 +117,4 @@ class BiomeScreenViewModel @Inject constructor(
             }
         }
     }
-
-
 }

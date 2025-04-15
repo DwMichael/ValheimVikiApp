@@ -1,6 +1,6 @@
 package com.rabbitv.valheimviki.utils
 
-import com.rabbitv.valheimviki.domain.model.creature.Type
+import com.rabbitv.valheimviki.domain.model.creature.CreatureType
 
 object Constants {
     //API URL
@@ -13,6 +13,7 @@ object Constants {
     //DataSource
     const val PREFERENCES_NAME = "valheimViki_preferences"
     const val PREFERENCES_KEY = "on_boarding_completed"
+    const val PREFERENCES_LANGUAGE_KEY = "language_saved"
 
     //GITDSIZE
     const val BIOME_GRID_COLUMNS = 2
@@ -22,6 +23,7 @@ object Constants {
 
     //DATA NAVIGATION ARGUMENT KEYS
     const val BIOME_ARGUMENT_KEY = "biomeId"
+    const val TEXT_ARGUMENT_KEY = "text"
     const val MAIN_BOSS_ARGUMENT_KEY = "mainBossId"
 
     //GROUP ROUTE NAMES
@@ -29,12 +31,12 @@ object Constants {
     const val DETAIL_ROUTE_GRAPH = "detailGraph"
 
     //Creature Order map
-    val TYPE_ORDER_MAP = mapOf(
-        Type.BOSS.toString() to 1,
-        Type.MINI_BOSS.toString() to 2,
-        Type.AGGRESSIVE_CREATURE.toString() to 3,
-        Type.PASSIVE_CREATURE.toString() to 4,
-        Type.NPC.toString() to 5,
+    val CreatureTYPE_ORDER_MAP = mapOf(
+        CreatureType.BOSS.toString() to 1,
+        CreatureType.MINI_BOSS.toString() to 2,
+        CreatureType.AGGRESSIVE_CREATURE.toString() to 3,
+        CreatureType.PASSIVE_CREATURE.toString() to 4,
+        CreatureType.NPC.toString() to 5,
     )
 
 

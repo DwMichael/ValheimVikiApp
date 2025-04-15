@@ -14,4 +14,12 @@ class DataStoreRepository @Inject constructor(
     fun readOnBoardingState(): Flow<Boolean> {
         return dataStore.readOnBoardingState()
     }
+
+    suspend fun saveLanguage(language: String) {
+        dataStore.saveLanguage(language = language)
+    }
+
+    fun languageProvider(): Flow<String> {
+        return dataStore.languageProvider()
+    }
 }

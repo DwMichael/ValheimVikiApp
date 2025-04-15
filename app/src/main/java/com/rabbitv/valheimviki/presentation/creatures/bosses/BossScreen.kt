@@ -1,6 +1,8 @@
 package com.rabbitv.valheimviki.presentation.creatures.bosses
 
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,9 +22,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavHostController
-import com.rabbitv.valheimviki.domain.model.creature.CreatureDtoX
-import com.rabbitv.valheimviki.navigation.Screen
+import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.presentation.common.EmptyScreen
 import com.rabbitv.valheimviki.presentation.common.GridContent
 import com.rabbitv.valheimviki.presentation.components.LoadingIndicator
@@ -31,12 +31,14 @@ import com.rabbitv.valheimviki.utils.Constants.NORMAL_SIZE_GRID
 import kotlinx.coroutines.launch
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun BossScreen(
+    modifier: Modifier,
+    onItemClick : (String, String) -> Unit,
     paddingValues: PaddingValues,
     viewModel: BossesViewModel = hiltViewModel(),
-    navController: NavHostController
+    animatedVisibilityScope: AnimatedVisibilityScope
 ) {
     val scope = rememberCoroutineScope()
     val refreshState = rememberPullToRefreshState()
@@ -47,55 +49,50 @@ fun BossScreen(
     if (bossUIState.isLoading) {
         LoadingIndicator(paddingValues = paddingValues)
     } else {
-        Surface(
-            color = Color.Transparent,
-            modifier = Modifier
-                .testTag("BossSurface")
-                .fillMaxSize()
-                .padding(paddingValues)
+        Box(
+            modifier = modifier
         ) {
-            when (bossUIState.bosses.isEmpty()) {
-                false -> {
-                    Box(
-                        modifier = Modifier.testTag("BossGrid"),
-                    ) {
-                        GridContent(
-                            modifier = Modifier,
-                            items = bossUIState.bosses,
-                            clickToNavigate = { item ->
-                                navController.navigate(Screen.CreatureDetail.passCreatureId(mainBossId = item.id))
-                                navController.navigate(Screen.CreatureDetail.passCreatureId(mainBossId = item.id))
-                            },
-                            state = refreshState,
-                            onRefresh = {
-                                viewModel.refetchBosses()
-                                scope.launch {
-                                    refreshState.animateToHidden()
-                                }
-                            },
-                            isRefreshing = refreshing,
-                            numbersOfColumns = NORMAL_SIZE_GRID,
-                            height = ITEM_HEIGHT_TWO_COLUMNS
-                        )
-                    }
-                }
+            Surface(
+                color = Color.Transparent,
+                modifier = Modifier
+                    .testTag("BossSurface")
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            ) {
+                when (bossUIState.bosses.isEmpty()) {
+                    false -> {
+                        Box(
+                            modifier = Modifier.testTag("BossGrid"),
+                        ) {
+                            GridContent(
+                                modifier = Modifier,
+                                items = bossUIState.bosses,
+                                onItemClick = onItemClick,
+                                numbersOfColumns = NORMAL_SIZE_GRID,
+                                height = ITEM_HEIGHT_TWO_COLUMNS,
+                                animatedVisibilityScope = animatedVisibilityScope
 
-                true -> {
-                    Box(
-                        modifier = Modifier.testTag("EmptyScreenBoss"),
-                    ) {
-                        EmptyScreen(
-                            modifier = Modifier,
-                            state = refreshState,
-                            isRefreshing = refreshing,
-                            onRefresh = {
-                                viewModel.refetchBosses()
-                                scope.launch {
-                                    refreshState.animateToHidden()
-                                }
-                            },
-                            errorMessage = bossUIState.error.toString()
-                        )
+                            )
+                        }
+                    }
+
+                    true -> {
+                        Box(
+                            modifier = Modifier.testTag("EmptyScreenBoss"),
+                        ) {
+                            EmptyScreen(
+                                modifier = Modifier,
+                                state = refreshState,
+                                isRefreshing = refreshing,
+                                onRefresh = {
+                                    viewModel.refetchBosses()
+                                    scope.launch {
+                                        refreshState.animateToHidden()
+                                    }
+                                },
+                                errorMessage = bossUIState.error.toString()
+                            )
+                        }
                     }
                 }
             }
@@ -107,7 +104,7 @@ fun BossScreen(
 @Preview(showBackground = true)
 @Composable
 fun PreviewBossListScreen() {
-    val sampleCreatures = emptyList<CreatureDtoX>()
+    val sampleCreatures = emptyList<Creature>()
 
 
     Scaffold(

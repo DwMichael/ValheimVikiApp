@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId = "com.rabbitv.valheimviki"
-        minSdk = 25
+        minSdk = 26
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -83,6 +83,9 @@ dependencies {
     implementation("com.composables:icons-lucide:1.1.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.1")
 
+    implementation("androidx.work:work-runtime-ktx:2.10.0")
+    androidTestImplementation("androidx.work:work-testing:2.10.0")
+
     implementation("io.coil-kt.coil3:coil-compose:3.1.0")
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.1.0")
 
@@ -91,18 +94,22 @@ dependencies {
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
 
-    implementation("com.google.dagger:hilt-android:2.56")
+
     implementation(platform("androidx.compose:compose-bom:2025.03.00"))
     implementation("androidx.activity:activity-compose:1.10.1")
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.material:material")
     implementation("androidx.compose.ui:ui-tooling-preview")
 
+    implementation("com.google.dagger:hilt-android:2.56")
     androidTestImplementation("com.google.dagger:hilt-android-testing:2.56")
     ksp("androidx.room:room-compiler:2.6.1")
     ksp("com.google.dagger:hilt-compiler:2.56")
     kspTest("com.google.dagger:hilt-compiler:2.56")
     kspAndroidTest("com.google.dagger:hilt-compiler:2.56")
+    implementation("androidx.hilt:hilt-work:1.2.0")
+
+
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     testImplementation("org.mockito:mockito-core:5.16.1")

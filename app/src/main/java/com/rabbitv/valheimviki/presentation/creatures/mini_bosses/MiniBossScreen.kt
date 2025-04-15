@@ -1,6 +1,8 @@
 package com.rabbitv.valheimviki.presentation.creatures.mini_bosses
 
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,9 +22,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavHostController
-import com.rabbitv.valheimviki.domain.model.creature.CreatureDtoX
-import com.rabbitv.valheimviki.navigation.Screen
+import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.presentation.common.EmptyScreen
 import com.rabbitv.valheimviki.presentation.common.GridContent
 import com.rabbitv.valheimviki.presentation.components.LoadingIndicator
@@ -31,12 +31,15 @@ import com.rabbitv.valheimviki.utils.Constants.NORMAL_SIZE_GRID
 import kotlinx.coroutines.launch
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun MiniBossScreen(
+    modifier : Modifier,
+    onItemClick :(String,String)-> Unit,
     paddingValues: PaddingValues,
     viewModel: MiniBossesViewModel = hiltViewModel(),
-    navController: NavHostController
+    animatedVisibilityScope: AnimatedVisibilityScope
+
 ) {
     val scope = rememberCoroutineScope()
     val refreshState = rememberPullToRefreshState()
@@ -48,58 +51,54 @@ fun MiniBossScreen(
     if (miniBossesUIState.isLoading) {
         LoadingIndicator(paddingValues = paddingValues)
     } else {
-        Surface(
-            color = Color.Transparent,
-            modifier = Modifier
-                .testTag("MiniBossSurface")
-                .fillMaxSize()
-                .padding(paddingValues)
+        Box(
+            modifier= modifier
         ) {
-            when (miniBossesUIState.miniBosses.isEmpty()) {
-                false -> {
-                    Box(
-                        modifier = Modifier.testTag("MiniBossGird"),
-                    ) {
-                        GridContent(
-                            modifier = Modifier,
-                            items = miniBossesUIState.miniBosses,
-                            clickToNavigate = { item -> navController.navigate(Screen.CreatureDetail.passCreatureId(mainBossId = item.id))
-                            },
-                            state = refreshState,
-                            onRefresh = {
-                                viewModel.refetchBiomes()
-                                scope.launch {
-                                    refreshState.animateToHidden()
-                                }
-                            },
-                            isRefreshing = refreshing,
-                            numbersOfColumns = NORMAL_SIZE_GRID,
-                            height = ITEM_HEIGHT_TWO_COLUMNS
-                        )
+            Surface(
+                color = Color.Transparent,
+                modifier = Modifier
+                    .testTag("MiniBossSurface")
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            ) {
+                when (miniBossesUIState.miniBosses.isEmpty()) {
+                    false -> {
+                        Box(
+                            modifier = Modifier.testTag("MiniBossGird"),
+                        ) {
+                            GridContent(
+                                modifier = Modifier,
+                                items = miniBossesUIState.miniBosses,
+                                onItemClick = onItemClick ,
+                                numbersOfColumns = NORMAL_SIZE_GRID,
+                                height = ITEM_HEIGHT_TWO_COLUMNS,
+                                animatedVisibilityScope = animatedVisibilityScope
+                            )
+                        }
+                    }
+
+                    true -> {
+                        Box(
+                            modifier = Modifier.testTag("EmptyScreenMiniBoss"),
+                        ) {
+                            EmptyScreen(
+                                modifier = Modifier,
+                                state = refreshState,
+                                isRefreshing = refreshing,
+                                onRefresh = {
+                                    viewModel.refetchBiomes()
+                                    scope.launch {
+                                        refreshState.animateToHidden()
+                                    }
+                                },
+                                errorMessage = miniBossesUIState.error.toString()
+                            )
+                        }
                     }
                 }
 
-                true -> {
-                    Box(
-                        modifier = Modifier.testTag("EmptyScreenMiniBoss"),
-                    ) {
-                        EmptyScreen(
-                            modifier = Modifier,
-                            state = refreshState,
-                            isRefreshing = refreshing,
-                            onRefresh = {
-                                viewModel.refetchBiomes()
-                                scope.launch {
-                                    refreshState.animateToHidden()
-                                }
-                            },
-                            errorMessage = miniBossesUIState.error.toString()
-                        )
-                    }
-                }
+
             }
-
-
         }
     }
 }
@@ -108,8 +107,7 @@ fun MiniBossScreen(
 @Preview(showBackground = true)
 @Composable
 fun PreviewMiniBossListScreen() {
-    val sampleCreatures = emptyList<CreatureDtoX>()
-
+    val sampleCreatures = emptyList<Creature>()
 
     Scaffold(
         topBar = {

@@ -2,11 +2,13 @@ package com.rabbitv.valheimviki.presentation.creatures.mini_bosses
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rabbitv.valheimviki.data.mappers.creatures.toMiniBosses
 import com.rabbitv.valheimviki.domain.exceptions.FetchException
 import com.rabbitv.valheimviki.domain.model.creature.RefetchUseCases
-import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
-import com.rabbitv.valheimviki.domain.use_cases.creatures.CreatureUseCases
+import com.rabbitv.valheimviki.domain.model.creature.mini_boss.MiniBoss
+import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,7 +17,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class MiniBossesUIState(
-    val miniBosses: List<MainBoss> = emptyList(),
+    val miniBosses: List<MiniBoss> = emptyList(),
     val error: String? = null,
     val isLoading: Boolean = false
 )
@@ -41,9 +43,10 @@ class MiniBossesViewModel @Inject constructor(
 
     private fun load() {
         _miniBossesUIState.value = _miniBossesUIState.value.copy(isLoading = true, error = null)
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             try {
-                creatureUseCases.getMainBossesUseCase("en").collect { miniBoss ->
+                creatureUseCases.getMiniBossesUseCase("en").collect { miniBoss ->
+                    println("miniBoss: $miniBoss")
                     _miniBossesUIState.update { current ->
                         current.copy(miniBosses = miniBoss, isLoading = false)
                     }
@@ -62,12 +65,12 @@ class MiniBossesViewModel @Inject constructor(
 
     fun refetchBiomes() {
         _miniBossesUIState.value = _miniBossesUIState.value.copy(isLoading = true, error = null)
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             try {
-                creatureUseCases.refetchCreaturesUseCase("en", RefetchUseCases.GET_BOSSES)
+                creatureUseCases.refetchCreaturesUseCase("en", RefetchUseCases.GET_MINI_BOSSES)
                     .collect { sortedMiniBosses ->
                         _miniBossesUIState.update { current ->
-                            current.copy(miniBosses = sortedMiniBosses, isLoading = false)
+                            current.copy(miniBosses = sortedMiniBosses.toMiniBosses(), isLoading = false)
                         }
                     }
             } catch (e: FetchException) {

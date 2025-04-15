@@ -15,5 +15,3 @@ data class ApiResponse<T>(
     val data: List<T>
 ) : ErrorResponseDto
 
-
-data class ApiResponseSecond<T>(@SerializedName("data") val data: List<T>)

@@ -1,6 +1,10 @@
 package com.rabbitv.valheimviki.presentation.common
 
-import androidx.compose.foundation.Image
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.core.ExperimentalAnimationSpecApi
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,158 +22,161 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.PullToRefreshState
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.ContentAlpha
-import coil3.compose.LocalPlatformContext
-import coil3.compose.rememberAsyncImagePainter
-import coil3.compose.rememberConstraintsSizeResolver
+import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
-import coil3.request.error
-import coil3.request.placeholder
+import coil3.request.crossfade
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.repository.ItemData
+import com.rabbitv.valheimviki.navigation.LocalSharedTransitionScope
 import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_TWO_COLUMNS
 import com.rabbitv.valheimviki.ui.theme.MEDIUM_PADDING
+import com.rabbitv.valheimviki.ui.theme.SMALL_PADDING
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
-
+private const val boundsAnimationDurationMillis = 500
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GridContent(
     modifier: Modifier,
     items: List<ItemData>,
-    clickToNavigate: (item: ItemData) -> Unit,
-    state: PullToRefreshState,
-    isRefreshing: Boolean,
-    onRefresh: () -> Unit,
+    onItemClick: (String, String) -> Unit,
     numbersOfColumns: Int,
     height: Dp,
+    animatedVisibilityScope:AnimatedVisibilityScope,
 ) {
 
-    PullToRefreshBox(
-        state = state,
-        isRefreshing = isRefreshing,
-        onRefresh = onRefresh,
-    ) {
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(numbersOfColumns),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(numbersOfColumns),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
 
-            ) {
-            if (items.isEmpty()) {
-                items(items) {
-                    Text(
-                        text = "Sprawdź połączenie z internetem",
-                        color = Color.Red,
-                        modifier = Modifier.align(Alignment.Center)
+        ) {
+        if (items.isEmpty()) {
+            items(items) {
+                Text(
+                    text = "Sprawdź połączenie z internetem",
+                    color = Color.Red,
+                )
+            }
+        } else {
+
+            items(items, key = { item -> item.id }) { item ->
+                Box(
+                    modifier = modifier.testTag("GirdItem ${item.name}")
+                ) {
+                    GridItem(
+                        item = item,
+                        onItemClick = onItemClick,
+                        height = height,
+                        animatedVisibilityScope = animatedVisibilityScope
                     )
                 }
-            } else {
-
-                items(items) { item ->
-                    println("GirdItem ${item.name}")
-                    Box(
-                        modifier = modifier.testTag("GirdItem ${item.name}")
-                    ) {
-                        GridItem(
-                            item = item,
-                            clickToNavigate = clickToNavigate,
-                            height = height
-                        )
-                    }
-                }
             }
-
         }
+
     }
 }
 
+
+@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalAnimationSpecApi::class)
 @Composable
 fun GridItem(
     item: ItemData,
-    clickToNavigate: (item: ItemData) -> Unit,
-    height: Dp
+    onItemClick: (String, String) -> Unit,
+    height: Dp,
+    animatedVisibilityScope: AnimatedVisibilityScope
 ) {
+    val sharedTransitionScope = LocalSharedTransitionScope.current
+        ?: throw IllegalStateException("No Scope found")
 
-    val sizeResolver = rememberConstraintsSizeResolver()
-    val painter = rememberAsyncImagePainter(
-        ImageRequest.Builder(LocalPlatformContext.current)
-            .data(item.imageUrl.toString())
-            .placeholder(R.drawable.ic_placeholder)
-            .error(R.drawable.ic_placeholder)
-            .size(sizeResolver)
-            .build(),
-    )
 
-    Box(
-        modifier = Modifier
-            .height(height)
-            .clickable {
-                clickToNavigate(item)
-            },
-
-        contentAlignment = Alignment.BottomStart
-    ) {
-        Surface(
-            color = Color.Transparent,
-            shape = RoundedCornerShape(
-                size = MEDIUM_PADDING
-            ),
+    with(sharedTransitionScope) {
+        Box(
+            modifier = Modifier
+                .height(height)
+                .clickable {
+                    onItemClick(item.id, item.name)
+                },
+            contentAlignment = Alignment.BottomStart
         ) {
-            Image(
-                painter = painter,
+            AsyncImage(
+                modifier = Modifier.sharedElement(
+                    state = rememberSharedContentState(key = "image-${item.id}"),
+                    animatedVisibilityScope = animatedVisibilityScope,
+                ).fillMaxSize().clip(RoundedCornerShape(MEDIUM_PADDING))
+                    ,
+                model = ImageRequest.Builder(context = LocalContext.current)
+                    .data(item.imageUrl.toString())
+                    .crossfade(true)
+                    .build(),
+                error = painterResource(R.drawable.ic_placeholder),
+                placeholder = painterResource(R.drawable.ic_placeholder),
                 contentDescription = stringResource(R.string.item_grid_image),
                 contentScale = ContentScale.Crop,
+
+                )
+
+            Surface(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .then(sizeResolver),
-            )
-        }
-        Surface(
-            modifier = Modifier
-                .fillMaxHeight(0.2f)
-                .fillMaxWidth()
-                .clip(
-                    RoundedCornerShape(
-                        bottomStart = MEDIUM_PADDING,
-                        bottomEnd = MEDIUM_PADDING
+                    .sharedElement(
+                        state = rememberSharedContentState(key = "Surface-${item.id}"),
+                        animatedVisibilityScope = animatedVisibilityScope,
                     )
-                ),
-            tonalElevation = 0.dp,
-            color = Color.Black.copy(alpha = ContentAlpha.medium),
-        ) {
-            Text(
-                text = item.name,
-                color = Color.White,
-                style = MaterialTheme.typography.headlineSmall,
-                modifier = Modifier
-                    .wrapContentHeight(align = Alignment.CenterVertically)
-                    .padding
-                        (horizontal = 8.dp),
-            )
+                    .fillMaxHeight(0.2f)
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(bottomStart = SMALL_PADDING, bottomEnd = SMALL_PADDING)),
+                tonalElevation = 0.dp,
+                color = Color.Black.copy(alpha = ContentAlpha.medium),
+            ) {
+                Text(
+                    modifier = Modifier.padding
+                        (horizontal = 8.dp)
+                        .sharedElement(
+                            state = rememberSharedContentState(key = "text-${item.name}"),
+                            boundsTransform = { _, _ ->
+                                tween(durationMillis = 600)
+                            },
+//                            boundsTransform = BoundsTransform{initialBounds, targetBounds ->
+//                                keyframes {
+//                                    durationMillis = boundsAnimationDurationMillis
+//                                    initialBounds at 0 using ArcMode.ArcBelow using FastOutSlowInEasing
+//                                    targetBounds at boundsAnimationDurationMillis
+//                                }
+//                            },
+                            animatedVisibilityScope = animatedVisibilityScope,
+                        ).wrapContentHeight(align = Alignment.CenterVertically),
+                    text = item.name,
+                    color = Color.White,
+                    style = MaterialTheme.typography.headlineSmall,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
         }
     }
 }
 
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Preview(name = "GridItem", showBackground = true)
 @Composable
 private fun PreviewGridItem() {
+
     val item = Biome(
         id = "123",
         category = "BIOME",
@@ -179,15 +186,19 @@ private fun PreviewGridItem() {
         order = 1
     )
     ValheimVikiAppTheme {
-        GridItem(
-            item = item,
-            clickToNavigate = {},
-            height = ITEM_HEIGHT_TWO_COLUMNS,
-        )
-    }
+                AnimatedVisibility(true) {
+                GridItem(
+                    item = item,
+                    onItemClick = { _, _ -> },
+                    height = ITEM_HEIGHT_TWO_COLUMNS,
+                    animatedVisibilityScope = this,
+                )
+                }
+            }
+
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Preview(name = "ContentGrid", showBackground = true)
 @Composable
 private fun PreviewContentGrid() {
@@ -196,7 +207,7 @@ private fun PreviewContentGrid() {
         Biome(
             id = "123123",
             category = "BIOME",
-            name = "Forest Forest Forest", description = "A dense and lush forest.",
+            name = "Forest Forest", description = "A dense and lush forest.",
             imageUrl = "",
             order = 1
         ),
@@ -211,15 +222,15 @@ private fun PreviewContentGrid() {
 
 
     ValheimVikiAppTheme {
-        GridContent(
-            modifier = Modifier,
-            items = sampleBiomes,
-            clickToNavigate = { item -> {} },
-            state = rememberPullToRefreshState(),
-            onRefresh = {},
-            isRefreshing = false,
-            numbersOfColumns = 2,
-            height = ITEM_HEIGHT_TWO_COLUMNS
-        )
+        AnimatedVisibility(true) {
+            GridContent(
+                modifier = Modifier,
+                items = sampleBiomes,
+                onItemClick = { _, _ -> {} },
+                numbersOfColumns = 2,
+                height = ITEM_HEIGHT_TWO_COLUMNS,
+                this
+            )
+        }
     }
 }

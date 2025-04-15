@@ -19,9 +19,10 @@ class SplashViewModel @Inject constructor(
     val onBoardingCompleted: StateFlow<Boolean> = _onBoardingCompleted
 
     init {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.Default) {
             _onBoardingCompleted.value =
                 useCases.readOnBoardingUseCase().stateIn(viewModelScope).value
+
         }
     }
 }
