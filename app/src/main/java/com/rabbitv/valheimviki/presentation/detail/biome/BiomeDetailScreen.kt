@@ -80,6 +80,7 @@ import androidx.wear.compose.material.ContentAlpha
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import com.composables.icons.lucide.Gem
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.PawPrint
 import com.composables.icons.lucide.Pickaxe
@@ -119,8 +120,12 @@ fun BiomeDetailScreen(
     val pagerState = rememberPagerState(
         initialPage = 1,
         pageCount = { relatedCreatures.size })
-    val pagerState2 = rememberPagerState(pageCount = { relatedOreDeposits.size })
-    val pagerState3 = rememberPagerState(pageCount = { relatedMaterials.size })
+    val pagerState2 = rememberPagerState(
+        initialPage = 1,
+        pageCount = { relatedOreDeposits.size })
+    val pagerState3 = rememberPagerState(
+        initialPage = 1,
+        pageCount = { relatedMaterials.size })
 
     biome?.let { biome ->
         BiomeDetailContent(
@@ -192,25 +197,30 @@ fun BiomeDetailContent(
                         pagerState, relatedCreatures ,
                         Lucide.PawPrint,
                         "Creatures",
-                        "Creatures you may encounter in this biome"
+                        "Creatures you may encounter in this biome",
+                        ContentScale.Crop,
                     )
                 }
-                RowTwoTridentDividers()
+
                 if(relatedOreDeposits.isNotEmpty()) {
+                    RowTwoTridentDividers()
                     HorizontalPagerSection(
                         pagerState2, relatedOreDeposits ,
                         Lucide.Pickaxe,
                         "Ore Deposits",
-                        "Ore Deposits you may encounter in this biome"
+                        "Ore Deposits you may encounter in this biome",
+                        ContentScale.Crop,
                     )
                 }
-                RowTwoTridentDividers()
-                if(relatedOreDeposits.isNotEmpty()) {
+
+                if(relatedMaterials.isNotEmpty()) {
+                    RowTwoTridentDividers()
                     HorizontalPagerSection(
-                        pagerState3, relatedOreDeposits ,
-                        Lucide.Pickaxe,
+                        pagerState3, relatedMaterials ,
+                        Lucide.Gem,
                         "Materials",
-                        "Unique materials you may encounter in this biome"
+                        "Unique materials you may encounter in this biome",
+                        ContentScale.None,
                     )
                 }
             }
@@ -263,7 +273,6 @@ fun StraitWhiteLine() {
             end = endPoint
         )
 
-        // Draw the line using the gradient brush
         drawLine(
             brush = gradientBrush,
             start = startPoint,
@@ -281,6 +290,7 @@ fun HorizontalPagerSection(
     icon: ImageVector,
     title:String,
     subTitle:String,
+    contentScale: ContentScale
 ) {
     val pageWidth = 160.dp
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
@@ -377,7 +387,7 @@ fun HorizontalPagerSection(
                                     .crossfade(true)
                                     .build(),
                                 contentDescription = stringResource(R.string.item_grid_image),
-                                contentScale = ContentScale.Crop,
+                                contentScale = contentScale
                             )
                             Surface(
                                 modifier = Modifier.size(18.dp)
@@ -665,7 +675,8 @@ fun PreviewRectangleSectionHeader() {
             list = creatureList
             , Lucide.PawPrint,
             "Creatuers",
-            "Creatures you may encounter in this biome"
+            "Creatures you may encounter in this biome",
+            ContentScale.Crop,
         )
     }
 }
@@ -762,7 +773,7 @@ fun PreviewBiomeDetailContent() {
                     errorPainter = painterResource(R.drawable.preview_image),
                     pagerState = pagerState,
                     pagerState2 = pagerState2,
-                    pagerState3 = pagerState2,
+                    pagerState3 = pagerState3,
                     relatedCreatures = creatureList,
                     relatedOreDeposits = oreDeposit,
                     relatedMaterials = materials
