@@ -1,5 +1,6 @@
 package com.rabbitv.valheimviki.presentation.detail.creature
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -18,16 +19,27 @@ import javax.inject.Inject
 class CreatureScreenViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val creatureUseCases: CreatureUseCases,
-) : ViewModel(){
+) : ViewModel() {
     private val mainBossId: String = checkNotNull(savedStateHandle[MAIN_BOSS_ARGUMENT_KEY])
+
     private val _mainBoss = MutableStateFlow<MainBoss?>(null)
     val mainBoss: StateFlow<MainBoss?> = _mainBoss
 
+
     init {
-        viewModelScope.launch(Dispatchers.IO) {
-            creatureUseCases.getCreatureById(mainBossId).let {
+        launch()
+    }
+
+
+    fun launch() {
+        try {
+            viewModelScope.launch(Dispatchers.IO) {
+                creatureUseCases.getCreatureById(mainBossId).let {
                     _mainBoss.value = createFromCreature(it)
+                }
             }
+        } catch (e: Exception) {
+            Log.e("General fetch error BiomeDetailViewModel", e.message.toString())
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.components
+package com.rabbitv.valheimviki.presentation.components.trident_dividers
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box

@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.common
+package com.rabbitv.valheimviki.presentation.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope

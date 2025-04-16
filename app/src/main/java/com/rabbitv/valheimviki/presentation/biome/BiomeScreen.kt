@@ -14,16 +14,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.rabbitv.valheimviki.presentation.common.EmptyScreen
-import com.rabbitv.valheimviki.presentation.common.GridContent
+import com.rabbitv.valheimviki.presentation.components.EmptyScreen
+import com.rabbitv.valheimviki.presentation.components.GridContent
 import com.rabbitv.valheimviki.presentation.components.ShimmerEffect
 import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_TWO_COLUMNS
 import com.rabbitv.valheimviki.utils.Constants.BIOME_GRID_COLUMNS
-import com.rabbitv.valheimviki.utils.isNetworkAvailable
 import kotlinx.coroutines.launch
 
 
