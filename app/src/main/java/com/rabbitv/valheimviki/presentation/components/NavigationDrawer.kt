@@ -1,6 +1,5 @@
 package com.rabbitv.valheimviki.presentation.components
 
-//import com.rabbitv.valheimviki.ui.theme.IMFellEnglishFontFamily
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement

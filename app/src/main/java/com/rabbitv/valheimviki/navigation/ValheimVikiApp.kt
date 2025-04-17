@@ -49,7 +49,7 @@ import com.rabbitv.valheimviki.presentation.components.NavigationDrawer
 import com.rabbitv.valheimviki.presentation.creatures.bosses.BossScreen
 import com.rabbitv.valheimviki.presentation.creatures.mini_bosses.MiniBossScreen
 import com.rabbitv.valheimviki.presentation.detail.biome.BiomeDetailScreen
-import com.rabbitv.valheimviki.presentation.detail.creature.CreatureDetailScreen
+import com.rabbitv.valheimviki.presentation.detail.creature.MainBossDetailScreen
 import com.rabbitv.valheimviki.presentation.home.MainAppBar
 import com.rabbitv.valheimviki.presentation.intro.WelcomeScreen
 import com.rabbitv.valheimviki.presentation.splash.SplashScreen
@@ -92,7 +92,7 @@ fun MainContainer(
         route.startsWith(Screen.Splash.route.substringBefore("{")) ||
                 route.startsWith(Screen.Welcome.route.substringBefore("{")) ||
                 route.startsWith(Screen.BiomeDetail.route.substringBefore("{")) ||
-                route.startsWith(Screen.CreatureDetail.route.substringBefore("{"))
+                route.startsWith(Screen.MainBossDetail.route.substringBefore("{"))
     } == false
 
     val isNavigating = remember { mutableStateOf(false) }
@@ -175,7 +175,7 @@ fun MainContainer(
                                 modifier = Modifier.padding(10.dp),
                                 onItemClick = { itemId, text ->
                                     valheimVikiNavController.navigate(
-                                        Screen.CreatureDetail.passCreatureId(itemId, text)
+                                        Screen.MainBossDetail.passCreatureId(itemId, text)
                                     )
                                 },
                                 paddingValues = innerPadding,
@@ -185,11 +185,12 @@ fun MainContainer(
                         composable(Screen.MiniBoss.route) {
                             MiniBossScreen(
                                 modifier = Modifier.padding(10.dp),
-                                onItemClick = { itemId, text ->
-                                    valheimVikiNavController.navigate(
-                                        Screen.CreatureDetail.passCreatureId(itemId, text)
-                                    )
-                                },
+                                onItemClick = { itemId, text ->{} },
+//                                    { itemId, text ->
+//                                    valheimVikiNavController.navigate(
+//                                        Screen.MainBossDetail.passCreatureId(itemId, text)
+//                                    )
+//                                },
                                 paddingValues = innerPadding,
                                 animatedVisibilityScope = this@composable
                             )
@@ -210,13 +211,18 @@ fun MainContainer(
                             )
                         }
                         composable(
-                            route = Screen.CreatureDetail.route,
+                            route = Screen.MainBossDetail.route,
                             arguments = listOf(
                                 navArgument(MAIN_BOSS_ARGUMENT_KEY) { type = NavType.StringType },
                                 navArgument(TEXT_ARGUMENT_KEY) { type = NavType.StringType }
                             )
                         ) {
-                            CreatureDetailScreen()
+                            MainBossDetailScreen(
+                                onBack = { valheimVikiNavController.navigate(route = Screen.Boss.route) {
+                                    popUpTo(route = Screen.Boss.route) { inclusive = true }
+                                } },
+                                animatedVisibilityScope = this@composable
+                            )
                         }
                     }
             }

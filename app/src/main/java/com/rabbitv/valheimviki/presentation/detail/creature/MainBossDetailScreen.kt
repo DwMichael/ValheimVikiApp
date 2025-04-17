@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -33,21 +34,20 @@ import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun CreatureDetailScreen(
+fun MainBossDetailScreen(
     onBack: () -> Unit,
-    viewModel: CreatureScreenViewModel = hiltViewModel(),
+    viewModel: MainBossScreenViewModel = hiltViewModel(),
     animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
     val mainBoss by viewModel.mainBoss.collectAsStateWithLifecycle()
     val sharedTransitionScope = LocalSharedTransitionScope.current
         ?: throw IllegalStateException("No Scope found")
     mainBoss?.let { mainBoss ->
-        CreatureContent(
+        MainBossContent(
             onBack = onBack,
             animatedVisibilityScope = animatedVisibilityScope,
             mainBoss = mainBoss,
             sharedTransitionScope = sharedTransitionScope,
-            errorPainter = TODO(),
         )
     }
 
@@ -56,7 +56,7 @@ fun CreatureDetailScreen(
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun CreatureContent(
+fun MainBossContent(
     mainBoss: MainBoss,
     onBack: () -> Unit,
     sharedTransitionScope: SharedTransitionScope,
@@ -86,7 +86,8 @@ fun CreatureContent(
                     itemData = mainBoss,
                     sharedTransitionScope = sharedTransitionScope,
                     animatedVisibilityScope = animatedVisibilityScope,
-                    errorPainter = errorPainter
+                    errorPainter = errorPainter,
+                    textAlign = TextAlign.Center
                 )
                 DetailExpandableText(text = mainBoss.description.toString())
                 SlavicDivider()
@@ -104,10 +105,9 @@ fun CreatureContent(
 private fun PreviewCreatureDetail() {
     SharedTransitionLayout {
         AnimatedVisibility(visible = true){
-            CreatureDetailScreen(
-                onBack = TODO(),
-                viewModel = TODO(),
-                animatedVisibilityScope = TODO()
+            MainBossDetailScreen(
+                onBack = {  },
+                animatedVisibilityScope = this
             )
         }
     }

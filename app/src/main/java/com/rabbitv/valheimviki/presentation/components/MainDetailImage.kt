@@ -1,7 +1,9 @@
 package com.rabbitv.valheimviki.presentation.components
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
@@ -23,6 +25,8 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.ContentAlpha
 import coil3.compose.AsyncImage
@@ -30,6 +34,8 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.repository.ItemData
+import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
+import com.rabbitv.valheimviki.utils.FakeData.generateFakeMaterials
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -39,6 +45,7 @@ fun MainDetailImage(
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
     errorPainter: Painter? = null,
+    textAlign: TextAlign = TextAlign.Start,
 ) {
     with(sharedTransitionScope) {
         Box(
@@ -92,13 +99,34 @@ fun MainDetailImage(
                             boundsTransform = { _, _ ->
                                 tween(durationMillis = 600)
                             }
-                        )
-                        .wrapContentHeight(align = Alignment.CenterVertically),
+                        ).wrapContentHeight(
+                            Alignment.CenterVertically
+                        ),
+                    textAlign = textAlign,
                     text = itemData.name,
                     color = Color.White,
                     style = MaterialTheme.typography.displaySmall,
                 )
 
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Preview(showBackground = true)
+@Composable
+fun PreviewMainDetailImage(){
+    ValheimVikiAppTheme {
+        SharedTransitionLayout {
+            AnimatedVisibility(true) {
+                val itemsData = generateFakeMaterials()
+                MainDetailImage(
+                    onBack = {},
+                    itemData = itemsData.first(),
+                    sharedTransitionScope = this@SharedTransitionLayout,
+                    animatedVisibilityScope = this,
+                )
             }
         }
     }
