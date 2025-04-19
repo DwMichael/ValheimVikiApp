@@ -15,8 +15,9 @@ interface RelationDao {
     @Query("""
         SELECT CASE 
             WHEN mainItemId = :queryId THEN relatedItemId 
-            WHEN relatedItemId = :queryId THEN mainItemId 
-        END AS oppositeId
+            WHEN relatedItemId = :queryId THEN mainItemId
+        END AS oppositeId,
+        quantity
         FROM relations
         WHERE mainItemId = :queryId OR relatedItemId = :queryId
     """)

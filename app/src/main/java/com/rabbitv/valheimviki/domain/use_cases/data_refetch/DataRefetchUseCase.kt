@@ -18,11 +18,10 @@ import com.rabbitv.valheimviki.domain.repository.RelationRepository
 import com.rabbitv.valheimviki.domain.repository.TreeRepository
 import com.rabbitv.valheimviki.domain.use_cases.datastore.DataStoreUseCases
 import jakarta.inject.Inject
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 import java.io.IOException
 import java.net.UnknownHostException
 
@@ -143,55 +142,37 @@ class DataRefetchUseCase @Inject constructor(
     }
 
 
-    private suspend fun shouldNotRefreshData(): Boolean {
-        val hasBiomes = mutableListOf<Biome>()
-        val hasCreatures = mutableListOf<Creature>()
-        val hasOreDeposits = mutableListOf<OreDeposit>()
-        val hasMaterials = mutableListOf<Material>()
-        val hasPointOfInterest = mutableListOf<PointOfInterest>()
-        val hasTrees = mutableListOf<Tree>()
-        val hasRelations = mutableListOf<Relation>()
+    private suspend fun shouldNotRefreshData(): Boolean = coroutineScope {
 
-        coroutineScope {
-            val biome = async {
-                biomeRepository.getLocalBiomes().first()
-            }
-            val creature = async {
-                creatureRepository.getLocalCreatures().first()
-            }
-            val relations = async {
-                relationsRepository.getLocalRelations().first()
-            }
-            val oreDeposit = async {
-                oreDepositRepository.getLocalOreDeposits().first()
-            }
-            val materials = async {
-                materialsRepository.getLocalMaterials().first()
-            }
-            val pointOfInterests = async {
-                pointOfInterestRepository.getLocalPointOfInterest().first()
-            }
 
-            val trees = async {
-                treeRepository.getLocalTrees().first()
-            }
-            launch(Dispatchers.Default) {
-                hasBiomes.addAll(biome.await())
-                hasCreatures.addAll(creature.await())
-                hasOreDeposits.addAll(oreDeposit.await())
-                hasMaterials.addAll(materials.await())
-                hasRelations.addAll(relations.await())
-                hasTrees.addAll(trees.await())
-                hasPointOfInterest.addAll(pointOfInterests.await())
-            }
-        }
+        val deferredResults = listOf(
+            async { biomeRepository.getLocalBiomes().first() },
+            async { creatureRepository.getLocalCreatures().first() },
+            async { oreDepositRepository.getLocalOreDeposits().first() },
+            async { materialsRepository.getLocalMaterials().first() },
+            async { pointOfInterestRepository.getLocalPointOfInterest().first() },
+            async { treeRepository.getLocalTrees().first() },
+            async { relationsRepository.getLocalRelations().first() }
+        )
 
-        return ((hasBiomes.isNotEmpty() && hasBiomes.size == 9)
-                || (hasCreatures.isNotEmpty() && hasCreatures.size == 83)
-                || (hasOreDeposits.isNotEmpty() && hasOreDeposits.size == 9)
-                || (hasMaterials.isNotEmpty() && hasMaterials.size == 176)
-                || (hasRelations.isNotEmpty() && hasRelations.size == 194 )
-                || (hasPointOfInterest.isNotEmpty() && hasPointOfInterest.size == 51)
-                || (hasTrees.isNotEmpty() && hasTrees.size == 8))
+        val results = deferredResults.awaitAll()
+
+        val biomes = results[0] as List<Biome>
+        val creatures = results[1] as List<Creature>
+        val oreDeposits = results[2] as List<OreDeposit>
+        val materials = results[3] as List<Material>
+        val pointsOfInterest = results[4] as List<PointOfInterest>
+        val trees = results[5] as List<Tree>
+        val relations = results[6] as List<Relation>
+
+        return@coroutineScope (
+                biomes.size == 9 &&
+                        creatures.size == 83 &&
+                        oreDeposits.size == 9 &&
+                        materials.size == 195 &&
+                        pointsOfInterest.size == 51 &&
+                        trees.size == 8 &&
+                        relations.size == 234
+                )
     }
 }

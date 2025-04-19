@@ -22,8 +22,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.rabbitv.valheimviki.presentation.detail.biome.BODY_CONTENT_PADDING
-import com.rabbitv.valheimviki.presentation.detail.biome.DEFAULT_MINIMUM_TEXT_LINE
+import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
+import com.rabbitv.valheimviki.ui.theme.DEFAULT_MINIMUM_TEXT_LINE
+
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
 @Composable

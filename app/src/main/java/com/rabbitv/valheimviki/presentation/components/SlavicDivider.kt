@@ -20,7 +20,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.rabbitv.valheimviki.R
-import com.rabbitv.valheimviki.presentation.detail.biome.BODY_CONTENT_PADDING
+import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 
 @Composable
 fun SlavicDivider() {

@@ -4,6 +4,7 @@
 
 package com.rabbitv.valheimviki.navigation
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
@@ -87,6 +88,9 @@ fun MainContainer(
     val navBackStackEntry by valheimVikiNavController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
+    BackHandler {
+
+    }
 
     val showTopAppBar = currentRoute?.let { route ->
         route.startsWith(Screen.Splash.route.substringBefore("{")) ||
@@ -98,6 +102,9 @@ fun MainContainer(
     val isNavigating = remember { mutableStateOf(false) }
     val topBarVisible = remember { mutableStateOf(showTopAppBar) }
     LaunchedEffect(currentRoute) {
+        items.find { it.route == currentRoute }?.let {
+            selectedItem.value = it
+        }
         if (!showTopAppBar) {
             isNavigating.value = true
             delay(250)

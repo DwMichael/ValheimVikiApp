@@ -99,9 +99,7 @@ fun MainDetailImage(
                             boundsTransform = { _, _ ->
                                 tween(durationMillis = 600)
                             }
-                        ).wrapContentHeight(
-                            Alignment.CenterVertically
-                        ),
+                        ).wrapContentHeight(Alignment.CenterVertically),
                     textAlign = textAlign,
                     text = itemData.name,
                     color = Color.White,

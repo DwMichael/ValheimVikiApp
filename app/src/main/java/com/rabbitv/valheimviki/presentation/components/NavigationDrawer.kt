@@ -119,7 +119,6 @@ fun NavigationDrawer(
                     Spacer(Modifier.height(12.dp))
                     items.forEach { item ->
                         NavigationDrawerItem(
-//                            ForestGreen10Dark
                             colors = NavigationDrawerItemDefaults.colors(
                                 selectedIconColor = Color.Black,
                                 selectedTextColor = Color.Black,
@@ -163,7 +162,6 @@ fun NavigationDrawer(
                                     launchSingleTop = true
                                     restoreState = true
                                 }
-                                selectedItem.value = item
                                 scope.launch { drawerState.close() }
                             },
                             modifier = Modifier
