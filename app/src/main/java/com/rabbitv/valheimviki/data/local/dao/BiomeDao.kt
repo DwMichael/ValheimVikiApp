@@ -16,6 +16,7 @@ interface BiomeDao {
     @Query("SELECT * FROM biomes WHERE id = :id")
     fun getBiomeById(id: String): Biome
 
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAllBiomes(biomes: List<Biome>)
 }

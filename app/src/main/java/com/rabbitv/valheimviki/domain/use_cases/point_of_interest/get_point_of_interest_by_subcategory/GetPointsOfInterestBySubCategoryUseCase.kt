@@ -2,15 +2,16 @@ package com.rabbitv.valheimviki.domain.use_cases.point_of_interest.get_point_of_
 
 import com.rabbitv.valheimviki.domain.exceptions.PointOfInterestBySubCategoryFetchLocalException
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
+import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterestSubCategory
 import com.rabbitv.valheimviki.domain.repository.PointOfInterestRepository
 import jakarta.inject.Inject
 
 class GetPointsOfInterestBySubCategoryUseCase @Inject constructor(
     private val repository: PointOfInterestRepository
 ) {
-    operator fun invoke(subCategory: String): List<PointOfInterest> {
+    operator fun invoke(subCategory: PointOfInterestSubCategory): List<PointOfInterest> {
         return try {
-            val pointOfInterest = repository.getPointOfInterestBySubCategory(subCategory)
+            val pointOfInterest = repository.getPointOfInterestBySubCategory(subCategory.toString())
             if (pointOfInterest.isNotEmpty()) {
                 pointOfInterest
             }else

@@ -12,6 +12,7 @@ import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
+import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
 import com.rabbitv.valheimviki.domain.model.tree.Tree
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
@@ -22,7 +23,6 @@ import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.domain.use_cases.tree.TreeUseCases
 import com.rabbitv.valheimviki.utils.Constants.BIOME_ARGUMENT_KEY
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -71,16 +71,15 @@ class BiomeDetailScreenViewModel @Inject constructor(
                 _biome.value = biomeId.let { biomeUseCases.getBiomeByIdUseCase(biomeId = biomeId) }
 
 
-                val deferredRelations: Deferred<List<String>> = async {
-                    biomeId.let { relationsUseCase.getRelatedIdsUseCase(it) }
-                }
+                val relatedObjects: List<RelatedItem> = async {
+                    relationsUseCase.getRelatedIdsUseCase(biomeId)
+                }.await()
 
-                val relatedObjects: List<String> = deferredRelations.await()
-
+                val relatedIds = relatedObjects.map { it.id }
                 try {
                     relatedObjects.let { ids ->
                         creaturesUseCase.getCreatureByRelationAndSubCategory(
-                            ids,
+                            relatedIds,
                             CreatureType.BOSS)?.toMainBoss().let { boss ->
                             _mainBoss.value = boss
                         }
@@ -91,34 +90,34 @@ class BiomeDetailScreenViewModel @Inject constructor(
                 }
 
                 try {
-                    val creatures = creaturesUseCase.getCreaturesByIds(relatedObjects)
+                    val creatures = creaturesUseCase.getCreaturesByIds(relatedIds)
                     _relatedCreatures.value = creatures
                 } catch (e: Exception) {
                     Log.e("Creatures fetch error BiomeDetailViewModel", e.message.toString())
                 }
 
                 try {
-                    val oreDeposits = oreDepositUseCases.getOreDepositsByIdsUseCase(relatedObjects)
+                    val oreDeposits = oreDepositUseCases.getOreDepositsByIdsUseCase(relatedIds)
                     _relatedOreDeposits.value = oreDeposits
                 } catch (e: Exception) {
                     Log.e("Ore deposits fetch error BiomeDetailViewModel", e.message.toString())
                 }
                 try {
-                    val materials = materialUseCases.getMaterialsByIds(relatedObjects)
+                    val materials = materialUseCases.getMaterialsByIds(relatedIds)
                     _relatedMaterials.value = materials
                 } catch (e: Exception) {
                     Log.e("Materials fetch error BiomeDetailViewModel", e.message.toString())
                 }
 
                 try {
-                    val pointOfInterest = pointOfInterestUseCases.getPointsOfInterestByIdsUseCase(relatedObjects)
+                    val pointOfInterest = pointOfInterestUseCases.getPointsOfInterestByIdsUseCase(relatedIds)
                     _relatedPointOfInterest.value = pointOfInterest
                 } catch (e: Exception) {
                     Log.e("PointOfInterest fetch error BiomeDetailViewModel", e.message.toString())
                 }
 
                 try {
-                    val trees = treeUseCases.getTreesByIdsUseCase(relatedObjects)
+                    val trees = treeUseCases.getTreesByIdsUseCase(relatedIds)
                     _relatedTrees.value = trees
                 } catch (e: Exception) {
                     Log.e("Trees fetch error BiomeDetailViewModel", e.message.toString())

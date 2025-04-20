@@ -3,6 +3,7 @@ package com.rabbitv.valheimviki.data.repository.relation
 
 import com.rabbitv.valheimviki.data.local.dao.RelationDao
 import com.rabbitv.valheimviki.data.remote.api.ApiRelationsService
+import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
 import com.rabbitv.valheimviki.domain.model.relation.Relation
 import com.rabbitv.valheimviki.domain.repository.RelationRepository
 import kotlinx.coroutines.flow.Flow
@@ -20,7 +21,7 @@ class RelationRepositoryImpl(
         return relationDao.getRelatedId(queryId)
     }
 
-    override fun getRelatedIds(queryId: String): List<String> {
+    override fun getRelatedIds(queryId: String): List<RelatedItem> {
         return relationDao.getRelatedIds(queryId)
     }
 

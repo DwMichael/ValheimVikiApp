@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="ValheimVikiApp">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-04-16T17:47:33.635585900Z">
+        <DropdownSelection timestamp="2025-04-20T16:29:11.985560100Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\Legio\.android\avd\Pixel_Fold_API_35.avd" />
+              <DeviceId pluginId="PhysicalDevice" identifier="serial=RFCW60EHDNV" />
             </handle>
           </Target>
         </DropdownSelection>

@@ -7,9 +7,11 @@ import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -24,6 +26,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.composables.icons.lucide.Gem
@@ -46,12 +49,11 @@ import com.rabbitv.valheimviki.presentation.components.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.ImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.MainDetailImage
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
-import com.rabbitv.valheimviki.presentation.components.trident_dividers.RowTwoTridentDividers
+import com.rabbitv.valheimviki.presentation.components.trident_dividers.TridentsDividedRow
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
 
-const val DEFAULT_MINIMUM_TEXT_LINE = 4
-const val BODY_CONTENT_PADDING = 10
+
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -150,7 +152,10 @@ fun BiomeDetailContent(
                 )
                 DetailExpandableText(text = biome.description.toString())
                 mainBoss?.let { mainBoss ->
-                    ImageWithTopLabel(itemData = mainBoss, errorPainter = errorPainter)
+                    ImageWithTopLabel(
+                        itemData = mainBoss,
+                        subTitle= "BOSS",
+                        errorPainter = errorPainter)
                 }
                 SlavicDivider()
                 if(relatedCreatures.isNotEmpty()) {
@@ -164,7 +169,7 @@ fun BiomeDetailContent(
                 }
 
                 if(relatedOreDeposits.isNotEmpty()) {
-                    RowTwoTridentDividers()
+                    TridentsDividedRow()
                     HorizontalPagerSection(
                         pagerState2, relatedOreDeposits ,
                         Lucide.Pickaxe,
@@ -175,7 +180,7 @@ fun BiomeDetailContent(
                 }
 
                 if(relatedMaterials.isNotEmpty()) {
-                    RowTwoTridentDividers()
+                    TridentsDividedRow()
                     HorizontalPagerSection(
                         pagerState3, relatedMaterials ,
                         Lucide.Gem,
@@ -186,7 +191,7 @@ fun BiomeDetailContent(
                     )
                 }
                 if(relatedPointOfInterest.isNotEmpty()) {
-                    RowTwoTridentDividers()
+                    TridentsDividedRow()
                     HorizontalPagerSection(
                         pagerState4, relatedPointOfInterest ,
                         Lucide.House,
@@ -197,7 +202,7 @@ fun BiomeDetailContent(
                     )
                 }
                 if(relatedPointOfInterest.isNotEmpty()) {
-                    RowTwoTridentDividers()
+                    TridentsDividedRow()
                     HorizontalPagerSection(
                         pagerState5, relatedTrees ,
                         Lucide.Trees,
@@ -207,6 +212,7 @@ fun BiomeDetailContent(
                         iconModifier = Modifier
                     )
                 }
+                Box(modifier = Modifier.size(45.dp))
             }
         }
     )
@@ -241,18 +247,19 @@ fun PreviewBiomeDetailContent() {
         collapseImmune = "False",
         forsakenPower = "High"
     )
-    val pagerState = rememberPagerState(pageCount = {
-        10
-    })
-    val pagerState2 = rememberPagerState(pageCount = {
-        5
-    })
-    val pagerState3 = rememberPagerState(pageCount = {
-        5
-    })
     val creatureList = FakeData.generateFakeCreatures()
     val oreDeposit = FakeData.generateFakeOreDeposits()
     val materials = FakeData.generateFakeMaterials()
+    val pagerState = rememberPagerState(pageCount = {
+        creatureList.size
+    })
+    val pagerState2 = rememberPagerState(pageCount = {
+        oreDeposit.size
+    })
+    val pagerState3 = rememberPagerState(pageCount = {
+        materials.size
+    })
+
     ValheimVikiAppTheme {
         SharedTransitionLayout {
             AnimatedVisibility(visible = true) {

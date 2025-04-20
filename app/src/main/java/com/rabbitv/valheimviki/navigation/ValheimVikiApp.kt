@@ -4,6 +4,7 @@
 
 package com.rabbitv.valheimviki.navigation
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
@@ -49,13 +50,15 @@ import com.rabbitv.valheimviki.presentation.components.NavigationDrawer
 import com.rabbitv.valheimviki.presentation.creatures.bosses.BossScreen
 import com.rabbitv.valheimviki.presentation.creatures.mini_bosses.MiniBossScreen
 import com.rabbitv.valheimviki.presentation.detail.biome.BiomeDetailScreen
-import com.rabbitv.valheimviki.presentation.detail.creature.CreatureDetailScreen
+import com.rabbitv.valheimviki.presentation.detail.creature.main_boss_screen.MainBossDetailScreen
+import com.rabbitv.valheimviki.presentation.detail.creature.mini_boss_screen.MiniBossDetailScreen
 import com.rabbitv.valheimviki.presentation.home.MainAppBar
 import com.rabbitv.valheimviki.presentation.intro.WelcomeScreen
 import com.rabbitv.valheimviki.presentation.splash.SplashScreen
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.Constants.BIOME_ARGUMENT_KEY
 import com.rabbitv.valheimviki.utils.Constants.MAIN_BOSS_ARGUMENT_KEY
+import com.rabbitv.valheimviki.utils.Constants.MINI_BOSS_ARGUMENT_KEY
 import com.rabbitv.valheimviki.utils.Constants.TEXT_ARGUMENT_KEY
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -87,17 +90,23 @@ fun MainContainer(
     val navBackStackEntry by valheimVikiNavController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
+    BackHandler {
+
+    }
 
     val showTopAppBar = currentRoute?.let { route ->
         route.startsWith(Screen.Splash.route.substringBefore("{")) ||
                 route.startsWith(Screen.Welcome.route.substringBefore("{")) ||
                 route.startsWith(Screen.BiomeDetail.route.substringBefore("{")) ||
-                route.startsWith(Screen.CreatureDetail.route.substringBefore("{"))
+                route.startsWith(Screen.MainBossDetail.route.substringBefore("{"))
     } == false
 
     val isNavigating = remember { mutableStateOf(false) }
     val topBarVisible = remember { mutableStateOf(showTopAppBar) }
     LaunchedEffect(currentRoute) {
+        items.find { it.route == currentRoute }?.let {
+            selectedItem.value = it
+        }
         if (!showTopAppBar) {
             isNavigating.value = true
             delay(250)
@@ -120,12 +129,12 @@ fun MainContainer(
     ) {
         Scaffold(
             topBar = {
-                AnimatedVisibility (
-                    visible = topBarVisible.value ,
+                AnimatedVisibility(
+                    visible = topBarVisible.value,
                     enter = slideInVertically(
                         initialOffsetY = { -it },
                         animationSpec = tween(durationMillis = 300)
-                    ) ,
+                    ),
                     exit = slideOutVertically(
                         targetOffsetY = { -it },
                         animationSpec = tween(durationMillis = 300)
@@ -147,78 +156,102 @@ fun MainContainer(
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize(),
                 )
-                    NavHost(
-                        navController = valheimVikiNavController,
-                        startDestination = Screen.Splash.route,
-                    ) {
-                        composable(route = Screen.Splash.route) {
-                            SplashScreen(valheimVikiNavController)
-                        }
-                        composable(route = Screen.Welcome.route) {
-                            WelcomeScreen(valheimVikiNavController)
-                        }
-                        composable(Screen.Biome.route) {
-                            BiomeScreen(
-                                modifier = Modifier.padding(10.dp),
-                                onItemClick = { itemId, text ->
-                                    valheimVikiNavController.navigate(
-                                        Screen.BiomeDetail.passBiomeIdAndText(itemId, text)
-                                    )
-                                },
-                                paddingValues = innerPadding,
-                                animatedVisibilityScope = this@composable
-                            )
-                        }
-
-                        composable(Screen.Boss.route) {
-                            BossScreen(
-                                modifier = Modifier.padding(10.dp),
-                                onItemClick = { itemId, text ->
-                                    valheimVikiNavController.navigate(
-                                        Screen.CreatureDetail.passCreatureId(itemId, text)
-                                    )
-                                },
-                                paddingValues = innerPadding,
-                                animatedVisibilityScope = this@composable
-                            )
-                        }
-                        composable(Screen.MiniBoss.route) {
-                            MiniBossScreen(
-                                modifier = Modifier.padding(10.dp),
-                                onItemClick = { itemId, text ->
-                                    valheimVikiNavController.navigate(
-                                        Screen.CreatureDetail.passCreatureId(itemId, text)
-                                    )
-                                },
-                                paddingValues = innerPadding,
-                                animatedVisibilityScope = this@composable
-                            )
-                        }
-
-                        composable(
-                            Screen.BiomeDetail.route,
-                            arguments = listOf(
-                                navArgument(BIOME_ARGUMENT_KEY) { type = NavType.StringType },
-                                navArgument(TEXT_ARGUMENT_KEY) { type = NavType.StringType }
-                            )
-                        ) { backStackEntry ->
-                            BiomeDetailScreen(
-                                onBack = { valheimVikiNavController.navigate(route = Screen.Biome.route) {
-                                    popUpTo(route = Screen.Biome.route) { inclusive = true }
-                                } },
-                                animatedVisibilityScope = this@composable
-                            )
-                        }
-                        composable(
-                            route = Screen.CreatureDetail.route,
-                            arguments = listOf(
-                                navArgument(MAIN_BOSS_ARGUMENT_KEY) { type = NavType.StringType },
-                                navArgument(TEXT_ARGUMENT_KEY) { type = NavType.StringType }
-                            )
-                        ) {
-                            CreatureDetailScreen()
-                        }
+                NavHost(
+                    navController = valheimVikiNavController,
+                    startDestination = Screen.Splash.route,
+                ) {
+                    composable(route = Screen.Splash.route) {
+                        SplashScreen(valheimVikiNavController)
                     }
+                    composable(route = Screen.Welcome.route) {
+                        WelcomeScreen(valheimVikiNavController)
+                    }
+                    composable(Screen.Biome.route) {
+                        BiomeScreen(
+                            modifier = Modifier.padding(10.dp),
+                            onItemClick = { itemId, text ->
+                                valheimVikiNavController.navigate(
+                                    Screen.BiomeDetail.passBiomeIdAndText(itemId, text)
+                                )
+                            },
+                            paddingValues = innerPadding,
+                            animatedVisibilityScope = this@composable
+                        )
+                    }
+
+                    composable(Screen.Boss.route) {
+                        BossScreen(
+                            modifier = Modifier.padding(10.dp),
+                            onItemClick = { itemId, text ->
+                                valheimVikiNavController.navigate(
+                                    Screen.MainBossDetail.passCreatureId(itemId, text)
+                                )
+                            },
+                            paddingValues = innerPadding,
+                            animatedVisibilityScope = this@composable
+                        )
+                    }
+                    composable(Screen.MiniBoss.route) {
+                        MiniBossScreen(
+                            modifier = Modifier.padding(10.dp),
+                            onItemClick = { itemId, text ->
+                                valheimVikiNavController.navigate(
+                                    Screen.MiniBossDetail.passCreatureId(itemId, text)
+                                )
+                            },
+                            paddingValues = innerPadding,
+                            animatedVisibilityScope = this@composable
+                        )
+                    }
+                    composable(
+                        Screen.BiomeDetail.route,
+                        arguments = listOf(
+                            navArgument(BIOME_ARGUMENT_KEY) { type = NavType.StringType },
+                            navArgument(TEXT_ARGUMENT_KEY) { type = NavType.StringType }
+                        )
+                    ) { backStackEntry ->
+                        BiomeDetailScreen(
+                            onBack = {
+                                valheimVikiNavController.navigate(route = Screen.Biome.route) {
+                                    popUpTo(route = Screen.Biome.route) { inclusive = true }
+                                }
+                            },
+                            animatedVisibilityScope = this@composable
+                        )
+                    }
+                    composable(
+                        route = Screen.MainBossDetail.route,
+                        arguments = listOf(
+                            navArgument(MAIN_BOSS_ARGUMENT_KEY) { type = NavType.StringType },
+                            navArgument(TEXT_ARGUMENT_KEY) { type = NavType.StringType }
+                        )
+                    ) {
+                        MainBossDetailScreen(
+                            onBack = {
+                                valheimVikiNavController.navigate(route = Screen.Boss.route) {
+                                    popUpTo(route = Screen.Boss.route) { inclusive = true }
+                                }
+                            },
+                            animatedVisibilityScope = this@composable
+                        )
+                    }
+                    composable(
+                        route = Screen.MainBossDetail.route,
+                        arguments = listOf(
+                            navArgument(MINI_BOSS_ARGUMENT_KEY) { type = NavType.StringType },
+                            navArgument(TEXT_ARGUMENT_KEY) { type = NavType.StringType }
+                        )
+                    ) {
+                        MiniBossDetailScreen(
+                            onBack = {
+                                valheimVikiNavController.navigate(route = Screen.MiniBoss.route) {
+                                    popUpTo(route = Screen.MiniBoss.route) { inclusive = true }
+                                }
+                            },
+                            animatedVisibilityScope = this@composable
+                        )
+                    }
+                }
             }
         )
     }

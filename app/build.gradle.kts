@@ -101,10 +101,10 @@ dependencies {
     implementation("androidx.compose.material:material")
     implementation("androidx.compose.ui:ui-tooling-preview")
 
-    implementation("com.google.dagger:hilt-android:2.56")
+
     androidTestImplementation("com.google.dagger:hilt-android-testing:2.56")
     ksp("androidx.room:room-compiler:2.6.1")
-    ksp("com.google.dagger:hilt-compiler:2.56")
+
     kspTest("com.google.dagger:hilt-compiler:2.56")
     kspAndroidTest("com.google.dagger:hilt-compiler:2.56")
     implementation("androidx.hilt:hilt-work:1.2.0")

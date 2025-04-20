@@ -1,5 +1,6 @@
 package com.rabbitv.valheimviki.presentation.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -51,7 +52,8 @@ import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.PawPrint
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.repository.ItemData
-import com.rabbitv.valheimviki.presentation.detail.biome.BODY_CONTENT_PADDING
+import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
+import com.rabbitv.valheimviki.ui.theme.DarkGrey
 import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
@@ -60,7 +62,7 @@ import kotlin.math.absoluteValue
 @Composable
 fun HorizontalPagerSection(
     pagerState: PagerState,
-    list: List<ItemData>,
+    list: List<ItemData?>,
     icon: ImageVector,
     title:String,
     subTitle:String,
@@ -120,90 +122,107 @@ fun HorizontalPagerSection(
                     pagerSnapDistance = PagerSnapDistance.atMost(list.size)
                 )
             ) { pageIndex ->
-                Card(
-                    Modifier
-                        .size(150.dp)
-                        .graphicsLayer {
-                            val pageOffset = (
-                                    (pagerState.currentPage - pageIndex) + pagerState
-                                        .currentPageOffsetFraction
-                                    ).absoluteValue
-                            val scale = lerp(
-                                start = 0.8f,
-                                stop = 1f,
-                                fraction = 1f - pageOffset.coerceIn(0f, 1f)
-                            )
-                            scaleX = scale
-                            scaleY = scale
-
-                            alpha = lerp(
-                                start = 0.5f,
-                                stop = 1f,
-                                fraction = 1f - pageOffset.coerceIn(0f, 1f)
-                            )
-                            cameraDistance = 8f * density
-                        }.shadow(
-                            elevation = 8.dp,
-                            shape = RoundedCornerShape(8.dp),
-                            spotColor = Color.White.copy(alpha = 0.25f)
-                        )
-                ) {
-                    list.let {
-                        Box(
-                            modifier = Modifier
-                                .height(150.dp),
-
-                            ) {
-                            AsyncImage(
-                                modifier = Modifier
-                                    .fillMaxSize(),
-                                model = ImageRequest.Builder(LocalContext.current)
-                                    .data(it[pageIndex].imageUrl)
-                                    .crossfade(true)
-                                    .build(),
-                                contentDescription = stringResource(R.string.item_grid_image),
-                                contentScale = contentScale
-                            )
-                            Surface(
-                                modifier = Modifier.size(18.dp)
-                                    .align(Alignment.TopEnd)
-                                    .clip(RoundedCornerShape(2.dp)),
-                                color = ForestGreen10Dark,
-                            ) {
-                                Text(
-                                    text = "${pageIndex+1}",
-                                    modifier = Modifier.fillMaxWidth(),
-                                    textAlign = TextAlign.Center,
-                                    color = Color.White,
-                                    style = MaterialTheme.typography.labelSmall
-                                )
-                            }
-                            Surface(
-                                modifier = Modifier.align(Alignment.BottomStart)
-                                    .fillMaxHeight(0.2f)
-                                    .fillMaxWidth(),
-                                tonalElevation = 0.dp,
-                                color = Color.Black.copy(alpha = ContentAlpha.medium),
-                            ) {
-
-                                Text(
-                                    modifier = Modifier
-                                        .padding
-                                            (horizontal = 5.dp)
-                                        .wrapContentHeight(align = Alignment.CenterVertically),
-                                    text = it[pageIndex].name.toString(),
-                                    color = Color.White,
-                                    style = MaterialTheme.typography.labelLarge,
-                                )
-                            }
-                        }
-                    }
-                }
+                HorizontalPagerItem(
+                    pagerState = pagerState,
+                    list = list,
+                    pageIndex = pageIndex,
+                    contentScale = contentScale,
+                    size = list.size
+                )
             }
         }
     }
 }
 
+
+@Composable
+fun HorizontalPagerItem(
+    pagerState: PagerState,
+    list: List<ItemData?>,
+    pageIndex: Int,
+    size: Int,
+    contentScale: ContentScale,
+){
+    Card(
+        Modifier
+            .size(150.dp)
+            .graphicsLayer {
+                val pageOffset = (
+                        (pagerState.currentPage - pageIndex) + pagerState
+                            .currentPageOffsetFraction
+                        ).absoluteValue
+                val scale = lerp(
+                    start = 0.8f,
+                    stop = 1f,
+                    fraction = 1f - pageOffset.coerceIn(0f, 1f)
+                )
+                scaleX = scale
+                scaleY = scale
+
+                alpha = lerp(
+                    start = 0.5f,
+                    stop = 1f,
+                    fraction = 1f - pageOffset.coerceIn(0f, 1f)
+                )
+                cameraDistance = 8f * density
+            }.shadow(
+                elevation = 8.dp,
+                shape = RoundedCornerShape(8.dp),
+                spotColor = Color.White.copy(alpha = 0.25f)
+            )
+    ) {
+        list.let {
+            Box(
+                modifier = Modifier
+                    .height(150.dp),
+
+                ) {
+                AsyncImage(
+                    modifier = Modifier
+                        .fillMaxSize().background(DarkGrey),
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(it[pageIndex]?.imageUrl)
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = stringResource(R.string.item_grid_image),
+                    contentScale = contentScale
+                )
+                Surface(
+                    modifier = Modifier.height(18.dp).width(28.dp)
+                        .align(Alignment.TopEnd)
+                        .clip(RoundedCornerShape(2.dp)),
+                    color = ForestGreen10Dark,
+                ) {
+                    Text(
+                        text = "${pageIndex+1}/${size}",
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center,
+                        color = Color.White,
+                        style = MaterialTheme.typography.labelSmall
+                    )
+                }
+                Surface(
+                    modifier = Modifier.align(Alignment.BottomStart)
+                        .fillMaxHeight(0.2f)
+                        .fillMaxWidth(),
+                    tonalElevation = 0.dp,
+                    color = Color.Black.copy(alpha = ContentAlpha.medium),
+                ) {
+
+                    Text(
+                        modifier = Modifier
+                            .padding
+                                (horizontal = 5.dp)
+                            .wrapContentHeight(align = Alignment.CenterVertically),
+                        text = it[pageIndex]?.name.toString(),
+                        color = Color.White,
+                        style = MaterialTheme.typography.labelLarge,
+                    )
+                }
+            }
+        }
+    }
+}
 
 @Composable
 @Preview("RectangleSectionHeader")

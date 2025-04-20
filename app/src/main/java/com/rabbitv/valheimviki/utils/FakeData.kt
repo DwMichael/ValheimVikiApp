@@ -12,7 +12,7 @@ object FakeData{
                 imageUrl = "https://example.com/image1.jpg",
                 category = "Plant",
                 subCategory = "Herb",
-                name = "Basil",
+                name = "Withered bone X3",
                 description = "A common herb used in cooking.",
                 usage = "Culinary",
                 growthTime = "30 days",

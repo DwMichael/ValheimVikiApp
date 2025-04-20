@@ -27,7 +27,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.ContentAlpha
 import coil3.compose.AsyncImage
@@ -36,7 +38,7 @@ import coil3.request.crossfade
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
 import com.rabbitv.valheimviki.domain.repository.ItemData
-import com.rabbitv.valheimviki.presentation.detail.biome.BODY_CONTENT_PADDING
+import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.DETAIL_ITEM_SHAPE_PADDING
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
@@ -45,6 +47,9 @@ fun ImageWithTopLabel(
     modifier: Modifier = Modifier,
     itemData: ItemData,
     errorPainter: Painter? = null,
+    horizontalDividerWidth: Dp = 100.dp ,
+    subTitle: String? = null,
+    textStyle: TextStyle = MaterialTheme.typography.titleMedium,
 ) {
     Box(
         modifier = modifier
@@ -84,26 +89,28 @@ fun ImageWithTopLabel(
                 Text(
                     text = itemData.name,
                     color = Color.White,
-                    style = MaterialTheme.typography.titleMedium,
+                    style =textStyle,
                     modifier = Modifier
                         .wrapContentSize(align = Alignment.Center)
                         .padding
                             (horizontal = 8.dp),
                 )
                 HorizontalDivider(
-                    modifier = Modifier.width(100.dp),
+                    modifier = Modifier.width(horizontalDividerWidth),
                     thickness = 1.dp,
                     color = Color.White
                 )
-                Text(
-                    text = "BOSS",
-                    color = Color.White,
-                    style = MaterialTheme.typography.labelMedium,
-                    modifier = Modifier
-                        .wrapContentSize(align = Alignment.Center)
-                        .padding
-                            (horizontal = 8.dp),
-                )
+                subTitle?.let {
+                    Text(
+                        text = subTitle,
+                        color = Color.White,
+                        style = MaterialTheme.typography.labelMedium,
+                        modifier = Modifier
+                            .wrapContentSize(align = Alignment.Center)
+                            .padding
+                                (horizontal = 8.dp),
+                    )
+                }
             }
 
         }

@@ -20,7 +20,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.rabbitv.valheimviki.R
-import com.rabbitv.valheimviki.presentation.detail.biome.BODY_CONTENT_PADDING
+import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 
 @Composable
 fun SlavicDivider() {
@@ -35,7 +35,7 @@ fun SlavicDivider() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(modifier = Modifier.weight(1f).rotate(180f)) {
-                StraitWhiteLine()
+                SharpWhiteLine()
             }
             Image(
                 painter = painterResource(id = R.drawable.divider_image),
@@ -44,14 +44,14 @@ fun SlavicDivider() {
                 modifier = Modifier.height(desiredHeight) // Adjust height as needed
             )
             Box(modifier = Modifier.weight(1f)) {
-                StraitWhiteLine()
+                SharpWhiteLine()
             }
         }
     }
 }
 
 @Composable
-fun StraitWhiteLine() {
+fun SharpWhiteLine() {
     Canvas(
         modifier = Modifier.fillMaxWidth().fillMaxHeight()
     ) {
