@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
 import com.rabbitv.valheimviki.domain.model.relation.Relation
 import kotlinx.coroutines.flow.Flow
 
@@ -16,12 +17,12 @@ interface RelationDao {
         SELECT CASE 
             WHEN mainItemId = :queryId THEN relatedItemId 
             WHEN relatedItemId = :queryId THEN mainItemId
-        END AS oppositeId,
+        END AS id,
         quantity
         FROM relations
         WHERE mainItemId = :queryId OR relatedItemId = :queryId
     """)
-    fun getRelatedIds(queryId: String): List<String>
+    fun getRelatedIds(queryId: String): List<RelatedItem>
 
     @Query("SELECT relatedItemId FROM relations WHERE mainItemId = :queryId ")
     fun getRelatedId(queryId: String): String

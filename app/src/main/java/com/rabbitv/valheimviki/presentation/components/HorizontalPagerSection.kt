@@ -62,7 +62,7 @@ import kotlin.math.absoluteValue
 @Composable
 fun HorizontalPagerSection(
     pagerState: PagerState,
-    list: List<ItemData>,
+    list: List<ItemData?>,
     icon: ImageVector,
     title:String,
     subTitle:String,
@@ -138,7 +138,7 @@ fun HorizontalPagerSection(
 @Composable
 fun HorizontalPagerItem(
     pagerState: PagerState,
-    list: List<ItemData>,
+    list: List<ItemData?>,
     pageIndex: Int,
     size: Int,
     contentScale: ContentScale,
@@ -181,7 +181,7 @@ fun HorizontalPagerItem(
                     modifier = Modifier
                         .fillMaxSize().background(DarkGrey),
                     model = ImageRequest.Builder(LocalContext.current)
-                        .data(it[pageIndex].imageUrl)
+                        .data(it[pageIndex]?.imageUrl)
                         .crossfade(true)
                         .build(),
                     contentDescription = stringResource(R.string.item_grid_image),
@@ -214,7 +214,7 @@ fun HorizontalPagerItem(
                             .padding
                                 (horizontal = 5.dp)
                             .wrapContentHeight(align = Alignment.CenterVertically),
-                        text = it[pageIndex].name.toString(),
+                        text = it[pageIndex]?.name.toString(),
                         color = Color.White,
                         style = MaterialTheme.typography.labelLarge,
                     )

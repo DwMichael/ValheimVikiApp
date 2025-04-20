@@ -25,6 +25,7 @@ object Constants {
     const val BIOME_ARGUMENT_KEY = "biomeId"
     const val TEXT_ARGUMENT_KEY = "text"
     const val MAIN_BOSS_ARGUMENT_KEY = "mainBossId"
+    const val MINI_BOSS_ARGUMENT_KEY = "miniBossId"
 
     //GROUP ROUTE NAMES
     const val MAIN_ROUTE_GRAPH = "mainGraph"

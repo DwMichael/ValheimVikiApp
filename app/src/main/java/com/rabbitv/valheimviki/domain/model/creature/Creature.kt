@@ -3,6 +3,7 @@ package com.rabbitv.valheimviki.domain.model.creature
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.google.gson.annotations.SerializedName
 import com.rabbitv.valheimviki.domain.repository.ItemData
 import kotlinx.serialization.Serializable
 
@@ -19,17 +20,17 @@ data class Creature(
     val order: Int,
     // Common stats fields
     val levels: Int? = null,
-    val baseHP: Int? = null,
-    val weakness: String? = null,
-    val resistance: String? = null,
-    val baseDamage: String? = null,
+    @SerializedName("Base HP") val baseHP: Int? = null,
+    @SerializedName("Weakness") val weakness: String? = null,
+    @SerializedName("Resistance") val resistance: String? = null,
+    @SerializedName("Base Damage") val baseDamage: String? = null,
     // Boss/MiniBoss specific fields
-    val collapseImmune: String? = null,
-    val forsakenPower: String? = null,
+    @SerializedName("CollapseImmune") val collapseImmune: String? = null,
+    @SerializedName("Forsaken Power")val forsakenPower: String? = null,
     // AggressiveCreature/PassiveCreature specific fields
-    val imageStarOne: String? = null,
-    val imageStarTwo: String? = null,
+    @SerializedName("image_star_one") val imageStarOne: String? = null,
+    @SerializedName("image_star_two") val imageStarTwo: String? = null,
     // PassiveCreature specific field
-    val abilities: String? = null,
+    @SerializedName("Abilities") val abilities: String? = null,
     ):ItemData
 

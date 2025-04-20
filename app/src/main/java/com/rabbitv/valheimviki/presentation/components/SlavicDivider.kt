@@ -35,7 +35,7 @@ fun SlavicDivider() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(modifier = Modifier.weight(1f).rotate(180f)) {
-                StraitWhiteLine()
+                SharpWhiteLine()
             }
             Image(
                 painter = painterResource(id = R.drawable.divider_image),
@@ -44,14 +44,14 @@ fun SlavicDivider() {
                 modifier = Modifier.height(desiredHeight) // Adjust height as needed
             )
             Box(modifier = Modifier.weight(1f)) {
-                StraitWhiteLine()
+                SharpWhiteLine()
             }
         }
     }
 }
 
 @Composable
-fun StraitWhiteLine() {
+fun SharpWhiteLine() {
     Canvas(
         modifier = Modifier.fillMaxWidth().fillMaxHeight()
     ) {
