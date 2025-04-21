@@ -46,7 +46,6 @@ class MiniBossesViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 creatureUseCases.getMiniBossesUseCase("en").collect { miniBoss ->
-                    println("miniBoss: $miniBoss")
                     _miniBossesUIState.update { current ->
                         current.copy(miniBosses = miniBoss, isLoading = false)
                     }

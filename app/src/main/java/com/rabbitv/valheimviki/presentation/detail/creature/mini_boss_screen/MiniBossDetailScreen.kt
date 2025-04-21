@@ -8,14 +8,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -36,73 +33,48 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil3.compose.AsyncImagePainter
-import coil3.compose.rememberAsyncImagePainter
-import com.composables.icons.lucide.Flame
 import com.composables.icons.lucide.Heater
 import com.composables.icons.lucide.Lucide
-import com.composables.icons.lucide.TreePine
 import com.composables.icons.lucide.Trophy
 import com.rabbitv.valheimviki.R
-import com.rabbitv.valheimviki.domain.model.biome.Biome
-import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
-import com.rabbitv.valheimviki.domain.model.material.Material
-import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
+import com.rabbitv.valheimviki.domain.model.creature.mini_boss.MiniBoss
 import com.rabbitv.valheimviki.domain.repository.ItemData
 import com.rabbitv.valheimviki.navigation.LocalSharedTransitionScope
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.GreenTorchesDivider
 import com.rabbitv.valheimviki.presentation.components.HorizontalPagerSection
-import com.rabbitv.valheimviki.presentation.components.ImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.MainDetailImage
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.trident_dividers.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.creature.components.BossStatsFlowRow
-import com.rabbitv.valheimviki.presentation.detail.creature.components.CardWithImageAndTitle
 import com.rabbitv.valheimviki.presentation.detail.creature.components.CardWithOverlayLabel
-import com.rabbitv.valheimviki.presentation.detail.creature.components.CardWithTrophy
-import com.rabbitv.valheimviki.presentation.detail.creature.components.CustomRowLayout
 import com.rabbitv.valheimviki.presentation.detail.creature.components.OverlayLabel
-import com.rabbitv.valheimviki.presentation.detail.creature.main_boss_screen.MainBossContent
-import com.rabbitv.valheimviki.presentation.detail.creature.main_boss_screen.MainBossScreenViewModel
-import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
-
 
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun MiniBossDetailScreen(
     onBack: () -> Unit,
-    viewModel: MainBossScreenViewModel = hiltViewModel(),
+    viewModel: MiniBossDetailScreenViewModel = hiltViewModel(),
     animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
-    val mainBoss by viewModel.mainBoss.collectAsStateWithLifecycle()
-    val relatedForsakenAltar by viewModel.relatedForsakenAltar.collectAsStateWithLifecycle()
-    val relatedBiome by viewModel.relatedBiome.collectAsStateWithLifecycle()
-    val relatedSummoningItems by viewModel.relatedSummoningItems.collectAsStateWithLifecycle()
+    val miniBoss by viewModel.miniBoss.collectAsStateWithLifecycle()
     val dropItems by viewModel.dropItems.collectAsStateWithLifecycle()
     val trophy by viewModel.trophy.collectAsStateWithLifecycle()
-    val sacrificialStones by viewModel.sacrificialStones.collectAsStateWithLifecycle()
     val sharedTransitionScope = LocalSharedTransitionScope.current
         ?: throw IllegalStateException("No Scope found")
-    val painter = rememberAsyncImagePainter(relatedBiome?.imageUrl)
     val pagerState = rememberPagerState(
         initialPage = 1,
         pageCount = { dropItems.size })
 
-    mainBoss?.let { mainBoss ->
-        MainBossContent(
+    miniBoss?.let { mainBoss ->
+        MiniBossContent(
             onBack = onBack,
-            animatedVisibilityScope = animatedVisibilityScope,
-            mainBoss = mainBoss,
-            relatedBiome = relatedBiome,
-            relatedForsakenAltar = relatedForsakenAltar,
-            relatedSummoningItems = relatedSummoningItems,
+            miniBoss = miniBoss!!,
             dropItems = dropItems,
             trophyUrl = trophy?.imageUrl,
             sharedTransitionScope = sharedTransitionScope,
-            sacrificialStones = sacrificialStones,
-            painter = painter,
+            animatedVisibilityScope = animatedVisibilityScope,
             pagerState = pagerState
         )
     }
@@ -113,19 +85,14 @@ fun MiniBossDetailScreen(
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun MiniBossContent(
-    mainBoss: MainBoss,
-    relatedBiome: Biome?,
-    relatedForsakenAltar: PointOfInterest?,
-    relatedSummoningItems: List<Material?>,
+    miniBoss: MiniBoss,
     dropItems: List<ItemData?>,
-    sacrificialStones: PointOfInterest?,
     trophyUrl: String?,
     pagerState: PagerState,
     onBack: () -> Unit,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
     errorPainter: Painter? = null,
-    painter: AsyncImagePainter
 ) {
     Scaffold(
         content = { padding ->
@@ -146,76 +113,16 @@ fun MiniBossContent(
             ) {
                 MainDetailImage(
                     onBack = onBack,
-                    itemData = mainBoss,
+                    itemData = miniBoss,
                     sharedTransitionScope = sharedTransitionScope,
                     animatedVisibilityScope = animatedVisibilityScope,
                     errorPainter = errorPainter,
                     textAlign = TextAlign.Center
                 )
-                DetailExpandableText(text = mainBoss.description.toString())
+                DetailExpandableText(text = miniBoss.description.toString())
                 TridentsDividedRow(text = "BOSS DETAIL")
-                relatedBiome?.let {
-                    CardWithOverlayLabel(
-                        painter = painter,
-                        content = {
-                            Row {
-                                Box(
-                                    modifier = Modifier.fillMaxHeight()
-                                ) {
-                                    OverlayLabel(
-                                        icon = Lucide.TreePine,
-                                        label = " PRIMARY SPAWN",
-                                    )
-                                }
-                                Text(
-                                    it.name.uppercase(),
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    modifier = Modifier
-                                        .align(Alignment.CenterVertically)
-                                        .fillMaxWidth()
-                                        .padding(8.dp),
-                                    color = Color.White,
-                                    textAlign = TextAlign.Center
-                                )
-                            }
 
-                        }
-                    )
-                }
-                relatedForsakenAltar?.let {
-                    TridentsDividedRow()
-                    ImageWithTopLabel(
-                        itemData = relatedForsakenAltar,
-                        horizontalDividerWidth = 250.dp,
-                        textStyle = MaterialTheme.typography.titleLarge
-                    )
-                }
                 SlavicDivider()
-                relatedSummoningItems.isNotEmpty().let {
-                    CardWithOverlayLabel(
-                        height = 180.dp,
-                        alpha = 0.1f,
-                        painter = painterResource(R.drawable.summoning_bg),
-                        content = {
-                            Column {
-                                Box(
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                    OverlayLabel(
-
-                                        icon = Lucide.Flame,
-                                        label = "SUMMONING ITEMS",
-                                    )
-                                }
-                                CustomRowLayout(
-                                    relatedSummoningItems = relatedSummoningItems,
-                                    modifier = Modifier.weight(1f)
-                                )
-
-                            }
-                        }
-                    )
-                }
                 dropItems.isNotEmpty().let {
                     HorizontalPagerSection(
                         pagerState,
@@ -228,36 +135,6 @@ fun MiniBossContent(
                     )
                 }
                 GreenTorchesDivider(text = "FORSAKEN POWER")
-                Row(
-                    modifier = Modifier.padding(BODY_CONTENT_PADDING.dp)
-                ) {
-                    Box(
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        CardWithTrophy(
-                            forsakenPower = mainBoss.forsakenPower,
-                            trophyUrl = trophyUrl
-                        )
-                    }
-                    Spacer(
-                        modifier = Modifier
-                            .width(15.dp)
-                            .wrapContentSize()
-                    )
-                    Box(
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        sacrificialStones?.let {
-                            CardWithImageAndTitle(
-                                "WHERE TO HANG THE BOSS TROPHY",
-                                imageUrl = sacrificialStones.imageUrl,
-                                itemName = sacrificialStones.name,
-                                contentScale = ContentScale.Crop,
-                            )
-                        }
-
-                    }
-                }
                 TridentsDividedRow(text = "BOSS STATS")
                 CardWithOverlayLabel(
                     painter = painterResource(R.drawable.base_hp_bg),
@@ -272,7 +149,7 @@ fun MiniBossContent(
                                 )
                             }
                             Text(
-                                mainBoss.baseHP.toString().uppercase(),
+                                miniBoss.baseHP.toString().uppercase(),
                                 style = MaterialTheme.typography.bodyLarge,
                                 modifier = Modifier
                                     .align(Alignment.CenterVertically)
@@ -284,7 +161,7 @@ fun MiniBossContent(
                         }
                     }
                 )
-                BossStatsFlowRow(mainBoss = mainBoss)
+                BossStatsFlowRow(item = miniBoss)
                 SlavicDivider()
                 Box(modifier = Modifier.size(45.dp))
             }

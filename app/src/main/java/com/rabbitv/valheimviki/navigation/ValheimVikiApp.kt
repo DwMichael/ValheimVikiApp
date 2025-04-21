@@ -95,11 +95,10 @@ fun MainContainer(
     }
 
     val showTopAppBar = currentRoute?.let { route ->
-        route.startsWith(Screen.Splash.route.substringBefore("{")) ||
-                route.startsWith(Screen.Welcome.route.substringBefore("{")) ||
-                route.startsWith(Screen.BiomeDetail.route.substringBefore("{")) ||
-                route.startsWith(Screen.MainBossDetail.route.substringBefore("{"))
-    } == false
+        route.startsWith(Screen.Boss.route.substringBefore("{")) ||
+                route.startsWith(Screen.Biome.route.substringBefore("{")) ||
+                route.startsWith(Screen.MiniBoss.route.substringBefore("{"))
+    } == true
 
     val isNavigating = remember { mutableStateOf(false) }
     val topBarVisible = remember { mutableStateOf(showTopAppBar) }
@@ -182,9 +181,9 @@ fun MainContainer(
                     composable(Screen.Boss.route) {
                         BossScreen(
                             modifier = Modifier.padding(10.dp),
-                            onItemClick = { itemId, text ->
+                            onItemClick = { mainBossId, text ->
                                 valheimVikiNavController.navigate(
-                                    Screen.MainBossDetail.passCreatureId(itemId, text)
+                                    Screen.MainBossDetail.passCreatureId(mainBossId, text)
                                 )
                             },
                             paddingValues = innerPadding,
@@ -194,9 +193,9 @@ fun MainContainer(
                     composable(Screen.MiniBoss.route) {
                         MiniBossScreen(
                             modifier = Modifier.padding(10.dp),
-                            onItemClick = { itemId, text ->
+                            onItemClick = { miniBossId, text ->
                                 valheimVikiNavController.navigate(
-                                    Screen.MiniBossDetail.passCreatureId(itemId, text)
+                                    Screen.MiniBossDetail.passMiniBossId(miniBossId, text)
                                 )
                             },
                             paddingValues = innerPadding,
@@ -236,7 +235,7 @@ fun MainContainer(
                         )
                     }
                     composable(
-                        route = Screen.MainBossDetail.route,
+                        route = Screen.MiniBossDetail.route,
                         arguments = listOf(
                             navArgument(MINI_BOSS_ARGUMENT_KEY) { type = NavType.StringType },
                             navArgument(TEXT_ARGUMENT_KEY) { type = NavType.StringType }

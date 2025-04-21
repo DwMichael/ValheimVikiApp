@@ -26,7 +26,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MiniBossScreenViewModel @Inject constructor(
+class MiniBossDetailScreenViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val creatureUseCases: CreatureUseCases,
     private val pointOfInterestUseCases: PointOfInterestUseCases,

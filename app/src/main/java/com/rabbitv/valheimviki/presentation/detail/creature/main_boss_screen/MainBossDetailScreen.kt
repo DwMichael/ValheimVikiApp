@@ -60,7 +60,6 @@ import com.rabbitv.valheimviki.presentation.components.ImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.MainDetailImage
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.trident_dividers.TridentsDividedRow
-import com.rabbitv.valheimviki.presentation.detail.creature.main_boss_screen.MainBossScreenViewModel
 import com.rabbitv.valheimviki.presentation.detail.creature.components.BossStatsFlowRow
 import com.rabbitv.valheimviki.presentation.detail.creature.components.CardWithImageAndTitle
 import com.rabbitv.valheimviki.presentation.detail.creature.components.CardWithOverlayLabel
@@ -284,7 +283,7 @@ fun MainBossContent(
                         }
                     }
                 )
-                BossStatsFlowRow(mainBoss = mainBoss)
+                BossStatsFlowRow(item = mainBoss)
                 SlavicDivider()
                 Box(modifier = Modifier.size(45.dp))
             }
