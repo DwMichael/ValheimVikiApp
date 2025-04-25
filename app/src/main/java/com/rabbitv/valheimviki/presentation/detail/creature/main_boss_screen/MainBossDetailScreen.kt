@@ -82,9 +82,12 @@ fun MainBossDetailScreen(
     val dropItems by viewModel.dropItems.collectAsStateWithLifecycle()
     val trophy by viewModel.trophy.collectAsStateWithLifecycle()
     val sacrificialStones by viewModel.sacrificialStones.collectAsStateWithLifecycle()
+
     val sharedTransitionScope = LocalSharedTransitionScope.current
         ?: throw IllegalStateException("No Scope found")
+
     val painter = rememberAsyncImagePainter(relatedBiome?.imageUrl)
+
     val pagerState = rememberPagerState(
         initialPage = 1,
         pageCount = { dropItems.size })
@@ -148,7 +151,6 @@ fun MainBossContent(
                     itemData = mainBoss,
                     sharedTransitionScope = sharedTransitionScope,
                     animatedVisibilityScope = animatedVisibilityScope,
-                    errorPainter = errorPainter,
                     textAlign = TextAlign.Center
                 )
                 DetailExpandableText(text = mainBoss.description.toString())

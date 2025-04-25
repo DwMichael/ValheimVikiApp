@@ -10,4 +10,6 @@ enum class MaterialSubCategory {
     SEED,
     FORSAKEN_ALTAR_OFFERING,
     METAL,
+    SHOP,
+    VALUABLE,
 }

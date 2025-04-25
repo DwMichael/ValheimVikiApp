@@ -36,6 +36,12 @@ class MiniBossesViewModel @Inject constructor(
     private val _miniBossesUIState = MutableStateFlow(MiniBossesUIState())
     val miniBossesUIState: StateFlow<MiniBossesUIState> = _miniBossesUIState
 
+    private val _scrollPosition = MutableStateFlow(0)
+    val scrollPosition: StateFlow<Int> = _scrollPosition
+
+    fun saveScrollPosition(position: Int) {
+        _scrollPosition.value = position
+    }
 
     init {
         load()

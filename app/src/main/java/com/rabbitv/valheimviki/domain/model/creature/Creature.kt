@@ -32,5 +32,8 @@ data class Creature(
     @SerializedName("image_star_two") val imageStarTwo: String? = null,
     // PassiveCreature specific field
     @SerializedName("Abilities") val abilities: String? = null,
+    //NPC
+    @SerializedName("Biography")val biography: String? = null,
+    @SerializedName("Location")val location: String? = null,
     ):ItemData
 

@@ -211,9 +211,7 @@ fun MainContainer(
                     ) { backStackEntry ->
                         BiomeDetailScreen(
                             onBack = {
-                                valheimVikiNavController.navigate(route = Screen.Biome.route) {
-                                    popUpTo(route = Screen.Biome.route) { inclusive = true }
-                                }
+                                valheimVikiNavController.popBackStack()
                             },
                             animatedVisibilityScope = this@composable
                         )
@@ -227,9 +225,7 @@ fun MainContainer(
                     ) {
                         MainBossDetailScreen(
                             onBack = {
-                                valheimVikiNavController.navigate(route = Screen.Boss.route) {
-                                    popUpTo(route = Screen.Boss.route) { inclusive = true }
-                                }
+                                valheimVikiNavController.popBackStack()
                             },
                             animatedVisibilityScope = this@composable
                         )
@@ -243,9 +239,7 @@ fun MainContainer(
                     ) {
                         MiniBossDetailScreen(
                             onBack = {
-                                valheimVikiNavController.navigate(route = Screen.MiniBoss.route) {
-                                    popUpTo(route = Screen.MiniBoss.route) { inclusive = true }
-                                }
+                                valheimVikiNavController.popBackStack()
                             },
                             animatedVisibilityScope = this@composable
                         )

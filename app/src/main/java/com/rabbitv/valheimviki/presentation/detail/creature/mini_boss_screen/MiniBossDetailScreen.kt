@@ -30,6 +30,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -116,12 +117,46 @@ fun MiniBossContent(
                     itemData = miniBoss,
                     sharedTransitionScope = sharedTransitionScope,
                     animatedVisibilityScope = animatedVisibilityScope,
-                    errorPainter = errorPainter,
                     textAlign = TextAlign.Center
                 )
                 DetailExpandableText(text = miniBoss.description.toString())
                 TridentsDividedRow(text = "BOSS DETAIL")
-
+                Text(
+                    modifier = Modifier,
+                text = "PRIMARY SPAWN",
+                textAlign = TextAlign.Left,
+                style = MaterialTheme.typography.titleMedium,
+                maxLines = 1,
+                overflow = TextOverflow.Visible
+                )
+//                relatedBiome?.let {
+//                    CardWithOverlayLabel(
+//                        painter = painter,
+//                        content = {
+//                            Row {
+//                                Box(
+//                                    modifier = Modifier.fillMaxHeight()
+//                                ) {
+//                                    OverlayLabel(
+//                                        icon = Lucide.TreePine,
+//                                        label = " PRIMARY SPAWN",
+//                                    )
+//                                }
+//                                Text(
+//                                    it.name.uppercase(),
+//                                    style = MaterialTheme.typography.bodyLarge,
+//                                    modifier = Modifier
+//                                        .align(Alignment.CenterVertically)
+//                                        .fillMaxWidth()
+//                                        .padding(8.dp),
+//                                    color = Color.White,
+//                                    textAlign = TextAlign.Center
+//                                )
+//                            }
+//
+//                        }
+//                    )
+//                }
                 SlavicDivider()
                 dropItems.isNotEmpty().let {
                     HorizontalPagerSection(

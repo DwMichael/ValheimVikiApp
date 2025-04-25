@@ -10,6 +10,7 @@ import com.rabbitv.valheimviki.domain.model.creature.npc.NPC
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.material.MaterialSubCategory
 import com.rabbitv.valheimviki.domain.model.material.MaterialSubType
+import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
 import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
@@ -38,6 +39,9 @@ class MiniBossDetailScreenViewModel @Inject constructor(
     private val _miniBoss = MutableStateFlow<MiniBoss?>(null)
     val miniBoss: StateFlow<MiniBoss?> = _miniBoss
 
+    private val _primarySpawn = MutableStateFlow<PointOfInterest?>(null)
+    val primarySpawn: StateFlow<PointOfInterest?> = _primarySpawn
+
     private val _npc = MutableStateFlow<NPC?>(null)
     val npc: StateFlow<NPC?> = _npc
 
@@ -63,9 +67,13 @@ class MiniBossDetailScreenViewModel @Inject constructor(
                 val relatedObjects: List<RelatedItem> = async {
                     relationUseCases.getRelatedIdsUseCase(miniBossId)
                 }.await()
-                val relatedIds = relatedObjects.map { it.id }
-                val deferreds = listOf(
 
+                val relatedIds = relatedObjects.map { it.id }
+
+                val deferreds = listOf(
+//                    async {
+//                        pointOfInterestUseCases.ge
+//                    },
                     async {
 
                         val materials = materialUseCases.getMaterialsBySubCategory(

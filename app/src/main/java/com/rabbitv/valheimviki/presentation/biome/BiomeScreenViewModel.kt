@@ -24,6 +24,8 @@ import javax.inject.Inject
 
 data class BiomesUIState(
     val biomes: List<Biome> = emptyList(),
+    val scrollPosition: Int = 0,
+    val saveScrollPosition: (Int) -> Unit = {},
     val areCreatures: Boolean = false,
     val error: String? = null,
     val isLoading: Boolean = false
@@ -36,6 +38,12 @@ class BiomeScreenViewModel @Inject constructor(
 ) : ViewModel() {
     val isConnection: Boolean = isNetworkAvailable(context)
 
+    private val _scrollPosition = MutableStateFlow(0)
+    val scrollPosition: StateFlow<Int> = _scrollPosition
+
+    fun saveScrollPosition(position: Int) {
+        _scrollPosition.value = position
+    }
 
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing: StateFlow<Boolean>

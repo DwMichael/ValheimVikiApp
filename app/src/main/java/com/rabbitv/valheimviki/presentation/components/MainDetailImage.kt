@@ -21,7 +21,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -44,7 +43,6 @@ fun MainDetailImage(
     itemData: ItemData,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
-    errorPainter: Painter? = null,
     textAlign: TextAlign = TextAlign.Start,
 ) {
     with(sharedTransitionScope) {
@@ -71,7 +69,6 @@ fun MainDetailImage(
                     .crossfade(true)
                     .build(),
                 contentDescription = stringResource(R.string.item_grid_image),
-                error = errorPainter,
                 contentScale = ContentScale.Crop,
             )
             Surface(

@@ -38,6 +38,12 @@ class BossesViewModel @Inject constructor(
     private val _bossUIState = MutableStateFlow(BossUIState())
     val bossUIState: StateFlow<BossUIState> = _bossUIState
 
+    private val _scrollPosition = MutableStateFlow(0)
+    val scrollPosition: StateFlow<Int> = _scrollPosition
+
+    fun saveScrollPosition(position: Int) {
+        _scrollPosition.value = position
+    }
 
     init {
         load()
