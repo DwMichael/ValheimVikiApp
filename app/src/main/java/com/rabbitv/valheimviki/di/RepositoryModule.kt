@@ -28,6 +28,7 @@ import com.rabbitv.valheimviki.domain.repository.BiomeRepository
 import com.rabbitv.valheimviki.domain.repository.CreatureRepository
 import com.rabbitv.valheimviki.domain.repository.DataStoreOperations
 import com.rabbitv.valheimviki.domain.repository.MaterialRepository
+import com.rabbitv.valheimviki.domain.repository.NetworkConnectivity
 import com.rabbitv.valheimviki.domain.repository.OreDepositRepository
 import com.rabbitv.valheimviki.domain.repository.PointOfInterestRepository
 import com.rabbitv.valheimviki.domain.repository.RelationRepository
@@ -35,6 +36,7 @@ import com.rabbitv.valheimviki.domain.repository.TreeRepository
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.biome.get_biome_by_id.GetBiomeByIdUseCase
 import com.rabbitv.valheimviki.domain.use_cases.biome.get_local_biomes.GetLocalBiomesUseCase
+import com.rabbitv.valheimviki.domain.use_cases.connection.NetworkConnectivityObserver
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
 import com.rabbitv.valheimviki.domain.use_cases.creature.get_aggressive_creatures.GetAggressiveCreatures
 import com.rabbitv.valheimviki.domain.use_cases.creature.get_creature_by_id.GetCreatureByIdUseCase
@@ -164,6 +166,13 @@ object RepositoryModule {
         return TreeRepositoryImpl(apiService, treeDao)
     }
 
+    @Provides
+    @Singleton
+    fun provideNetworkConnectivityObserver(
+        @ApplicationContext context: Context
+    ): NetworkConnectivity {
+        return NetworkConnectivityObserver(context = context)
+    }
 
     @Provides
     @Singleton

@@ -22,7 +22,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -35,22 +36,36 @@ class MiniBossDetailScreenViewModel @Inject constructor(
     private val relationUseCases: RelationUseCases
 ) : ViewModel() {
     private val miniBossId: String = checkNotNull(savedStateHandle[Constants.MINI_BOSS_ARGUMENT_KEY])
-
     private val _miniBoss = MutableStateFlow<MiniBoss?>(null)
-    val miniBoss: StateFlow<MiniBoss?> = _miniBoss
-
     private val _primarySpawn = MutableStateFlow<PointOfInterest?>(null)
-    val primarySpawn: StateFlow<PointOfInterest?> = _primarySpawn
-
     private val _npc = MutableStateFlow<NPC?>(null)
-    val npc: StateFlow<NPC?> = _npc
-
     private val _dropItems = MutableStateFlow<List<Material?>>(emptyList())
-    val dropItems: StateFlow<List<Material?>> = _dropItems
-
     private val _trophy = MutableStateFlow<Material?>(null)
-    val trophy: StateFlow<Material?> = _trophy
+    private val _isLoading = MutableStateFlow(false)
+    private val _error = MutableStateFlow<String?>(null)
 
+    val uiState  = combine(
+        _miniBoss,
+        _primarySpawn,
+        _npc,
+        _dropItems,
+        _trophy,
+        _isLoading,
+        _error,
+    ) {values ->
+        @Suppress("UNCHECKED_CAST")
+        MiniBossDetailUiState(
+            miniBoss = values[0] as MiniBoss?,
+            primarySpawn = values[1] as PointOfInterest?,
+            npc = values[2] as NPC?,
+            dropItems = values[3] as List<Material?>,
+            trophy = values[4] as Material?,
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000),
+        initialValue = MiniBossDetailUiState()
+    )
 
     init {
         launch()
@@ -60,6 +75,7 @@ class MiniBossDetailScreenViewModel @Inject constructor(
     fun launch() {
 
         try {
+            _isLoading.value = true
             viewModelScope.launch(Dispatchers.IO) {
                 creatureUseCases.getCreatureById(miniBossId).let {
                     _miniBoss.value = CreatureFactory.createFromCreature(it)
@@ -93,8 +109,11 @@ class MiniBossDetailScreenViewModel @Inject constructor(
                 )
                 deferreds.awaitAll()
             }
+            _isLoading.value = false
         } catch (e: Exception) {
             Log.e("General fetch error BiomeDetailViewModel", e.message.toString())
+            _isLoading.value = false
+            _error.value = e.message
         }
     }
 }

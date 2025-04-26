@@ -28,7 +28,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.GridContent
-import com.rabbitv.valheimviki.presentation.components.LoadingIndicator
+import com.rabbitv.valheimviki.presentation.components.ShimmerEffect
 import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_TWO_COLUMNS
 import com.rabbitv.valheimviki.utils.Constants.NORMAL_SIZE_GRID
 import kotlinx.coroutines.flow.collectLatest
@@ -39,8 +39,8 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun MiniBossScreen(
-    modifier : Modifier,
-    onItemClick :(String,String)-> Unit,
+    modifier: Modifier,
+    onItemClick: (String, String) -> Unit,
     paddingValues: PaddingValues,
     viewModel: MiniBossesViewModel = hiltViewModel(),
     animatedVisibilityScope: AnimatedVisibilityScope
@@ -51,7 +51,7 @@ fun MiniBossScreen(
     val miniBossesUIState: MiniBossesUIState by viewModel.miniBossesUIState
         .collectAsStateWithLifecycle()
     val refreshing: Boolean by viewModel.isRefreshing.collectAsStateWithLifecycle()
-
+    val isConnection: Boolean by viewModel.isConnection.collectAsStateWithLifecycle()
     val initialScrollPosition by viewModel.scrollPosition.collectAsStateWithLifecycle()
     val lazyGridState = rememberLazyGridState(
         initialFirstVisibleItemIndex = initialScrollPosition
@@ -67,57 +67,56 @@ fun MiniBossScreen(
             }
     }
 
-    if (miniBossesUIState.isLoading) {
-        LoadingIndicator(paddingValues = paddingValues)
-    } else {
-        Box(
-            modifier= modifier
-        ) {
-            Surface(
-                color = Color.Transparent,
-                modifier = Modifier
-                    .testTag("MiniBossSurface")
-                    .fillMaxSize()
-                    .padding(paddingValues)
-            ) {
-                when (miniBossesUIState.miniBosses.isEmpty()) {
-                    false -> {
-                        Box(
-                            modifier = Modifier.testTag("MiniBossGird"),
-                        ) {
-                            GridContent(
-                                modifier = Modifier,
-                                items = miniBossesUIState.miniBosses,
-                                onItemClick = onItemClick ,
-                                numbersOfColumns = NORMAL_SIZE_GRID,
-                                height = ITEM_HEIGHT_TWO_COLUMNS,
-                                animatedVisibilityScope = animatedVisibilityScope,
-                                lazyGridState = lazyGridState
-                            )
-                        }
-                    }
 
-                    true -> {
-                        Box(
-                            modifier = Modifier.testTag("EmptyScreenMiniBoss"),
-                        ) {
-                            EmptyScreen(
-                                modifier = Modifier,
-                                state = refreshState,
-                                isRefreshing = refreshing,
-                                onRefresh = {
-                                    viewModel.refetchBiomes()
-                                    scope.launch {
-                                        refreshState.animateToHidden()
-                                    }
-                                },
-                                errorMessage = miniBossesUIState.error.toString()
-                            )
-                        }
+    Box(
+        modifier = modifier
+    ) {
+        Surface(
+            color = Color.Transparent,
+            modifier = Modifier
+                .testTag("MiniBossSurface")
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            when {
+                miniBossesUIState.isLoading || (miniBossesUIState.miniBosses.isEmpty() && isConnection) -> {
+                    ShimmerEffect()
+                }
+
+                miniBossesUIState.miniBosses.isNotEmpty() -> {
+                    Box(
+                        modifier = Modifier.testTag("MiniBossGird"),
+                    ) {
+                        GridContent(
+                            modifier = Modifier,
+                            items = miniBossesUIState.miniBosses,
+                            onItemClick = onItemClick,
+                            numbersOfColumns = NORMAL_SIZE_GRID,
+                            height = ITEM_HEIGHT_TWO_COLUMNS,
+                            animatedVisibilityScope = animatedVisibilityScope,
+                            lazyGridState = lazyGridState
+                        )
                     }
                 }
 
-
+                miniBossesUIState.error != null -> {
+                    Box(
+                        modifier = Modifier.testTag("EmptyScreenMiniBoss"),
+                    ) {
+                        EmptyScreen(
+                            modifier = Modifier,
+                            state = refreshState,
+                            isRefreshing = refreshing,
+                            onRefresh = {
+                                viewModel.refetchBiomes()
+                                scope.launch {
+                                    refreshState.animateToHidden()
+                                }
+                            },
+                            errorMessage = miniBossesUIState.error.toString()
+                        )
+                    }
+                }
             }
         }
     }

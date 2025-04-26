@@ -45,7 +45,7 @@ fun BiomeScreen(
     val refreshState = rememberPullToRefreshState()
     val biomeUIState: BiomesUIState by viewModel.biomeUIState.collectAsStateWithLifecycle()
     val refreshing: Boolean by viewModel.isRefreshing.collectAsStateWithLifecycle()
-    val isConnection: Boolean = viewModel.isConnection
+    val isConnection: Boolean by viewModel.isConnection.collectAsStateWithLifecycle()
 
     val initialScrollPosition by viewModel.scrollPosition.collectAsStateWithLifecycle()
     val lazyGridState = rememberLazyGridState(

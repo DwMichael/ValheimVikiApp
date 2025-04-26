@@ -28,7 +28,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.GridContent
-import com.rabbitv.valheimviki.presentation.components.LoadingIndicator
+import com.rabbitv.valheimviki.presentation.components.ShimmerEffect
 import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_TWO_COLUMNS
 import com.rabbitv.valheimviki.utils.Constants.NORMAL_SIZE_GRID
 import kotlinx.coroutines.flow.collectLatest
@@ -49,6 +49,7 @@ fun BossScreen(
     val refreshState = rememberPullToRefreshState()
     val bossUIState: BossUIState by viewModel.bossUIState.collectAsStateWithLifecycle()
     val refreshing: Boolean by viewModel.isRefreshing.collectAsStateWithLifecycle()
+    val isConnection: Boolean by viewModel.isConnection.collectAsStateWithLifecycle()
 
     val initialScrollPosition by viewModel.scrollPosition.collectAsStateWithLifecycle()
     val lazyGridState = rememberLazyGridState(
@@ -65,9 +66,6 @@ fun BossScreen(
             }
     }
 
-    if (bossUIState.isLoading) {
-        LoadingIndicator(paddingValues = paddingValues)
-    } else {
         Box(
             modifier = modifier
         ) {
@@ -78,8 +76,12 @@ fun BossScreen(
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
-                when (bossUIState.bosses.isEmpty()) {
-                    false -> {
+                when {
+                    bossUIState.isLoading || (bossUIState.bosses.isEmpty() && isConnection)  -> {
+                        ShimmerEffect()
+                    }
+
+                    bossUIState.bosses.isNotEmpty() -> {
                         Box(
                             modifier = Modifier.testTag("BossGrid"),
                         ) {
@@ -95,7 +97,7 @@ fun BossScreen(
                         }
                     }
 
-                    true -> {
+                    bossUIState.error != null ->{
                         Box(
                             modifier = Modifier.testTag("EmptyScreenBoss"),
                         ) {
@@ -116,7 +118,6 @@ fun BossScreen(
                 }
             }
         }
-    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

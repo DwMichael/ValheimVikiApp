@@ -24,8 +24,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -38,28 +39,48 @@ class MainBossScreenViewModel @Inject constructor(
     private val biomeUseCases: BiomeUseCases,
     private val relationUseCases: RelationUseCases
 ) : ViewModel() {
-    private val mainBossId: String = checkNotNull(savedStateHandle[Constants.MAIN_BOSS_ARGUMENT_KEY])
-
+    private val mainBossId: String =
+        checkNotNull(savedStateHandle[Constants.MAIN_BOSS_ARGUMENT_KEY])
     private val _mainBoss = MutableStateFlow<MainBoss?>(null)
-    val mainBoss: StateFlow<MainBoss?> = _mainBoss
-
     private val _relatedForsakenAltar = MutableStateFlow<PointOfInterest?>(null)
-    val relatedForsakenAltar: StateFlow<PointOfInterest?> = _relatedForsakenAltar
-
     private val _sacrificialStones = MutableStateFlow<PointOfInterest?>(null)
-    val sacrificialStones: StateFlow<PointOfInterest?> = _sacrificialStones
-
-    private val _dropItems = MutableStateFlow<List<Material?>>(emptyList())
-    val dropItems: StateFlow<List<Material?>> = _dropItems
-
-    private val _relatedSummoningItems = MutableStateFlow<List<Material?>>(emptyList())
-    val relatedSummoningItems: StateFlow<List<Material?>> = _relatedSummoningItems
-
+    private val _dropItems = MutableStateFlow<List<Material>>(emptyList())
+    private val _relatedSummoningItems = MutableStateFlow<List<Material>>(emptyList())
     private val _relatedBiome = MutableStateFlow<Biome?>(null)
-    val relatedBiome: StateFlow<Biome?> = _relatedBiome
-
     private val _trophy = MutableStateFlow<Material?>(null)
-    val trophy: StateFlow<Material?> = _trophy
+
+    private val _isLoading = MutableStateFlow(false)
+    private val _error = MutableStateFlow<String?>(null)
+
+
+    val uiState = combine(
+        _mainBoss,
+        _relatedForsakenAltar,
+        _sacrificialStones,
+        _dropItems,
+        _relatedSummoningItems,
+        _relatedBiome,
+        _trophy,
+        _isLoading,
+        _error
+    ) { values ->
+        @Suppress("UNCHECKED_CAST")
+        MainBossDetailUiState(
+            mainBoss = values[0] as MainBoss?,
+            relatedForsakenAltar = values[1] as PointOfInterest?,
+            sacrificialStones =values[2] as PointOfInterest?,
+            dropItems = values[3] as List<Material>,
+            relatedSummoningItems = values[4] as List<Material>,
+            relatedBiome = values[5] as Biome?,
+            trophy = values[6] as Material?,
+            isLoading = values[7] as Boolean,
+            error = values[8] as String?
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000),
+        initialValue = MainBossDetailUiState()
+    )
 
 
     init {
@@ -70,6 +91,7 @@ class MainBossScreenViewModel @Inject constructor(
     fun launch() {
 
         try {
+           _isLoading.value = true
             viewModelScope.launch(Dispatchers.IO) {
                 creatureUseCases.getCreatureById(mainBossId).let {
                     _mainBoss.value = CreatureFactory.createFromCreature(it)
@@ -105,18 +127,19 @@ class MainBossScreenViewModel @Inject constructor(
                     },
                     async {
 
-                        val relatedAltarOfferings  = materialUseCases.getMaterialsBySubCategory(
+                        val relatedAltarOfferings = materialUseCases.getMaterialsBySubCategory(
                             subCategory = MaterialSubCategory.FORSAKEN_ALTAR_OFFERING,
                         ).filter { it.id in relatedIds }
 
                         val relevantCreatureDrops = materialUseCases.getMaterialsBySubCategory(
-                            MaterialSubCategory.CREATURE_DROP)
+                            MaterialSubCategory.CREATURE_DROP
+                        )
                             .filter { it.id in relatedIds }
                         val allRelevantDrops = relatedAltarOfferings + relevantCreatureDrops
-                        _relatedSummoningItems.value  = allRelevantDrops.distinctBy { it.id}
+                        _relatedSummoningItems.value = allRelevantDrops.distinctBy { it.id }
 
 
-                        },
+                    },
                     async {
 
                         val materials = materialUseCases.getMaterialsBySubCategory(
@@ -126,7 +149,7 @@ class MainBossScreenViewModel @Inject constructor(
                             material.id in relatedIds
                         }
 
-                        _trophy.value =materials.filter { material ->
+                        _trophy.value = materials.filter { material ->
                             (material.id in relatedIds)
                         }.find {
                             it.subType == MaterialSubType.TROPHY.toString()
@@ -138,10 +161,11 @@ class MainBossScreenViewModel @Inject constructor(
                 deferreds.awaitAll()
 
             }
-
-
+            _isLoading.value = false
         } catch (e: Exception) {
             Log.e("General fetch error BiomeDetailViewModel", e.message.toString())
+            _isLoading.value = false
+            _error.value = e.message
         }
     }
 }

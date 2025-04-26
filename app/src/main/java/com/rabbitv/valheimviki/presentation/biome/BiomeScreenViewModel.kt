@@ -1,6 +1,5 @@
 package com.rabbitv.valheimviki.presentation.biome
 
-import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,14 +8,14 @@ import com.rabbitv.valheimviki.domain.exceptions.BiomesFetchLocalException
 import com.rabbitv.valheimviki.domain.exceptions.BiomesInsertException
 import com.rabbitv.valheimviki.domain.exceptions.RelationFetchException
 import com.rabbitv.valheimviki.domain.model.biome.Biome
+import com.rabbitv.valheimviki.domain.repository.NetworkConnectivity
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
-import com.rabbitv.valheimviki.utils.isNetworkAvailable
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.jetbrains.annotations.VisibleForTesting
@@ -34,9 +33,13 @@ data class BiomesUIState(
 @HiltViewModel
 class BiomeScreenViewModel @Inject constructor(
     private val biomeUseCases: BiomeUseCases,
-    @ApplicationContext private val context: Context
+    private val connectivityObserver: NetworkConnectivity,
 ) : ViewModel() {
-    val isConnection: Boolean = isNetworkAvailable(context)
+    val isConnection: StateFlow<Boolean> = connectivityObserver.isConnected.stateIn(
+        scope = viewModelScope,
+        started = kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000),
+        initialValue = false
+    )
 
     private val _scrollPosition = MutableStateFlow(0)
     val scrollPosition: StateFlow<Int> = _scrollPosition
@@ -102,7 +105,7 @@ class BiomeScreenViewModel @Inject constructor(
     fun refetchBiomes() {
         _biomeUIState.value = _biomeUIState.value.copy(isLoading = true, error = null)
         viewModelScope.launch(Dispatchers.IO) {
-            if (isConnection) {
+            if (isConnection.value) {
                 _biomeUIState.value = _biomeUIState.value.copy(
                     isLoading = false, error = "No internet connection"
                 )

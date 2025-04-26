@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -25,7 +24,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -38,8 +36,6 @@ import com.composables.icons.lucide.Heater
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Trophy
 import com.rabbitv.valheimviki.R
-import com.rabbitv.valheimviki.domain.model.creature.mini_boss.MiniBoss
-import com.rabbitv.valheimviki.domain.repository.ItemData
 import com.rabbitv.valheimviki.navigation.LocalSharedTransitionScope
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.GreenTorchesDivider
@@ -59,76 +55,67 @@ fun MiniBossDetailScreen(
     viewModel: MiniBossDetailScreenViewModel = hiltViewModel(),
     animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
-    val miniBoss by viewModel.miniBoss.collectAsStateWithLifecycle()
-    val dropItems by viewModel.dropItems.collectAsStateWithLifecycle()
-    val trophy by viewModel.trophy.collectAsStateWithLifecycle()
+    val miniBossUiState by viewModel.uiState.collectAsStateWithLifecycle()
     val sharedTransitionScope = LocalSharedTransitionScope.current
         ?: throw IllegalStateException("No Scope found")
-    val pagerState = rememberPagerState(
-        initialPage = 1,
-        pageCount = { dropItems.size })
 
-    miniBoss?.let { mainBoss ->
-        MiniBossContent(
-            onBack = onBack,
-            miniBoss = miniBoss!!,
-            dropItems = dropItems,
-            trophyUrl = trophy?.imageUrl,
-            sharedTransitionScope = sharedTransitionScope,
-            animatedVisibilityScope = animatedVisibilityScope,
-            pagerState = pagerState
-        )
-    }
-
+    MiniBossContent(
+        onBack = onBack,
+        miniBossUiSate = miniBossUiState,
+        sharedTransitionScope = sharedTransitionScope,
+        animatedVisibilityScope = animatedVisibilityScope,
+    )
 }
 
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun MiniBossContent(
-    miniBoss: MiniBoss,
-    dropItems: List<ItemData?>,
-    trophyUrl: String?,
-    pagerState: PagerState,
+    miniBossUiSate: MiniBossDetailUiState,
     onBack: () -> Unit,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
-    errorPainter: Painter? = null,
 ) {
-    Scaffold(
-        content = { padding ->
-            Image(
-                painter = painterResource(id = R.drawable.main_background),
-                contentDescription = "BackgroundImage",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize(),
-            )
-            Column(
-                modifier = Modifier
-                    .testTag("BiomeDetailScreen")
-                    .fillMaxSize()
-                    .padding(padding)
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.Top,
-                horizontalAlignment = Alignment.Start,
-            ) {
-                MainDetailImage(
-                    onBack = onBack,
-                    itemData = miniBoss,
-                    sharedTransitionScope = sharedTransitionScope,
-                    animatedVisibilityScope = animatedVisibilityScope,
-                    textAlign = TextAlign.Center
-                )
-                DetailExpandableText(text = miniBoss.description.toString())
-                TridentsDividedRow(text = "BOSS DETAIL")
-                Text(
-                    modifier = Modifier,
-                text = "PRIMARY SPAWN",
-                textAlign = TextAlign.Left,
-                style = MaterialTheme.typography.titleMedium,
-                maxLines = 1,
-                overflow = TextOverflow.Visible
-                )
+    when {
+        miniBossUiSate.isLoading -> {
+            Box(modifier = Modifier.size(45.dp))
+        }
+
+        miniBossUiSate.miniBoss != null -> {
+            Scaffold(
+                content = { padding ->
+                    Image(
+                        painter = painterResource(id = R.drawable.main_background),
+                        contentDescription = "BackgroundImage",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                    Column(
+                        modifier = Modifier
+                            .testTag("BiomeDetailScreen")
+                            .fillMaxSize()
+                            .padding(padding)
+                            .verticalScroll(rememberScrollState()),
+                        verticalArrangement = Arrangement.Top,
+                        horizontalAlignment = Alignment.Start,
+                    ) {
+                        MainDetailImage(
+                            onBack = onBack,
+                            itemData = miniBossUiSate.miniBoss,
+                            sharedTransitionScope = sharedTransitionScope,
+                            animatedVisibilityScope = animatedVisibilityScope,
+                            textAlign = TextAlign.Center
+                        )
+                        DetailExpandableText(text = miniBossUiSate.miniBoss.description.toString())
+                        TridentsDividedRow(text = "BOSS DETAIL")
+                        Text(
+                            modifier = Modifier,
+                            text = "PRIMARY SPAWN",
+                            textAlign = TextAlign.Left,
+                            style = MaterialTheme.typography.titleMedium,
+                            maxLines = 1,
+                            overflow = TextOverflow.Visible
+                        )
 //                relatedBiome?.let {
 //                    CardWithOverlayLabel(
 //                        painter = painter,
@@ -157,49 +144,60 @@ fun MiniBossContent(
 //                        }
 //                    )
 //                }
-                SlavicDivider()
-                dropItems.isNotEmpty().let {
-                    HorizontalPagerSection(
-                        pagerState,
-                        dropItems,
-                        Lucide.Trophy,
-                        "Drop Items",
-                        "Items that drop from boss after defeating him",
-                        ContentScale.Crop,
-                        iconModifier = Modifier
-                    )
-                }
-                GreenTorchesDivider(text = "FORSAKEN POWER")
-                TridentsDividedRow(text = "BOSS STATS")
-                CardWithOverlayLabel(
-                    painter = painterResource(R.drawable.base_hp_bg),
-                    content = {
-                        Row {
-                            Box(
-                                modifier = Modifier.fillMaxHeight()
-                            ) {
-                                OverlayLabel(
-                                    icon = Lucide.Heater,
-                                    label = " BASE HP",
-                                )
-                            }
-                            Text(
-                                miniBoss.baseHP.toString().uppercase(),
-                                style = MaterialTheme.typography.bodyLarge,
-                                modifier = Modifier
-                                    .align(Alignment.CenterVertically)
-                                    .fillMaxWidth()
-                                    .padding(8.dp),
-                                color = Color.White,
-                                textAlign = TextAlign.Center
+                        SlavicDivider()
+                        miniBossUiSate.dropItems.isNotEmpty().let {
+                            HorizontalPagerSection(
+                                rememberPagerState(
+                                    initialPage = 1,
+                                    pageCount = { miniBossUiSate.dropItems.size }),
+                                miniBossUiSate.dropItems,
+                                Lucide.Trophy,
+                                "Drop Items",
+                                "Items that drop from boss after defeating him",
+                                ContentScale.Crop,
+                                iconModifier = Modifier
                             )
                         }
+                        GreenTorchesDivider(text = "FORSAKEN POWER")
+                        TridentsDividedRow(text = "BOSS STATS")
+                        CardWithOverlayLabel(
+                            painter = painterResource(R.drawable.base_hp_bg),
+                            content = {
+                                Row {
+                                    Box(
+                                        modifier = Modifier.fillMaxHeight()
+                                    ) {
+                                        OverlayLabel(
+                                            icon = Lucide.Heater,
+                                            label = " BASE HP",
+                                        )
+                                    }
+                                    Text(
+                                        miniBossUiSate.miniBoss.baseHP.toString().uppercase(),
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        modifier = Modifier
+                                            .align(Alignment.CenterVertically)
+                                            .fillMaxWidth()
+                                            .padding(8.dp),
+                                        color = Color.White,
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
+                            }
+                        )
+                        BossStatsFlowRow(item = miniBossUiSate.miniBoss)
+                        SlavicDivider()
+                        Box(modifier = Modifier.size(45.dp))
+
                     }
-                )
-                BossStatsFlowRow(item = miniBoss)
-                SlavicDivider()
-                Box(modifier = Modifier.size(45.dp))
-            }
+
+
+                }
+            )
         }
-    )
+
+        miniBossUiSate.error != null -> {
+            Box(modifier = Modifier.size(45.dp))
+        }
+    }
 }
