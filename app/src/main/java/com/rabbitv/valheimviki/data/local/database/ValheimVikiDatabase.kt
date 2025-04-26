@@ -23,7 +23,7 @@ import com.rabbitv.valheimviki.domain.model.tree.Tree
 @Database(entities = [Biome::class, Creature::class,
     Relation::class, OreDeposit::class,
     Material::class, PointOfInterest::class,
-    Tree::class], version = 5, exportSchema = false)
+    Tree::class], version = 6, exportSchema = false)
 abstract class ValheimVikiDatabase : RoomDatabase() {
 
     companion object {

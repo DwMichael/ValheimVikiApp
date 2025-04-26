@@ -15,8 +15,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -59,9 +61,11 @@ fun GridContent(
     numbersOfColumns: Int,
     height: Dp,
     animatedVisibilityScope:AnimatedVisibilityScope,
+    lazyGridState: LazyGridState ,
 ) {
 
     LazyVerticalGrid(
+        state = lazyGridState,
         columns = GridCells.Fixed(numbersOfColumns),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -229,7 +233,8 @@ private fun PreviewContentGrid() {
                 onItemClick = { _, _ -> {} },
                 numbersOfColumns = 2,
                 height = ITEM_HEIGHT_TWO_COLUMNS,
-                this
+                this,
+                rememberLazyGridState()
             )
         }
     }

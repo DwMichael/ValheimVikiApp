@@ -87,6 +87,8 @@ fun Creature.toNPC(): NPC{
         imageUrl = this.imageUrl.toString(),
         name = this.name.toString(),
         description = this.description.toString(),
+        biography = this.description.toString(),
+        location = this.description.toString(),
         order = this.order,
     )
 }

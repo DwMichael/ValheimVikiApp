@@ -32,7 +32,6 @@ import androidx.compose.ui.unit.dp
 import com.composables.icons.lucide.Flame
 import com.composables.icons.lucide.Lucide
 import com.rabbitv.valheimviki.R
-import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
 
 @Composable
 fun LabeledCardWithList(
@@ -123,24 +122,12 @@ fun LabeledCardWithList(
 }
 
 @Composable
-@Preview("BossStatsFlowRow", showBackground = true)
+@Preview("LabeledCardWithList", showBackground = true)
 fun LabeledCardWithListPreview() {
-    BossStatsFlowRow(
-        mainBoss = MainBoss(
-            id = "wqaew",
-            category = "dasd",
-            subCategory = "dasda",
-            imageUrl = "dasda",
-            name = "dasda",
-            description = "dasda",
-            order = 2,
-            levels = 2,
-            baseHP = 500,
-            weakness = "dasda,140 Pierce + 100 Poison,sdfsdfsd,sdf3w2342,sedfswefs,dasdasda2",
-            resistance = "dasda",
-            baseDamage = "dasda",
-            collapseImmune = "dasda",
-            forsakenPower = "dasda"
-        )
+    LabeledCardWithList(
+        textList = listOf("SDASD","SDasdasdasd","fsr3qewr2q3rw","ASdsada"),
+        painter = painterResource(R.drawable.base_damage_bg),
+        label = "ROGOTODO",
+        icon = Lucide.Flame
     )
 }

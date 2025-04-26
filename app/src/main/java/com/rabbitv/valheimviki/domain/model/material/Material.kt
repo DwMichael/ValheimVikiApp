@@ -2,9 +2,9 @@ package com.rabbitv.valheimviki.domain.model.material
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.google.gson.annotations.SerializedName
 import com.rabbitv.valheimviki.domain.repository.ItemData
 import kotlinx.serialization.Serializable
-import com.google.gson.annotations.SerializedName
 
 @Entity(tableName = "materials")
 @Serializable
@@ -19,6 +19,9 @@ data class Material(
     @SerializedName("usage") val usage: String? = null,
     @SerializedName("growth_time") val growthTime: String? = null,
     @SerializedName("NeedCultivatorGround") val needCultivatorGround: String? = null,
+    @SerializedName("price") val price: Int? = null,
+    @SerializedName("effect") val effect: String? = null,
+    @SerializedName("sell_price") val sellPrice: Int? = null,
     val order: Int,
     val subType: String? = null
 ):ItemData
