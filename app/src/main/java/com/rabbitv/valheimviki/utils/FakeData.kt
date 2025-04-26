@@ -5,6 +5,7 @@ import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
 
 object FakeData{
+
     fun generateFakeMaterials(): List<Material> {
         return listOf(
             Material(

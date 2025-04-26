@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -32,13 +34,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.rememberAsyncImagePainter
 import com.composables.icons.lucide.Heater
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Trophy
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.navigation.LocalSharedTransitionScope
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
-import com.rabbitv.valheimviki.presentation.components.GreenTorchesDivider
 import com.rabbitv.valheimviki.presentation.components.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.MainDetailImage
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
@@ -46,6 +48,7 @@ import com.rabbitv.valheimviki.presentation.components.trident_dividers.Tridents
 import com.rabbitv.valheimviki.presentation.detail.creature.components.BossStatsFlowRow
 import com.rabbitv.valheimviki.presentation.detail.creature.components.CardWithOverlayLabel
 import com.rabbitv.valheimviki.presentation.detail.creature.components.OverlayLabel
+import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -76,6 +79,8 @@ fun MiniBossContent(
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
+
+
     when {
         miniBossUiSate.isLoading -> {
             Box(modifier = Modifier.size(45.dp))
@@ -109,56 +114,45 @@ fun MiniBossContent(
                         DetailExpandableText(text = miniBossUiSate.miniBoss.description.toString())
                         TridentsDividedRow(text = "BOSS DETAIL")
                         Text(
-                            modifier = Modifier,
+                            modifier = Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp),
                             text = "PRIMARY SPAWN",
                             textAlign = TextAlign.Left,
-                            style = MaterialTheme.typography.titleMedium,
+                            style = MaterialTheme.typography.titleSmall,
                             maxLines = 1,
                             overflow = TextOverflow.Visible
                         )
-//                relatedBiome?.let {
-//                    CardWithOverlayLabel(
-//                        painter = painter,
-//                        content = {
-//                            Row {
-//                                Box(
-//                                    modifier = Modifier.fillMaxHeight()
-//                                ) {
-//                                    OverlayLabel(
-//                                        icon = Lucide.TreePine,
-//                                        label = " PRIMARY SPAWN",
-//                                    )
-//                                }
-//                                Text(
-//                                    it.name.uppercase(),
-//                                    style = MaterialTheme.typography.bodyLarge,
-//                                    modifier = Modifier
-//                                        .align(Alignment.CenterVertically)
-//                                        .fillMaxWidth()
-//                                        .padding(8.dp),
-//                                    color = Color.White,
-//                                    textAlign = TextAlign.Center
-//                                )
-//                            }
-//
-//                        }
-//                    )
-//                }
-                        SlavicDivider()
-                        miniBossUiSate.dropItems.isNotEmpty().let {
-                            HorizontalPagerSection(
-                                rememberPagerState(
-                                    initialPage = 1,
-                                    pageCount = { miniBossUiSate.dropItems.size }),
-                                miniBossUiSate.dropItems,
-                                Lucide.Trophy,
-                                "Drop Items",
-                                "Items that drop from boss after defeating him",
-                                ContentScale.Crop,
-                                iconModifier = Modifier
+                        miniBossUiSate.primarySpawn?.let {
+                            CardWithOverlayLabel(
+                                painter = rememberAsyncImagePainter(miniBossUiSate.primarySpawn.imageUrl),
+                                content = {
+                                        Box(
+                                            modifier = Modifier.fillMaxSize().wrapContentHeight(Alignment.CenterVertically).wrapContentWidth(Alignment.CenterHorizontally)
+                                        ) {
+                                            Text(
+                                                it.name.uppercase(),
+                                                style = MaterialTheme.typography.bodyLarge,
+                                                modifier = Modifier,
+                                                color = Color.White,
+                                                textAlign = TextAlign.Center
+                                            )
+                                        }
+                                    }
                             )
                         }
-                        GreenTorchesDivider(text = "FORSAKEN POWER")
+                        SlavicDivider()
+                        miniBossUiSate.dropItems.isNotEmpty().let {
+                                HorizontalPagerSection(
+                                    rememberPagerState(
+                                        initialPage = 1,
+                                        pageCount = { miniBossUiSate.dropItems.size }),
+                                    miniBossUiSate.dropItems,
+                                    Lucide.Trophy,
+                                    "Drop Items",
+                                    "Items that drop from boss after defeating him",
+                                    ContentScale.Crop,
+                                    iconModifier = Modifier
+                                )
+                        }
                         TridentsDividedRow(text = "BOSS STATS")
                         CardWithOverlayLabel(
                             painter = painterResource(R.drawable.base_hp_bg),
