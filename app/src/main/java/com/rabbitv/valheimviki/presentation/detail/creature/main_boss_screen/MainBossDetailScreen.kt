@@ -25,7 +25,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -59,6 +63,7 @@ import com.rabbitv.valheimviki.presentation.detail.creature.components.CardWithT
 import com.rabbitv.valheimviki.presentation.detail.creature.components.CustomRowLayout
 import com.rabbitv.valheimviki.presentation.detail.creature.components.OverlayLabel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -89,8 +94,21 @@ fun MainBossContent(
     animatedVisibilityScope: AnimatedVisibilityScope,
     mainBossUiState: MainBossDetailUiState,
 ) {
+    val transitionComplete = remember { mutableStateOf(false) }
+    val scrollEnabled = remember { derivedStateOf { transitionComplete.value } }
+
+    LaunchedEffect(Unit) {
+        delay(700)
+        transitionComplete.value = true
+    }
+
     Scaffold(
         content = { padding ->
+            val scrollModifier = if (scrollEnabled.value) {
+                Modifier.verticalScroll(rememberScrollState())
+            } else {
+                Modifier
+            }
             when {
                 mainBossUiState.isLoading -> {
                     Box(modifier = Modifier.size(45.dp))
@@ -107,7 +125,7 @@ fun MainBossContent(
                             .testTag("BiomeDetailScreen")
                             .fillMaxSize()
                             .padding(padding)
-                            .verticalScroll(rememberScrollState()),
+                            .then(scrollModifier),
                         verticalArrangement = Arrangement.Top,
                         horizontalAlignment = Alignment.Start,
                     ) {

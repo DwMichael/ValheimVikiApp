@@ -47,7 +47,7 @@ fun BossScreen(
 ) {
     val scope = rememberCoroutineScope()
     val refreshState = rememberPullToRefreshState()
-    val bossUIState: BossUIState by viewModel.bossUIState.collectAsStateWithLifecycle()
+    val uiState: BossUiState by viewModel.bossUIState.collectAsStateWithLifecycle()
     val refreshing: Boolean by viewModel.isRefreshing.collectAsStateWithLifecycle()
     val isConnection: Boolean by viewModel.isConnection.collectAsStateWithLifecycle()
 
@@ -77,17 +77,17 @@ fun BossScreen(
                     .padding(paddingValues)
             ) {
                 when {
-                    bossUIState.isLoading || (bossUIState.bosses.isEmpty() && isConnection)  -> {
+                    uiState.isLoading || (uiState.bosses.isEmpty() && isConnection)  -> {
                         ShimmerEffect()
                     }
 
-                    bossUIState.bosses.isNotEmpty() -> {
+                    uiState.bosses.isNotEmpty() -> {
                         Box(
                             modifier = Modifier.testTag("BossGrid"),
                         ) {
                             GridContent(
                                 modifier = Modifier,
-                                items = bossUIState.bosses,
+                                items = uiState.bosses,
                                 onItemClick = onItemClick,
                                 numbersOfColumns = NORMAL_SIZE_GRID,
                                 height = ITEM_HEIGHT_TWO_COLUMNS,
@@ -97,7 +97,7 @@ fun BossScreen(
                         }
                     }
 
-                    bossUIState.error != null ->{
+                    uiState.error != null ->{
                         Box(
                             modifier = Modifier.testTag("EmptyScreenBoss"),
                         ) {
@@ -111,7 +111,7 @@ fun BossScreen(
                                         refreshState.animateToHidden()
                                     }
                                 },
-                                errorMessage = bossUIState.error.toString()
+                                errorMessage = uiState.error.toString()
                             )
                         }
                     }

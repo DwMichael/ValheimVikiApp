@@ -48,11 +48,14 @@ fun MiniBossScreen(
 ) {
     val scope = rememberCoroutineScope()
     val refreshState = rememberPullToRefreshState()
-    val miniBossesUIState: MiniBossesUIState by viewModel.miniBossesUIState
+
+    val uiState: MiniBossesUiState by viewModel.miniBossesUIState
         .collectAsStateWithLifecycle()
+
     val refreshing: Boolean by viewModel.isRefreshing.collectAsStateWithLifecycle()
     val isConnection: Boolean by viewModel.isConnection.collectAsStateWithLifecycle()
     val initialScrollPosition by viewModel.scrollPosition.collectAsStateWithLifecycle()
+
     val lazyGridState = rememberLazyGridState(
         initialFirstVisibleItemIndex = initialScrollPosition
     )
@@ -79,17 +82,17 @@ fun MiniBossScreen(
                 .padding(paddingValues)
         ) {
             when {
-                miniBossesUIState.isLoading || (miniBossesUIState.miniBosses.isEmpty() && isConnection) -> {
+                uiState.isLoading || (uiState.miniBosses.isEmpty() && isConnection) -> {
                     ShimmerEffect()
                 }
 
-                miniBossesUIState.miniBosses.isNotEmpty() -> {
+                uiState.miniBosses.isNotEmpty() -> {
                     Box(
                         modifier = Modifier.testTag("MiniBossGird"),
                     ) {
                         GridContent(
                             modifier = Modifier,
-                            items = miniBossesUIState.miniBosses,
+                            items = uiState.miniBosses,
                             onItemClick = onItemClick,
                             numbersOfColumns = NORMAL_SIZE_GRID,
                             height = ITEM_HEIGHT_TWO_COLUMNS,
@@ -99,7 +102,7 @@ fun MiniBossScreen(
                     }
                 }
 
-                miniBossesUIState.error != null -> {
+                uiState.error != null -> {
                     Box(
                         modifier = Modifier.testTag("EmptyScreenMiniBoss"),
                     ) {
@@ -113,7 +116,7 @@ fun MiniBossScreen(
                                     refreshState.animateToHidden()
                                 }
                             },
-                            errorMessage = miniBossesUIState.error.toString()
+                            errorMessage = uiState.error.toString()
                         )
                     }
                 }

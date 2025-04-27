@@ -4,7 +4,7 @@
     <selectionStates>
       <SelectionState runConfigName="ValheimVikiApp">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-04-26T12:54:20.619428Z">
+        <DropdownSelection timestamp="2025-04-27T14:03:01.204110400Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="PhysicalDevice" identifier="serial=RFCW60EHDNV" />

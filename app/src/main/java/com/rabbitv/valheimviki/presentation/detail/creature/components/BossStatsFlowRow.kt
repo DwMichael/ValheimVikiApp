@@ -1,6 +1,5 @@
 package com.rabbitv.valheimviki.presentation.detail.creature.components
 
-import android.util.Log
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.runtime.Composable
@@ -33,7 +32,6 @@ fun BossStatsFlowRow(
         }
 
         if (item.weakness?.split(",")!!.any { it.isNotBlank() }) {
-
             LabeledCardWithList(
                 item.weakness!!.split(","),
                 painter = painterResource(R.drawable.weakness_bg),
@@ -42,7 +40,6 @@ fun BossStatsFlowRow(
             )
         }
         if (item.resistance?.split(",")!!.any { it.isNotBlank() }) {
-            Log.e("RESISTANCE ", "${item.resistance?.split(",")}")
             LabeledCardWithList(
                 item.resistance!!.split(","),
                 painter = painterResource(R.drawable.resistance_bg),
@@ -51,7 +48,6 @@ fun BossStatsFlowRow(
             )
         }
         if (item.baseDamage?.split(",")!!.any { it.isNotBlank() }) {
-
             LabeledCardWithList(
                 item.baseDamage!!.split(","),
                 painter = painterResource(R.drawable.immune_bg),

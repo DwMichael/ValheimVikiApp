@@ -1,5 +1,6 @@
 package com.rabbitv.valheimviki.presentation.detail.creature.mini_boss_screen
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,7 +24,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -49,6 +55,7 @@ import com.rabbitv.valheimviki.presentation.detail.creature.components.BossStats
 import com.rabbitv.valheimviki.presentation.detail.creature.components.CardWithOverlayLabel
 import com.rabbitv.valheimviki.presentation.detail.creature.components.OverlayLabel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
+import kotlinx.coroutines.delay
 
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -79,7 +86,13 @@ fun MiniBossContent(
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
+    val transitionComplete = remember { mutableStateOf(false) }
+    val scrollEnabled = remember { derivedStateOf { transitionComplete.value } }
 
+    LaunchedEffect(Unit) {
+        delay(700)
+        transitionComplete.value = true
+    }
 
     when {
         miniBossUiSate.isLoading -> {
@@ -87,6 +100,11 @@ fun MiniBossContent(
         }
 
         miniBossUiSate.miniBoss != null -> {
+            val scrollModifier = if (scrollEnabled.value) {
+                Modifier.verticalScroll(rememberScrollState())
+            } else {
+                Modifier
+            }
             Scaffold(
                 content = { padding ->
                     Image(
@@ -100,7 +118,7 @@ fun MiniBossContent(
                             .testTag("BiomeDetailScreen")
                             .fillMaxSize()
                             .padding(padding)
-                            .verticalScroll(rememberScrollState()),
+                            .then(scrollModifier),
                         verticalArrangement = Arrangement.Top,
                         horizontalAlignment = Alignment.Start,
                     ) {
@@ -113,15 +131,15 @@ fun MiniBossContent(
                         )
                         DetailExpandableText(text = miniBossUiSate.miniBoss.description.toString())
                         TridentsDividedRow(text = "BOSS DETAIL")
-                        Text(
-                            modifier = Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp),
-                            text = "PRIMARY SPAWN",
-                            textAlign = TextAlign.Left,
-                            style = MaterialTheme.typography.titleSmall,
-                            maxLines = 1,
-                            overflow = TextOverflow.Visible
-                        )
                         miniBossUiSate.primarySpawn?.let {
+                            Text(
+                                modifier = Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp),
+                                text = "PRIMARY SPAWN",
+                                textAlign = TextAlign.Left,
+                                style = MaterialTheme.typography.titleSmall,
+                                maxLines = 1,
+                                overflow = TextOverflow.Visible
+                            )
                             CardWithOverlayLabel(
                                 painter = rememberAsyncImagePainter(miniBossUiSate.primarySpawn.imageUrl),
                                 content = {
@@ -139,8 +157,9 @@ fun MiniBossContent(
                                     }
                             )
                         }
-                        SlavicDivider()
-                        miniBossUiSate.dropItems.isNotEmpty().let {
+                        if(miniBossUiSate.dropItems.isNotEmpty()) {
+                            Log.e("DropItems !!!!!", miniBossUiSate.dropItems.toString())
+                            SlavicDivider()
                                 HorizontalPagerSection(
                                     rememberPagerState(
                                         initialPage = 1,
@@ -152,6 +171,21 @@ fun MiniBossContent(
                                     ContentScale.Crop,
                                     iconModifier = Modifier
                                 )
+                        }
+                        if(miniBossUiSate.dropItems.isEmpty() && miniBossUiSate.primarySpawn == null) {
+                            Row(modifier = Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp))
+                            {
+                                Spacer(Modifier.weight(1f))
+                                Text(
+                                    "Connect to Internet to fetch boss detail data",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    modifier = Modifier.weight(2f),
+                                    color = Color.White,
+                                    textAlign = TextAlign.Center
+                                )
+                                Spacer(Modifier.weight(1f))
+                            }
+
                         }
                         TridentsDividedRow(text = "BOSS STATS")
                         CardWithOverlayLabel(

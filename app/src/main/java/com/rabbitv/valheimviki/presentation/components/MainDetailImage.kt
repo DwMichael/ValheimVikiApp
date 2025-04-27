@@ -6,18 +6,28 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.clickable
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,8 +43,10 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.repository.ItemData
+import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData.generateFakeMaterials
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -45,12 +57,20 @@ fun MainDetailImage(
     animatedVisibilityScope: AnimatedVisibilityScope,
     textAlign: TextAlign = TextAlign.Start,
 ) {
+    val backButtonVisibleState = remember { mutableStateOf(false) }
+
+
+    LaunchedEffect(Unit) {
+        delay(450)
+        backButtonVisibleState.value = true
+    }
+
     with(sharedTransitionScope) {
         Box(
             modifier = Modifier
                 .heightIn(min = 200.dp, max = 320.dp),
-            contentAlignment = Alignment.BottomStart,
-        ) {
+
+            ) {
             AsyncImage(
                 modifier = Modifier
                     .sharedElement(
@@ -60,10 +80,7 @@ fun MainDetailImage(
                             tween(durationMillis = 600)
                         }
                     )
-                    .fillMaxSize()
-                    .clickable {
-                        onBack()
-                    },
+                    .fillMaxSize(),
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(itemData.imageUrl)
                     .crossfade(true)
@@ -73,6 +90,7 @@ fun MainDetailImage(
             )
             Surface(
                 modifier = Modifier
+                    .align(Alignment.BottomCenter)
                     .sharedElement(
                         state = rememberSharedContentState(key = "Surface-${itemData.id}"),
                         animatedVisibilityScope = animatedVisibilityScope,
@@ -85,7 +103,6 @@ fun MainDetailImage(
                 tonalElevation = 0.dp,
                 color = Color.Black.copy(alpha = ContentAlpha.medium),
             ) {
-
                 Text(
                     modifier = Modifier
                         .padding
@@ -96,7 +113,8 @@ fun MainDetailImage(
                             boundsTransform = { _, _ ->
                                 tween(durationMillis = 600)
                             }
-                        ).wrapContentHeight(Alignment.CenterVertically),
+                        )
+                        .wrapContentHeight(Alignment.CenterVertically),
                     textAlign = textAlign,
                     text = itemData.name,
                     color = Color.White,
@@ -104,6 +122,32 @@ fun MainDetailImage(
                 )
 
             }
+            AnimatedVisibility(
+                visible = backButtonVisibleState.value,
+                enter = fadeIn(animationSpec = tween(300))
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .padding(8.dp),
+                    contentAlignment = Alignment.TopStart,
+                ) {
+                    FilledIconButton(
+                        onClick = { onBack() },
+                        shape = CircleShape,
+                        colors = IconButtonDefaults.filledIconButtonColors(
+                            containerColor = ForestGreen10Dark,
+                        ),
+                    ) {
+                        Icon(
+                            Icons.AutoMirrored.Rounded.ArrowBack,
+                            tint = Color.White,
+                            contentDescription = "Navigation Back Button"
+                        )
+                    }
+                }
+            }
+
         }
     }
 }
@@ -111,7 +155,7 @@ fun MainDetailImage(
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Preview(showBackground = true)
 @Composable
-fun PreviewMainDetailImage(){
+fun PreviewMainDetailImage() {
     ValheimVikiAppTheme {
         SharedTransitionLayout {
             AnimatedVisibility(true) {

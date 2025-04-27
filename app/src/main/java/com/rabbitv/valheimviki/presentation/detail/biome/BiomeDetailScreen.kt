@@ -18,7 +18,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -46,6 +50,7 @@ import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.trident_dividers.TridentsDividedRow
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
+import kotlinx.coroutines.delay
 
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -78,9 +83,20 @@ fun BiomeDetailContent(
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
+    val transitionComplete = remember { mutableStateOf(false) }
+    val scrollEnabled = remember { derivedStateOf { transitionComplete.value } }
 
+    LaunchedEffect(Unit) {
+        delay(700)
+        transitionComplete.value = true
+    }
     Scaffold(
         content = { padding ->
+            val scrollModifier = if (scrollEnabled.value) {
+                Modifier.verticalScroll(rememberScrollState())
+            } else {
+                Modifier
+            }
             when {
                 biomeUiState.isLoading -> {
                     Box(modifier = Modifier.size(45.dp))
@@ -97,7 +113,7 @@ fun BiomeDetailContent(
                             .testTag("BiomeDetailScreen")
                             .fillMaxSize()
                             .padding(padding)
-                            .verticalScroll(rememberScrollState()),
+                            .then(scrollModifier),
                         verticalArrangement = Arrangement.Top,
                         horizontalAlignment = Alignment.Start,
                     ) {

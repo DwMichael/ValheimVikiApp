@@ -132,12 +132,12 @@ fun MainContainer(
                     visible = topBarVisible.value,
                     enter = slideInVertically(
                         initialOffsetY = { -it },
-                        animationSpec = tween(durationMillis = 300)
+//                        animationSpec = tween(durationMillis = 300)
                     ),
                     exit = slideOutVertically(
                         targetOffsetY = { -it },
-                        animationSpec = tween(durationMillis = 300)
-                    ) + fadeOut(animationSpec = tween(durationMillis = 300))
+                        animationSpec = tween(durationMillis = 200)
+                    ) + fadeOut(animationSpec = tween(durationMillis = 200))
                 ) {
                     MainAppBar(
                         onSearchBarClick = {},

@@ -11,9 +11,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -39,11 +41,13 @@ fun LabeledCardWithList(
     painter: Painter = painterResource(id = R.drawable.base_damage_bg),
     label: String = "BASE DAMAGE",
     icon: ImageVector = Lucide.Flame,
+    maxWidth : Float = 0.5f
 ) {
-    val scrollState = rememberScrollState()
+    val lazyListState = rememberLazyListState()
+
     Card(
         modifier = Modifier
-            .fillMaxWidth(0.5f)
+            .fillMaxWidth(maxWidth)
             .heightIn(min = 100.dp, max = 200.dp)
             .padding(10.dp),
         shape = RoundedCornerShape(8.dp),
@@ -69,14 +73,14 @@ fun LabeledCardWithList(
                 ) {
 
                     Box(
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(0.5f)
                     ) {
                         OverlayLabel(
                             icon = icon,
                             label = label,
                         )
                     }
-                    if (scrollState.maxValue > 0) {
+                    if (lazyListState.canScrollForward) {
                         Image(
                             painter = painterResource(R.drawable.scroll_up),
                             contentDescription = "ScrollUpImage",
@@ -88,13 +92,12 @@ fun LabeledCardWithList(
                     }
                 }
 
-                Column(
+                LazyColumn(
+                    state = lazyListState,
                     modifier = Modifier
                         .padding(bottom = 10.dp)
-                        .verticalScroll(scrollState)
                 ) {
-
-                    textList.forEach { text ->
+                    items(textList){ text ->
                         Box(
                             modifier = Modifier
                                 .padding(
@@ -124,10 +127,16 @@ fun LabeledCardWithList(
 @Composable
 @Preview("LabeledCardWithList", showBackground = true)
 fun LabeledCardWithListPreview() {
-    LabeledCardWithList(
-        textList = listOf("SDASD","SDasdasdasd","fsr3qewr2q3rw","ASdsada"),
-        painter = painterResource(R.drawable.base_damage_bg),
-        label = "ROGOTODO",
-        icon = Lucide.Flame
-    )
+
+    Box(Modifier.size(225.dp))
+    {
+        LabeledCardWithList(
+            textList = listOf("SDASD","SDasdasdasd","fsr3qewr2q3rw","ASdsada","sdasdasda","dsadasdasd"),
+            painter = painterResource(R.drawable.base_damage_bg),
+            label = "ROGOTODO",
+            icon = Lucide.Flame,
+            maxWidth = 1f
+        )
+    }
+
 }

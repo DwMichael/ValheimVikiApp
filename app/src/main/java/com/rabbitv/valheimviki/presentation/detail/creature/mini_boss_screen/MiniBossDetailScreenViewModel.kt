@@ -4,11 +4,12 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rabbitv.valheimviki.domain.exceptions.MaterialsFetchLocalException
+import com.rabbitv.valheimviki.domain.exceptions.PointOfInterestByIdsFetchLocalException
 import com.rabbitv.valheimviki.domain.mapper.CreatureFactory
 import com.rabbitv.valheimviki.domain.model.creature.mini_boss.MiniBoss
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.material.MaterialSubCategory
-import com.rabbitv.valheimviki.domain.model.material.MaterialSubType
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
 import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
@@ -34,30 +35,28 @@ class MiniBossDetailScreenViewModel @Inject constructor(
     private val materialUseCases: MaterialUseCases,
     private val relationUseCases: RelationUseCases
 ) : ViewModel() {
-    private val miniBossId: String = checkNotNull(savedStateHandle[Constants.MINI_BOSS_ARGUMENT_KEY])
+    private val miniBossId: String =
+        checkNotNull(savedStateHandle[Constants.MINI_BOSS_ARGUMENT_KEY])
     private val _miniBoss = MutableStateFlow<MiniBoss?>(null)
     private val _primarySpawn = MutableStateFlow<PointOfInterest?>(null)
     private val _dropItems = MutableStateFlow<List<Material>>(emptyList())
-    private val _trophy = MutableStateFlow<Material?>(null)
     private val _isLoading = MutableStateFlow(false)
     private val _error = MutableStateFlow<String?>(null)
 
-    val uiState  = combine(
+    val uiState = combine(
         _miniBoss,
         _primarySpawn,
         _dropItems,
-        _trophy,
         _isLoading,
         _error,
-    ) {values ->
+    ) { values ->
         @Suppress("UNCHECKED_CAST")
         MiniBossDetailUiState(
             miniBoss = values[0] as MiniBoss?,
             primarySpawn = values[1] as PointOfInterest?,
             dropItems = values[2] as List<Material>,
-            trophy = values[3] as Material?,
-            isLoading = values[4] as Boolean,
-            error = values[5] as String?
+            isLoading = values[3] as Boolean,
+            error = values[4] as String?
         )
     }.stateIn(
         scope = viewModelScope,
@@ -86,27 +85,31 @@ class MiniBossDetailScreenViewModel @Inject constructor(
 
                 val deferreds = listOf(
                     async {
-                      val pointOfInterest = pointOfInterestUseCases.getPointsOfInterestByIdsUseCase(relatedIds)
-                        _primarySpawn.value = pointOfInterest.find {
-                            it.id in relatedIds
+                        try {
+                            val pointOfInterest =
+                                pointOfInterestUseCases.getPointsOfInterestByIdsUseCase(relatedIds)
+                            _primarySpawn.value = pointOfInterest.find {
+                                it.id in relatedIds
+                            }
+                        } catch (e: PointOfInterestByIdsFetchLocalException) {
+                            _primarySpawn.value = null
+                        } catch (e: Exception) {
+                            throw e
                         }
 
                     },
                     async {
-
-                        val materials = materialUseCases.getMaterialsBySubCategory(
-                            MaterialSubCategory.MINI_BOSS_DROP
-                        )
-                        _dropItems.value = materials.filter { material ->
-                            material.id in relatedIds
+                        try {
+                            val materials = materialUseCases.getMaterialsBySubCategory(
+                                MaterialSubCategory.MINI_BOSS_DROP
+                            )
+                            _dropItems.value = materials.filter { material ->
+                                material.id in relatedIds
+                            }
+                        } catch (e: MaterialsFetchLocalException) {
+                            _dropItems.value = emptyList()
                         }
-        //TODO: WHEN ADD WEAPON DATA MAKE SURE TO FETCH WEAPON AS DROP ITEM FOR LORD RETO
-                        _trophy.value = materials.filter { material ->
-                            (material.id in relatedIds)
-                        }.find {
-                            it.subType == MaterialSubType.TROPHY.toString()
-                        }
-
+                        //TODO: WHEN ADD WEAPON DATA MAKE SURE TO FETCH WEAPON AS DROP ITEM FOR LORD RETO
                     }
                 )
                 deferreds.awaitAll()

@@ -8,7 +8,6 @@ data class MiniBossDetailUiState(
     val miniBoss: MiniBoss? = null,
     val primarySpawn: PointOfInterest? = null,
     val dropItems: List<Material> = emptyList(),
-    val trophy: Material? = null,
     val isLoading: Boolean = false,
     val error: String? = null
 )
