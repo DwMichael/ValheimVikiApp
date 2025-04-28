@@ -4,7 +4,6 @@
 
 package com.rabbitv.valheimviki.navigation
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
@@ -43,12 +42,14 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.MountainSnow
+import com.composables.icons.lucide.Rabbit
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.presentation.biome.BiomeScreen
 import com.rabbitv.valheimviki.presentation.components.DrawerItem
 import com.rabbitv.valheimviki.presentation.components.NavigationDrawer
 import com.rabbitv.valheimviki.presentation.creatures.bosses.BossScreen
 import com.rabbitv.valheimviki.presentation.creatures.mini_bosses.MiniBossScreen
+import com.rabbitv.valheimviki.presentation.creatures.mob_list.MobListScreen
 import com.rabbitv.valheimviki.presentation.detail.biome.BiomeDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.creature.main_boss_screen.MainBossDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.creature.mini_boss_screen.MiniBossDetailScreen
@@ -90,14 +91,15 @@ fun MainContainer(
     val navBackStackEntry by valheimVikiNavController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    BackHandler {
-
-    }
+//    BackHandler {
+//
+//    }
 
     val showTopAppBar = currentRoute?.let { route ->
         route.startsWith(Screen.Boss.route.substringBefore("{")) ||
                 route.startsWith(Screen.Biome.route.substringBefore("{")) ||
-                route.startsWith(Screen.MiniBoss.route.substringBefore("{"))
+                route.startsWith(Screen.MiniBoss.route.substringBefore("{")) ||
+                route.startsWith(Screen.MobList.route.substringBefore("{"))
     } == true
 
     val isNavigating = remember { mutableStateOf(false) }
@@ -165,6 +167,7 @@ fun MainContainer(
                     composable(route = Screen.Welcome.route) {
                         WelcomeScreen(valheimVikiNavController)
                     }
+                    //Drawer Screens
                     composable(Screen.Biome.route) {
                         BiomeScreen(
                             modifier = Modifier.padding(10.dp),
@@ -202,6 +205,19 @@ fun MainContainer(
                             animatedVisibilityScope = this@composable
                         )
                     }
+                    composable(Screen.MobList.route) {
+                        MobListScreen(
+                            modifier = Modifier.padding(10.dp),
+//                            onItemClick = { miniBossId, text ->
+//                                valheimVikiNavController.navigate(
+//                                    Screen.MiniBossDetail.passMiniBossId(miniBossId, text)
+//                                )
+//                            },
+                            paddingValues = innerPadding,
+//                            animatedVisibilityScope = this@composable
+                        )
+                    }
+                    //Detail Screens
                     composable(
                         Screen.BiomeDetail.route,
                         arguments = listOf(
@@ -271,6 +287,12 @@ private fun getDrawerItems(): List<DrawerItem> {
             label = stringResource(R.string.minibosses),
             contentDescription = stringResource(R.string.minibosses_section),
             route = Screen.MiniBoss.route
+        ),
+        DrawerItem(
+            icon = Lucide.Rabbit,
+            label = "Creatures",
+            contentDescription = "Creatures section",
+            route = Screen.MobList.route
         ),
     )
 }

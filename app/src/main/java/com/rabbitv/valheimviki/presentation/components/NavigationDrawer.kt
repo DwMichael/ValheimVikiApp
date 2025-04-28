@@ -46,6 +46,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.MountainSnow
+import com.composables.icons.lucide.Rabbit
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.navigation.Screen
 import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
@@ -214,14 +215,20 @@ private fun PreviewNavigationDrawer() {
         DrawerItem(
             iconPainter = painterResource(R.drawable.skull),
             label = "Bosses",
-            contentDescription = "Creatures section",
+            contentDescription = "Bosses section",
             route = Screen.Boss.route
         ),
         DrawerItem(
             iconPainter = painterResource(R.drawable.ogre),
             label = "MiniBosses",
-            contentDescription = "Creatures section",
+            contentDescription = "MiniBosses section",
             route = Screen.MiniBoss.route
+        ),
+        DrawerItem(
+            icon = Lucide.Rabbit,
+            label = "Creatures",
+            contentDescription = "Creatures section",
+            route = ""
         ),
 
         )

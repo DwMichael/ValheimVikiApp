@@ -12,7 +12,6 @@ data class MainBoss(
     override val name: String,
     override val description: String,
     override val order: Int,
-    override val levels: Int,
     override val baseHP: Int,
     override val weakness: String,
     override val resistance: String,

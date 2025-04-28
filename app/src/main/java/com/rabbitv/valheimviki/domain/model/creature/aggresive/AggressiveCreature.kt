@@ -12,11 +12,9 @@ data class AggressiveCreature(
     override val name: String,
     override val description: String,
     override val order: Int,
-    override val levels: Int?,
     override val baseHP: Int?,
     override val weakness: String?,
     override val resistance: String?,
     override val baseDamage: String,
-    val imageStarOne: String,
-    val imageStarTwo: String,
+    val levels : List<LevelCreatureData>,
 ): CombatCreature()

@@ -131,7 +131,6 @@ fun PreviewBiomeImageHeaderSection50() {
         name = "BoneMass",
         description = "Przykładowy opis głównego bossa.",
         order = 1,
-        levels = 2,
         baseHP = 1500,
         weakness = "Ogień",
         resistance = "Lód",

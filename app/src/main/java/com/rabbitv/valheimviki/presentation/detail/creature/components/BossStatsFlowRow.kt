@@ -70,7 +70,6 @@ fun BossStatsFlowRowPreview() {
             name = "dasda",
             description = "dasda",
             order = 2,
-            levels = 2,
             baseHP = 500,
             weakness = "dasda,140 Pierce + 100 Poison,sdfsdfsd,sdf3w2342,sedfswefs,dasdasda2",
             resistance = "dasda",

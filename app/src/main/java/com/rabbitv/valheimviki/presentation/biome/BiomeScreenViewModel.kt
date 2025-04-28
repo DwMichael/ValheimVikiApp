@@ -94,8 +94,6 @@ class BiomeScreenViewModel @Inject constructor(
                         "${e.message}"
                     )
                 }
-
-
             }
         }
 

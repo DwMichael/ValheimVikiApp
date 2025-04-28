@@ -4,6 +4,7 @@ package com.rabbitv.valheimviki.domain.model.creature
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
+import com.rabbitv.valheimviki.domain.model.creature.aggresive.LevelCreatureData
 import com.rabbitv.valheimviki.domain.repository.ItemData
 import kotlinx.serialization.Serializable
 
@@ -28,6 +29,7 @@ data class Creature(
     @SerializedName("CollapseImmune") val collapseImmune: String? = null,
     @SerializedName("Forsaken Power")val forsakenPower: String? = null,
     // AggressiveCreature/PassiveCreature specific fields
+    @SerializedName("Levels")val levelCreatureData: List<LevelCreatureData> = emptyList(),
     @SerializedName("image_star_one") val imageStarOne: String? = null,
     @SerializedName("image_star_two") val imageStarTwo: String? = null,
     // PassiveCreature specific field

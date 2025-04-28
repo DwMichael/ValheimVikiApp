@@ -5,6 +5,8 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
+import com.rabbitv.valheimviki.data.local.converter.Converters
 import com.rabbitv.valheimviki.data.local.dao.BiomeDao
 import com.rabbitv.valheimviki.data.local.dao.CreatureDao
 import com.rabbitv.valheimviki.data.local.dao.MaterialDao
@@ -23,7 +25,8 @@ import com.rabbitv.valheimviki.domain.model.tree.Tree
 @Database(entities = [Biome::class, Creature::class,
     Relation::class, OreDeposit::class,
     Material::class, PointOfInterest::class,
-    Tree::class], version = 6, exportSchema = false)
+    Tree::class], version = 7, exportSchema = false)
+@TypeConverters(Converters::class)
 abstract class ValheimVikiDatabase : RoomDatabase() {
 
     companion object {

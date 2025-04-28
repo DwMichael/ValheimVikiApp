@@ -16,7 +16,6 @@ fun Creature.toMainBoss(): MainBoss{
         name = this.name.toString(),
         description = this.description.toString(),
         order = this.order,
-        levels = this.levels?.toInt() ?: 0,
         baseHP = this.baseHP ?:0,
         weakness = this.weakness.toString(),
         resistance = this.resistance.toString(),
@@ -35,7 +34,6 @@ fun Creature.toMiniBoss(): MiniBoss{
         name = this.name.toString(),
         description = this.description.toString(),
         order = this.order,
-        levels = this.levels?.toInt() ?: 0,
         baseHP = this.baseHP ?:0,
         weakness = this.weakness.toString(),
         resistance = this.resistance.toString(),
@@ -52,14 +50,11 @@ fun Creature.toAggressiveCreature(): AggressiveCreature{
         name = this.name.toString(),
         description = this.description.toString(),
         order = this.order,
-        levels = this.levels?.toInt() ?: 0,
         baseHP = this.baseHP ?:0,
         weakness = this.weakness.toString(),
         resistance = this.resistance.toString(),
         baseDamage= this.baseDamage.toString(),
-        imageStarOne= this.imageStarOne.toString(),
-        imageStarTwo= this.imageStarTwo.toString(),
-
+        levels = this.levelCreatureData.toList()
     )
 }
 
@@ -104,7 +99,6 @@ fun MainBoss.toCreature(): Creature{
         name = this.name,
         description = this.description,
         order = this.order,
-        levels = this.levels,
         baseHP = this.baseHP,
         weakness = this.weakness,
         resistance = this.resistance,
@@ -126,7 +120,6 @@ fun MiniBoss.toCreature(): Creature {
         name = this.name,
         description = this.description,
         order = this.order,
-        levels = this.levels,
         baseHP = this.baseHP,
         weakness = this.weakness,
         resistance = this.resistance,
@@ -148,15 +141,13 @@ fun AggressiveCreature.toCreature(): Creature {
         name = this.name,
         description = this.description,
         order = this.order,
-        levels = this.levels,
         baseHP = this.baseHP,
         weakness = this.weakness,
         resistance = this.resistance,
         baseDamage = this.baseDamage,
         collapseImmune = null,
         forsakenPower = null,
-        imageStarOne = this.imageStarOne,
-        imageStarTwo = this.imageStarTwo,
+        levelCreatureData = this.levels,
         abilities = null
     )
 }

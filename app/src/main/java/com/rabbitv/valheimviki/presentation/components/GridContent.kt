@@ -52,6 +52,7 @@ import com.rabbitv.valheimviki.ui.theme.SMALL_PADDING
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
 private const val boundsAnimationDurationMillis = 500
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GridContent(
@@ -60,8 +61,8 @@ fun GridContent(
     onItemClick: (String, String) -> Unit,
     numbersOfColumns: Int,
     height: Dp,
-    animatedVisibilityScope:AnimatedVisibilityScope,
-    lazyGridState: LazyGridState ,
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    lazyGridState: LazyGridState,
 ) {
 
     LazyVerticalGrid(
@@ -71,29 +72,18 @@ fun GridContent(
         verticalArrangement = Arrangement.spacedBy(16.dp),
 
         ) {
-        if (items.isEmpty()) {
-            items(items) {
-                Text(
-                    text = "Sprawdź połączenie z internetem",
-                    color = Color.Red,
+        items(items, key = { item -> item.id }) { item ->
+            Box(
+                modifier = modifier.testTag("GirdItem ${item.name}")
+            ) {
+                GridItem(
+                    item = item,
+                    onItemClick = onItemClick,
+                    height = height,
+                    animatedVisibilityScope = animatedVisibilityScope
                 )
             }
-        } else {
-
-            items(items, key = { item -> item.id }) { item ->
-                Box(
-                    modifier = modifier.testTag("GirdItem ${item.name}")
-                ) {
-                    GridItem(
-                        item = item,
-                        onItemClick = onItemClick,
-                        height = height,
-                        animatedVisibilityScope = animatedVisibilityScope
-                    )
-                }
-            }
         }
-
     }
 }
 
@@ -120,11 +110,13 @@ fun GridItem(
             contentAlignment = Alignment.BottomStart
         ) {
             AsyncImage(
-                modifier = Modifier.sharedElement(
-                    state = rememberSharedContentState(key = "image-${item.id}"),
-                    animatedVisibilityScope = animatedVisibilityScope,
-                ).fillMaxSize().clip(RoundedCornerShape(MEDIUM_PADDING))
-                    ,
+                modifier = Modifier
+                    .sharedElement(
+                        state = rememberSharedContentState(key = "image-${item.id}"),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                    )
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(MEDIUM_PADDING)),
                 model = ImageRequest.Builder(context = LocalContext.current)
                     .data(item.imageUrl.toString())
                     .crossfade(true)
@@ -144,13 +136,19 @@ fun GridItem(
                     )
                     .fillMaxHeight(0.2f)
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(bottomStart = SMALL_PADDING, bottomEnd = SMALL_PADDING)),
+                    .clip(
+                        RoundedCornerShape(
+                            bottomStart = SMALL_PADDING,
+                            bottomEnd = SMALL_PADDING
+                        )
+                    ),
                 tonalElevation = 0.dp,
                 color = Color.Black.copy(alpha = ContentAlpha.medium),
             ) {
                 Text(
-                    modifier = Modifier.padding
-                        (horizontal = 8.dp)
+                    modifier = Modifier
+                        .padding
+                            (horizontal = 8.dp)
                         .sharedElement(
                             state = rememberSharedContentState(key = "text-${item.name}"),
                             boundsTransform = { _, _ ->
@@ -164,7 +162,8 @@ fun GridItem(
 //                                }
 //                            },
                             animatedVisibilityScope = animatedVisibilityScope,
-                        ).wrapContentHeight(align = Alignment.CenterVertically),
+                        )
+                        .wrapContentHeight(align = Alignment.CenterVertically),
                     text = item.name,
                     color = Color.White,
                     style = MaterialTheme.typography.headlineSmall,
@@ -190,15 +189,15 @@ private fun PreviewGridItem() {
         order = 1
     )
     ValheimVikiAppTheme {
-                AnimatedVisibility(true) {
-                GridItem(
-                    item = item,
-                    onItemClick = { _, _ -> },
-                    height = ITEM_HEIGHT_TWO_COLUMNS,
-                    animatedVisibilityScope = this,
-                )
-                }
-            }
+        AnimatedVisibility(true) {
+            GridItem(
+                item = item,
+                onItemClick = { _, _ -> },
+                height = ITEM_HEIGHT_TWO_COLUMNS,
+                animatedVisibilityScope = this,
+            )
+        }
+    }
 
 }
 
