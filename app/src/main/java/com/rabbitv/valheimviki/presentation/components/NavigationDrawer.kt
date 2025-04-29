@@ -51,9 +51,12 @@ import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.navigation.Screen
 import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
 import com.rabbitv.valheimviki.ui.theme.ForestGreen40Dark
+import com.rabbitv.valheimviki.ui.theme.PrimaryText
+import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+
 data class DrawerItem(
     val iconPainter: Painter? = null,
     val icon: ImageVector? = null,
@@ -121,11 +124,11 @@ fun NavigationDrawer(
                     items.forEach { item ->
                         NavigationDrawerItem(
                             colors = NavigationDrawerItemDefaults.colors(
-                                selectedIconColor = Color.Black,
-                                selectedTextColor = Color.Black,
+                                selectedIconColor = PrimaryText,
+                                selectedTextColor = PrimaryText,
                                 selectedContainerColor = ForestGreen10Dark,
-                                unselectedIconColor = MaterialTheme.colorScheme.primary,
-                                unselectedTextColor = MaterialTheme.colorScheme.primary,
+                                unselectedIconColor = PrimaryWhite,
+                                unselectedTextColor = PrimaryWhite,
                                 unselectedContainerColor = Color.Transparent,
                             ),
                             icon = {
@@ -151,8 +154,7 @@ fun NavigationDrawer(
                                     fontWeight = FontWeight.Normal,
                                     lineHeight = 20.sp,
                                     fontSize = 16.sp,
-
-                                    )
+                                )
                             },
                             selected = (item == selectedItem.value),
                             onClick = {

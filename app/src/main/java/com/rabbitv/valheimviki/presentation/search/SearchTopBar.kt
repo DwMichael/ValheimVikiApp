@@ -61,8 +61,8 @@ import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
 import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_ONE_COLUMNS
 import com.rabbitv.valheimviki.ui.theme.MEDIUM_PADDING
 import com.rabbitv.valheimviki.ui.theme.PrimaryOrange
+import com.rabbitv.valheimviki.ui.theme.SecondTextWhite
 import com.rabbitv.valheimviki.ui.theme.Shapes
-import com.rabbitv.valheimviki.ui.theme.TextWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.Constants.BASE_URL
 
@@ -83,9 +83,10 @@ fun SearchTopBar(
         order = 1
     )
 
-    Box(Modifier
-        .fillMaxSize()
-        .semantics { isTraversalGroup = true }) {
+    Box(
+        Modifier
+            .fillMaxSize()
+            .semantics { isTraversalGroup = true }) {
         val onActiveChange: (Boolean) -> Unit = { newActive ->
             expanded = newActive
         }
@@ -228,7 +229,7 @@ fun SearchListItem(
             Text(
                 text = item.name,
                 style = MaterialTheme.typography.bodyLarge,
-                color = TextWhite,
+                color = SecondTextWhite,
                 textAlign = TextAlign.Start,
                 modifier = Modifier
                     .wrapContentHeight(align = Alignment.CenterVertically)
@@ -245,7 +246,7 @@ fun SearchListItem(
 )
 @Composable
 private fun PreviewSearchListItem() {
-    val navigation = NavHostController(LocalContext.current)
+    NavHostController(LocalContext.current)
 
     val exampleItem: ItemData = Biome(
         id = "1",
@@ -256,7 +257,7 @@ private fun PreviewSearchListItem() {
         order = 1
     )
     ValheimVikiAppTheme {
-        val resultText = "Suggestion 2"
+        "Suggestion 2"
         SearchListItem(
             exampleItem,
             {},

@@ -5,7 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.exceptions.CreatureFetchException
 import com.rabbitv.valheimviki.domain.exceptions.CreaturesFetchLocalException
-import com.rabbitv.valheimviki.domain.model.creature.aggresive.AggressiveCreature
+import com.rabbitv.valheimviki.domain.model.creature.Creature
+import com.rabbitv.valheimviki.domain.model.creature.CreatureSubCategory
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -18,12 +19,15 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
+
 @HiltViewModel
 class MobListViewModel @Inject constructor(
-    private val creatureuseCases: CreatureUseCases
+    private val creatureCases: CreatureUseCases
 ) : ViewModel() {
 
-    private val _aggressiveCreature = MutableStateFlow<List<AggressiveCreature>>(emptyList())
+    private val _creatureList = MutableStateFlow<List<Creature>>(emptyList())
+    private val _selectedSubCategory = MutableStateFlow<Int>(0)
+
 
     private val _scrollPosition = MutableStateFlow(0)
     val scrollPosition: StateFlow<Int> = _scrollPosition
@@ -40,14 +44,17 @@ class MobListViewModel @Inject constructor(
     private val _error = MutableStateFlow<String?>(null)
 
     val uiState = combine(
-        _aggressiveCreature,
+        _creatureList,
+        _selectedSubCategory,
         _error,
         _isLoading
-    ) { aggressiveCreature, error, isLoading ->
+    ) { values ->
+        @Suppress("UNCHECKED_CAST")
         MobListUiState(
-            aggressiveCreatures = aggressiveCreature,
-            error = error,
-            isLoading = isLoading
+            creatureList = values[0] as List<Creature>,
+            selectedSubCategory = values[1] as Int,
+            error = values[2] as String?,
+            isLoading = values[3] as Boolean
         )
     }.stateIn(
         viewModelScope,
@@ -57,17 +64,19 @@ class MobListViewModel @Inject constructor(
 
 
     init {
-        lauch()
+        launch()
     }
 
-    internal fun lauch() {
+    internal fun launch(subCategory: CreatureSubCategory = CreatureSubCategory.PASSIVE_CREATURE) {
         _isLoading.value = true
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                creatureuseCases.getAggressiveCreatures().collect {
-                    creatures -> _aggressiveCreature.value = creatures
+                creatureCases.getCreaturesBySubCategory(subCategory)
+                    .collect { creatures ->
+                        _creatureList.value = creatures
 
-                }
+                    }
+
             } catch (e: Exception) {
                 when (e) {
                     is CreatureFetchException -> Log.e(
@@ -86,6 +95,29 @@ class MobListViewModel @Inject constructor(
                     )
                 }
             }
+        }
+    }
+
+    fun selectCreaturesSubCategory(subCategory: CreatureSubCategory) {
+        Log.e("selectCreaturesSubCategory WYWOŁANIE", "$subCategory")
+        when (subCategory) {
+            CreatureSubCategory.PASSIVE_CREATURE -> {
+                _selectedSubCategory.value = 0
+                launch(subCategory)
+            }
+
+            CreatureSubCategory.AGGRESSIVE_CREATURE -> {
+                _selectedSubCategory.value = 1
+                launch(subCategory)
+            }
+
+            CreatureSubCategory.NPC -> {
+                _selectedSubCategory.value = 2
+                launch(subCategory)
+            }
+
+            CreatureSubCategory.BOSS -> null
+            CreatureSubCategory.MINI_BOSS -> null
         }
     }
 }

@@ -1,12 +1,13 @@
 package com.rabbitv.valheimviki.domain.model.creature
 
 import kotlinx.serialization.Serializable
+
 @Serializable
-enum class CreatureType {
+enum class CreatureSubCategory {
     AGGRESSIVE_CREATURE,
-    BOSS,
-    MINI_BOSS,
+    PASSIVE_CREATURE,
     NPC,
-    PASSIVE_CREATURE
+    BOSS,
+    MINI_BOSS
 }
 

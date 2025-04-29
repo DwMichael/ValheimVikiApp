@@ -1,9 +1,10 @@
 package com.rabbitv.valheimviki.presentation.creatures.mob_list
 
-import com.rabbitv.valheimviki.domain.model.creature.aggresive.AggressiveCreature
+import com.rabbitv.valheimviki.domain.model.creature.Creature
 
 data class MobListUiState(
-    val aggressiveCreatures: List<AggressiveCreature> = emptyList(),
+    val creatureList: List<Creature> = emptyList(),
+    val selectedSubCategory: Int = 0,
     val error: String? = null,
     val isLoading: Boolean = false
 )

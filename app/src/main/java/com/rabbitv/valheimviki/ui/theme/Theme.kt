@@ -14,8 +14,8 @@ import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
     background = ForestGreen30Dark,
-    primary = White,
-    onPrimary = White,
+    primary = PrimaryWhite,
+    onPrimary = PrimaryWhite,
     onPrimaryContainer = PrimaryOrange,
     error = Color.Red,
     secondary = PrimaryOrange,
@@ -36,7 +36,7 @@ fun ValheimVikiAppTheme(
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
+    when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)

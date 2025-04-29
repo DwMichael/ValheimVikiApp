@@ -2,8 +2,9 @@ package com.rabbitv.valheimviki.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val White = Color(0xFFFFFFFF)
-val TextWhite = Color(0x80FFFFFF)
+val PrimaryWhite = Color(0xFFFFFFFF)
+val SecondTextWhite = Color(0x80FFFFFF)
+val PrimaryText = Color(0xFFD8C79E)
 val PrimaryGrey = Color(0xFFA9A9A9)
 val SecondGrey = Color(0xFF1a1f1d)
 val ThirdGrey = Color(0xFF333333)
@@ -11,7 +12,7 @@ val PrimaryOrange = Color(0xFFDD6119)
 val DarkGrey = Color(0xFF1C1F26)
 
 val ForestGreen10Dark = Color(0xFF006666)
-val ForestGreen20Dark = Color(0xFF012F38)
+val ForestGreen20Dark = Color(0xFF023B3B)
 val ForestGreen30Dark = Color(0xFF040F10)
 val ForestGreen40Dark = Color(0xFF040F10)
 val PrimaryLighterBlack = Color(0xFF030303)

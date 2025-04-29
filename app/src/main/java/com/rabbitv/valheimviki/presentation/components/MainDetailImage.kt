@@ -15,7 +15,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.FilledIconButton
@@ -43,7 +43,9 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.repository.ItemData
+import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
+import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData.generateFakeMaterials
 import kotlinx.coroutines.delay
@@ -128,20 +130,20 @@ fun MainDetailImage(
             ) {
                 Box(
                     modifier = Modifier
-                        .size(48.dp)
+                        .size(64.dp)
                         .padding(8.dp),
                     contentAlignment = Alignment.TopStart,
                 ) {
                     FilledIconButton(
                         onClick = { onBack() },
-                        shape = CircleShape,
+                        shape = RoundedCornerShape(BODY_CONTENT_PADDING.dp),
                         colors = IconButtonDefaults.filledIconButtonColors(
                             containerColor = ForestGreen10Dark,
                         ),
                     ) {
                         Icon(
                             Icons.AutoMirrored.Rounded.ArrowBack,
-                            tint = Color.White,
+                            tint = PrimaryWhite,
                             contentDescription = "Navigation Back Button"
                         )
                     }

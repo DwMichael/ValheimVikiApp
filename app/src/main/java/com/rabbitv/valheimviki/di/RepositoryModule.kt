@@ -42,6 +42,7 @@ import com.rabbitv.valheimviki.domain.use_cases.creature.get_aggressive_creature
 import com.rabbitv.valheimviki.domain.use_cases.creature.get_creature_by_id.GetCreatureByIdUseCase
 import com.rabbitv.valheimviki.domain.use_cases.creature.get_creature_by_id_and_subcategory.GetCreatureByIdAndSubCategoryUseCase
 import com.rabbitv.valheimviki.domain.use_cases.creature.get_creature_by_relation_and_sub_category.GetCreatureByRelationAndSubCategory
+import com.rabbitv.valheimviki.domain.use_cases.creature.get_creature_by_subcategory.GetCreatureBySubCategoryUseCase
 import com.rabbitv.valheimviki.domain.use_cases.creature.get_creatures_by_ids.GetCreaturesByIdsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.creature.get_local_creatures.GetLocalCreaturesUseCase
 import com.rabbitv.valheimviki.domain.use_cases.creature.get_main_bosses.GetMainBossesUseCase
@@ -228,6 +229,7 @@ object RepositoryModule {
             getCreatureByRelationAndSubCategory = GetCreatureByRelationAndSubCategory(
                 creatureRepository
             ),
+            getCreaturesBySubCategory = GetCreatureBySubCategoryUseCase(creatureRepository),
             refetchCreaturesUseCase = RefetchCreaturesUseCase(
                 creatureRepository,
                 relationsRepository
@@ -270,26 +272,36 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideMaterialUseCases(materialRepository: MaterialRepository): MaterialUseCases{
+    fun provideMaterialUseCases(materialRepository: MaterialRepository): MaterialUseCases {
         return MaterialUseCases(
             getLocalMaterials = GetLocalMaterialsUseCase(materialRepository),
             getMaterialsByIds = GetMaterialsByIdsUseCase(materialRepository),
             getMaterialById = GetMaterialByIdUseCase(materialRepository),
             getMaterialsBySubCategory = GetMaterialsBySubCategoryUseCase(materialRepository),
-            getMaterialsBySubCategoryAndSubType = GetMaterialsBySubCategoryAndSubTypeUseCase(materialRepository),
+            getMaterialsBySubCategoryAndSubType = GetMaterialsBySubCategoryAndSubTypeUseCase(
+                materialRepository
+            ),
             insertMaterials = InsertMaterialsUseCase(materialRepository)
         )
     }
 
     @Provides
     @Singleton
-    fun providePointOfInterestUseCases(pointOfInterestRepository: PointOfInterestRepository): PointOfInterestUseCases{
+    fun providePointOfInterestUseCases(pointOfInterestRepository: PointOfInterestRepository): PointOfInterestUseCases {
         return PointOfInterestUseCases(
-            getLocalPointOfInterestUseCase = GetLocalPointOfInterestUseCase(pointOfInterestRepository),
+            getLocalPointOfInterestUseCase = GetLocalPointOfInterestUseCase(
+                pointOfInterestRepository
+            ),
             getPointOfInterestByIdUseCase = GetPointOfInterestByIdUseCase(pointOfInterestRepository),
-            getPointsOfInterestBySubCategoryUseCase = GetPointsOfInterestBySubCategoryUseCase(pointOfInterestRepository),
-            getPointOfInterestBySubCategoryAndIdUseCase = GetPointOfInterestBySubCategoryAndIdUseCase(pointOfInterestRepository),
-            getPointsOfInterestByIdsUseCase = GetPointsOfInterestByIdsUseCase(pointOfInterestRepository),
+            getPointsOfInterestBySubCategoryUseCase = GetPointsOfInterestBySubCategoryUseCase(
+                pointOfInterestRepository
+            ),
+            getPointOfInterestBySubCategoryAndIdUseCase = GetPointOfInterestBySubCategoryAndIdUseCase(
+                pointOfInterestRepository
+            ),
+            getPointsOfInterestByIdsUseCase = GetPointsOfInterestByIdsUseCase(
+                pointOfInterestRepository
+            ),
             insertPointOfInterestUseCase = InsertPointOfInterestUseCase(pointOfInterestRepository)
         )
     }

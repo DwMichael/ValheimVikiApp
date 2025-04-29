@@ -3,7 +3,7 @@ package com.rabbitv.valheimviki.domain.use_cases.creature.refetch_creatures
 import com.rabbitv.valheimviki.domain.exceptions.CreaturesFetchLocalException
 import com.rabbitv.valheimviki.domain.exceptions.CreaturesInsertException
 import com.rabbitv.valheimviki.domain.model.creature.Creature
-import com.rabbitv.valheimviki.domain.model.creature.CreatureType
+import com.rabbitv.valheimviki.domain.model.creature.CreatureSubCategory
 import com.rabbitv.valheimviki.domain.model.creature.RefetchUseCases
 import com.rabbitv.valheimviki.domain.repository.CreatureRepository
 import com.rabbitv.valheimviki.domain.repository.RelationRepository
@@ -14,9 +14,11 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
-class RefetchCreaturesUseCase @Inject constructor(private val creatureRepository: CreatureRepository,
-                                                  private val relationsRepository: RelationRepository) {
-    suspend operator fun invoke(language: String,  refetchUseCase: RefetchUseCases):
+class RefetchCreaturesUseCase @Inject constructor(
+    private val creatureRepository: CreatureRepository,
+    private val relationsRepository: RelationRepository
+) {
+    suspend operator fun invoke(language: String, refetchUseCase: RefetchUseCases):
             Flow<List<Creature>> {
 
         when (refetchUseCase) {
@@ -36,8 +38,9 @@ class RefetchCreaturesUseCase @Inject constructor(private val creatureRepository
                         throw CreaturesFetchLocalException("API MainBosses request failed with code $errorCode: $errorBody")
                     }
                 }
-                return creatureRepository.getCreaturesBySubCategory(CreatureType.BOSS.toString())
-                .map { mainBossList -> mainBossList.sortedBy { it.order } }}
+                return creatureRepository.getCreaturesBySubCategory(CreatureSubCategory.BOSS.toString())
+                    .map { mainBossList -> mainBossList.sortedBy { it.order } }
+            }
 
             RefetchUseCases.GET_MINI_BOSSES -> {
                 withContext(Dispatchers.IO) {
@@ -55,8 +58,9 @@ class RefetchCreaturesUseCase @Inject constructor(private val creatureRepository
                         throw CreaturesFetchLocalException("API MainBosses request failed with code $errorCode: $errorBody")
                     }
                 }
-                return creatureRepository.getCreaturesBySubCategory(CreatureType.MINI_BOSS.toString())
-                    .map { mainBossList -> mainBossList.sortedBy { it.order } }}
+                return creatureRepository.getCreaturesBySubCategory(CreatureSubCategory.MINI_BOSS.toString())
+                    .map { mainBossList -> mainBossList.sortedBy { it.order } }
+            }
         }
     }
 }

@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.data.mappers.creatures.toMainBoss
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.Creature
-import com.rabbitv.valheimviki.domain.model.creature.CreatureType
+import com.rabbitv.valheimviki.domain.model.creature.CreatureSubCategory
 import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
@@ -44,8 +44,8 @@ class BiomeDetailScreenViewModel @Inject constructor(
     private val oreDepositUseCases: OreDepositUseCases
 ) : ViewModel() {
     private val _biome = MutableStateFlow<Biome?>(null)
-    private  val _mainBoss = MutableStateFlow<MainBoss?>(null)
-    private  val _relatedCreatures = MutableStateFlow<List<Creature>>(emptyList())
+    private val _mainBoss = MutableStateFlow<MainBoss?>(null)
+    private val _relatedCreatures = MutableStateFlow<List<Creature>>(emptyList())
     private val _relatedOreDeposits = MutableStateFlow<List<OreDeposit>>(emptyList())
     private val _relatedMaterials = MutableStateFlow<List<Material>>(emptyList())
     private val _relatedPointOfInterest = MutableStateFlow<List<PointOfInterest>>(emptyList())
@@ -100,7 +100,8 @@ class BiomeDetailScreenViewModel @Inject constructor(
                     relatedObjects.let { ids ->
                         creaturesUseCase.getCreatureByRelationAndSubCategory(
                             relatedIds,
-                            CreatureType.BOSS)?.toMainBoss().let { boss ->
+                            CreatureSubCategory.BOSS
+                        )?.toMainBoss().let { boss ->
                             _mainBoss.value = boss
                         }
                     }
@@ -130,7 +131,8 @@ class BiomeDetailScreenViewModel @Inject constructor(
                 }
 
                 try {
-                    val pointOfInterest = pointOfInterestUseCases.getPointsOfInterestByIdsUseCase(relatedIds)
+                    val pointOfInterest =
+                        pointOfInterestUseCases.getPointsOfInterestByIdsUseCase(relatedIds)
                     _relatedPointOfInterest.value = pointOfInterest
                 } catch (e: Exception) {
                     Log.e("PointOfInterest fetch error BiomeDetailViewModel", e.message.toString())

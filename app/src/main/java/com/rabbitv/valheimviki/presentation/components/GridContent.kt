@@ -48,6 +48,7 @@ import com.rabbitv.valheimviki.domain.repository.ItemData
 import com.rabbitv.valheimviki.navigation.LocalSharedTransitionScope
 import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_TWO_COLUMNS
 import com.rabbitv.valheimviki.ui.theme.MEDIUM_PADDING
+import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.SMALL_PADDING
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
@@ -154,18 +155,11 @@ fun GridItem(
                             boundsTransform = { _, _ ->
                                 tween(durationMillis = 600)
                             },
-//                            boundsTransform = BoundsTransform{initialBounds, targetBounds ->
-//                                keyframes {
-//                                    durationMillis = boundsAnimationDurationMillis
-//                                    initialBounds at 0 using ArcMode.ArcBelow using FastOutSlowInEasing
-//                                    targetBounds at boundsAnimationDurationMillis
-//                                }
-//                            },
                             animatedVisibilityScope = animatedVisibilityScope,
                         )
                         .wrapContentHeight(align = Alignment.CenterVertically),
                     text = item.name,
-                    color = Color.White,
+                    color = PrimaryWhite,
                     style = MaterialTheme.typography.headlineSmall,
                     overflow = TextOverflow.Ellipsis,
                 )

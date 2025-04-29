@@ -1,6 +1,6 @@
 package com.rabbitv.valheimviki.utils
 
-import com.rabbitv.valheimviki.domain.model.creature.CreatureType
+import com.rabbitv.valheimviki.domain.model.creature.CreatureSubCategory
 
 object Constants {
     //API URL
@@ -32,12 +32,12 @@ object Constants {
     const val DETAIL_ROUTE_GRAPH = "detailGraph"
 
     //Creature Order map
-    val CreatureTYPE_ORDER_MAP = mapOf(
-        CreatureType.BOSS.toString() to 1,
-        CreatureType.MINI_BOSS.toString() to 2,
-        CreatureType.AGGRESSIVE_CREATURE.toString() to 3,
-        CreatureType.PASSIVE_CREATURE.toString() to 4,
-        CreatureType.NPC.toString() to 5,
+    val CreatureSubCategory_ORDER_MAP = mapOf(
+        CreatureSubCategory.BOSS.toString() to 1,
+        CreatureSubCategory.MINI_BOSS.toString() to 2,
+        CreatureSubCategory.AGGRESSIVE_CREATURE.toString() to 3,
+        CreatureSubCategory.PASSIVE_CREATURE.toString() to 4,
+        CreatureSubCategory.NPC.toString() to 5,
     )
 
 

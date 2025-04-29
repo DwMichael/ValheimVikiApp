@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -21,14 +23,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.repository.ItemData
+import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.DETAIL_ITEM_SHAPE_PADDING
+import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
+import com.rabbitv.valheimviki.ui.theme.ShimmerDarkGray
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -36,9 +43,12 @@ import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 fun ListContent(
     items: List<ItemData>,
     clickToNavigate: (item: ItemData) -> Unit,
+    lazyListState: LazyListState
 ) {
     LazyColumn(
+        state = lazyListState,
         modifier = Modifier
+            .padding(horizontal = BODY_CONTENT_PADDING.dp)
             .fillMaxSize()
     ) {
         items(items) { item ->
@@ -60,7 +70,7 @@ fun ListItem(
             .fillMaxWidth()
             .height(80.dp)
             .clip(RoundedCornerShape(DETAIL_ITEM_SHAPE_PADDING))
-            .background(Color(0xFF1f1d18))
+            .background(ShimmerDarkGray)
             .clickable {
                 clickToNavigate(item)
             },
@@ -72,17 +82,19 @@ fun ListItem(
                 .fillMaxHeight()
                 .width(120.dp)
                 .clip(RoundedCornerShape(DETAIL_ITEM_SHAPE_PADDING)),
+            placeholder = painterResource(R.drawable.ic_placeholder),
             contentScale = ContentScale.Crop,
         )
         Text(
             text = item.name,
-            color = Color(0xFFd4c194),
+            color = PrimaryWhite,
             modifier = modifier
                 .weight(1f)
                 .fillMaxSize()
                 .wrapContentHeight(Alignment.CenterVertically)
                 .padding(start = 12.dp, end = 8.dp),
-            style = MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.titleLarge,
+            overflow = TextOverflow.Ellipsis
         )
     }
 }
@@ -135,6 +147,7 @@ private fun PreviewContentList2() {
         ListContent(
             items = sampleBiomes,
             clickToNavigate = { item -> {} },
+            lazyListState = rememberLazyListState()
         )
     }
 }

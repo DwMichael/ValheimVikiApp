@@ -80,7 +80,8 @@ fun WelcomeScreen(
             .paint(
                 painterResource(id = pages[currentPage].image),
                 contentScale = ContentScale.Crop
-            ).padding(bottom = 50.dp)
+            )
+            .padding(bottom = 50.dp)
     ) {
         HorizontalPager(
             state = pagerState,
@@ -158,7 +159,7 @@ fun PagerScreen(onBoardingPage: OnBoardingPage, position: Int, horizontalPadding
             style = MaterialTheme.typography.displayLarge,
             color = Color.White
 //            style = TextStyle(
-//                color = Color.White,
+//                color = Color.PrimaryWhite,
 //                fontSize = 48.sp,
 //                fontWeight = FontWeight(800),
 //                letterSpacing = 0.15.sp,
@@ -172,7 +173,7 @@ fun PagerScreen(onBoardingPage: OnBoardingPage, position: Int, horizontalPadding
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.labelLarge, // Now style is correctly used
             color = Color.White
-            )
+        )
 
 
     }
