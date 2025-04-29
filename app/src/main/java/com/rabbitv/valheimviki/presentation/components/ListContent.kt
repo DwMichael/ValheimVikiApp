@@ -28,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.repository.ItemData
-import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.DETAIL_ITEM_SHAPE_PADDING
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
@@ -38,15 +37,14 @@ fun ListContent(
     items: List<ItemData>,
     clickToNavigate: (item: ItemData) -> Unit,
 ) {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-
-        ) {
-            items(items) { item ->
-                    ListItem(item = item, clickToNavigate = clickToNavigate)
-                    Spacer(modifier = Modifier.height(16.dp))
-            }
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        items(items) { item ->
+            ListItem(item = item, clickToNavigate = clickToNavigate)
+            Spacer(modifier = Modifier.height(16.dp))
+        }
 
     }
 }
@@ -62,7 +60,7 @@ fun ListItem(
             .fillMaxWidth()
             .height(80.dp)
             .clip(RoundedCornerShape(DETAIL_ITEM_SHAPE_PADDING))
-            .background(Color(0xFF1f1d18 ))
+            .background(Color(0xFF1f1d18))
             .clickable {
                 clickToNavigate(item)
             },
@@ -72,7 +70,8 @@ fun ListItem(
             contentDescription = item.name,
             modifier = modifier
                 .fillMaxHeight()
-                .width(120.dp).clip(RoundedCornerShape(DETAIL_ITEM_SHAPE_PADDING)),
+                .width(120.dp)
+                .clip(RoundedCornerShape(DETAIL_ITEM_SHAPE_PADDING)),
             contentScale = ContentScale.Crop,
         )
         Text(
