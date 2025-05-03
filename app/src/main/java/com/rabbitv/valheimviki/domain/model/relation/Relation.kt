@@ -10,8 +10,10 @@ import kotlinx.serialization.Serializable
 data class Relation(
 
     @PrimaryKey(autoGenerate = false)
-    @SerializedName("id") val id:String,
-    @SerializedName("mainItemId") val mainItemId:String,
-    @SerializedName("relationItemId") val relatedItemId:String,
-    @SerializedName("quantity") val quantity:Int? = null
+    @SerializedName("id") val id: String,
+    @SerializedName("mainItemId") val mainItemId: String,
+    @SerializedName("relationItemId") val relatedItemId: String,
+    @SerializedName("quantity") val quantity: Int? = null,
+    @SerializedName("quantity2star") val quantity2star: Int? = null,
+    @SerializedName("quantity3star") val quantity3star: Int? = null
 )

@@ -3,6 +3,7 @@ package com.rabbitv.valheimviki.di
 import android.content.Context
 import com.rabbitv.valheimviki.data.local.dao.BiomeDao
 import com.rabbitv.valheimviki.data.local.dao.CreatureDao
+import com.rabbitv.valheimviki.data.local.dao.FoodDao
 import com.rabbitv.valheimviki.data.local.dao.MaterialDao
 import com.rabbitv.valheimviki.data.local.dao.OreDepositDao
 import com.rabbitv.valheimviki.data.local.dao.PointOfInterestDao
@@ -10,6 +11,7 @@ import com.rabbitv.valheimviki.data.local.dao.RelationDao
 import com.rabbitv.valheimviki.data.local.dao.TreeDao
 import com.rabbitv.valheimviki.data.remote.api.ApiBiomeService
 import com.rabbitv.valheimviki.data.remote.api.ApiCreatureService
+import com.rabbitv.valheimviki.data.remote.api.ApiFoodService
 import com.rabbitv.valheimviki.data.remote.api.ApiMaterialsService
 import com.rabbitv.valheimviki.data.remote.api.ApiOreDepositService
 import com.rabbitv.valheimviki.data.remote.api.ApiPointOfInterestService
@@ -19,6 +21,7 @@ import com.rabbitv.valheimviki.data.repository.DataStoreOperationsImpl
 import com.rabbitv.valheimviki.data.repository.DataStoreRepository
 import com.rabbitv.valheimviki.data.repository.biome.BiomeRepositoryImpl
 import com.rabbitv.valheimviki.data.repository.creature.CreatureRepositoryImpl
+import com.rabbitv.valheimviki.data.repository.food.FoodRepositoryImpl
 import com.rabbitv.valheimviki.data.repository.material.MaterialRepositoryImpl
 import com.rabbitv.valheimviki.data.repository.ore_deposit.OreDepositRepositoryImpl
 import com.rabbitv.valheimviki.data.repository.point_of_interest.PointOfInterestRepositoryImpl
@@ -27,6 +30,7 @@ import com.rabbitv.valheimviki.data.repository.tree.TreeRepositoryImpl
 import com.rabbitv.valheimviki.domain.repository.BiomeRepository
 import com.rabbitv.valheimviki.domain.repository.CreatureRepository
 import com.rabbitv.valheimviki.domain.repository.DataStoreOperations
+import com.rabbitv.valheimviki.domain.repository.FoodRepository
 import com.rabbitv.valheimviki.domain.repository.MaterialRepository
 import com.rabbitv.valheimviki.domain.repository.NetworkConnectivity
 import com.rabbitv.valheimviki.domain.repository.OreDepositRepository
@@ -56,6 +60,8 @@ import com.rabbitv.valheimviki.domain.use_cases.datastore.get_onboarding_state.R
 import com.rabbitv.valheimviki.domain.use_cases.datastore.language_state_provider.LanguageProvider
 import com.rabbitv.valheimviki.domain.use_cases.datastore.save_onboarding_state.SaveOnBoardingState
 import com.rabbitv.valheimviki.domain.use_cases.datastore.saved_language_state.SaveLanguageState
+import com.rabbitv.valheimviki.domain.use_cases.food.FoodUseCases
+import com.rabbitv.valheimviki.domain.use_cases.food.get_local_food_list.GetLocalFoodList
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.get_local_Materials.GetLocalMaterialsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.material.get_material_by_id.GetMaterialByIdUseCase
@@ -169,6 +175,15 @@ object RepositoryModule {
 
     @Provides
     @Singleton
+    fun provideFoodRepositoryImpl(
+        apiService: ApiFoodService,
+        treeDao: FoodDao
+    ): FoodRepository {
+        return FoodRepositoryImpl(apiService, treeDao)
+    }
+
+    @Provides
+    @Singleton
     fun provideNetworkConnectivityObserver(
         @ApplicationContext context: Context
     ): NetworkConnectivity {
@@ -185,6 +200,7 @@ object RepositoryModule {
         oreDepositRepository: OreDepositRepository,
         pointOfInterestRepository: PointOfInterestRepository,
         treeRepository: TreeRepository,
+        foodRepository: FoodRepository,
         dataStoreUseCases: DataStoreUseCases
     ): DataRefetchUseCase {
         return DataRefetchUseCase(
@@ -196,6 +212,7 @@ object RepositoryModule {
             materialsRepository = materialRepository,
             pointOfInterestRepository = pointOfInterestRepository,
             treeRepository = treeRepository,
+            foodRepository = foodRepository
         )
     }
 
@@ -313,6 +330,14 @@ object RepositoryModule {
             getLocalTreesUseCase = GetLocalTreesUseCase(treeRepository),
             getTreeByIdUseCase = GetTreeByIdUseCase(treeRepository),
             getTreesByIdsUseCase = GetTreesByIdsUseCase(treeRepository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideFoodUseCases(foodRepository: FoodRepository): FoodUseCases {
+        return FoodUseCases(
+            getLocalFoodList = GetLocalFoodList(foodRepository)
         )
     }
 }

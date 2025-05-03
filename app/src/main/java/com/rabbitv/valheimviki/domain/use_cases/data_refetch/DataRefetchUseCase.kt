@@ -4,6 +4,7 @@ import com.rabbitv.valheimviki.domain.exceptions.FetchException
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.model.data_refetch_result.DataRefetchResult
+import com.rabbitv.valheimviki.domain.model.food.Food
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
@@ -11,6 +12,7 @@ import com.rabbitv.valheimviki.domain.model.relation.Relation
 import com.rabbitv.valheimviki.domain.model.tree.Tree
 import com.rabbitv.valheimviki.domain.repository.BiomeRepository
 import com.rabbitv.valheimviki.domain.repository.CreatureRepository
+import com.rabbitv.valheimviki.domain.repository.FoodRepository
 import com.rabbitv.valheimviki.domain.repository.MaterialRepository
 import com.rabbitv.valheimviki.domain.repository.OreDepositRepository
 import com.rabbitv.valheimviki.domain.repository.PointOfInterestRepository
@@ -34,6 +36,7 @@ class DataRefetchUseCase @Inject constructor(
     private val relationsRepository: RelationRepository,
     private val pointOfInterestRepository: PointOfInterestRepository,
     private val treeRepository: TreeRepository,
+    private val foodRepository: FoodRepository,
     private val dataStoreUseCases: DataStoreUseCases,
 ) {
     suspend fun refetchAllData(): DataRefetchResult {
@@ -50,6 +53,7 @@ class DataRefetchUseCase @Inject constructor(
             val materialsResponse = materialsRepository.fetchMaterials(language)
             val pointOfInterestResponse = pointOfInterestRepository.fetchPointOfInterests(language)
             val treeResponse = treeRepository.fetchTrees(language)
+            val foodResponse = foodRepository.fetchFoodList(language)
             val relationResponse = relationsRepository.fetchRelations()
 
             if (biomeResponse.isSuccessful &&
@@ -58,6 +62,7 @@ class DataRefetchUseCase @Inject constructor(
                 materialsResponse.isSuccessful &&
                 pointOfInterestResponse.isSuccessful &&
                 treeResponse.isSuccessful &&
+                foodResponse.isSuccessful &&
                 relationResponse.isSuccessful
             ) {
 
@@ -109,6 +114,13 @@ class DataRefetchUseCase @Inject constructor(
                     }
                 } ?: return DataRefetchResult.Error("Null trees data received")
 
+                foodResponse.body()?.let { foodList ->
+                    if (foodList.isNotEmpty()) {
+                        foodRepository.insertFoodList(foodList)
+                    } else
+                        return DataRefetchResult.Error("Empty food data received")
+                } ?: return DataRefetchResult.Error("Null food data received")
+
                 relationResponse.body()?.let { relations ->
                     if (relations.isNotEmpty()) {
                         relationsRepository.insertRelations(relations)
@@ -122,9 +134,10 @@ class DataRefetchUseCase @Inject constructor(
                 val errorMessage = "API error: " +
                         (biomeResponse.errorBody()?.string() ?: "") +
                         (creatureResponse.errorBody()?.string() ?: "") +
-                        (oreDepositResponse.errorBody()?.string() ?: "")+
-                        (materialsResponse.errorBody()?.string() ?: "")+
-                        (pointOfInterestResponse.errorBody()?.string() ?: "")+
+                        (oreDepositResponse.errorBody()?.string() ?: "") +
+                        (materialsResponse.errorBody()?.string() ?: "") +
+                        (pointOfInterestResponse.errorBody()?.string() ?: "") +
+                        (foodResponse.errorBody()?.string() ?: "") +
                         (treeResponse.errorBody()?.string() ?: "")
                 (relationResponse.errorBody()?.string() ?: "")
                 DataRefetchResult.NetworkError(errorMessage)
@@ -152,6 +165,7 @@ class DataRefetchUseCase @Inject constructor(
             async { materialsRepository.getLocalMaterials().first() },
             async { pointOfInterestRepository.getLocalPointOfInterest().first() },
             async { treeRepository.getLocalTrees().first() },
+            async { foodRepository.getLocalFoodList().first() },
             async { relationsRepository.getLocalRelations().first() }
         )
 
@@ -163,7 +177,8 @@ class DataRefetchUseCase @Inject constructor(
         val materials = results[3] as List<Material>
         val pointsOfInterest = results[4] as List<PointOfInterest>
         val trees = results[5] as List<Tree>
-        val relations = results[6] as List<Relation>
+        val food = results[6] as List<Food>
+        val relations = results[7] as List<Relation>
 
         return@coroutineScope (
                 biomes.size == 9 &&
@@ -172,6 +187,7 @@ class DataRefetchUseCase @Inject constructor(
                         materials.size == 266 && //supabase ma o jeden więcej ale to przez deertrophy
                         pointsOfInterest.size == 51 &&
                         trees.size == 8 &&
+                        food.size == 76 &&
                         relations.size == 246
                 )
     }

@@ -42,8 +42,12 @@ object DatabaseModule {
     fun provideMaterialDao(appDatabase: ValheimVikiDatabase) = appDatabase.materialDao()
 
     @Provides
-    fun providePointOfInterestDao(appDatabase: ValheimVikiDatabase) = appDatabase.pointOfInterestDao()
+    fun providePointOfInterestDao(appDatabase: ValheimVikiDatabase) =
+        appDatabase.pointOfInterestDao()
 
     @Provides
     fun provideTreeDao(appDatabase: ValheimVikiDatabase) = appDatabase.treeDao()
+
+    @Provides
+    fun provideFoodDao(appDatabase: ValheimVikiDatabase) = appDatabase.foodDao()
 }
