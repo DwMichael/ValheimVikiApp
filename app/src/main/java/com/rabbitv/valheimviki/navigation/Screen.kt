@@ -1,5 +1,6 @@
 package com.rabbitv.valheimviki.navigation
 
+import com.rabbitv.valheimviki.utils.Constants.AGGRESSIVE_CREATURE_KEY
 import com.rabbitv.valheimviki.utils.Constants.BIOME_ARGUMENT_KEY
 import com.rabbitv.valheimviki.utils.Constants.MAIN_BOSS_ARGUMENT_KEY
 import com.rabbitv.valheimviki.utils.Constants.MINI_BOSS_ARGUMENT_KEY
@@ -39,19 +40,29 @@ sealed class Screen(val route: String) {
     }
 
     @Serializable
-    object MainBossDetail : Screen("mainBoss_screen/{$MAIN_BOSS_ARGUMENT_KEY}/{$TEXT_ARGUMENT_KEY}") {
+    object MainBossDetail :
+        Screen("mainBoss_screen/{$MAIN_BOSS_ARGUMENT_KEY}/{$TEXT_ARGUMENT_KEY}") {
         fun passCreatureId(mainBossId: String, text: String): String {
             return "mainBoss_screen/$mainBossId/$text"
         }
     }
 
     @Serializable
-    object MiniBossDetail : Screen("miniBoss_screen/{$MINI_BOSS_ARGUMENT_KEY}/{$TEXT_ARGUMENT_KEY}"){
+    object MiniBossDetail :
+        Screen("miniBoss_screen/{$MINI_BOSS_ARGUMENT_KEY}/{$TEXT_ARGUMENT_KEY}") {
         fun passMiniBossId(miniBossId: String, text: String): String {
             return "miniBoss_screen/$miniBossId/$text"
         }
     }
 
+
+    @Serializable
+    object AggressiveCreatureDetail :
+        Screen("aggressive_creature_screen/{$AGGRESSIVE_CREATURE_KEY}") {
+        fun passAggressiveCreatureId(aggressiveCreatureId: String): String {
+            return "aggressive_creature_screen/$aggressiveCreatureId"
+        }
+    }
 
 
 }

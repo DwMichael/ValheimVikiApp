@@ -51,12 +51,14 @@ import com.rabbitv.valheimviki.presentation.creatures.bosses.BossScreen
 import com.rabbitv.valheimviki.presentation.creatures.mini_bosses.MiniBossScreen
 import com.rabbitv.valheimviki.presentation.creatures.mob_list.MobListScreen
 import com.rabbitv.valheimviki.presentation.detail.biome.BiomeDetailScreen
+import com.rabbitv.valheimviki.presentation.detail.creature.aggressive_screen.AggressiveCreatureDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.creature.main_boss_screen.MainBossDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.creature.mini_boss_screen.MiniBossDetailScreen
 import com.rabbitv.valheimviki.presentation.home.MainAppBar
 import com.rabbitv.valheimviki.presentation.intro.WelcomeScreen
 import com.rabbitv.valheimviki.presentation.splash.SplashScreen
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
+import com.rabbitv.valheimviki.utils.Constants.AGGRESSIVE_CREATURE_KEY
 import com.rabbitv.valheimviki.utils.Constants.BIOME_ARGUMENT_KEY
 import com.rabbitv.valheimviki.utils.Constants.MAIN_BOSS_ARGUMENT_KEY
 import com.rabbitv.valheimviki.utils.Constants.MINI_BOSS_ARGUMENT_KEY
@@ -208,11 +210,19 @@ fun MainContainer(
                     composable(Screen.MobList.route) {
                         MobListScreen(
                             modifier = Modifier.padding(10.dp),
-//                            onItemClick = { miniBossId, text ->
-//                                valheimVikiNavController.navigate(
-//                                    Screen.MiniBossDetail.passMiniBossId(miniBossId, text)
-//                                )
-//                            },
+                            onItemClick = { creatureId, creatureSubCategory ->
+                                when (creatureSubCategory) {
+                                    0 -> {}
+                                    1 -> valheimVikiNavController.navigate(
+                                        Screen.AggressiveCreatureDetail.passAggressiveCreatureId(
+                                            creatureId
+                                        )
+                                    )
+
+                                    2 -> {}
+                                }
+
+                            },
                             paddingValues = innerPadding,
 //                            animatedVisibilityScope = this@composable
                         )
@@ -258,6 +268,18 @@ fun MainContainer(
                                 valheimVikiNavController.popBackStack()
                             },
                             animatedVisibilityScope = this@composable
+                        )
+                    }
+                    composable(
+                        route = Screen.AggressiveCreatureDetail.route,
+                        arguments = listOf(
+                            navArgument(AGGRESSIVE_CREATURE_KEY) { type = NavType.StringType },
+                        )
+                    ) {
+                        AggressiveCreatureDetailScreen(
+                            onBack = {
+                                valheimVikiNavController.popBackStack()
+                            },
                         )
                     }
                 }

@@ -59,6 +59,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun MobListScreen(
+    onItemClick: (String, Int) -> Unit,
     modifier: Modifier, paddingValues: PaddingValues, viewModel: MobListViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -121,8 +122,9 @@ fun MobListScreen(
             if (uiState.creatureList.isNotEmpty() == true) {
                 ListContent(
                     items = uiState.creatureList,
-                    clickToNavigate = {},
-                    lazyListState = lazyListState
+                    clickToNavigate = onItemClick,
+                    lazyListState = lazyListState,
+                    uiState.selectedSubCategory,
                 )
             }
         }

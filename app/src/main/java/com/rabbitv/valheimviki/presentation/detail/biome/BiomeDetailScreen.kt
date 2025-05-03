@@ -45,8 +45,8 @@ import com.rabbitv.valheimviki.navigation.LocalSharedTransitionScope
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.ImageWithTopLabel
-import com.rabbitv.valheimviki.presentation.components.MainDetailImage
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.main_detail_images.MainDetailImageAnimated
 import com.rabbitv.valheimviki.presentation.components.trident_dividers.TridentsDividedRow
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
@@ -101,6 +101,7 @@ fun BiomeDetailContent(
                 biomeUiState.isLoading -> {
                     Box(modifier = Modifier.size(45.dp))
                 }
+
                 biomeUiState.biome != null -> {
                     Image(
                         painter = painterResource(id = R.drawable.main_background),
@@ -118,7 +119,7 @@ fun BiomeDetailContent(
                         horizontalAlignment = Alignment.Start,
                     ) {
 
-                        MainDetailImage(
+                        MainDetailImageAnimated(
                             onBack = onBack,
                             itemData = biomeUiState.biome,
                             sharedTransitionScope = sharedTransitionScope,

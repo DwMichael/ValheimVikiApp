@@ -99,7 +99,6 @@ class MobListViewModel @Inject constructor(
     }
 
     fun selectCreaturesSubCategory(subCategory: CreatureSubCategory) {
-        Log.e("selectCreaturesSubCategory WYWOŁANIE", "$subCategory")
         when (subCategory) {
             CreatureSubCategory.PASSIVE_CREATURE -> {
                 _selectedSubCategory.value = 0

@@ -42,8 +42,9 @@ import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 @Composable
 fun ListContent(
     items: List<ItemData>,
-    clickToNavigate: (item: ItemData) -> Unit,
-    lazyListState: LazyListState
+    clickToNavigate: (String, Int) -> Unit,
+    lazyListState: LazyListState,
+    subCategoryNumber: Int,
 ) {
     LazyColumn(
         state = lazyListState,
@@ -52,7 +53,9 @@ fun ListContent(
             .fillMaxSize()
     ) {
         items(items) { item ->
-            ListItem(item = item, clickToNavigate = clickToNavigate)
+            ListItem(item = item, clickToNavigate = {
+                clickToNavigate(item.id, subCategoryNumber)
+            })
             Spacer(modifier = Modifier.height(16.dp))
         }
 
@@ -63,7 +66,7 @@ fun ListContent(
 fun ListItem(
     item: ItemData,
     modifier: Modifier = Modifier,
-    clickToNavigate: (item: ItemData) -> Unit
+    clickToNavigate: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -71,9 +74,7 @@ fun ListItem(
             .height(80.dp)
             .clip(RoundedCornerShape(DETAIL_ITEM_SHAPE_PADDING))
             .background(ShimmerDarkGray)
-            .clickable {
-                clickToNavigate(item)
-            },
+            .clickable { clickToNavigate() },
     ) {
         AsyncImage(
             model = item.imageUrl,
@@ -146,8 +147,11 @@ private fun PreviewContentList2() {
     ValheimVikiAppTheme {
         ListContent(
             items = sampleBiomes,
-            clickToNavigate = { item -> {} },
-            lazyListState = rememberLazyListState()
+            clickToNavigate = { string1, intValue ->
+                println("Navigating with: $string1, $intValue")
+            },
+            lazyListState = rememberLazyListState(),
+            0,
         )
     }
 }

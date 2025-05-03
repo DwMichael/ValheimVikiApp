@@ -7,11 +7,14 @@ import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.mapper.CreatureFactory
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.aggresive.AggressiveCreature
+import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
+import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.utils.Constants
+import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -23,17 +26,21 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class AggressiveCreatureDetailScreenViewModel  @Inject constructor(
+@HiltViewModel
+class AggressiveCreatureDetailScreenViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val creatureUseCases: CreatureUseCases,
     private val relationUseCases: RelationUseCases,
-    private val biomeUseCases: BiomeUseCases
-) : ViewModel(){
-    private val _creatureId : String = checkNotNull(savedStateHandle[Constants.MAIN_BOSS_ARGUMENT_KEY])
+    private val biomeUseCases: BiomeUseCases,
+    private val materialUseCases: MaterialUseCases,
+) : ViewModel() {
+    private val _aggressiveCreatureId: String =
+        checkNotNull(savedStateHandle[Constants.AGGRESSIVE_CREATURE_KEY])
     private val _creature = MutableStateFlow<AggressiveCreature?>(null)
-    private val _biome = MutableStateFlow<Biome?> (null)
+    private val _biome = MutableStateFlow<Biome?>(null)
+    private val _dropItems = MutableStateFlow<List<Material>>(emptyList())
     private val _isLoading = MutableStateFlow<Boolean>(false)
-    private val _error  = MutableStateFlow<String?>(null)
+    private val _error = MutableStateFlow<String?>(null)
 
 
     val uiState = combine(
@@ -41,7 +48,7 @@ class AggressiveCreatureDetailScreenViewModel  @Inject constructor(
         _biome,
         _isLoading,
         _error,
-    ){ values->
+    ) { values ->
         AggressiveCreatureDetailUiState(
             aggressiveCreature = values[0] as AggressiveCreature?,
             biome = values[1] as Biome?,
@@ -59,15 +66,15 @@ class AggressiveCreatureDetailScreenViewModel  @Inject constructor(
     }
 
 
-    internal fun launch(){
+    internal fun launch() {
         try {
-            _isLoading.value =true
+            _isLoading.value = true
             viewModelScope.launch(Dispatchers.IO) {
-                creatureUseCases.getCreatureById(_creatureId).let {
+                creatureUseCases.getCreatureById(_aggressiveCreatureId).let {
                     _creature.value = CreatureFactory.createFromCreature(it)
                 }
                 val relatedObjects: List<RelatedItem> = async {
-                    relationUseCases.getRelatedIdsUseCase(_creatureId)
+                    relationUseCases.getRelatedIdsUseCase(_aggressiveCreatureId)
                 }.await()
                 val relatedIds = relatedObjects.map { it.id }
 
@@ -82,8 +89,7 @@ class AggressiveCreatureDetailScreenViewModel  @Inject constructor(
                 deferreds.awaitAll()
             }
             _isLoading.value = false
-        }catch (e: Exception)
-        {
+        } catch (e: Exception) {
             Log.e("General fetch error AggressiveDetailViewModel", e.message.toString())
             _isLoading.value = false
             _error.value = e.message

@@ -1,6 +1,5 @@
 package com.rabbitv.valheimviki.presentation.detail.creature.mini_boss_screen
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -48,8 +47,8 @@ import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.navigation.LocalSharedTransitionScope
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.HorizontalPagerSection
-import com.rabbitv.valheimviki.presentation.components.MainDetailImage
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.main_detail_images.MainDetailImageAnimated
 import com.rabbitv.valheimviki.presentation.components.trident_dividers.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.creature.components.BossStatsFlowRow
 import com.rabbitv.valheimviki.presentation.detail.creature.components.CardWithOverlayLabel
@@ -122,7 +121,7 @@ fun MiniBossContent(
                         verticalArrangement = Arrangement.Top,
                         horizontalAlignment = Alignment.Start,
                     ) {
-                        MainDetailImage(
+                        MainDetailImageAnimated(
                             onBack = onBack,
                             itemData = miniBossUiSate.miniBoss,
                             sharedTransitionScope = sharedTransitionScope,
@@ -143,36 +142,38 @@ fun MiniBossContent(
                             CardWithOverlayLabel(
                                 painter = rememberAsyncImagePainter(miniBossUiSate.primarySpawn.imageUrl),
                                 content = {
-                                        Box(
-                                            modifier = Modifier.fillMaxSize().wrapContentHeight(Alignment.CenterVertically).wrapContentWidth(Alignment.CenterHorizontally)
-                                        ) {
-                                            Text(
-                                                it.name.uppercase(),
-                                                style = MaterialTheme.typography.bodyLarge,
-                                                modifier = Modifier,
-                                                color = Color.White,
-                                                textAlign = TextAlign.Center
-                                            )
-                                        }
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .wrapContentHeight(Alignment.CenterVertically)
+                                            .wrapContentWidth(Alignment.CenterHorizontally)
+                                    ) {
+                                        Text(
+                                            it.name.uppercase(),
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            modifier = Modifier,
+                                            color = Color.White,
+                                            textAlign = TextAlign.Center
+                                        )
                                     }
+                                }
                             )
                         }
-                        if(miniBossUiSate.dropItems.isNotEmpty()) {
-                            Log.e("DropItems !!!!!", miniBossUiSate.dropItems.toString())
+                        if (miniBossUiSate.dropItems.isNotEmpty()) {
                             SlavicDivider()
-                                HorizontalPagerSection(
-                                    rememberPagerState(
-                                        initialPage = 1,
-                                        pageCount = { miniBossUiSate.dropItems.size }),
-                                    miniBossUiSate.dropItems,
-                                    Lucide.Trophy,
-                                    "Drop Items",
-                                    "Items that drop from boss after defeating him",
-                                    ContentScale.Crop,
-                                    iconModifier = Modifier
-                                )
+                            HorizontalPagerSection(
+                                rememberPagerState(
+                                    initialPage = 1,
+                                    pageCount = { miniBossUiSate.dropItems.size }),
+                                miniBossUiSate.dropItems,
+                                Lucide.Trophy,
+                                "Drop Items",
+                                "Items that drop from boss after defeating him",
+                                ContentScale.Crop,
+                                iconModifier = Modifier
+                            )
                         }
-                        if(miniBossUiSate.dropItems.isEmpty() && miniBossUiSate.primarySpawn == null) {
+                        if (miniBossUiSate.dropItems.isEmpty() && miniBossUiSate.primarySpawn == null) {
                             Row(modifier = Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp))
                             {
                                 Spacer(Modifier.weight(1f))

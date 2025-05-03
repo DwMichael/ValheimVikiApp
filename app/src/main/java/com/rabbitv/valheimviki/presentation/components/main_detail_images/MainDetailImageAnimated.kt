@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.components
+package com.rabbitv.valheimviki.presentation.components.main_detail_images
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
@@ -52,7 +52,7 @@ import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun MainDetailImage(
+fun MainDetailImageAnimated(
     onBack: () -> Unit = {},
     itemData: ItemData,
     sharedTransitionScope: SharedTransitionScope,
@@ -149,7 +149,6 @@ fun MainDetailImage(
                     }
                 }
             }
-
         }
     }
 }
@@ -157,12 +156,12 @@ fun MainDetailImage(
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Preview(showBackground = true)
 @Composable
-fun PreviewMainDetailImage() {
+fun PreviewMainDetailImageAnimated() {
     ValheimVikiAppTheme {
         SharedTransitionLayout {
             AnimatedVisibility(true) {
                 val itemsData = generateFakeMaterials()
-                MainDetailImage(
+                MainDetailImageAnimated(
                     onBack = {},
                     itemData = itemsData.first(),
                     sharedTransitionScope = this@SharedTransitionLayout,
