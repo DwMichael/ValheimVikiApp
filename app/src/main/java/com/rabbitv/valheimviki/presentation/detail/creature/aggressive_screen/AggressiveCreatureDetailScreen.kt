@@ -26,13 +26,13 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Divider
-import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -94,7 +94,6 @@ import kotlin.math.absoluteValue
 @Composable
 fun AggressiveCreatureDetailScreen(
     onBack: () -> Unit,
-    modifier: Modifier = Modifier,
     viewModel: AggressiveCreatureDetailScreenViewModel = hiltViewModel()
 ) {
 
@@ -158,12 +157,12 @@ fun AggressiveCreatureDetailContent(
                             }
                         }
                     )
-                    Divider(
-                        thickness = 1.dp,
-                        color = PrimaryWhite,
+                    HorizontalDivider(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(BODY_CONTENT_PADDING.dp)
+                            .padding(BODY_CONTENT_PADDING.dp),
+                        thickness = 1.dp,
+                        color = PrimaryWhite
                     )
                     DetailExpandableText(
                         text = it.description,
@@ -212,7 +211,6 @@ fun AggressiveCreatureDetailContent(
                             "Drop Items",
                             "Items that drop from creature after defeating him",
                             ContentScale.Crop,
-                            iconModifier = Modifier,
                             parentPageIndex = pageIndex,
                         )
                     }
@@ -307,7 +305,6 @@ fun CreatureHorizontalPager(
     title: String,
     subTitle: String,
     contentScale: ContentScale,
-    iconModifier: Modifier = Modifier.rotate(-85f),
     parentPageIndex: Int,
 ) {
     val pageWidth = 300.dp
@@ -336,7 +333,7 @@ fun CreatureHorizontalPager(
                         icon,
                         tint = Color.White,
                         contentDescription = "Rectangle section Icon",
-                        modifier = iconModifier
+                        modifier = Modifier.rotate(-85f)
                     )
                     Spacer(modifier = Modifier.width(11.dp))
                     Text(
@@ -493,16 +490,27 @@ fun CreatureHorizontalPagerItem(
 fun PreviewCreatureHorizontalPagerItem() {
     ValheimVikiAppTheme {
         val pagerState = rememberPagerState(pageCount = {
-            10
+            1
         })
-        val creatureList = FakeData.generateFakeCreatures()
-        CreatureHorizontalPagerItem(
-            pagerState = pagerState,
-            list = emptyList(),
-            pageIndex = 1,
-            parentPageIndex = 1,
-            contentScale = ContentScale.Crop
-        )
+        val materials = FakeData.generateFakeMaterials()
+        val list1 = listOf(1, 1, 1)
+        val list2 = listOf(2, 2, 2)
+        listOf(
+            DropItem(
+                material = materials[0],
+                quantityList = list1,
+                chanceStarList = list2
+            )
+
+        ).also {
+            CreatureHorizontalPagerItem(
+                pagerState = pagerState,
+                list = it,
+                pageIndex = 0,
+                parentPageIndex = 0,
+                contentScale = ContentScale.Crop
+            )
+        }
     }
 }
 
