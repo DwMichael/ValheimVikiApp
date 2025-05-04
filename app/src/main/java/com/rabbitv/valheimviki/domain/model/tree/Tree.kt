@@ -11,8 +11,8 @@ data class Tree(
     @PrimaryKey(autoGenerate = false)
     override val id: String,
     override val imageUrl: String,
-    val category: String,
+    override val category: String,
     override val name: String,
     val description: String,
     val order: Int,
-): ItemData
+) : ItemData

@@ -76,7 +76,7 @@ fun MainDetailImageAnimated(
             AsyncImage(
                 modifier = Modifier
                     .sharedElement(
-                        state = rememberSharedContentState(key = "image-${itemData.id}"),
+                        sharedContentState = rememberSharedContentState(key = "image-${itemData.id}"),
                         animatedVisibilityScope = animatedVisibilityScope,
                         boundsTransform = { _, _ ->
                             tween(durationMillis = 600)
@@ -94,7 +94,7 @@ fun MainDetailImageAnimated(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .sharedElement(
-                        state = rememberSharedContentState(key = "Surface-${itemData.id}"),
+                        sharedContentState = rememberSharedContentState(key = "Surface-${itemData.id}"),
                         animatedVisibilityScope = animatedVisibilityScope,
                         boundsTransform = { _, _ ->
                             tween(durationMillis = 600)
@@ -110,7 +110,7 @@ fun MainDetailImageAnimated(
                         .padding
                             (horizontal = 8.dp)
                         .sharedElement(
-                            state = rememberSharedContentState(key = "text-${itemData.name}"),
+                            sharedContentState = rememberSharedContentState(key = "text-${itemData.name}"),
                             animatedVisibilityScope = animatedVisibilityScope,
                             boundsTransform = { _, _ ->
                                 tween(durationMillis = 600)

@@ -13,6 +13,12 @@ interface FoodDao {
     @Query("SELECT * FROM food")
     fun getLocalFoodList(): Flow<List<Food>>
 
+    @Query("SELECT * FROM food where subCategory = :subCategory")
+    fun getFoodListBySubCategory(subCategory: String): List<Food>
+
+    @Query("SELECT * FROM food where id IN (:ids)")
+    fun getFoodListByIds(ids: List<String>): List<Food>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFood(foodList: List<Food>)
 

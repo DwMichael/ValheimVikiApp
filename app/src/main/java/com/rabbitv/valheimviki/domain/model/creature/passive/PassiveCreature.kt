@@ -4,9 +4,9 @@ import com.rabbitv.valheimviki.domain.repository.ItemData
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class PassiveCreature (
+data class PassiveCreature(
     override val id: String,
-    val category: String,
+    override val category: String,
     val subCategory: String,
     override val imageUrl: String,
     override val name: String,
@@ -17,4 +17,4 @@ data class PassiveCreature (
     val abilities: String?,
     val imageStarOne: String,
     val imageStarTwo: String,
-): ItemData
+) : ItemData

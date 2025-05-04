@@ -41,6 +41,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
@@ -175,7 +176,6 @@ fun HorizontalPagerItem(
             Box(
                 modifier = Modifier
                     .height(150.dp),
-
                 ) {
                 AsyncImage(
                     modifier = Modifier
@@ -188,7 +188,7 @@ fun HorizontalPagerItem(
                     contentScale = contentScale
                 )
                 Surface(
-                    modifier = Modifier.height(18.dp).width(28.dp)
+                    modifier = Modifier.height(18.dp).width(32.dp)
                         .align(Alignment.TopEnd)
                         .clip(RoundedCornerShape(2.dp)),
                     color = ForestGreen10Dark,
@@ -215,6 +215,8 @@ fun HorizontalPagerItem(
                                 (horizontal = 5.dp)
                             .wrapContentHeight(align = Alignment.CenterVertically),
                         text = it[pageIndex]?.name.toString(),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                         color = Color.White,
                         style = MaterialTheme.typography.labelLarge,
                     )

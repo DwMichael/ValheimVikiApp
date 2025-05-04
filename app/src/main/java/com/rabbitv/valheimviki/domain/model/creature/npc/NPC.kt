@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class NPC(
     override val id: String,
-    val category: String,
+    override val category: String,
     val subCategory: String,
     override val imageUrl: String,
     override val name: String,
@@ -14,4 +14,4 @@ data class NPC(
     val biography: String,
     val location: String,
     val order: Int,
-): ItemData
+) : ItemData

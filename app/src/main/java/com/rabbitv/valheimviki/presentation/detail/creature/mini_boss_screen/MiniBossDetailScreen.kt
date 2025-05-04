@@ -50,9 +50,9 @@ import com.rabbitv.valheimviki.presentation.components.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.main_detail_images.MainDetailImageAnimated
 import com.rabbitv.valheimviki.presentation.components.trident_dividers.TridentsDividedRow
-import com.rabbitv.valheimviki.presentation.detail.creature.components.BossStatsFlowRow
 import com.rabbitv.valheimviki.presentation.detail.creature.components.CardWithOverlayLabel
 import com.rabbitv.valheimviki.presentation.detail.creature.components.OverlayLabel
+import com.rabbitv.valheimviki.presentation.detail.creature.components.StatsFlowRow
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import kotlinx.coroutines.delay
 
@@ -214,7 +214,12 @@ fun MiniBossContent(
                                 }
                             }
                         )
-                        BossStatsFlowRow(item = miniBossUiSate.miniBoss)
+                        StatsFlowRow(
+                            baseDamage = miniBossUiSate.miniBoss.baseDamage,
+                            weakness = miniBossUiSate.miniBoss.weakness,
+                            resistance = miniBossUiSate.miniBoss.resistance,
+                            collapseImmune = miniBossUiSate.miniBoss.collapseImmune,
+                        )
                         SlavicDivider()
                         Box(modifier = Modifier.size(45.dp))
 

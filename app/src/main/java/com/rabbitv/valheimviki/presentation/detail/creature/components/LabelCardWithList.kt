@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.composables.icons.lucide.Flame
 import com.composables.icons.lucide.Lucide
@@ -41,14 +42,15 @@ fun LabeledCardWithList(
     painter: Painter = painterResource(id = R.drawable.base_damage_bg),
     label: String = "BASE DAMAGE",
     icon: ImageVector = Lucide.Flame,
-    maxWidth : Float = 0.5f
+    maxWidth: Float = 0.5f,
+    maxHeight: Dp,
 ) {
     val lazyListState = rememberLazyListState()
 
     Card(
         modifier = Modifier
             .fillMaxWidth(maxWidth)
-            .heightIn(min = 100.dp, max = 200.dp)
+            .heightIn(min = 100.dp, max = maxHeight)
             .padding(10.dp),
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(8.dp)
@@ -58,7 +60,7 @@ fun LabeledCardWithList(
             Image(
                 painter = painter,
                 contentDescription = null,
-                contentScale = ContentScale.FillHeight,
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .matchParentSize()
             )
@@ -73,7 +75,7 @@ fun LabeledCardWithList(
                 ) {
 
                     Box(
-                        modifier = Modifier.fillMaxWidth(0.5f)
+                        modifier = Modifier.fillMaxWidth(0.8f)
                     ) {
                         OverlayLabel(
                             icon = icon,
@@ -85,8 +87,8 @@ fun LabeledCardWithList(
                             painter = painterResource(R.drawable.scroll_up),
                             contentDescription = "ScrollUpImage",
                             modifier = Modifier
-                                .fillMaxWidth(0.5f)
-                                .padding(6.dp)
+                                .fillMaxWidth(0.8f)
+                                .padding(4.dp)
                                 .rotate(-10f)
                         )
                     }
@@ -97,7 +99,7 @@ fun LabeledCardWithList(
                     modifier = Modifier
                         .padding(bottom = 10.dp)
                 ) {
-                    items(textList){ text ->
+                    items(textList) { text ->
                         Box(
                             modifier = Modifier
                                 .padding(
@@ -113,7 +115,7 @@ fun LabeledCardWithList(
                         ) {
                             Text(
                                 text = text.trimStart { it == ' ' },
-                                style = MaterialTheme.typography.bodyMedium,
+                                style = MaterialTheme.typography.bodyLarge,
                                 modifier = Modifier.padding(4.dp)
                             )
                         }
@@ -128,14 +130,22 @@ fun LabeledCardWithList(
 @Preview("LabeledCardWithList", showBackground = true)
 fun LabeledCardWithListPreview() {
 
-    Box(Modifier.size(225.dp))
+    Box(Modifier.size(205.dp))
     {
         LabeledCardWithList(
-            textList = listOf("SDASD","SDasdasdasd","fsr3qewr2q3rw","ASdsada","sdasdasda","dsadasdasd"),
+            textList = listOf(
+                "SDASD",
+                "SDasdasdasd",
+                "fsr3qewr2q3rw",
+                "ASdsada",
+                "sdasdasda",
+                "dsadasdasd"
+            ),
             painter = painterResource(R.drawable.base_damage_bg),
-            label = "ROGOTODO",
+            label = "BASE DAMAGE",
             icon = Lucide.Flame,
-            maxWidth = 1f
+            maxWidth = 1f,
+            maxHeight = 240.dp
         )
     }
 

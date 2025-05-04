@@ -9,10 +9,10 @@ import kotlinx.serialization.Serializable
 @Entity(tableName = "materials")
 @Serializable
 data class Material(
-    @PrimaryKey (autoGenerate = false)
+    @PrimaryKey(autoGenerate = false)
     override val id: String,
     override val imageUrl: String,
-    val category: String,
+    override val category: String,
     val subCategory: String,
     override val name: String,
     val description: String? = null,
@@ -24,4 +24,4 @@ data class Material(
     @SerializedName("sell_price") val sellPrice: Int? = null,
     val order: Int,
     val subType: String? = null
-):ItemData
+) : ItemData

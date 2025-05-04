@@ -5,7 +5,7 @@ import com.rabbitv.valheimviki.domain.repository.FoodRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class GetLocalFoodList @Inject constructor(
+class GetLocalFoodListUseCase @Inject constructor(
     private val foodRepository: FoodRepository
 ) {
     operator fun invoke(): Flow<List<Food>> {

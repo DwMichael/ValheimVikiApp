@@ -61,7 +61,9 @@ import com.rabbitv.valheimviki.domain.use_cases.datastore.language_state_provide
 import com.rabbitv.valheimviki.domain.use_cases.datastore.save_onboarding_state.SaveOnBoardingState
 import com.rabbitv.valheimviki.domain.use_cases.datastore.saved_language_state.SaveLanguageState
 import com.rabbitv.valheimviki.domain.use_cases.food.FoodUseCases
-import com.rabbitv.valheimviki.domain.use_cases.food.get_local_food_list.GetLocalFoodList
+import com.rabbitv.valheimviki.domain.use_cases.food.get_food_list_by_ids.GetFoodListByIdsUseCase
+import com.rabbitv.valheimviki.domain.use_cases.food.get_food_list_by_subCategory.GetFoodListBySubCategoryUseCase
+import com.rabbitv.valheimviki.domain.use_cases.food.get_local_food_list.GetLocalFoodListUseCase
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.get_local_Materials.GetLocalMaterialsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.material.get_material_by_id.GetMaterialByIdUseCase
@@ -337,7 +339,9 @@ object RepositoryModule {
     @Singleton
     fun provideFoodUseCases(foodRepository: FoodRepository): FoodUseCases {
         return FoodUseCases(
-            getLocalFoodList = GetLocalFoodList(foodRepository)
+            getLocalFoodListUseCase = GetLocalFoodListUseCase(foodRepository),
+            getFoodBySubCategoryUseCase = GetFoodListBySubCategoryUseCase(foodRepository),
+            getFoodListByIdsUseCase = GetFoodListByIdsUseCase(foodRepository)
         )
     }
 }

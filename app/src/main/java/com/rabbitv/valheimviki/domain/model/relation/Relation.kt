@@ -15,5 +15,9 @@ data class Relation(
     @SerializedName("relationItemId") val relatedItemId: String,
     @SerializedName("quantity") val quantity: Int? = null,
     @SerializedName("quantity2star") val quantity2star: Int? = null,
-    @SerializedName("quantity3star") val quantity3star: Int? = null
+    @SerializedName("quantity3star") val quantity3star: Int? = null,
+    @SerializedName("chance1star") val chance1star: Int? = null,
+    @SerializedName("chance2star") val chance2star: Int? = null,
+    @SerializedName("chance3star") val chance3star: Int? = null
+
 )

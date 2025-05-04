@@ -10,9 +10,9 @@ import kotlinx.serialization.Serializable
 data class OreDeposit(
     @PrimaryKey(autoGenerate = false)
     override val id: String,
-    val category: String,
+    override val category: String,
     override val name: String,
     val description: String,
     val order: Int,
     override val imageUrl: String
-): ItemData
+) : ItemData

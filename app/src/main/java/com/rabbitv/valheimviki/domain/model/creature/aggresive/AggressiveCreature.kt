@@ -16,5 +16,6 @@ data class AggressiveCreature(
     override val weakness: String?,
     override val resistance: String?,
     override val baseDamage: String,
-    val levels : List<LevelCreatureData>,
-): CombatCreature()
+    val levels: List<LevelCreatureData>,
+    val abilities: String?,
+) : CombatCreature()

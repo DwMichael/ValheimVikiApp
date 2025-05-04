@@ -113,7 +113,7 @@ fun GridItem(
             AsyncImage(
                 modifier = Modifier
                     .sharedElement(
-                        state = rememberSharedContentState(key = "image-${item.id}"),
+                        sharedContentState = rememberSharedContentState(key = "image-${item.id}"),
                         animatedVisibilityScope = animatedVisibilityScope,
                     )
                     .fillMaxSize()
@@ -132,7 +132,7 @@ fun GridItem(
             Surface(
                 modifier = Modifier
                     .sharedElement(
-                        state = rememberSharedContentState(key = "Surface-${item.id}"),
+                        sharedContentState = rememberSharedContentState(key = "Surface-${item.id}"),
                         animatedVisibilityScope = animatedVisibilityScope,
                     )
                     .fillMaxHeight(0.2f)
@@ -151,7 +151,7 @@ fun GridItem(
                         .padding
                             (horizontal = 8.dp)
                         .sharedElement(
-                            state = rememberSharedContentState(key = "text-${item.name}"),
+                            sharedContentState = rememberSharedContentState(key = "text-${item.name}"),
                             boundsTransform = { _, _ ->
                                 tween(durationMillis = 600)
                             },

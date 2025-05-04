@@ -7,12 +7,9 @@ import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.mapper.CreatureFactory
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.aggresive.AggressiveCreature
-import com.rabbitv.valheimviki.domain.model.food.Food
-import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
-import com.rabbitv.valheimviki.domain.use_cases.food.FoodUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.utils.Constants
@@ -35,16 +32,12 @@ class AggressiveCreatureDetailScreenViewModel @Inject constructor(
     private val relationUseCases: RelationUseCases,
     private val biomeUseCases: BiomeUseCases,
     private val materialUseCases: MaterialUseCases,
-    private val foodUseCases: FoodUseCases
 ) : ViewModel() {
     private val _aggressiveCreatureId: String =
         checkNotNull(savedStateHandle[Constants.AGGRESSIVE_CREATURE_KEY])
     private val _creature = MutableStateFlow<AggressiveCreature?>(null)
     private val _biome = MutableStateFlow<Biome?>(null)
-    private val _dropMaterials = MutableStateFlow<List<Material>>(emptyList())
-    private val _dropFood = MutableStateFlow<List<Food>>(emptyList())
-    private val _dropItems =
-        MutableStateFlow<List<Any>>(emptyList()) //Combine of dropFood and dropMaterials
+    private val _dropItems = MutableStateFlow<List<DropItem>>(emptyList())
     private val _isLoading = MutableStateFlow<Boolean>(false)
     private val _error = MutableStateFlow<String?>(null)
 
@@ -52,14 +45,17 @@ class AggressiveCreatureDetailScreenViewModel @Inject constructor(
     val uiState = combine(
         _creature,
         _biome,
+        _dropItems,
         _isLoading,
         _error,
     ) { values ->
+        @Suppress("UNCHECKED_CAST")
         AggressiveCreatureDetailUiState(
             aggressiveCreature = values[0] as AggressiveCreature?,
             biome = values[1] as Biome?,
-            isLoading = values[2] as Boolean,
-            error = values[3] as String?
+            dropItems = values[2] as List<DropItem>,
+            isLoading = values[3] as Boolean,
+            error = values[4] as String?
         )
     }.stateIn(
         scope = viewModelScope,
@@ -91,7 +87,42 @@ class AggressiveCreatureDetailScreenViewModel @Inject constructor(
                             it.id in relatedIds
                         }
                     },
-                )
+                    async {
+                        try {
+                            val materials = materialUseCases.getMaterialsByIds(relatedIds)
+                            val tempList = mutableListOf<DropItem>()
+
+                            val relatedItemsMap = relatedObjects.associateBy { it.id }
+                            for (material in materials) {
+                                val relatedItem = relatedItemsMap[material.id]
+                                val quantityList = listOf<Int?>(
+                                    relatedItem?.quantity,
+                                    relatedItem?.quantity2star,
+                                    relatedItem?.quantity3star
+                                )
+                                val chanceStarList = listOf<Int?>(
+                                    relatedItem?.chance1star,
+                                    relatedItem?.chance2star,
+                                    relatedItem?.chance3star
+                                )
+                                tempList.add(
+                                    DropItem(
+                                        material = material,
+                                        quantityList = quantityList,
+                                        chanceStarList = chanceStarList,
+                                    )
+                                )
+                            }
+                            _dropItems.value = tempList
+                            Log.e("DROP ITEMS ", "$tempList")
+                        } catch (e: Exception) {
+                            Log.e("AggressiveCreatureDetail ViewModel", "$e")
+                            _dropItems.value = emptyList()
+                        }
+
+                    },
+
+                    )
                 deferreds.awaitAll()
             }
             _isLoading.value = false

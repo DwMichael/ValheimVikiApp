@@ -20,6 +20,14 @@ class FoodRepositoryImpl @Inject constructor(
         return foodDao.getLocalFoodList()
     }
 
+    override fun getFoodListBySubCategory(subCategory: String): List<Food> {
+        return foodDao.getFoodListBySubCategory(subCategory)
+    }
+
+    override fun getFoodListByIds(ids: List<String>): List<Food> {
+        return foodDao.getFoodListByIds(ids)
+    }
+
     override suspend fun insertFoodList(foodList: List<Food>) {
         check(foodList.isNotEmpty()) { "Food list cannot be empty , cannot insert ${foodList.size} food" }
         foodDao.insertFood(foodList)

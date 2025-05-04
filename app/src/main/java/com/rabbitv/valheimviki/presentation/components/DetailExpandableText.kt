@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -38,8 +39,9 @@ fun DetailExpandableText(
     showLessText: String = " show less",
     showLessStyle: SpanStyle = showMoreStyle,
     textAlign: TextAlign? = null,
+    isExpanded: MutableState<Boolean> = remember { mutableStateOf(false) }
 ) {
-    var isExpanded by remember { mutableStateOf(false) }
+
     var clickable by remember { mutableStateOf(false) }
     var lastCharIndex by remember { mutableIntStateOf(0) }
 
@@ -47,7 +49,7 @@ fun DetailExpandableText(
         modifier = modifier
             .padding(BODY_CONTENT_PADDING.dp)
             .clickable(clickable) {
-                isExpanded = !isExpanded
+                isExpanded.value = !isExpanded.value
             }
             .then(modifier)
     ) {
@@ -57,7 +59,7 @@ fun DetailExpandableText(
                 .animateContentSize(),
             text = buildAnnotatedString {
                 if (clickable) {
-                    if (isExpanded) {
+                    if (isExpanded.value) {
                         append(text)
                         withStyle(style = showLessStyle) { append(showLessText) }
                     } else {
@@ -72,9 +74,9 @@ fun DetailExpandableText(
                 }
             },
 
-            maxLines = if (isExpanded) Int.MAX_VALUE else collapsedMaxLine,
+            maxLines = if (isExpanded.value) Int.MAX_VALUE else collapsedMaxLine,
             onTextLayout = { textLayoutResult ->
-                if (!isExpanded && textLayoutResult.hasVisualOverflow) {
+                if (!isExpanded.value && textLayoutResult.hasVisualOverflow) {
                     clickable = true
                     lastCharIndex = textLayoutResult.getLineEnd(collapsedMaxLine - 1)
                 }

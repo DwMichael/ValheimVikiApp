@@ -28,7 +28,7 @@ import com.rabbitv.valheimviki.domain.model.tree.Tree
     entities = [Biome::class, Creature::class,
         Relation::class, OreDeposit::class,
         Material::class, PointOfInterest::class,
-        Tree::class, Food::class], version = 9, exportSchema = false
+        Tree::class, Food::class], version = 11, exportSchema = false
 )
 @TypeConverters(Converters::class)
 abstract class ValheimVikiDatabase : RoomDatabase() {
@@ -40,7 +40,7 @@ abstract class ValheimVikiDatabase : RoomDatabase() {
             } else {
                 Room.databaseBuilder(context, ValheimVikiDatabase::class.java, "valheimviki.db")
             }
-            return databaseBuilder.fallbackToDestructiveMigration().build()
+            return databaseBuilder.fallbackToDestructiveMigration(false).build()
         }
     }
 

@@ -11,4 +11,9 @@
     <string name="bosses">Bosses</string>
     <string name="minibosses">MiniBosses</string>
     <string name="mainbosssection">MainBossSection</string>
+    <string name="immune">IMMUNE</string>
+    <string name="resistance">RESISTANCE</string>
+    <string name="weakness">WEAKNESS</string>
+    <string name="base_damage">BASE DAMAGE</string>
+    <string name="abilities">Abilities</string>
 </resources>

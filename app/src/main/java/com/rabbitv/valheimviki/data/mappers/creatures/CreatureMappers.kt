@@ -7,7 +7,7 @@ import com.rabbitv.valheimviki.domain.model.creature.mini_boss.MiniBoss
 import com.rabbitv.valheimviki.domain.model.creature.npc.NPC
 import com.rabbitv.valheimviki.domain.model.creature.passive.PassiveCreature
 
-fun Creature.toMainBoss(): MainBoss{
+fun Creature.toMainBoss(): MainBoss {
     return MainBoss(
         id = this.id,
         category = this.category.toString(),
@@ -16,7 +16,7 @@ fun Creature.toMainBoss(): MainBoss{
         name = this.name.toString(),
         description = this.description.toString(),
         order = this.order,
-        baseHP = this.baseHP ?:0,
+        baseHP = this.baseHP ?: 0,
         weakness = this.weakness.toString(),
         resistance = this.resistance.toString(),
         baseDamage = this.baseDamage.toString(),
@@ -25,7 +25,7 @@ fun Creature.toMainBoss(): MainBoss{
     )
 }
 
-fun Creature.toMiniBoss(): MiniBoss{
+fun Creature.toMiniBoss(): MiniBoss {
     return MiniBoss(
         id = this.id,
         category = this.category.toString(),
@@ -34,14 +34,15 @@ fun Creature.toMiniBoss(): MiniBoss{
         name = this.name.toString(),
         description = this.description.toString(),
         order = this.order,
-        baseHP = this.baseHP ?:0,
+        baseHP = this.baseHP ?: 0,
         weakness = this.weakness.toString(),
         resistance = this.resistance.toString(),
-        baseDamage= this.baseDamage.toString(),
+        baseDamage = this.baseDamage.toString(),
         collapseImmune = this.collapseImmune.toString(),
     )
 }
-fun Creature.toAggressiveCreature(): AggressiveCreature{
+
+fun Creature.toAggressiveCreature(): AggressiveCreature {
     return AggressiveCreature(
         id = this.id,
         category = this.category.toString(),
@@ -50,15 +51,16 @@ fun Creature.toAggressiveCreature(): AggressiveCreature{
         name = this.name.toString(),
         description = this.description.toString(),
         order = this.order,
-        baseHP = this.baseHP ?:0,
+        baseHP = this.baseHP ?: 0,
         weakness = this.weakness.toString(),
         resistance = this.resistance.toString(),
-        baseDamage= this.baseDamage.toString(),
-        levels = this.levelCreatureData.toList()
+        baseDamage = this.baseDamage.toString(),
+        levels = this.levelCreatureData.toList(),
+        abilities = this.abilities,
     )
 }
 
-fun Creature.toPassiveCreature(): PassiveCreature{
+fun Creature.toPassiveCreature(): PassiveCreature {
     return PassiveCreature(
         id = this.id,
         category = this.category.toString(),
@@ -68,13 +70,14 @@ fun Creature.toPassiveCreature(): PassiveCreature{
         description = this.description.toString(),
         order = this.order,
         levels = this.levels?.toInt() ?: 0,
-        baseHP = this.baseHP ?:0,
+        baseHP = this.baseHP ?: 0,
         abilities = this.abilities.toString(),
         imageStarOne = this.imageStarOne.toString(),
-        imageStarTwo= this.imageStarTwo.toString(),
+        imageStarTwo = this.imageStarTwo.toString(),
     )
 }
-fun Creature.toNPC(): NPC{
+
+fun Creature.toNPC(): NPC {
     return NPC(
         id = this.id,
         category = this.category.toString(),
@@ -89,8 +92,7 @@ fun Creature.toNPC(): NPC{
 }
 
 
-
-fun MainBoss.toCreature(): Creature{
+fun MainBoss.toCreature(): Creature {
     return Creature(
         id = this.id,
         category = this.category,
@@ -197,23 +199,23 @@ fun NPC.toCreature(): Creature {
 }
 
 
-
-fun List<Creature>.toMainBosses():List<MainBoss>{
+fun List<Creature>.toMainBosses(): List<MainBoss> {
     return this.map { it.toMainBoss() }
 }
-fun List<Creature>.toMiniBosses():List<MiniBoss>{
+
+fun List<Creature>.toMiniBosses(): List<MiniBoss> {
     return this.map { it.toMiniBoss() }
 }
 
-fun List<Creature>.toAggressiveCreatures():List<AggressiveCreature>{
+fun List<Creature>.toAggressiveCreatures(): List<AggressiveCreature> {
     return this.map { it.toAggressiveCreature() }
 }
 
-fun List<Creature>.toPassiveCreatures():List<PassiveCreature>{
+fun List<Creature>.toPassiveCreatures(): List<PassiveCreature> {
     return this.map { it.toPassiveCreature() }
 }
 
-fun List<Creature>.toNPC():List<NPC>{
+fun List<Creature>.toNPC(): List<NPC> {
     return this.map { it.toNPC() }
 }
 

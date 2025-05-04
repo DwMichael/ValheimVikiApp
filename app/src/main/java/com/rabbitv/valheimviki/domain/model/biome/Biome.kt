@@ -15,7 +15,7 @@ data class Biome(
     @PrimaryKey(autoGenerate = false)
     override val id: String,
     @SerializedName("category")
-    val category: String,
+    override val category: String,
     @SerializedName("imageUrl")
     override val imageUrl: String,
     @SerializedName("name")
