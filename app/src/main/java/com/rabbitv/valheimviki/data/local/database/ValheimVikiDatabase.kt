@@ -28,7 +28,7 @@ import com.rabbitv.valheimviki.domain.model.tree.Tree
     entities = [Biome::class, Creature::class,
         Relation::class, OreDeposit::class,
         Material::class, PointOfInterest::class,
-        Tree::class, Food::class], version = 11, exportSchema = false
+        Tree::class, Food::class], version = 12, exportSchema = false
 )
 @TypeConverters(Converters::class)
 abstract class ValheimVikiDatabase : RoomDatabase() {

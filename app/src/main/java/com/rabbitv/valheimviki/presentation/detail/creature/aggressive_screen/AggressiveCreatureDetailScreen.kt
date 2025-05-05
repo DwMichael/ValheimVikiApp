@@ -600,7 +600,6 @@ fun PreviewCreaturePage() {
         name = "sadsdd",
         description = "asdasd2",
         order = 2,
-        baseHP = 1111,
         weakness = "SDASD",
         resistance = "dasdas2",
         baseDamage = "dsasdasd",

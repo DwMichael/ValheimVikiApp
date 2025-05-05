@@ -51,12 +51,11 @@ fun Creature.toAggressiveCreature(): AggressiveCreature {
         name = this.name.toString(),
         description = this.description.toString(),
         order = this.order,
-        baseHP = this.baseHP ?: 0,
+        levels = this.levelCreatureData.toList(),
         weakness = this.weakness.toString(),
         resistance = this.resistance.toString(),
         baseDamage = this.baseDamage.toString(),
-        levels = this.levelCreatureData.toList(),
-        abilities = this.abilities,
+        abilities = this.abilities.toString(),
     )
 }
 
@@ -68,12 +67,11 @@ fun Creature.toPassiveCreature(): PassiveCreature {
         imageUrl = this.imageUrl.toString(),
         name = this.name.toString(),
         description = this.description.toString(),
+        notes = this.notes.toString(),
         order = this.order,
-        levels = this.levels?.toInt() ?: 0,
-        baseHP = this.baseHP ?: 0,
-        abilities = this.abilities.toString(),
-        imageStarOne = this.imageStarOne.toString(),
-        imageStarTwo = this.imageStarTwo.toString(),
+        levels = this.levelCreatureData.toList(),
+        abilities = this.abilities,
+        weaknesses = this.weakness,
     )
 }
 
@@ -107,8 +105,6 @@ fun MainBoss.toCreature(): Creature {
         baseDamage = this.baseDamage,
         collapseImmune = this.collapseImmune,
         forsakenPower = this.forsakenPower,
-        imageStarOne = null,
-        imageStarTwo = null,
         abilities = null
     )
 }
@@ -128,8 +124,6 @@ fun MiniBoss.toCreature(): Creature {
         baseDamage = this.baseDamage,
         collapseImmune = this.collapseImmune,
         forsakenPower = null,
-        imageStarOne = null,
-        imageStarTwo = null,
         abilities = null
     )
 }
@@ -143,14 +137,7 @@ fun AggressiveCreature.toCreature(): Creature {
         name = this.name,
         description = this.description,
         order = this.order,
-        baseHP = this.baseHP,
-        weakness = this.weakness,
-        resistance = this.resistance,
-        baseDamage = this.baseDamage,
-        collapseImmune = null,
-        forsakenPower = null,
         levelCreatureData = this.levels,
-        abilities = null
     )
 }
 
@@ -163,16 +150,7 @@ fun PassiveCreature.toCreature(): Creature {
         name = this.name,
         description = this.description,
         order = this.order,
-        levels = this.levels,
-        baseHP = this.baseHP,
-        weakness = null,
-        resistance = null,
-        baseDamage = null,
-        collapseImmune = null,
-        forsakenPower = null,
-        imageStarOne = this.imageStarOne,
-        imageStarTwo = this.imageStarTwo,
-        abilities = this.abilities
+        levelCreatureData = this.levels,
     )
 }
 
@@ -192,8 +170,6 @@ fun NPC.toCreature(): Creature {
         baseDamage = null,
         collapseImmune = null,
         forsakenPower = null,
-        imageStarOne = null,
-        imageStarTwo = null,
         abilities = null
     )
 }

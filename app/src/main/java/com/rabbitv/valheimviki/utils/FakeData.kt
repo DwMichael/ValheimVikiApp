@@ -4,7 +4,7 @@ import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
 
-object FakeData{
+object FakeData {
 
     fun generateFakeMaterials(): List<Material> {
         return listOf(
@@ -131,8 +131,6 @@ object FakeData{
                 baseDamage = "100-150",
                 collapseImmune = "Yes",
                 forsakenPower = "Nature's Wrath",
-                imageStarOne = "https://example.com/meadows_troll_star1.png",
-                imageStarTwo = "https://example.com/meadows_troll_star2.png"
             ),
             Creature(
                 id = "creature002",
@@ -147,8 +145,6 @@ object FakeData{
                 weakness = "Fire, Spirit",
                 resistance = "Frost, Poison",
                 baseDamage = "35-45",
-                imageStarOne = "https://example.com/frost_draugr_star1.png",
-                imageStarTwo = "https://example.com/frost_draugr_star2.png"
             ),
             Creature(
                 id = "creature003",
@@ -164,8 +160,6 @@ object FakeData{
                 resistance = "None",
                 baseDamage = "5-10",
                 abilities = "Night Vision, Swift Movement",
-                imageStarOne = null,
-                imageStarTwo = null
             ),
             Creature(
                 id = "creature004",
@@ -182,8 +176,6 @@ object FakeData{
                 baseDamage = "65-80",
                 collapseImmune = "Yes",
                 forsakenPower = null,
-                imageStarOne = "https://example.com/swamp_guardian_star1.png",
-                imageStarTwo = "https://example.com/swamp_guardian_star2.png"
             ),
             Creature(
                 id = "creature005",
@@ -198,9 +190,8 @@ object FakeData{
                 weakness = "Blunt, Frost",
                 resistance = "Pierce, Slash",
                 baseDamage = "75-85",
-                imageStarOne = "https://example.com/plains_mantis_star1.png",
-                imageStarTwo = "https://example.com/plains_mantis_star2.png"
-            )
+
+                )
         )
 
     }

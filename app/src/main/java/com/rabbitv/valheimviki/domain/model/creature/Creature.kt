@@ -30,9 +30,8 @@ data class Creature(
     @SerializedName("Forsaken Power") val forsakenPower: String? = null,
     // AggressiveCreature/PassiveCreature specific fields
     @SerializedName("Levels") val levelCreatureData: List<LevelCreatureData> = emptyList(),
-    @SerializedName("image_star_one") val imageStarOne: String? = null,
-    @SerializedName("image_star_two") val imageStarTwo: String? = null,
     // PassiveCreature specific field
+    @SerializedName("Notes") val notes: String? = null,
     @SerializedName("Abilities") val abilities: String? = null,
     //NPC
     @SerializedName("Biography") val biography: String? = null,

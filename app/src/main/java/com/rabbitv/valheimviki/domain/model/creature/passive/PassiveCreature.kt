@@ -1,5 +1,6 @@
 package com.rabbitv.valheimviki.domain.model.creature.passive
 
+import com.rabbitv.valheimviki.domain.model.creature.aggresive.LevelCreatureData
 import com.rabbitv.valheimviki.domain.repository.ItemData
 import kotlinx.serialization.Serializable
 
@@ -11,10 +12,9 @@ data class PassiveCreature(
     override val imageUrl: String,
     override val name: String,
     val description: String,
+    val notes: String,
     val order: Int,
-    val levels: Int?,
-    val baseHP: Int?,
+    val levels: List<LevelCreatureData>,
     val abilities: String?,
-    val imageStarOne: String,
-    val imageStarTwo: String,
+    val weaknesses: String?,
 ) : ItemData
