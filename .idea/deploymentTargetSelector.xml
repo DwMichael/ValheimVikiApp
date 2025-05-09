@@ -4,7 +4,7 @@
     <selectionStates>
       <SelectionState runConfigName="ValheimVikiApp">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-05-04T19:56:58.557267800Z">
+        <DropdownSelection timestamp="2025-05-09T15:33:00.993965900Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\Legio\.android\avd\Galaxy_S25.avd" />

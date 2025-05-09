@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.detail.creature.components
+package com.rabbitv.valheimviki.presentation.detail.creature.components.cards
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

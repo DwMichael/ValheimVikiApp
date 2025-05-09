@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.detail.creature.components
+package com.rabbitv.valheimviki.presentation.detail.creature.components.rows
 
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -15,6 +15,7 @@ import com.composables.icons.lucide.Shield
 import com.composables.icons.lucide.Swords
 import com.composables.icons.lucide.Unlink
 import com.rabbitv.valheimviki.R
+import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithLabeledList
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -56,7 +57,7 @@ fun StatsFlowRow(
 
     FlowRow(maxItemsInEachRow = 2) {
         if (baseDamageList.isNotEmpty()) {
-            LabeledCardWithList(
+            CardWithLabeledList(
                 baseDamageList,
                 painter = painterResource(R.drawable.base_damage_bg),
                 label = stringResource(R.string.base_damage),
@@ -67,7 +68,7 @@ fun StatsFlowRow(
         }
 
         if (weaknessList.isNotEmpty()) {
-            LabeledCardWithList(
+            CardWithLabeledList(
                 weaknessList,
                 painter = painterResource(R.drawable.weakness_bg),
                 label = stringResource(R.string.weakness),
@@ -78,7 +79,7 @@ fun StatsFlowRow(
         }
 
         if (resistanceList.isNotEmpty()) {
-            LabeledCardWithList(
+            CardWithLabeledList(
                 resistanceList,
                 painter = painterResource(R.drawable.resistance_bg),
                 label = stringResource(R.string.resistance),
@@ -89,7 +90,7 @@ fun StatsFlowRow(
         }
 
         if (immunityList.isNotEmpty()) {
-            LabeledCardWithList(
+            CardWithLabeledList(
                 immunityList,
                 painter = painterResource(R.drawable.immune_bg),
                 label = stringResource(R.string.immune),
@@ -100,7 +101,7 @@ fun StatsFlowRow(
         }
 
         if (abilitiesList.isNotEmpty()) {
-            LabeledCardWithList(
+            CardWithLabeledList(
                 abilitiesList,
                 painter = painterResource(R.drawable.abilities),
                 label = stringResource(R.string.abilities),

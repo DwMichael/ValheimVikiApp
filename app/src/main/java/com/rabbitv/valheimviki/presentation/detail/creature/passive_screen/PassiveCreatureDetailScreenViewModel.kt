@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.detail.creature.aggressive_screen
+package com.rabbitv.valheimviki.presentation.detail.creature.passive_screen
 
 import android.util.Log
 import androidx.lifecycle.SavedStateHandle
@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.mapper.CreatureFactory
 import com.rabbitv.valheimviki.domain.model.biome.Biome
-import com.rabbitv.valheimviki.domain.model.creature.aggresive.AggressiveCreature
+import com.rabbitv.valheimviki.domain.model.creature.passive.PassiveCreature
 import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
@@ -27,16 +27,16 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 @HiltViewModel
-class AggressiveCreatureDetailScreenViewModel @Inject constructor(
+class PassiveCreatureDetailScreenViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val creatureUseCases: CreatureUseCases,
     private val relationUseCases: RelationUseCases,
     private val biomeUseCases: BiomeUseCases,
     private val materialUseCases: MaterialUseCases,
 ) : ViewModel() {
-    private val _aggressiveCreatureId: String =
-        checkNotNull(savedStateHandle[Constants.AGGRESSIVE_CREATURE_KEY])
-    private val _creature = MutableStateFlow<AggressiveCreature?>(null)
+    private val _passiveCreatureId: String =
+        checkNotNull(savedStateHandle[Constants.PASSIVE_CREATURE_KEY])
+    private val _creature = MutableStateFlow<PassiveCreature?>(null)
     private val _biome = MutableStateFlow<Biome?>(null)
     private val _dropItems = MutableStateFlow<List<DropItem>>(emptyList())
     private val _isLoading = MutableStateFlow<Boolean>(false)
@@ -51,8 +51,8 @@ class AggressiveCreatureDetailScreenViewModel @Inject constructor(
         _error,
     ) { values ->
         @Suppress("UNCHECKED_CAST")
-        AggressiveCreatureDetailUiState(
-            aggressiveCreature = values[0] as AggressiveCreature?,
+        PassiveCreatureDetailUiState(
+            passiveCreature = values[0] as PassiveCreature?,
             biome = values[1] as Biome?,
             dropItems = values[2] as List<DropItem>,
             isLoading = values[3] as Boolean,
@@ -61,7 +61,7 @@ class AggressiveCreatureDetailScreenViewModel @Inject constructor(
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
-        initialValue = AggressiveCreatureDetailUiState()
+        initialValue = PassiveCreatureDetailUiState()
     )
 
     init {
@@ -73,11 +73,11 @@ class AggressiveCreatureDetailScreenViewModel @Inject constructor(
         try {
             _isLoading.value = true
             viewModelScope.launch(Dispatchers.IO) {
-                creatureUseCases.getCreatureById(_aggressiveCreatureId).let {
+                creatureUseCases.getCreatureById(_passiveCreatureId).let {
                     _creature.value = CreatureFactory.createFromCreature(it)
                 }
                 val relatedObjects: List<RelatedItem> = async {
-                    relationUseCases.getRelatedIdsUseCase(_aggressiveCreatureId)
+                    relationUseCases.getRelatedIdsUseCase(_passiveCreatureId)
                 }.await()
                 val relatedIds = relatedObjects.map { it.id }
 
@@ -117,7 +117,7 @@ class AggressiveCreatureDetailScreenViewModel @Inject constructor(
                             _dropItems.value = tempList
                             Log.e("DROP ITEMS ", "$tempList")
                         } catch (e: Exception) {
-                            Log.e("AggressiveCreatureDetail ViewModel", "$e")
+                            Log.e("PassiveCreatureDetail ViewModel", "$e")
                             _dropItems.value = emptyList()
                         }
 
@@ -128,7 +128,7 @@ class AggressiveCreatureDetailScreenViewModel @Inject constructor(
             }
             _isLoading.value = false
         } catch (e: Exception) {
-            Log.e("General fetch error AggressiveDetailViewModel", e.message.toString())
+            Log.e("General fetch error PassiveDetailViewModel", e.message.toString())
             _isLoading.value = false
             _error.value = e.message
         }

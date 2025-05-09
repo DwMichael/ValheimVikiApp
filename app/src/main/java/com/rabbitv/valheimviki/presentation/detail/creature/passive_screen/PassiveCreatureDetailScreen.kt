@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.detail.creature.aggressive_screen
+package com.rabbitv.valheimviki.presentation.detail.creature.passive_screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -6,8 +6,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -43,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.rememberAsyncImagePainter
+import com.composables.icons.lucide.Atom
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Trophy
 import com.rabbitv.valheimviki.R
@@ -56,22 +59,20 @@ import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.Car
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
 import com.rabbitv.valheimviki.presentation.detail.creature.components.horizontal_pager.CreatureHorizontalPager
 import com.rabbitv.valheimviki.presentation.detail.creature.components.rows.StarLevelRow
-import com.rabbitv.valheimviki.presentation.detail.creature.components.rows.StatsFlowRow
-
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@Composable
-fun AggressiveCreatureDetailScreen(
-    onBack: () -> Unit,
-    viewModel: AggressiveCreatureDetailScreenViewModel = hiltViewModel()
-) {
 
+@Composable
+fun PassiveCreatureDetailScreen(
+    onBack: () -> Unit,
+    viewModel: PassiveCreatureDetailScreenViewModel = hiltViewModel()
+) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    AggressiveCreatureDetailContent(
+    PassiveCreatureDetailContent(
         uiState = uiState,
         onBack = onBack
     )
@@ -80,12 +81,12 @@ fun AggressiveCreatureDetailScreen(
 
 
 @Composable
-fun AggressiveCreatureDetailContent(
+fun PassiveCreatureDetailContent(
     onBack: () -> Unit,
-    uiState: AggressiveCreatureDetailUiState,
+    uiState: PassiveCreatureDetailUiState,
 ) {
     val backButtonVisibleState = remember { mutableStateOf(false) }
-    mutableListOf<String?>(uiState.aggressiveCreature?.imageUrl)
+    mutableListOf<String?>(uiState.passiveCreature?.imageUrl)
     LaunchedEffect(Unit) {
         delay(450)
         backButtonVisibleState.value = true
@@ -93,14 +94,15 @@ fun AggressiveCreatureDetailContent(
 
     val pagerState =
         rememberPagerState(
-            pageCount = { uiState.aggressiveCreature?.levels?.size ?: 0 },
+            pageCount = { uiState.passiveCreature?.levels?.size ?: 0 },
 
             )
     val sharedScrollState = rememberScrollState()
     val isExpandable = remember { mutableStateOf(false) }
+    val isExpandableNote = remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
     Scaffold { padding ->
-        uiState.aggressiveCreature?.let {
+        uiState.passiveCreature?.let {
             HorizontalPager(
                 state = pagerState,
                 modifier = Modifier
@@ -188,28 +190,41 @@ fun AggressiveCreatureDetailContent(
                     }
 
                     TridentsDividedRow(text = "BOSS STATS")
-                    Box(
-                        modifier = Modifier.padding(horizontal = 10.dp)
+                    CardStatDetails(
+                        title = stringResource(R.string.baseHp),
+                        text = uiState.passiveCreature.levels[pageIndex].baseHp.toString(),
+                        icon = Icons.Outlined.Favorite,
+                        iconColor = Color.Red,
+                        styleTextFirst = MaterialTheme.typography.labelSmall,
+                        styleTextSecond = MaterialTheme.typography.bodyLarge,
+                        iconSize = 36.dp
                     )
-                    {
-                        CardStatDetails(
-                            title = stringResource(R.string.baseHp),
-                            text = uiState.aggressiveCreature.levels[pageIndex].baseHp.toString(),
-                            icon = Icons.Outlined.Favorite,
-                            iconColor = Color.Red,
-                            styleTextFirst = MaterialTheme.typography.labelSmall,
-                            styleTextSecond = MaterialTheme.typography.bodyLarge,
-                            iconSize = 36.dp
+                    Spacer(Modifier.height(10.dp))
+                    CardStatDetails(
+                        title = stringResource(R.string.fun_fact),
+                        text = uiState.passiveCreature.abilities.toString(),
+                        icon = Lucide.Atom,
+                        iconColor = Color.White,
+                        styleTextFirst = MaterialTheme.typography.labelSmall,
+                        styleTextSecond = MaterialTheme.typography.bodyMedium,
+                        iconSize = 36.dp
+                    )
+                    if (uiState.passiveCreature.notes.isNotBlank()) {
+                        SlavicDivider()
+                        Text(
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                                .padding(horizontal = 10.dp),
+                            text = "NOTE",
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.headlineMedium,
+                        )
+                        DetailExpandableText(
+                            text = it.notes,
+                            collapsedMaxLine = 3,
+                            isExpanded = isExpandableNote
                         )
                     }
-
-
-                    StatsFlowRow(
-                        baseDamage = uiState.aggressiveCreature.levels[pageIndex].baseDamage,
-                        weakness = uiState.aggressiveCreature.weakness,
-                        resistance = uiState.aggressiveCreature.resistance,
-                        abilities = uiState.aggressiveCreature.abilities,
-                    )
                     SlavicDivider()
                     Box(modifier = Modifier.size(45.dp))
                 }
@@ -244,6 +259,13 @@ fun PageIndicator(
         }
     }
 }
+
+//@Composable
+//fun NoteCustomLayout(
+//    noteText: String
+//) {
+//
+//}
 
 
 @Preview(name = "CreaturePage")

@@ -54,6 +54,7 @@ import com.rabbitv.valheimviki.presentation.detail.biome.BiomeDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.creature.aggressive_screen.AggressiveCreatureDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.creature.main_boss_screen.MainBossDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.creature.mini_boss_screen.MiniBossDetailScreen
+import com.rabbitv.valheimviki.presentation.detail.creature.passive_screen.PassiveCreatureDetailScreen
 import com.rabbitv.valheimviki.presentation.home.MainAppBar
 import com.rabbitv.valheimviki.presentation.intro.WelcomeScreen
 import com.rabbitv.valheimviki.presentation.splash.SplashScreen
@@ -62,6 +63,7 @@ import com.rabbitv.valheimviki.utils.Constants.AGGRESSIVE_CREATURE_KEY
 import com.rabbitv.valheimviki.utils.Constants.BIOME_ARGUMENT_KEY
 import com.rabbitv.valheimviki.utils.Constants.MAIN_BOSS_ARGUMENT_KEY
 import com.rabbitv.valheimviki.utils.Constants.MINI_BOSS_ARGUMENT_KEY
+import com.rabbitv.valheimviki.utils.Constants.PASSIVE_CREATURE_KEY
 import com.rabbitv.valheimviki.utils.Constants.TEXT_ARGUMENT_KEY
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -212,7 +214,12 @@ fun MainContainer(
                             modifier = Modifier.padding(10.dp),
                             onItemClick = { creatureId, creatureSubCategory ->
                                 when (creatureSubCategory) {
-                                    0 -> {}
+                                    0 -> valheimVikiNavController.navigate(
+                                        Screen.PassiveCreatureDetail.passPassiveCreatureId(
+                                            creatureId
+                                        )
+                                    )
+
                                     1 -> valheimVikiNavController.navigate(
                                         Screen.AggressiveCreatureDetail.passAggressiveCreatureId(
                                             creatureId
@@ -277,6 +284,18 @@ fun MainContainer(
                         )
                     ) {
                         AggressiveCreatureDetailScreen(
+                            onBack = {
+                                valheimVikiNavController.popBackStack()
+                            },
+                        )
+                    }
+                    composable(
+                        route = Screen.PassiveCreatureDetail.route,
+                        arguments = listOf(
+                            navArgument(PASSIVE_CREATURE_KEY) { type = NavType.StringType },
+                        )
+                    ) {
+                        PassiveCreatureDetailScreen(
                             onBack = {
                                 valheimVikiNavController.popBackStack()
                             },

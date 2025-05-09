@@ -4,6 +4,7 @@ import com.rabbitv.valheimviki.utils.Constants.AGGRESSIVE_CREATURE_KEY
 import com.rabbitv.valheimviki.utils.Constants.BIOME_ARGUMENT_KEY
 import com.rabbitv.valheimviki.utils.Constants.MAIN_BOSS_ARGUMENT_KEY
 import com.rabbitv.valheimviki.utils.Constants.MINI_BOSS_ARGUMENT_KEY
+import com.rabbitv.valheimviki.utils.Constants.PASSIVE_CREATURE_KEY
 import com.rabbitv.valheimviki.utils.Constants.TEXT_ARGUMENT_KEY
 
 
@@ -61,6 +62,14 @@ sealed class Screen(val route: String) {
         Screen("aggressive_creature_screen/{$AGGRESSIVE_CREATURE_KEY}") {
         fun passAggressiveCreatureId(aggressiveCreatureId: String): String {
             return "aggressive_creature_screen/$aggressiveCreatureId"
+        }
+    }
+
+    @Serializable
+    object PassiveCreatureDetail :
+        Screen("passive_creature_screen/{$PASSIVE_CREATURE_KEY}") {
+        fun passPassiveCreatureId(passiveCreatureId: String): String {
+            return "passive_creature_screen/$passiveCreatureId"
         }
     }
 

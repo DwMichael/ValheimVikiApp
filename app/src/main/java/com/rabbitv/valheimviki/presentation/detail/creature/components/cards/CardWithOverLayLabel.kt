@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.detail.creature.components
+package com.rabbitv.valheimviki.presentation.detail.creature.components.cards
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import com.composables.icons.lucide.Flame
 import com.composables.icons.lucide.Lucide
 import com.rabbitv.valheimviki.R
+import com.rabbitv.valheimviki.presentation.detail.creature.components.rows.CustomRowLayout
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.DETAIL_ITEM_SHAPE_PADDING
 import com.rabbitv.valheimviki.utils.FakeData

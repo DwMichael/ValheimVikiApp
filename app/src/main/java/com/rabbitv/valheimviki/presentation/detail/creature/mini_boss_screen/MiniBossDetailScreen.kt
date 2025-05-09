@@ -9,9 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -19,6 +17,8 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -34,13 +34,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.rememberAsyncImagePainter
-import com.composables.icons.lucide.Heater
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Trophy
 import com.rabbitv.valheimviki.R
@@ -50,9 +50,10 @@ import com.rabbitv.valheimviki.presentation.components.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.main_detail_images.MainDetailImageAnimated
 import com.rabbitv.valheimviki.presentation.components.trident_dividers.TridentsDividedRow
-import com.rabbitv.valheimviki.presentation.detail.creature.components.CardWithOverlayLabel
-import com.rabbitv.valheimviki.presentation.detail.creature.components.OverlayLabel
-import com.rabbitv.valheimviki.presentation.detail.creature.components.StatsFlowRow
+import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardStatDetails
+import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
+import com.rabbitv.valheimviki.presentation.detail.creature.components.rows.StatsFlowRow
+
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import kotlinx.coroutines.delay
 
@@ -189,31 +190,20 @@ fun MiniBossContent(
 
                         }
                         TridentsDividedRow(text = "BOSS STATS")
-                        CardWithOverlayLabel(
-                            painter = painterResource(R.drawable.base_hp_bg),
-                            content = {
-                                Row {
-                                    Box(
-                                        modifier = Modifier.fillMaxHeight()
-                                    ) {
-                                        OverlayLabel(
-                                            icon = Lucide.Heater,
-                                            label = " BASE HP",
-                                        )
-                                    }
-                                    Text(
-                                        miniBossUiSate.miniBoss.baseHP.toString().uppercase(),
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        modifier = Modifier
-                                            .align(Alignment.CenterVertically)
-                                            .fillMaxWidth()
-                                            .padding(8.dp),
-                                        color = Color.White,
-                                        textAlign = TextAlign.Center
-                                    )
-                                }
-                            }
+                        Box(
+                            modifier = Modifier.padding(horizontal = 10.dp)
                         )
+                        {
+                            CardStatDetails(
+                                title = stringResource(R.string.baseHp),
+                                text = miniBossUiSate.miniBoss.baseHP.toString(),
+                                icon = Icons.Outlined.Favorite,
+                                iconColor = Color.Red,
+                                styleTextFirst = MaterialTheme.typography.labelSmall,
+                                styleTextSecond = MaterialTheme.typography.bodyLarge,
+                                iconSize = 36.dp
+                            )
+                        }
                         StatsFlowRow(
                             baseDamage = miniBossUiSate.miniBoss.baseDamage,
                             weakness = miniBossUiSate.miniBoss.weakness,

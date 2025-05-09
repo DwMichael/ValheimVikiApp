@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.detail.creature.components
+package com.rabbitv.valheimviki.presentation.detail.creature.components.cards
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -37,7 +37,7 @@ import com.composables.icons.lucide.Lucide
 import com.rabbitv.valheimviki.R
 
 @Composable
-fun LabeledCardWithList(
+fun CardWithLabeledList(
     textList: List<String>,
     painter: Painter = painterResource(id = R.drawable.base_damage_bg),
     label: String = "BASE DAMAGE",
@@ -127,12 +127,12 @@ fun LabeledCardWithList(
 }
 
 @Composable
-@Preview("LabeledCardWithList", showBackground = true)
-fun LabeledCardWithListPreview() {
+@Preview("CardWithLabeledList", showBackground = true)
+fun CardWithLabeledListPreview() {
 
     Box(Modifier.size(205.dp))
     {
-        LabeledCardWithList(
+        CardWithLabeledList(
             textList = listOf(
                 "SDASD",
                 "SDasdasdasd",

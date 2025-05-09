@@ -1,19 +1,23 @@
 <resources>
-    <string name="app_name">ValheimVikiApp</string>
-    <string name="item_grid_image">Item Grid Image</string>
+    <string name="app_name" translatable="false">ValheimVikiApp</string>
+    <string name="item_grid_image" translatable="false">Item Grid Image</string>
     <string name="no_internet_connection">No Internet Connection</string>
-    <string name="creatures_section">Creatures section</string>
-    <string name="biomes_section">Biomes section</string>
-    <string name="boss_section">Boss section</string>
-    <string name="minibosses_section">MiniBosses section</string>
-    <string name="biomes">Biomes</string>
-    <string name="creatures">Creatures</string>
-    <string name="bosses">Bosses</string>
-    <string name="minibosses">MiniBosses</string>
-    <string name="mainbosssection">MainBossSection</string>
-    <string name="immune">IMMUNE</string>
-    <string name="resistance">RESISTANCE</string>
-    <string name="weakness">WEAKNESS</string>
-    <string name="base_damage">BASE DAMAGE</string>
-    <string name="abilities">Abilities</string>
+    <string name="creatures_section" translatable="false">Creatures section</string>
+    <string name="biomes_section" translatable="false">Biomes section</string>
+    <string name="boss_section" translatable="false">Boss section</string>
+    <string name="minibosses_section" translatable="false">MiniBosses section</string>
+    <string name="biomes" translatable="false">Biomes</string>
+    <string name="creatures" translatable="false">Creatures</string>
+    <string name="bosses" translatable="false">Bosses</string>
+    <string name="minibosses" translatable="false">MiniBosses</string>
+    <string name="mainbosssection" translatable="false">MainBossSection</string>
+    <string name="immune" translatable="false">Immune</string>
+    <string name="resistance" translatable="false">Resistance</string>
+    <string name="weakness" translatable="false">Weakness</string>
+    <string name="base_damage" translatable="false">Base Damage</string>
+    <string name="baseHp" translatable="false">Base HP</string>
+    <string name="abilities" translatable="false">Abilities</string>
+    <string name="note" translatable="false">Note</string>
+    <string name="fun_fact">Fun Fact</string>
+    <string name="heart_icon" translatable="false">Heart Icon</string>
 </resources>

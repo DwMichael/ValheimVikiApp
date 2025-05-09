@@ -69,7 +69,7 @@ class MainBossScreenViewModel @Inject constructor(
         MainBossDetailUiState(
             mainBoss = values[0] as MainBoss?,
             relatedForsakenAltar = values[1] as PointOfInterest?,
-            sacrificialStones =values[2] as PointOfInterest?,
+            sacrificialStones = values[2] as PointOfInterest?,
             dropItems = values[3] as List<Material>,
             relatedSummoningItems = values[4] as List<Material>,
             relatedBiome = values[5] as Biome?,
@@ -92,7 +92,7 @@ class MainBossScreenViewModel @Inject constructor(
     fun launch() {
 
         try {
-           _isLoading.value = true
+            _isLoading.value = true
             viewModelScope.launch(Dispatchers.IO) {
                 creatureUseCases.getCreatureById(mainBossId).let {
                     _mainBoss.value = CreatureFactory.createFromCreature(it)
@@ -134,8 +134,7 @@ class MainBossScreenViewModel @Inject constructor(
 
                         val relevantCreatureDrops = materialUseCases.getMaterialsBySubCategory(
                             MaterialSubCategory.CREATURE_DROP
-                        )
-                            .filter { it.id in relatedIds }
+                        ).filter { it.id in relatedIds }
                         val allRelevantDrops = relatedAltarOfferings + relevantCreatureDrops
                         _relatedSummoningItems.value = allRelevantDrops.distinctBy { it.id }
 
