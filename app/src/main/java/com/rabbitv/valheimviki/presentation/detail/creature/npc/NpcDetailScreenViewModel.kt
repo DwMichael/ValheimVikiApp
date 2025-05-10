@@ -9,10 +9,12 @@ import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.npc.NPC
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.material.MaterialSubCategory
+import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
 import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
+import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.PointOfInterestUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.utils.Constants
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -34,13 +36,16 @@ class NpcDetailScreenViewModel @Inject constructor(
     private val relationUseCases: RelationUseCases,
     private val biomeUseCases: BiomeUseCases,
     private val materialUseCases: MaterialUseCases,
+    private val pointOfInterestUseCases: PointOfInterestUseCases,
 ) : ViewModel() {
     private val _npcId: String =
-        checkNotNull(savedStateHandle[Constants.PASSIVE_CREATURE_KEY])
+        checkNotNull(savedStateHandle[Constants.NPC_KEY])
     private val _creature = MutableStateFlow<NPC?>(null)
     private val _biome = MutableStateFlow<Biome?>(null)
     private val _shopItems = MutableStateFlow<List<Material>>(emptyList())
     private val _shopSellItems = MutableStateFlow<List<Material>>(emptyList())
+    private val _hildirChests = MutableStateFlow<List<Material>>(emptyList())
+    private val _chestsLocation = MutableStateFlow<List<PointOfInterest>>(emptyList())
     private val _isLoading = MutableStateFlow<Boolean>(false)
     private val _error = MutableStateFlow<String?>(null)
 
@@ -50,6 +55,8 @@ class NpcDetailScreenViewModel @Inject constructor(
         _biome,
         _shopItems,
         _shopSellItems,
+        _hildirChests,
+        _chestsLocation,
         _isLoading,
         _error,
     ) { values ->
@@ -59,8 +66,10 @@ class NpcDetailScreenViewModel @Inject constructor(
             biome = values[1] as Biome?,
             shopItems = values[2] as List<Material>,
             shopSellItems = values[3] as List<Material>,
-            isLoading = values[4] as Boolean,
-            error = values[5] as String?
+            hildirChests = values[4] as List<Material>,
+            chestsLocation = values[5] as List<PointOfInterest>,
+            isLoading = values[6] as Boolean,
+            error = values[7] as String?
         )
     }.stateIn(
         scope = viewModelScope,
@@ -99,10 +108,33 @@ class NpcDetailScreenViewModel @Inject constructor(
                                     .filter {
                                         it.id in relatedIds
                                     }
-                            _shopItems.value = materials
+                            _shopItems.value = materials.sortedBy { it.order }
                         } catch (e: Exception) {
-                            Log.e("PassiveCreatureDetail ViewModel", "$e")
+                            Log.e("NP shop Items Detail ViewModel", "$e")
                             _shopItems.value = emptyList()
+                        }
+                    },
+                    async {
+                        try {
+                            val materials =
+                                materialUseCases.getMaterialsBySubCategory(MaterialSubCategory.MINI_BOSS_DROP)
+                                    .filter {
+                                        it.id in relatedIds
+                                    }
+                            _hildirChests.value = materials.sortedBy { it.order }
+                        } catch (e: Exception) {
+                            Log.e("hildir chests NPC Detail ViewModel", "$e")
+                            _hildirChests.value = emptyList()
+                        }
+                    },
+                    async {
+                        try {
+                            _chestsLocation.value =
+                                pointOfInterestUseCases.getPointsOfInterestByIdsUseCase(relatedIds)
+                                    .sortedBy { it.order }
+                        } catch (e: Exception) {
+                            Log.e("chests locations NPC Detail ViewModel", "$e")
+                            _chestsLocation.value = emptyList()
                         }
                     },
                     async {
@@ -112,9 +144,9 @@ class NpcDetailScreenViewModel @Inject constructor(
                                     .filter {
                                         it.id in relatedIds
                                     }
-                            _shopSellItems.value = materials
+                            _shopSellItems.value = materials.sortedBy { it.order }
                         } catch (e: Exception) {
-                            Log.e("PassiveCreatureDetail ViewModel", "$e")
+                            Log.e("Shop Sell Items NPC Detail ViewModel", "$e")
                             _shopSellItems.value = emptyList()
                         }
                     },

@@ -99,7 +99,7 @@ fun CreatureHorizontalPager(
                 Spacer(modifier = Modifier.padding(6.dp))
                 Text(
                     subTitle,
-                    style = MaterialTheme.typography.titleSmall,
+                    style = MaterialTheme.typography.titleMedium,
                 )
             }
             Spacer(modifier = Modifier.padding(6.dp))

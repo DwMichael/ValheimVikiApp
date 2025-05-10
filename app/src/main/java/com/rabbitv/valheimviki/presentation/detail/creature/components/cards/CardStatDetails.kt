@@ -38,7 +38,7 @@ import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 @Composable
 fun CardStatDetails(
     title: String,
-    text: String,
+    text: String? = null,
     icon: ImageVector,
     iconColor: Color,
     iconSize: Dp = 64.dp,
@@ -88,14 +88,17 @@ fun CardStatDetails(
                     color = PrimaryWhite,
                     style = styleTextFirst,
                 )
-                Text(
-                    modifier = Modifier
-                        .padding(horizontal = 5.dp)
-                        .wrapContentHeight(align = Alignment.CenterVertically),
-                    text = text.uppercase(),
-                    color = PrimaryWhite,
-                    style = styleTextSecond,
-                )
+                if(text != null){
+                    Text(
+                        modifier = Modifier
+                            .padding(horizontal = 5.dp)
+                            .wrapContentHeight(align = Alignment.CenterVertically),
+                        text = text.uppercase(),
+                        color = PrimaryWhite,
+                        style = styleTextSecond,
+                    )
+                }
+
             }
         }
     }
@@ -114,6 +117,25 @@ fun CardStatDetailsPreview() {
             CardStatDetails(
                 title = "Health",
                 text = "10000",
+                icon = Icons.Filled.Favorite,
+                iconColor = Color(0xFFE91E63)
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF2D2D2D)
+@Composable
+fun CardStatDetailsNullTextPreview() {
+    ValheimVikiAppTheme {
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .height(150.dp)
+        )
+        {
+            CardStatDetails(
+                title = "Health",
                 icon = Icons.Filled.Favorite,
                 iconColor = Color(0xFFE91E63)
             )

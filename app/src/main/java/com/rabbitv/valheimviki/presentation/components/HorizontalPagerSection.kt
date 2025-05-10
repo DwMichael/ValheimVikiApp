@@ -65,8 +65,8 @@ fun HorizontalPagerSection(
     pagerState: PagerState,
     list: List<ItemData?>,
     icon: ImageVector,
-    title:String,
-    subTitle:String,
+    title: String,
+    subTitle: String,
     contentScale: ContentScale,
     iconModifier: Modifier = Modifier.rotate(-85f)
 ) {
@@ -108,7 +108,7 @@ fun HorizontalPagerSection(
                 Spacer(modifier = Modifier.padding(6.dp))
                 Text(
                     subTitle,
-                    style = MaterialTheme.typography.titleSmall,
+                    style = MaterialTheme.typography.titleMedium,
                 )
             }
             Spacer(modifier = Modifier.padding(6.dp))
@@ -143,7 +143,7 @@ fun HorizontalPagerItem(
     pageIndex: Int,
     size: Int,
     contentScale: ContentScale,
-){
+) {
     Card(
         Modifier
             .size(150.dp)
@@ -166,7 +166,8 @@ fun HorizontalPagerItem(
                     fraction = 1f - pageOffset.coerceIn(0f, 1f)
                 )
                 cameraDistance = 8f * density
-            }.shadow(
+            }
+            .shadow(
                 elevation = 8.dp,
                 shape = RoundedCornerShape(8.dp),
                 spotColor = Color.White.copy(alpha = 0.25f)
@@ -176,10 +177,11 @@ fun HorizontalPagerItem(
             Box(
                 modifier = Modifier
                     .height(150.dp),
-                ) {
+            ) {
                 AsyncImage(
                     modifier = Modifier
-                        .fillMaxSize().background(DarkGrey),
+                        .fillMaxSize()
+                        .background(DarkGrey),
                     model = ImageRequest.Builder(LocalContext.current)
                         .data(it[pageIndex]?.imageUrl)
                         .crossfade(true)
@@ -188,13 +190,15 @@ fun HorizontalPagerItem(
                     contentScale = contentScale
                 )
                 Surface(
-                    modifier = Modifier.height(18.dp).width(32.dp)
+                    modifier = Modifier
+                        .height(18.dp)
+                        .width(32.dp)
                         .align(Alignment.TopEnd)
                         .clip(RoundedCornerShape(2.dp)),
                     color = ForestGreen10Dark,
                 ) {
                     Text(
-                        text = "${pageIndex+1}/${size}",
+                        text = "${pageIndex + 1}/${size}",
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center,
                         color = Color.White,
@@ -202,7 +206,8 @@ fun HorizontalPagerItem(
                     )
                 }
                 Surface(
-                    modifier = Modifier.align(Alignment.BottomStart)
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
                         .fillMaxHeight(0.2f)
                         .fillMaxWidth(),
                     tonalElevation = 0.dp,
@@ -226,6 +231,23 @@ fun HorizontalPagerItem(
     }
 }
 
+
+@Composable
+@Preview("HorizontalPagerItemPreview")
+fun PreviewHorizontalPagerItem() {
+    val pagerState = rememberPagerState(pageCount = {
+        10
+    })
+    val creatureList = FakeData.generateFakeCreatures()
+    HorizontalPagerItem(
+        pagerState = pagerState,
+        list = creatureList,
+        pageIndex = 0,
+        size = 10,
+        contentScale = ContentScale.Crop,
+    )
+}
+
 @Composable
 @Preview("RectangleSectionHeader")
 fun PreviewRectangleSectionHeader() {
@@ -236,8 +258,8 @@ fun PreviewRectangleSectionHeader() {
         val creatureList = FakeData.generateFakeCreatures()
         HorizontalPagerSection(
             pagerState = pagerState,
-            list = creatureList
-            , Lucide.PawPrint,
+            list = creatureList,
+            Lucide.PawPrint,
             "Creatuers",
             "Creatures you may encounter in this biome",
             ContentScale.Crop,

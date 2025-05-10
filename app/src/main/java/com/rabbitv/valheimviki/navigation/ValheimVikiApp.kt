@@ -54,6 +54,7 @@ import com.rabbitv.valheimviki.presentation.detail.biome.BiomeDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.creature.aggressive_screen.AggressiveCreatureDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.creature.main_boss_screen.MainBossDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.creature.mini_boss_screen.MiniBossDetailScreen
+import com.rabbitv.valheimviki.presentation.detail.creature.npc.NpcDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.creature.passive_screen.PassiveCreatureDetailScreen
 import com.rabbitv.valheimviki.presentation.home.MainAppBar
 import com.rabbitv.valheimviki.presentation.intro.WelcomeScreen
@@ -63,6 +64,7 @@ import com.rabbitv.valheimviki.utils.Constants.AGGRESSIVE_CREATURE_KEY
 import com.rabbitv.valheimviki.utils.Constants.BIOME_ARGUMENT_KEY
 import com.rabbitv.valheimviki.utils.Constants.MAIN_BOSS_ARGUMENT_KEY
 import com.rabbitv.valheimviki.utils.Constants.MINI_BOSS_ARGUMENT_KEY
+import com.rabbitv.valheimviki.utils.Constants.NPC_KEY
 import com.rabbitv.valheimviki.utils.Constants.PASSIVE_CREATURE_KEY
 import com.rabbitv.valheimviki.utils.Constants.TEXT_ARGUMENT_KEY
 import kotlinx.coroutines.delay
@@ -226,9 +228,12 @@ fun MainContainer(
                                         )
                                     )
 
-                                    2 -> {}
+                                    2 -> valheimVikiNavController.navigate(
+                                        Screen.NpcDetail.passNpcId(
+                                            creatureId
+                                        )
+                                    )
                                 }
-
                             },
                             paddingValues = innerPadding,
 //                            animatedVisibilityScope = this@composable
@@ -301,6 +306,20 @@ fun MainContainer(
                             },
                         )
                     }
+                    composable(
+                        route = Screen.NpcDetail.route,
+                        arguments = listOf(
+                            navArgument(NPC_KEY) { type = NavType.StringType },
+                        )
+                    ) {
+                        NpcDetailScreen(
+                            onBack = {
+                                valheimVikiNavController.popBackStack()
+                            },
+                        )
+                    }
+
+
                 }
             }
         )

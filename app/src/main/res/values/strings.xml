@@ -20,4 +20,11 @@
     <string name="note" translatable="false">Note</string>
     <string name="fun_fact">Fun Fact</string>
     <string name="heart_icon" translatable="false">Heart Icon</string>
+    <string name="hildir_text_first">Hildir has a map table in front of her that leads to various different locations where special dungeons with special minibosses can be fought, and different loot is found. Interacting with the table adds the locations to your map. The locations are:</string>
+    <string name="hildir_text_second">Up to three of each type of these locations will generate in each world. The spawning rules for each location type are as follows:</string>
+    <string name="hildir_text_fourth">Each of these quest locations is full of loot, enemies, and unique minibosses. Once defeated, these minibosses each drop a quest item:</string>
+    <string name="hildir_text_third">When players find Hildir, it can be a good idea to drop a Portal in the vicinity to make easier returns.</string>
+    <string name="hildir_text_fifth">Each of these chests weighs 200, has a stack size of 1, and cannot be teleported. Chests can be returned to Hildir, which unlocks additional trades from her; note that only one of each type of chest can be returned.</string>
+    <string name="hildir_text_sixth">Returning a chest to Hildir will enable new Events, which will cause the chest\'s respective boss and their minions to invade your base.</string>
+    <string name="hildir_html_text"><![CDATA[<ul><li>Smouldering Tombs: Each 3000 meters apart, between 3000 - 8000 meters from the world center, at an altitude of at least 1 meter.</li>\n                        <li>Howling Caverns: Each 2000 meters apart, between 1000 - 8000 meters from the world center, at an altitude of at least 200 meters.</li>\n                        <li>Sealed Tower: Each 3000 meters apart, at an altitude of at least 8 meters.</li></ul>]]></string>
 </resources>

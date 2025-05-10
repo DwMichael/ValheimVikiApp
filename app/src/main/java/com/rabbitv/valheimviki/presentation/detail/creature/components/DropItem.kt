@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.detail.creature.aggressive_screen
+package com.rabbitv.valheimviki.presentation.detail.creature.components
 
 import com.rabbitv.valheimviki.domain.model.material.Material
 

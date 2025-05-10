@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.detail.creature.components
+package com.rabbitv.valheimviki.presentation.detail.creature.components.rows
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

@@ -184,11 +184,11 @@ class DataRefetchUseCase @Inject constructor(
                 biomes.size == 9 &&
                         creatures.size == 83 &&
                         oreDeposits.size == 9 &&
-                        materials.size == 269 && //supabase ma o jeden więcej ale to przez deertrophy
+                        materials.size == 267 && //supabase ma o jeden więcej ale to przez deertrophy
                         pointsOfInterest.size == 51 &&
                         trees.size == 8 &&
                         food.size == 76 &&
-                        relations.size == 371
+                        relations.size == 464
                 )
     }
 }
