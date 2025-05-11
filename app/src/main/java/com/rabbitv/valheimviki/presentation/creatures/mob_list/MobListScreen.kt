@@ -29,6 +29,7 @@ import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -55,12 +57,14 @@ import com.rabbitv.valheimviki.ui.theme.ICON_SIZE
 import com.rabbitv.valheimviki.ui.theme.PrimaryText
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ShimmerDarkGray
+import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import kotlinx.coroutines.launch
 
 @Composable
 fun MobListScreen(
     onItemClick: (String, Int) -> Unit,
-    modifier: Modifier, paddingValues: PaddingValues, viewModel: MobListViewModel = hiltViewModel()
+    modifier: Modifier, paddingValues: PaddingValues,
+    viewModel: MobListViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val initialScrollPosition by viewModel.scrollPosition.collectAsStateWithLifecycle()
@@ -90,6 +94,7 @@ fun MobListScreen(
             }
         }
     }
+
     LaunchedEffect(uiState.selectedSubCategory) {
         if (selectedDifferentCategory.value) {
             coroutineScope.launch {
@@ -128,38 +133,49 @@ fun MobListScreen(
                 )
             }
         }
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
-        ) {
-            AnimatedVisibility(
-                visible = backButtonVisibleState,
-                enter = fadeIn(animationSpec = tween(300)),
-                exit = fadeOut(animationSpec = tween(300)),
-                modifier = Modifier.align(Alignment.BottomEnd)
-            ) {
-                FloatingActionButton(
-                    onClick = {
-                        backToTopState.value = true
-                    },
-                    shape = RoundedCornerShape(BODY_CONTENT_PADDING.dp),
-                    containerColor = ForestGreen10Dark,
-                    contentColor = PrimaryWhite,
-                    elevation = FloatingActionButtonDefaults.elevation(),
-                    modifier = Modifier.size(ICON_CLICK_DIM)
-                ) {
-                    Icon(
-                        Icons.Filled.KeyboardArrowUp,
-                        contentDescription = "Button Up",
-                        modifier = Modifier.size(ICON_SIZE)
-                    )
-                }
-            }
-        }
-
+        CustomFloatingActionButton(
+            backButtonVisibleState = backButtonVisibleState,
+            backToTopState = backToTopState
+        )
     }
 }
+
+@Composable
+fun CustomFloatingActionButton(
+    backButtonVisibleState: Boolean,
+    backToTopState: MutableState<Boolean>,
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        AnimatedVisibility(
+            visible = backButtonVisibleState,
+            enter = fadeIn(animationSpec = tween(300)),
+            exit = fadeOut(animationSpec = tween(300)),
+            modifier = Modifier.align(Alignment.BottomEnd)
+        ) {
+            FloatingActionButton(
+                onClick = {
+                    backToTopState.value = true
+                },
+                shape = RoundedCornerShape(BODY_CONTENT_PADDING.dp),
+                containerColor = ForestGreen10Dark,
+                contentColor = PrimaryWhite,
+                elevation = FloatingActionButtonDefaults.elevation(),
+                modifier = Modifier.size(ICON_CLICK_DIM)
+            ) {
+                Icon(
+                    Icons.Filled.KeyboardArrowUp,
+                    contentDescription = "Button Up",
+                    modifier = Modifier.size(ICON_SIZE)
+                )
+            }
+        }
+    }
+}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -238,3 +254,31 @@ fun CreatureTab(
     }
 }
 
+@Preview("CreatureTab ")
+@Composable
+fun PreviewCreatureTab() {
+    ValheimVikiAppTheme {
+        Column {
+            CreatureTab(
+                selectedTabIndex = 0,
+                onTabSelected = {},
+                onClick = { },
+                selected = true
+            )
+        }
+    }
+}
+
+@Preview("CustomFloatingActionButton", widthDp = 80, heightDp = 80)
+@Composable
+fun PreviewCustomFloatingActionButton() {
+    val backButtonVisibleState = true
+
+    val backToTopState = remember { mutableStateOf(false) }
+    ValheimVikiAppTheme {
+        CustomFloatingActionButton(
+            backButtonVisibleState = backButtonVisibleState,
+            backToTopState = backToTopState
+        )
+    }
+}
