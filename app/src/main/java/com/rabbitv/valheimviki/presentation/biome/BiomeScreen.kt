@@ -35,11 +35,11 @@ import kotlinx.coroutines.launch
 @Composable
 fun BiomeScreen(
     modifier: Modifier,
-    onItemClick : (String, String) -> Unit,
+    onItemClick: (String, String) -> Unit,
     paddingValues: PaddingValues,
     viewModel: BiomeScreenViewModel = hiltViewModel(),
     animatedVisibilityScope: AnimatedVisibilityScope
-    ) {
+) {
 
     val scope = rememberCoroutineScope()
     val refreshState = rememberPullToRefreshState()
@@ -74,7 +74,7 @@ fun BiomeScreen(
 
         ) {
             when {
-                biomeUIState.isLoading || (biomeUIState.biomes.isEmpty() && isConnection)  -> {
+                biomeUIState.isLoading || (biomeUIState.biomes.isEmpty() && isConnection) -> {
                     ShimmerEffect()
                 }
 

@@ -80,10 +80,13 @@ class MobListViewModel @Inject constructor(
                 creatureCases.getCreaturesBySubCategory(subCategory)
                     .collect { creatures ->
                         _creatureList.value = creatures
-
+                        _isLoading.value = false
+                        _error.value = null
                     }
 
             } catch (e: Exception) {
+                _isLoading.value = false
+                _error.value = "somthing goes wrong"
                 when (e) {
                     is CreatureFetchException -> Log.e(
                         "CreatureFetchException MobListScreenViewModel",

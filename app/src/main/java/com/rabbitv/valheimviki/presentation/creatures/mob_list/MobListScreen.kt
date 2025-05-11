@@ -117,8 +117,11 @@ fun MobListScreen(
     ) {
         when {
             uiState.isLoading || (uiState.creatureList.isEmpty() && isConnection) -> {
-                ShimmerEffect()
+                Box(modifier = Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp)) {
+                    ShimmerEffect()
+                }
             }
+
             uiState.creatureList.isNotEmpty() -> {
                 Column {
                     CreatureTab(
@@ -145,6 +148,7 @@ fun MobListScreen(
                     backToTopState = backToTopState
                 )
             }
+
             uiState.error != null -> {
                 Box(
                     modifier = Modifier.testTag("EmptyScreenMiniBoss"),

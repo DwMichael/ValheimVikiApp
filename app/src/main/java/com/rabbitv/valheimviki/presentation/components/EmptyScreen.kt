@@ -29,7 +29,7 @@ fun EmptyScreen(
     modifier: Modifier? = null,
     state: PullToRefreshState? = null,
     isRefreshing: Boolean? = null,
-    onRefresh: () -> Unit? = { },
+    onRefresh: () -> Unit = {},
     errorMessage: String,
 ) {
 //    PullToRefreshBox(

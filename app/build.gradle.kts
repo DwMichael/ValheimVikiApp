@@ -71,10 +71,10 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
     implementation("androidx.core:core-splashscreen:1.0.1")
-    implementation("androidx.navigation:navigation-compose:2.8.9")
-    androidTestImplementation("androidx.navigation:navigation-testing:2.8.9")
+    implementation("androidx.navigation:navigation-compose:2.9.0")
+    androidTestImplementation("androidx.navigation:navigation-testing:2.9.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
-    implementation("com.google.dagger:hilt-android:2.56.1")
+    implementation("com.google.dagger:hilt-android:2.56.2")
 //    ksp("com.google.dagger:hilt-compiler:2.56.1")
     ksp("com.google.dagger:hilt-android-compiler:2.56.1")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
@@ -90,9 +90,9 @@ dependencies {
     implementation("io.coil-kt.coil3:coil-compose:3.1.0")
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.1.0")
 
-    implementation("androidx.compose.ui:ui-text-google-fonts:1.7.8")
-    implementation("androidx.datastore:datastore-preferences:1.1.3")
-    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.compose.ui:ui-text-google-fonts:1.8.1")
+    implementation("androidx.datastore:datastore-preferences:1.1.6")
+    implementation("androidx.room:room-runtime:2.7.1")
     implementation("androidx.room:room-ktx:2.7.1")
 
 

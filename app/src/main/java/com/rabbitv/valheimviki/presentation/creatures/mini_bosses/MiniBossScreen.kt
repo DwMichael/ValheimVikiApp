@@ -13,11 +13,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,7 +31,6 @@ import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_TWO_COLUMNS
 import com.rabbitv.valheimviki.utils.Constants.NORMAL_SIZE_GRID
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
@@ -46,9 +43,6 @@ fun MiniBossScreen(
     animatedVisibilityScope: AnimatedVisibilityScope
 
 ) {
-    val scope = rememberCoroutineScope()
-    val refreshState = rememberPullToRefreshState()
-
     val uiState: MiniBossesUiState by viewModel.miniBossesUIState
         .collectAsStateWithLifecycle()
 
@@ -108,14 +102,6 @@ fun MiniBossScreen(
                     ) {
                         EmptyScreen(
                             modifier = Modifier,
-                            state = refreshState,
-                            isRefreshing = refreshing,
-                            onRefresh = {
-                                viewModel.refetchBiomes()
-                                scope.launch {
-                                    refreshState.animateToHidden()
-                                }
-                            },
                             errorMessage = uiState.error.toString()
                         )
                     }
