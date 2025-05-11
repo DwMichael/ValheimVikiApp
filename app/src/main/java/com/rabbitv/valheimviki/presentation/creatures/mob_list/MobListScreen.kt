@@ -49,7 +49,9 @@ import com.composables.icons.lucide.Rat
 import com.composables.icons.lucide.Skull
 import com.composables.icons.lucide.User
 import com.rabbitv.valheimviki.domain.model.creature.CreatureSubCategory
+import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.ListContent
+import com.rabbitv.valheimviki.presentation.components.ShimmerEffect
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
 import com.rabbitv.valheimviki.ui.theme.ICON_CLICK_DIM
@@ -60,6 +62,7 @@ import com.rabbitv.valheimviki.ui.theme.ShimmerDarkGray
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MobListScreen(
     onItemClick: (String, Int) -> Unit,
@@ -76,7 +79,7 @@ fun MobListScreen(
     val backButtonVisibleState by remember {
         derivedStateOf { lazyListState.firstVisibleItemIndex >= 2 }
     }
-
+    val isConnection: Boolean by viewModel.isConnection.collectAsStateWithLifecycle()
     val backToTopState = remember { mutableStateOf(false) }
 
     if (backToTopState.value) {
@@ -112,31 +115,47 @@ fun MobListScreen(
             .fillMaxSize()
             .padding(paddingValues)
     ) {
-        Column {
-            CreatureTab(
-                selectedTabIndex = uiState.selectedSubCategory,
-                onTabSelected = { index ->
-                    when (index) {
-                        0 -> viewModel.selectCreaturesSubCategory(CreatureSubCategory.PASSIVE_CREATURE)
-                        1 -> viewModel.selectCreaturesSubCategory(CreatureSubCategory.AGGRESSIVE_CREATURE)
-                        2 -> viewModel.selectCreaturesSubCategory(CreatureSubCategory.NPC)
-                    }
-                    selectedDifferentCategory.value = true
-                }, onClick = {}, selected = true
-            )
-            if (uiState.creatureList.isNotEmpty() == true) {
-                ListContent(
-                    items = uiState.creatureList,
-                    clickToNavigate = onItemClick,
-                    lazyListState = lazyListState,
-                    uiState.selectedSubCategory,
+        when {
+            uiState.isLoading || (uiState.creatureList.isEmpty() && isConnection) -> {
+                ShimmerEffect()
+            }
+            uiState.creatureList.isNotEmpty() -> {
+                Column {
+                    CreatureTab(
+                        selectedTabIndex = uiState.selectedSubCategory,
+                        onTabSelected = { index ->
+                            when (index) {
+                                0 -> viewModel.selectCreaturesSubCategory(CreatureSubCategory.PASSIVE_CREATURE)
+                                1 -> viewModel.selectCreaturesSubCategory(CreatureSubCategory.AGGRESSIVE_CREATURE)
+                                2 -> viewModel.selectCreaturesSubCategory(CreatureSubCategory.NPC)
+                            }
+                            selectedDifferentCategory.value = true
+                        }, onClick = {}, selected = true
+                    )
+                    ListContent(
+                        items = uiState.creatureList,
+                        clickToNavigate = onItemClick,
+                        lazyListState = lazyListState,
+                        uiState.selectedSubCategory,
+                    )
+                }
+
+                CustomFloatingActionButton(
+                    backButtonVisibleState = backButtonVisibleState,
+                    backToTopState = backToTopState
                 )
             }
+            uiState.error != null -> {
+                Box(
+                    modifier = Modifier.testTag("EmptyScreenMiniBoss"),
+                ) {
+                    EmptyScreen(
+                        modifier = Modifier,
+                        errorMessage = uiState.error.toString()
+                    )
+                }
+            }
         }
-        CustomFloatingActionButton(
-            backButtonVisibleState = backButtonVisibleState,
-            backToTopState = backToTopState
-        )
     }
 }
 
