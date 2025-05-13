@@ -9,8 +9,8 @@ import retrofit2.Response
 import javax.inject.Inject
 
 class WeaponRepositoryImplementation @Inject constructor(
-    val apiService: ApiWeaponService,
-    val weaponDao: WeaponDao
+    private val apiService: ApiWeaponService,
+    private val weaponDao: WeaponDao
 ) : WeaponRepository {
     override suspend fun fetchWeapons(lang: String): Response<List<Weapon>> {
         return apiService.fetchWeapons(lang)
@@ -21,7 +21,7 @@ class WeaponRepositoryImplementation @Inject constructor(
     }
 
     override suspend fun insertWeapons(weapons: List<Weapon>) {
-        check(weapons.isNotEmpty()) { "Weapons list cannot be empty , cannot insert ${weapons.size} weapons" }
-        insertWeapons(weapons)
+        check(weapons.isNotEmpty()) { "Weapons list cannot be empty , cannot insert ${weapons.size} creatures" }
+        weaponDao.insertWeapons(weapons)
     }
 }

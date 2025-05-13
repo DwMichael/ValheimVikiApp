@@ -122,16 +122,17 @@ class DataRefetchUseCase @Inject constructor(
                 foodResponse.body()?.let { foodList ->
                     if (foodList.isNotEmpty()) {
                         foodRepository.insertFoodList(foodList)
-                    } else
+                    } else {
                         return DataRefetchResult.Error("Empty food data received")
+                    }
                 } ?: return DataRefetchResult.Error("Null food data received")
 
                 weaponResponse.body()?.let { weaponList ->
                     if (weaponList.isNotEmpty()) {
                         weaponRepository.insertWeapons(weaponList)
-                    } else
+                    } else {
                         return DataRefetchResult.Error("Empty weapons data received")
-
+                    }
                 } ?: return DataRefetchResult.Error("Null weapons data received")
 
                 relationResponse.body()?.let { relations ->

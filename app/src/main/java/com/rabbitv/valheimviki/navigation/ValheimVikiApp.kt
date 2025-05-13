@@ -43,6 +43,7 @@ import androidx.navigation.navArgument
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.MountainSnow
 import com.composables.icons.lucide.Rabbit
+import com.composables.icons.lucide.Swords
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.presentation.biome.BiomeScreen
 import com.rabbitv.valheimviki.presentation.components.DrawerItem
@@ -59,6 +60,7 @@ import com.rabbitv.valheimviki.presentation.detail.creature.passive_screen.Passi
 import com.rabbitv.valheimviki.presentation.home.MainAppBar
 import com.rabbitv.valheimviki.presentation.intro.WelcomeScreen
 import com.rabbitv.valheimviki.presentation.splash.SplashScreen
+import com.rabbitv.valheimviki.presentation.weapons.WeaponListScreen
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.Constants.AGGRESSIVE_CREATURE_KEY
 import com.rabbitv.valheimviki.utils.Constants.BIOME_ARGUMENT_KEY
@@ -239,6 +241,37 @@ fun MainContainer(
 //                            animatedVisibilityScope = this@composable
                         )
                     }
+
+                    composable(Screen.WeaponList.route) {
+                        WeaponListScreen(
+                            modifier = Modifier.padding(10.dp),
+                            onItemClick = {
+//                                               creatureId, creatureSubCategory ->
+//                                when (creatureSubCategory) {
+//                                    0 -> valheimVikiNavController.navigate(
+//                                        Screen.PassiveCreatureDetail.passPassiveCreatureId(
+//                                            creatureId
+//                                        )
+//                                    )
+//
+//                                    1 -> valheimVikiNavController.navigate(
+//                                        Screen.AggressiveCreatureDetail.passAggressiveCreatureId(
+//                                            creatureId
+//                                        )
+//                                    )
+//
+//                                    2 -> valheimVikiNavController.navigate(
+//                                        Screen.NpcDetail.passNpcId(
+//                                            creatureId
+//                                        )
+//                                    )
+//                                }
+                            },
+                            paddingValues = innerPadding,
+//                            animatedVisibilityScope = this@composable
+                        )
+                    }
+
                     //Detail Screens
                     composable(
                         Screen.BiomeDetail.route,
@@ -353,6 +386,12 @@ private fun getDrawerItems(): List<DrawerItem> {
             label = "Creatures",
             contentDescription = "Creatures section",
             route = Screen.MobList.route
+        ),
+        DrawerItem(
+            icon = Lucide.Swords,
+            label = "Weapons",
+            contentDescription = "Weapons section",
+            route = Screen.WeaponList.route
         ),
     )
 }
