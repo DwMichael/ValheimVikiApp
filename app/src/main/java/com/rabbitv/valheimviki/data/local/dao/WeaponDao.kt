@@ -13,9 +13,6 @@ interface WeaponDao {
     @Query("SELECT * FROM weapons")
     fun getLocalWeapons(): Flow<List<Weapon>>
 
-    @Query("SELECT * FROM weapons where subCategory=:subCategory")
-    fun getWeaponsBySubCategory(subCategory: String): List<Weapon>
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertWeapons(weapons: List<Weapon>)
 }

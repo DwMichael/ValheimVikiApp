@@ -20,10 +20,6 @@ class WeaponRepositoryImplementation @Inject constructor(
         return weaponDao.getLocalWeapons()
     }
 
-    override fun getWeaponsBySubCategory(subCategory: String): List<Weapon> {
-        return weaponDao.getWeaponsBySubCategory(subCategory)
-    }
-
     override suspend fun insertWeapons(weapons: List<Weapon>) {
         check(weapons.isNotEmpty()) { "Weapons list cannot be empty , cannot insert ${weapons.size} weapons" }
         insertWeapons(weapons)

@@ -96,6 +96,10 @@ import com.rabbitv.valheimviki.domain.use_cases.tree.TreeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.tree.get_local_trees.GetLocalTreesUseCase
 import com.rabbitv.valheimviki.domain.use_cases.tree.get_tree_by_id.GetTreeByIdUseCase
 import com.rabbitv.valheimviki.domain.use_cases.tree.get_trees_by_ids.GetTreesByIdsUseCase
+import com.rabbitv.valheimviki.domain.use_cases.weapon.WeaponUseCases
+import com.rabbitv.valheimviki.domain.use_cases.weapon.get_local_weapons_use_case.GetLocalWeaponsUseCase
+import com.rabbitv.valheimviki.domain.use_cases.weapon.get_weapons_by_sub_category_use_case.GetWeaponsBySubCategoryUseCase
+import com.rabbitv.valheimviki.domain.use_cases.weapon.get_weapons_by_sub_type_use_case.GetWeaponsBySubTypeUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -216,6 +220,7 @@ object RepositoryModule {
         pointOfInterestRepository: PointOfInterestRepository,
         treeRepository: TreeRepository,
         foodRepository: FoodRepository,
+        weaponRepository: WeaponRepository,
         dataStoreUseCases: DataStoreUseCases
     ): DataRefetchUseCase {
         return DataRefetchUseCase(
@@ -227,7 +232,8 @@ object RepositoryModule {
             materialsRepository = materialRepository,
             pointOfInterestRepository = pointOfInterestRepository,
             treeRepository = treeRepository,
-            foodRepository = foodRepository
+            foodRepository = foodRepository,
+            weaponRepository = weaponRepository
         )
     }
 
@@ -355,6 +361,16 @@ object RepositoryModule {
             getLocalFoodListUseCase = GetLocalFoodListUseCase(foodRepository),
             getFoodBySubCategoryUseCase = GetFoodListBySubCategoryUseCase(foodRepository),
             getFoodListByIdsUseCase = GetFoodListByIdsUseCase(foodRepository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideWeaponUseCases(weaponRepository: WeaponRepository): WeaponUseCases {
+        return WeaponUseCases(
+            getLocalWeaponsUseCase = GetLocalWeaponsUseCase(weaponRepository),
+            getWeaponsBySubCategoryUseCase = GetWeaponsBySubCategoryUseCase(),
+            getWeaponsBySubTypeUseCase = GetWeaponsBySubTypeUseCase()
         )
     }
 }

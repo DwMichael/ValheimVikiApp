@@ -45,3 +45,6 @@ class TreesByIdsFetchLocalException(message: String) : FetchLocalException(messa
 class FoodFetchLocalException(message: String) : FetchLocalException(message)
 class FoodByIdsFetchLocalException(message: String) : FetchLocalException(message)
 
+//Weapons
+class WeaponFetchLocalException(message: String) : FetchLocalException(message)
+class WeaponByIdsFetchLocalException(message: String) : FetchLocalException(message)
