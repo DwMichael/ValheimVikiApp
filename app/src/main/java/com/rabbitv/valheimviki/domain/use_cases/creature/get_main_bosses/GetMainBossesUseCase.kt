@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 class GetMainBossesUseCase @Inject constructor(private val creatureRepository: CreatureRepository) {
     @OptIn(ExperimentalCoroutinesApi::class)
-    operator fun invoke(language: String): Flow<List<MainBoss>> {
+    operator fun invoke(): Flow<List<MainBoss>> {
         val creatureSubCategory = CreatureSubCategory.BOSS
         return creatureRepository.getCreaturesBySubCategory(creatureSubCategory.toString())
             .map { mainBosses -> mainBosses.toMainBosses().sortedBy { it.order } }
