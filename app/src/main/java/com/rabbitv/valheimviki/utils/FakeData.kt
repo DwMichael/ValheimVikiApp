@@ -6,9 +6,124 @@ import com.rabbitv.valheimviki.domain.model.creature.npc.NPC
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
+import com.rabbitv.valheimviki.domain.model.weapon.UpgradeInfo
+import com.rabbitv.valheimviki.domain.model.weapon.Weapon
 import com.rabbitv.valheimviki.presentation.detail.creature.npc.NpcDetailUiState
 
 object FakeData {
+    val fakeWeaponList: List<Weapon> = listOf(
+        Weapon(
+            id = "wpn_001",
+            imageUrl = "https://example.com/images/shadowblade.png",
+            category = "Melee",
+            subCategory = "Sword",
+            name = "Shadowblade of the Silent Night",
+            description = "A swift blade crafted from obsidian, said to be quenched in the tears of a fallen star. It whispers secrets to its wielder in the dead of night.",
+            order = 1,
+            upgradeInfoList = listOf(
+                UpgradeInfo(
+                    upgradeLevels = 1,
+                    slashDamage = 25,
+                    pierceDamage = 15,
+                    durability = 100,
+                    stationLevel = 1
+                ),
+                UpgradeInfo(
+                    upgradeLevels = 2,
+                    slashDamage = 35,
+                    pierceDamage = 20,
+                    spiritDamage = 5,
+                    durability = 120,
+                    stationLevel = 2
+                ),
+                UpgradeInfo(
+                    upgradeLevels = 3,
+                    slashDamage = 45,
+                    pierceDamage = 25,
+                    spiritDamage = 10,
+                    durability = 150,
+                    stationLevel = 3,
+                    maximumSkeletonsControllable = 1 // Unique stat for a magic-infused sword
+                )
+            ),
+            subType = "One-Handed Sword"
+        ),
+        Weapon(
+            id = "wpn_002",
+            imageUrl = "https://example.com/images/runichammer.png",
+            category = "Melee",
+            subCategory = "Hammer",
+            name = "Runic Earthshaker",
+            description = "A massive hammer inscribed with ancient runes of power. Each strike feels like the mountain's fury.",
+            order = 2,
+            upgradeInfoList = listOf(
+                UpgradeInfo(
+                    upgradeLevels = 1,
+                    bluntDamage = 40,
+                    durability = 150,
+                    stationLevel = 1
+                ),
+                UpgradeInfo(
+                    upgradeLevels = 2,
+                    bluntDamage = 55,
+                    fireDamage = 10, // Added elemental damage
+                    durability = 180,
+                    stationLevel = 2
+                ),
+                UpgradeInfo(
+                    upgradeLevels = 3,
+                    bluntDamage = 70,
+                    fireDamage = 15,
+                    lightningDamage = 5,
+                    durability = 220,
+                    stationLevel = 4 // Higher station level for powerful upgrades
+                )
+            ),
+            subType = "Two-Handed Hammer"
+        ),
+        Weapon(
+            id = "wpn_003",
+            imageUrl = "https://example.com/images/spiritbow.png",
+            category = "Ranged",
+            subCategory = "Bow",
+            name = "Whispering Spiritwood Bow",
+            description = "Crafted from the ancient Spiritwood, this bow fires arrows guided by ethereal forces. It hums with a gentle energy.",
+            order = 3,
+            upgradeInfoList = listOf(
+                UpgradeInfo(
+                    upgradeLevels = 1,
+                    pierceDamage = 20,
+                    durability = 80,
+                    stationLevel = 1
+                ),
+                UpgradeInfo(
+                    upgradeLevels = 2,
+                    pierceDamage = 28,
+                    frostDamage = 8,
+                    durability = 95,
+                    stationLevel = 2
+                ),
+                UpgradeInfo(
+                    upgradeLevels = 3,
+                    pierceDamage = 35,
+                    frostDamage = 12,
+                    poisonDamage = 5, // Added poison
+                    durability = 110,
+                    stationLevel = 3
+                ),
+                UpgradeInfo( // Added a 4th upgrade level for this bow
+                    upgradeLevels = 4,
+                    pierceDamage = 42,
+                    frostDamage = 18,
+                    poisonDamage = 8,
+                    pureDamage = 5, // Added pure damage
+                    durability = 130,
+                    stationLevel = 4
+                )
+            ),
+            subType = "Longbow"
+        )
+    )
 
     val pointOfInterest = listOf(
         PointOfInterest(

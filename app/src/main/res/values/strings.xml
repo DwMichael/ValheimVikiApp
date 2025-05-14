@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name" translatable="false">ValheimVikiApp</string>
     <string name="item_grid_image" translatable="false">Item Grid Image</string>
-    <string name="no_internet_connection">No Internet Connection</string>
     <string name="creatures_section" translatable="false">Creatures section</string>
     <string name="biomes_section" translatable="false">Biomes section</string>
     <string name="boss_section" translatable="false">Boss section</string>
@@ -27,4 +26,5 @@
     <string name="hildir_text_fifth">Each of these chests weighs 200, has a stack size of 1, and cannot be teleported. Chests can be returned to Hildir, which unlocks additional trades from her; note that only one of each type of chest can be returned.</string>
     <string name="hildir_text_sixth">Returning a chest to Hildir will enable new Events, which will cause the chest\'s respective boss and their minions to invade your base.</string>
     <string name="hildir_html_text"><![CDATA[<ul><li>Smouldering Tombs: Each 3000 meters apart, between 3000 - 8000 meters from the world center, at an altitude of at least 1 meter.</li>\n                        <li>Howling Caverns: Each 2000 meters apart, between 1000 - 8000 meters from the world center, at an altitude of at least 200 meters.</li>\n                        <li>Sealed Tower: Each 3000 meters apart, at an altitude of at least 8 meters.</li></ul>]]></string>
+    <string name="no_internet_connection_ms">Connect to internet to fetch data</string>
 </resources>

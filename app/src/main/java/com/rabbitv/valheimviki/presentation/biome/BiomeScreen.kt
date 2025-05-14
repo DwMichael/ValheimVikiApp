@@ -18,8 +18,10 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.GridContent
 import com.rabbitv.valheimviki.presentation.components.ShimmerEffect
@@ -89,13 +91,13 @@ fun BiomeScreen(
                             EmptyScreen(
                                 modifier = Modifier.fillMaxSize(),
                                 errorMessage = biomeUIState.error
-                                    ?: "Connect to internet to fetch data"
+                                    ?: stringResource(R.string.no_internet_connection_ms)
                             )
                         }
                     }
                 }
 
-                biomeUIState.biomes.isNotEmpty() -> {
+                else -> {
                     Box(
                         modifier = Modifier.testTag("BiomeGrid"),
                     ) {
