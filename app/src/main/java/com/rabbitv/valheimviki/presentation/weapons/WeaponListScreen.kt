@@ -1,11 +1,10 @@
 package com.rabbitv.valheimviki.presentation.weapons
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,9 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.ElevatedFilterChip
-
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
@@ -27,6 +24,7 @@ import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -40,20 +38,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.composables.icons.lucide.Axe
+import com.composables.icons.lucide.Bomb
 import com.composables.icons.lucide.Grab
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.PocketKnife
 import com.composables.icons.lucide.Shield
+import com.composables.icons.lucide.Slice
 import com.composables.icons.lucide.Sword
+import com.composables.icons.lucide.Swords
+import com.composables.icons.lucide.TypeOutline
+import com.composables.icons.lucide.Wand
+import com.composables.icons.lucide.WandSparkles
 import com.rabbitv.valheimviki.R
-import com.rabbitv.valheimviki.domain.model.weapon.WeaponSubCategory
-import com.rabbitv.valheimviki.presentation.components.EmptyScreen
-import com.rabbitv.valheimviki.presentation.components.ShimmerEffect
+
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.ui.theme.YellowDT
@@ -63,14 +64,19 @@ import com.rabbitv.valheimviki.ui.theme.YellowDTIconColor
 import com.rabbitv.valheimviki.ui.theme.YellowDTNotSelected
 import com.rabbitv.valheimviki.ui.theme.YellowDTSelected
 import com.rabbitv.valheimviki.utils.FakeData
+import kotlin.Int
 
 enum class SegmentButtonOptions(val label: String) {
     MELEE("Melee"),
     RANGED("Ranged"),
     MAGIC("Magic"),
     AMMO("Ammo");
-    override fun toString() = label
 }
+
+data class ChoiceChip(
+    val icon: ImageVector,
+    val label: String                 // or @StringRes val label: Int
+)
 
 @Composable
 fun WeaponListScreen(
@@ -147,16 +153,40 @@ fun WeaponListDisplay(
     weaponListUiState: WeaponListUiState
 ){
 
-    val items :List<Pair<ImageVector,String>> = listOf(
-        Pair(Lucide.Axe,"Axes"),
-        Pair( ImageVector.vectorResource(id = R.drawable.club),"Clubs"),
-        Pair(Lucide.Sword, "Swords"),
-            Pair(ImageVector.vectorResource(id = R.drawable.lance), "Spears"),
-                Pair(Lucide.Sword,"Poleartms"),
-                    Pair(Lucide.PocketKnife, "Knives"),
-                        Pair(Lucide.Grab,"Fists"),
-                            Pair(Lucide.Shield,"Shields")
+    val meleeItems :List<ChoiceChip> = listOf(
+        ChoiceChip(Lucide.Axe,"Axes"),
+        ChoiceChip( ImageVector.vectorResource(id = R.drawable.club),"Clubs"),
+        ChoiceChip(ImageVector.vectorResource(id = R.drawable.sword), "Swords"),
+        ChoiceChip(ImageVector.vectorResource(id = R.drawable.spear), "Spears"),
+        ChoiceChip(ImageVector.vectorResource(id = R.drawable.polearm),"Poleartms"),
+        ChoiceChip(ImageVector.vectorResource(id = R.drawable.knife), "Knives"),
+        ChoiceChip(Lucide.Grab,"Fists"),
+        ChoiceChip(Lucide.Shield,"Shields")
     )
+    val rangedItems :List<ChoiceChip> = listOf(
+        ChoiceChip(ImageVector.vectorResource(id = R.drawable.bow_arrow),"Bows"),
+        ChoiceChip( ImageVector.vectorResource(id = R.drawable.crossbow),"Crossbows"),
+    )
+    val magicItems :List<ChoiceChip> = listOf(
+        ChoiceChip(Lucide.WandSparkles,"Elemental magic"),
+        ChoiceChip(Lucide.Wand,"Blood magic")
+    )
+    val ammoItems :List<ChoiceChip> = listOf(
+        ChoiceChip( ImageVector.vectorResource(id = R.drawable.arrow),"Arrows"),
+        ChoiceChip(ImageVector.vectorResource(id = R.drawable.bolt),"Arrows"),
+        ChoiceChip(ImageVector.vectorResource(id = R.drawable.missile),"Missiles"),
+        ChoiceChip(Lucide.Bomb,"Bombs"),
+    )
+    val combineIcons : Map<Int, List<ChoiceChip>>  = mapOf(
+       0 to meleeItems,
+       1 to rangedItems,
+       2 to magicItems,
+       3 to  ammoItems
+    )
+
+    var selectedCategoryIndex by remember { mutableIntStateOf(0) }
+    var selectedChipIndex :Int? by remember { mutableStateOf(null) }
+
 
     Column(
         horizontalAlignment = Alignment.Start
@@ -165,12 +195,22 @@ fun WeaponListDisplay(
             style = MaterialTheme.typography.displayLarge
         )
         Spacer(Modifier.padding(top = 5.dp , start = BODY_CONTENT_PADDING.dp, end = BODY_CONTENT_PADDING.dp ))
-        SegmentedButtonSingleSelect()
+        SegmentedButtonSingleSelect(
+            selectedCategoryIndex,
+            { index -> selectedCategoryIndex = index }
+        )
         Spacer(Modifier.padding(BODY_CONTENT_PADDING.dp))
         SingleChoiceChipGroup(
-            items =  items,
-            selectedIndex = 0,
-            onSelectedChange = { },
+            itemsMap =  combineIcons,
+            selectedCategory = selectedCategoryIndex,
+            selectedIndex = selectedChipIndex,
+            onSelectedChange = {index ->
+                selectedChipIndex = if(selectedChipIndex == index){
+                        null
+                    }else {
+                        index
+                    }
+                },
             modifier = Modifier,
         )
     }
@@ -179,8 +219,9 @@ fun WeaponListDisplay(
 
 @Composable
 fun SingleChoiceChipGroup(
-    items: List<Pair<ImageVector,String>> ,
-    selectedIndex: Int ,
+    itemsMap:Map<Int, List<ChoiceChip>> ,
+    selectedCategory : Int,
+    selectedIndex: Int? ,
     onSelectedChange: (Int) -> Unit ,
     modifier: Modifier = Modifier ,
 )
@@ -189,15 +230,17 @@ fun SingleChoiceChipGroup(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items.forEachIndexed { index, pair, ->
-            CustomElevatedFilterChip(
-                index = index,
-                selectedIndex =selectedIndex,
-                onSelectedChange = onSelectedChange,
-                label = pair.second,
-                icon = pair.first
+        itemsMap[selectedCategory].let {items ->
+            items?.forEachIndexed { index, choiceChip, ->
+                CustomElevatedFilterChip(
+                    index = index,
+                    selectedIndex =selectedIndex,
+                    onSelectedChange = onSelectedChange,
+                    label = choiceChip.label,
+                    icon = choiceChip.icon
 
-            )
+                )
+            }
         }
     }
 }
@@ -205,7 +248,7 @@ fun SingleChoiceChipGroup(
 @Composable
 fun CustomElevatedFilterChip(
     index:Int,
-    selectedIndex: Int,
+    selectedIndex: Int?,
     onSelectedChange: (Int) -> Unit,
     label:String,
     icon: ImageVector,
@@ -241,8 +284,8 @@ fun CustomElevatedFilterChip(
 
 
 @Composable
-fun SegmentedButtonSingleSelect(){
-    var selectedIndex by remember { mutableIntStateOf(0) }
+fun SegmentedButtonSingleSelect( selectedIndex: Int, onClick:(index:Int)->Unit){
+
     val options : List<SegmentButtonOptions> = SegmentButtonOptions.entries
 
     val segmentColors = SegmentedButtonDefaults.colors(
@@ -271,7 +314,7 @@ fun SegmentedButtonSingleSelect(){
         options.forEachIndexed { index, label ->
             SegmentedButton(
                 shape = SegmentedButtonDefaults.itemShape(index = index, count = options.size),
-                onClick = { selectedIndex = index },
+                onClick = { onClick(index)},
                 selected = index == selectedIndex,
                 colors = segmentColors
             ) {
@@ -290,18 +333,39 @@ fun SegmentedButtonSingleSelect(){
 @Preview("SingleChoiceChipGroupPreview")
 @Composable
 fun PreviewSingleChoiceChipGroup(){
-    val items :List<Pair<ImageVector,String>> = listOf(
-        Pair(Lucide.Axe,"Axes"),
-        Pair( ImageVector.vectorResource(id = R.drawable.club),"Clubs"),
-        Pair(Lucide.Sword, "Swords"),
-        Pair(ImageVector.vectorResource(id = R.drawable.lance), "Spears"),
-        Pair(Lucide.Sword,"Poleartms"),
-        Pair(Lucide.PocketKnife, "Knives"),
-        Pair(Lucide.Grab,"Fists"),
-        Pair(Lucide.Shield,"Shields")
+    val meleeItems :List<ChoiceChip> = listOf(
+        ChoiceChip(Lucide.Axe,"Axes"),
+        ChoiceChip(ImageVector.vectorResource(id = R.drawable.club),"Clubs"),
+        ChoiceChip(ImageVector.vectorResource(id = R.drawable.sword), "Swords"),
+        ChoiceChip(ImageVector.vectorResource(id = R.drawable.spear), "Spears"),
+        ChoiceChip(ImageVector.vectorResource(id = R.drawable.polearm),"Poleartms"),
+        ChoiceChip(ImageVector.vectorResource(id = R.drawable.knife), "Knives"),
+        ChoiceChip(Lucide.Grab,"Fists"),
+        ChoiceChip(Lucide.Shield,"Shields")
+    )
+    val rangedItems :List<ChoiceChip> = listOf(
+        ChoiceChip(ImageVector.vectorResource(id = R.drawable.bow_arrow),"Bows"),
+        ChoiceChip( ImageVector.vectorResource(id = R.drawable.crossbow),"Crossbows"),
+    )
+    val magicItems :List<ChoiceChip> = listOf(
+        ChoiceChip(Lucide.WandSparkles,"Elemental magic"),
+        ChoiceChip(Lucide.Wand,"Blood magic")
+    )
+    val ammoItems :List<ChoiceChip> = listOf(
+        ChoiceChip( ImageVector.vectorResource(id = R.drawable.arrow),"Arrows"),
+        ChoiceChip(ImageVector.vectorResource(id = R.drawable.bolt),"Arrows"),
+        ChoiceChip(ImageVector.vectorResource(id = R.drawable.missile),"Missiles"),
+        ChoiceChip(Lucide.Bomb,"Bombs"),
+    )
+    val combineIcons : Map<Int, List<ChoiceChip>>  = mapOf(
+        0 to meleeItems,
+        1 to rangedItems,
+        2 to magicItems,
+        3 to  ammoItems
     )
     ValheimVikiAppTheme { SingleChoiceChipGroup(
-        items = items,
+        itemsMap = combineIcons,
+        selectedCategory = 0,
         selectedIndex = 1,
         onSelectedChange = {  },
         modifier = Modifier
@@ -338,7 +402,10 @@ fun PreviewCustomElevatedFilterChipNotSelected(){
 @Preview("SegmentedButtonSingleSelectPreview")
 @Composable
 fun PreviewSegmentedButtonSingleSelect(){
-    ValheimVikiAppTheme { SegmentedButtonSingleSelect() }
+    ValheimVikiAppTheme { SegmentedButtonSingleSelect(
+        selectedIndex = 0,
+        onClick = {  }
+    ) }
 
 }
 
