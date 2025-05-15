@@ -38,9 +38,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.composables.icons.lucide.Axe
+import com.composables.icons.lucide.Grab
+import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.PocketKnife
+import com.composables.icons.lucide.Shield
+import com.composables.icons.lucide.Sword
+import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.weapon.WeaponSubCategory
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.ShimmerEffect
@@ -136,6 +146,18 @@ fun WeaponListStateRenderer(
 fun WeaponListDisplay(
     weaponListUiState: WeaponListUiState
 ){
+
+    val items :List<Pair<ImageVector,String>> = listOf(
+        Pair(Lucide.Axe,"Axes"),
+        Pair( ImageVector.vectorResource(id = R.drawable.club),"Clubs"),
+        Pair(Lucide.Sword, "Swords"),
+            Pair(ImageVector.vectorResource(id = R.drawable.lance), "Spears"),
+                Pair(Lucide.Sword,"Poleartms"),
+                    Pair(Lucide.PocketKnife, "Knives"),
+                        Pair(Lucide.Grab,"Fists"),
+                            Pair(Lucide.Shield,"Shields")
+    )
+
     Column(
         horizontalAlignment = Alignment.Start
     ) {
@@ -146,7 +168,7 @@ fun WeaponListDisplay(
         SegmentedButtonSingleSelect()
         Spacer(Modifier.padding(BODY_CONTENT_PADDING.dp))
         SingleChoiceChipGroup(
-            items =  listOf("Axes","Clubs","Swords","Spears","Poleartms","Knives","Fists","Shields"),
+            items =  items,
             selectedIndex = 0,
             onSelectedChange = { },
             modifier = Modifier,
@@ -157,22 +179,24 @@ fun WeaponListDisplay(
 
 @Composable
 fun SingleChoiceChipGroup(
-    items: List<String>,
-    selectedIndex: Int,
-    onSelectedChange: (Int) -> Unit,
-    modifier: Modifier = Modifier,
+    items: List<Pair<ImageVector,String>> ,
+    selectedIndex: Int ,
+    onSelectedChange: (Int) -> Unit ,
+    modifier: Modifier = Modifier ,
 )
 {
     FlowRow(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items.forEachIndexed { index, label ->
+        items.forEachIndexed { index, pair, ->
             CustomElevatedFilterChip(
                 index = index,
                 selectedIndex =selectedIndex,
                 onSelectedChange = onSelectedChange,
-                label = label
+                label = pair.second,
+                icon = pair.first
+
             )
         }
     }
@@ -184,6 +208,7 @@ fun CustomElevatedFilterChip(
     selectedIndex: Int,
     onSelectedChange: (Int) -> Unit,
     label:String,
+    icon: ImageVector,
 ){
    val selectableChipColors = SelectableChipColors(
        containerColor = YellowDTContainerNotSelected,
@@ -209,7 +234,7 @@ fun CustomElevatedFilterChip(
             { Icon(Icons.Default.Check, contentDescription = null ,modifier = Modifier.size(FilterChipDefaults.IconSize)) }
         } else
         {
-            {Icon(Icons.Default.Home, contentDescription = null,modifier = Modifier.size(FilterChipDefaults.IconSize)) }
+            {Icon(icon, contentDescription = null,modifier = Modifier.size(FilterChipDefaults.IconSize)) }
         }
     )
 }
@@ -265,23 +290,35 @@ fun SegmentedButtonSingleSelect(){
 @Preview("SingleChoiceChipGroupPreview")
 @Composable
 fun PreviewSingleChoiceChipGroup(){
+    val items :List<Pair<ImageVector,String>> = listOf(
+        Pair(Lucide.Axe,"Axes"),
+        Pair( ImageVector.vectorResource(id = R.drawable.club),"Clubs"),
+        Pair(Lucide.Sword, "Swords"),
+        Pair(ImageVector.vectorResource(id = R.drawable.lance), "Spears"),
+        Pair(Lucide.Sword,"Poleartms"),
+        Pair(Lucide.PocketKnife, "Knives"),
+        Pair(Lucide.Grab,"Fists"),
+        Pair(Lucide.Shield,"Shields")
+    )
     ValheimVikiAppTheme { SingleChoiceChipGroup(
-        items = listOf("Axes","Clubs","Swords","Spears","Poleartms","Knives","Fists","Shields"),
+        items = items,
         selectedIndex = 1,
         onSelectedChange = {  },
         modifier = Modifier
     ) }
-
 }
+
 @Preview("CustomElevatedFilterChipSelectedPreview")
 @Composable
 fun PreviewCustomElevatedFilterChipSelected(){
-    ValheimVikiAppTheme { CustomElevatedFilterChip(
-        index = 0,
-        selectedIndex = 0,
-        onSelectedChange = {},
-        label = "Axes"
-    ) }
+    ValheimVikiAppTheme {
+        CustomElevatedFilterChip(
+	        index = 0 ,
+	        selectedIndex = 0 ,
+	        onSelectedChange = {} ,
+	        label = "Axes" ,
+	        icon = Lucide.Axe ,
+        ) }
 
 }
 
@@ -292,7 +329,8 @@ fun PreviewCustomElevatedFilterChipNotSelected(){
         index = 1,
         selectedIndex = 0,
         onSelectedChange = {},
-        label = "Axes"
+        label = "Axes",
+        icon = Lucide.Axe
     ) }
 
 }
