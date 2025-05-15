@@ -107,7 +107,8 @@ fun MainContainer(
         route.startsWith(Screen.Boss.route.substringBefore("{")) ||
                 route.startsWith(Screen.Biome.route.substringBefore("{")) ||
                 route.startsWith(Screen.MiniBoss.route.substringBefore("{")) ||
-                route.startsWith(Screen.MobList.route.substringBefore("{"))
+                route.startsWith(Screen.MobList.route.substringBefore("{")) ||
+                route.startsWith(Screen.WeaponList.route.substringBefore("{"))
     } == true
 
     val isNavigating = remember { mutableStateOf(false) }
@@ -245,30 +246,8 @@ fun MainContainer(
                     composable(Screen.WeaponList.route) {
                         WeaponListScreen(
                             modifier = Modifier.padding(10.dp),
-                            onItemClick = {
-//                                               creatureId, creatureSubCategory ->
-//                                when (creatureSubCategory) {
-//                                    0 -> valheimVikiNavController.navigate(
-//                                        Screen.PassiveCreatureDetail.passPassiveCreatureId(
-//                                            creatureId
-//                                        )
-//                                    )
-//
-//                                    1 -> valheimVikiNavController.navigate(
-//                                        Screen.AggressiveCreatureDetail.passAggressiveCreatureId(
-//                                            creatureId
-//                                        )
-//                                    )
-//
-//                                    2 -> valheimVikiNavController.navigate(
-//                                        Screen.NpcDetail.passNpcId(
-//                                            creatureId
-//                                        )
-//                                    )
-//                                }
-                            },
+                            onItemClick = {},
                             paddingValues = innerPadding,
-//                            animatedVisibilityScope = this@composable
                         )
                     }
 
@@ -351,8 +330,6 @@ fun MainContainer(
                             },
                         )
                     }
-
-
                 }
             }
         )
@@ -392,7 +369,7 @@ private fun getDrawerItems(): List<DrawerItem> {
             label = "Weapons",
             contentDescription = "Weapons section",
             route = Screen.WeaponList.route
-        ),
+        )
     )
 }
 

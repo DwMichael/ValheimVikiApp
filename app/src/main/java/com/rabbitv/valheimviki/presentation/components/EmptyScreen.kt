@@ -55,7 +55,7 @@ fun EmptyScreen(
                 modifier = Modifier.size(75.dp),
                 imageVector = Lucide.WifiOff,
                 tint = Color.White,
-                contentDescription = stringResource(R.string.no_internet_connection),
+                contentDescription = "NO_INTERNET_CONECTION_ICON",
             )
             Text(
                 errorMessage,

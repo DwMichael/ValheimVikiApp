@@ -47,6 +47,7 @@ import androidx.navigation.compose.rememberNavController
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.MountainSnow
 import com.composables.icons.lucide.Rabbit
+import com.composables.icons.lucide.Swords
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.navigation.Screen
 import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
@@ -232,7 +233,12 @@ private fun PreviewNavigationDrawer() {
             contentDescription = "Creatures section",
             route = ""
         ),
-
+        DrawerItem(
+            icon = Lucide.Swords,
+            label = "Weapons",
+            contentDescription = "Weapons section",
+            route = Screen.WeaponList.route
+        )
         )
     ValheimVikiAppTheme {
         NavigationDrawer(

@@ -60,6 +60,7 @@ import coil3.request.crossfade
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.TreePine
 import com.rabbitv.valheimviki.R
+import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.npc.NPC
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
@@ -148,7 +149,8 @@ fun NpcDetailContent(
                     .fillMaxSize()
                     .padding(padding)
                     .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.Center
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 MainDetailImage(
                     onBack = onBack,
@@ -746,6 +748,50 @@ fun PreviewNPCPage() {
         NpcDetailContent(
             onBack = {},
             uiState = fakeNpcDetailUiState
+        )
+    }
+}
+
+
+@Preview(name = "PreviewNPCPage")
+@Composable
+fun PreviewNPCPageSmal() {
+  val npc =  NPC(
+        id = "1",
+        category = "",
+        subCategory = "sdasd",
+        imageUrl = "sadasd",
+        name = "sadsdd",
+        description = "asdasd2",
+        order = 2,
+        biography = "",
+        location = "",
+    )
+    remember { mutableStateOf(true) }
+    ValheimVikiAppTheme {
+        NpcDetailContent(
+            onBack = {},
+            uiState = NpcDetailUiState(
+                npc =  NPC(
+                    id = "npc_blacksmith",
+                    name = "Bjorn the Blacksmith",
+                    imageUrl = "https://example.com/images/npcs/blacksmith.png",
+                    description = "A sturdy dwarf who forges powerful weapons for travellers.",
+                    order = 1,
+                    category = "",
+                    subCategory = "",
+                    biography = "",
+                    location = "",
+                ),
+                biome = Biome(
+                    id = "biome_plains",
+                    category = "Overworld",
+                    imageUrl = "https://example.com/images/biomes/plains.png",
+                    name = "Sunny Plains",
+                    description = "Rolling green fields with gentle hills and the occasional oak tree.",
+                    order = 0
+                )
+            )
         )
     }
 }

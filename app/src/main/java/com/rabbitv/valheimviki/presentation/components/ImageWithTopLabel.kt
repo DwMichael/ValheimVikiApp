@@ -140,7 +140,7 @@ fun PreviewBiomeImageHeaderSection50() {
     )
     ValheimVikiAppTheme {
         ImageWithTopLabel(
-            errorPainter = painterResource(R.drawable.preview_image),
+            errorPainter = painterResource(R.drawable.neck),
             itemData = fakeMainBoss,
         )
     }
