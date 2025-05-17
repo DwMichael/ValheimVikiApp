@@ -1,8 +1,5 @@
 package com.rabbitv.valheimviki.presentation.weapons
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -13,15 +10,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.ElevatedFilterChip
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -36,10 +30,8 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -55,7 +47,6 @@ import com.composables.icons.lucide.Bomb
 import com.composables.icons.lucide.Grab
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Shield
-import com.composables.icons.lucide.SlidersHorizontal
 import com.composables.icons.lucide.Wand
 import com.composables.icons.lucide.WandSparkles
 import com.rabbitv.valheimviki.R
@@ -170,9 +161,6 @@ fun WeaponListDisplay(
     onCategorySelected: (WeaponSubCategory) -> Unit,
     onChipSelected: (WeaponSubType?) -> Unit,
 ) {
-    var visible by remember { mutableStateOf(false) }
-    val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by interactionSource.collectIsPressedAsState()
     val scrollPosition = remember { mutableIntStateOf(0) }
     val lazyListState = rememberLazyListState(
         initialFirstVisibleItemIndex = scrollPosition.intValue
@@ -202,57 +190,20 @@ fun WeaponListDisplay(
                 onChipSelected(null)
             }
         )
-        Spacer(
-            Modifier.padding(
-                top = 5.dp,
-                start = BODY_CONTENT_PADDING.dp,
-                bottom = BODY_CONTENT_PADDING.dp,
-                end = BODY_CONTENT_PADDING.dp
-            )
-        )
-        IconButton(
-            onClick = {
-                visible = !visible
+        Spacer(Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp, vertical = 5.dp))
+        SingleChoiceChipGroup(
+            selectedCategory = weaponListUiState.selectedCategory,
+            selectedSubType = weaponListUiState.selectedChip,
+            onSelectedChange = { _, subType ->
+                if (weaponListUiState.selectedChip == subType) {
+                    onChipSelected(null)
+                } else {
+                    onChipSelected(subType)
+                }
             },
-            modifier = Modifier
-                .align(Alignment.End)
-                .size(64.dp, 36.dp)
-                .clip(RoundedCornerShape(1.dp)),
-            interactionSource = interactionSource,
-            colors = IconButtonDefaults.iconButtonColors(
-                containerColor = if (isPressed) YellowDT else YellowDTContainerNotSelected,
-                contentColor = if (isPressed) YellowDTIconColor else YellowDTSelected,
-                disabledContainerColor = YellowDT,
-                disabledContentColor = YellowDTIconColor
-            )
-        ) {
-            Icon(
-                Lucide.SlidersHorizontal,
-                contentDescription = "Slider Icon",
-                modifier = Modifier.size(FilterChipDefaults.IconSize)
-            )
-        }
-        AnimatedVisibility(visible) {
-            SingleChoiceChipGroup(
-                selectedCategory = weaponListUiState.selectedCategory,
-                selectedSubType = weaponListUiState.selectedChip,
-                onSelectedChange = { _, subType ->
-                    if (weaponListUiState.selectedChip == subType) {
-                        onChipSelected(null)
-                    } else {
-                        onChipSelected(subType)
-                    }
-                },
-                modifier = Modifier,
-            )
-        }
-        Spacer(
-            Modifier.padding(
-                start = BODY_CONTENT_PADDING.dp,
-                top = BODY_CONTENT_PADDING.dp,
-                end = BODY_CONTENT_PADDING.dp
-            )
+            modifier = Modifier,
         )
+        Spacer(Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp, vertical = 5.dp))
         ListContent(
             items = weaponListUiState.weaponList,
             clickToNavigate = { s, i -> {} },
