@@ -19,6 +19,12 @@ val LightDark = Color(0xFF13191a)
 val Purple80 = Color(0xFFD0BCFF)
 val PurpleGrey80 = Color(0xFFCCC2DC)
 val DarkWood = Color(0xFF282b25)
+val YellowDT = Color(0xFF52452a)
+val YellowDTSelected = Color(0xFFf5e0bb) //Text Too
+val YellowDTBorder = Color(0xFF999080)
+val YellowDTNotSelected = Color(0xFFebe1d4)//Text Too
+val YellowDTIconColor = Color(0xFFe9c16c)
+val YellowDTContainerNotSelected = Color(0xFF1f1b13)
 
 val Purple40 = Color(0xFF6650a4)
 val PurpleGrey40 = Color(0xFF625b71)

@@ -43,6 +43,7 @@ import androidx.navigation.navArgument
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.MountainSnow
 import com.composables.icons.lucide.Rabbit
+import com.composables.icons.lucide.Swords
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.presentation.biome.BiomeScreen
 import com.rabbitv.valheimviki.presentation.components.DrawerItem
@@ -59,6 +60,7 @@ import com.rabbitv.valheimviki.presentation.detail.creature.passive_screen.Passi
 import com.rabbitv.valheimviki.presentation.home.MainAppBar
 import com.rabbitv.valheimviki.presentation.intro.WelcomeScreen
 import com.rabbitv.valheimviki.presentation.splash.SplashScreen
+import com.rabbitv.valheimviki.presentation.weapons.WeaponListScreen
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.Constants.AGGRESSIVE_CREATURE_KEY
 import com.rabbitv.valheimviki.utils.Constants.BIOME_ARGUMENT_KEY
@@ -105,7 +107,8 @@ fun MainContainer(
         route.startsWith(Screen.Boss.route.substringBefore("{")) ||
                 route.startsWith(Screen.Biome.route.substringBefore("{")) ||
                 route.startsWith(Screen.MiniBoss.route.substringBefore("{")) ||
-                route.startsWith(Screen.MobList.route.substringBefore("{"))
+                route.startsWith(Screen.MobList.route.substringBefore("{")) ||
+                route.startsWith(Screen.WeaponList.route.substringBefore("{"))
     } == true
 
     val isNavigating = remember { mutableStateOf(false) }
@@ -239,6 +242,15 @@ fun MainContainer(
 //                            animatedVisibilityScope = this@composable
                         )
                     }
+
+                    composable(Screen.WeaponList.route) {
+                        WeaponListScreen(
+                            modifier = Modifier.padding(10.dp),
+                            onItemClick = {},
+                            paddingValues = innerPadding,
+                        )
+                    }
+
                     //Detail Screens
                     composable(
                         Screen.BiomeDetail.route,
@@ -318,8 +330,6 @@ fun MainContainer(
                             },
                         )
                     }
-
-
                 }
             }
         )
@@ -354,6 +364,12 @@ private fun getDrawerItems(): List<DrawerItem> {
             contentDescription = "Creatures section",
             route = Screen.MobList.route
         ),
+        DrawerItem(
+            icon = Lucide.Swords,
+            label = "Weapons",
+            contentDescription = "Weapons section",
+            route = Screen.WeaponList.route
+        )
     )
 }
 

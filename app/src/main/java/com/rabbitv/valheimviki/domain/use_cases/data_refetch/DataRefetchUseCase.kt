@@ -10,6 +10,7 @@ import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
 import com.rabbitv.valheimviki.domain.model.relation.Relation
 import com.rabbitv.valheimviki.domain.model.tree.Tree
+import com.rabbitv.valheimviki.domain.model.weapon.Weapon
 import com.rabbitv.valheimviki.domain.repository.BiomeRepository
 import com.rabbitv.valheimviki.domain.repository.CreatureRepository
 import com.rabbitv.valheimviki.domain.repository.FoodRepository
@@ -18,6 +19,7 @@ import com.rabbitv.valheimviki.domain.repository.OreDepositRepository
 import com.rabbitv.valheimviki.domain.repository.PointOfInterestRepository
 import com.rabbitv.valheimviki.domain.repository.RelationRepository
 import com.rabbitv.valheimviki.domain.repository.TreeRepository
+import com.rabbitv.valheimviki.domain.repository.WeaponRepository
 import com.rabbitv.valheimviki.domain.use_cases.datastore.DataStoreUseCases
 import jakarta.inject.Inject
 import kotlinx.coroutines.async
@@ -37,6 +39,7 @@ class DataRefetchUseCase @Inject constructor(
     private val pointOfInterestRepository: PointOfInterestRepository,
     private val treeRepository: TreeRepository,
     private val foodRepository: FoodRepository,
+    private val weaponRepository: WeaponRepository,
     private val dataStoreUseCases: DataStoreUseCases,
 ) {
     suspend fun refetchAllData(): DataRefetchResult {
@@ -54,6 +57,7 @@ class DataRefetchUseCase @Inject constructor(
             val pointOfInterestResponse = pointOfInterestRepository.fetchPointOfInterests(language)
             val treeResponse = treeRepository.fetchTrees(language)
             val foodResponse = foodRepository.fetchFoodList(language)
+            val weaponResponse = weaponRepository.fetchWeapons(language)
             val relationResponse = relationsRepository.fetchRelations()
 
             if (biomeResponse.isSuccessful &&
@@ -63,6 +67,7 @@ class DataRefetchUseCase @Inject constructor(
                 pointOfInterestResponse.isSuccessful &&
                 treeResponse.isSuccessful &&
                 foodResponse.isSuccessful &&
+                weaponResponse.isSuccessful &&
                 relationResponse.isSuccessful
             ) {
 
@@ -117,9 +122,18 @@ class DataRefetchUseCase @Inject constructor(
                 foodResponse.body()?.let { foodList ->
                     if (foodList.isNotEmpty()) {
                         foodRepository.insertFoodList(foodList)
-                    } else
+                    } else {
                         return DataRefetchResult.Error("Empty food data received")
+                    }
                 } ?: return DataRefetchResult.Error("Null food data received")
+
+                weaponResponse.body()?.let { weaponList ->
+                    if (weaponList.isNotEmpty()) {
+                        weaponRepository.insertWeapons(weaponList)
+                    } else {
+                        return DataRefetchResult.Error("Empty weapons data received")
+                    }
+                } ?: return DataRefetchResult.Error("Null weapons data received")
 
                 relationResponse.body()?.let { relations ->
                     if (relations.isNotEmpty()) {
@@ -138,8 +152,9 @@ class DataRefetchUseCase @Inject constructor(
                         (materialsResponse.errorBody()?.string() ?: "") +
                         (pointOfInterestResponse.errorBody()?.string() ?: "") +
                         (foodResponse.errorBody()?.string() ?: "") +
-                        (treeResponse.errorBody()?.string() ?: "")
-                (relationResponse.errorBody()?.string() ?: "")
+                        (treeResponse.errorBody()?.string() ?: "") +
+                        (weaponResponse.errorBody()?.string() ?: "") +
+                        (relationResponse.errorBody()?.string() ?: "")
                 DataRefetchResult.NetworkError(errorMessage)
             }
         } catch (e: Exception) {
@@ -166,6 +181,7 @@ class DataRefetchUseCase @Inject constructor(
             async { pointOfInterestRepository.getLocalPointOfInterest().first() },
             async { treeRepository.getLocalTrees().first() },
             async { foodRepository.getLocalFoodList().first() },
+            async { weaponRepository.getLocalWeapons().first() },
             async { relationsRepository.getLocalRelations().first() }
         )
 
@@ -178,16 +194,18 @@ class DataRefetchUseCase @Inject constructor(
         val pointsOfInterest = results[4] as List<PointOfInterest>
         val trees = results[5] as List<Tree>
         val food = results[6] as List<Food>
-        val relations = results[7] as List<Relation>
+        val weapons = results[7] as List<Weapon>
+        val relations = results[8] as List<Relation>
 
         return@coroutineScope (
                 biomes.size == 9 &&
                         creatures.size == 83 &&
                         oreDeposits.size == 9 &&
-                        materials.size == 267 && //supabase ma o jeden więcej ale to przez deertrophy
+                        materials.size == 267 &&
                         pointsOfInterest.size == 51 &&
                         trees.size == 8 &&
                         food.size == 76 &&
+                        weapons.size == 100 &&
                         relations.size == 464
                 )
     }

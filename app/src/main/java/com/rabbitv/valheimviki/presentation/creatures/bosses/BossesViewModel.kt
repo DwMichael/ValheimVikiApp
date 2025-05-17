@@ -55,15 +55,14 @@ class BossesViewModel @Inject constructor(
         _bossUiState.value = _bossUiState.value.copy(isLoading = true, error = null)
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                creatureUseCases.getMainBossesUseCase(DEFAULT_LANG).collect { bosses ->
+                creatureUseCases.getMainBossesUseCase().collect { bosses ->
                     _bossUiState.update { current ->
                         current.copy(bosses = bosses, isLoading = false)
                     }
                 }
-            }catch (e: CreatureFetchException) {
+            } catch (e: CreatureFetchException) {
                 _bossUiState.value = _bossUiState.value.copy(isLoading = false, error = e.message)
-            }
-            catch (e: FetchException) {
+            } catch (e: FetchException) {
                 _bossUiState.value = _bossUiState.value.copy(isLoading = false, error = e.message)
             } catch (e: Exception) {
                 _bossUiState.value = _bossUiState.value.copy(isLoading = false, error = e.message)

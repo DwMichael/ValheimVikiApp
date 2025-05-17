@@ -7,6 +7,7 @@ import com.rabbitv.valheimviki.domain.exceptions.CreatureFetchException
 import com.rabbitv.valheimviki.domain.exceptions.CreaturesFetchLocalException
 import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.model.creature.CreatureSubCategory
+import com.rabbitv.valheimviki.domain.repository.NetworkConnectivity
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -22,9 +23,14 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class MobListViewModel @Inject constructor(
-    private val creatureCases: CreatureUseCases
+    private val creatureCases: CreatureUseCases,
+    private val connectivityObserver: NetworkConnectivity,
 ) : ViewModel() {
-
+    val isConnection: StateFlow<Boolean> = connectivityObserver.isConnected.stateIn(
+        scope = viewModelScope,
+        started = kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000),
+        initialValue = false
+    )
     private val _creatureList = MutableStateFlow<List<Creature>>(emptyList())
     private val _selectedSubCategory = MutableStateFlow<Int>(0)
 
@@ -74,10 +80,13 @@ class MobListViewModel @Inject constructor(
                 creatureCases.getCreaturesBySubCategory(subCategory)
                     .collect { creatures ->
                         _creatureList.value = creatures
-
+                        _isLoading.value = false
+                        _error.value = null
                     }
 
             } catch (e: Exception) {
+                _isLoading.value = false
+                _error.value = "somthing goes wrong"
                 when (e) {
                     is CreatureFetchException -> Log.e(
                         "CreatureFetchException MobListScreenViewModel",

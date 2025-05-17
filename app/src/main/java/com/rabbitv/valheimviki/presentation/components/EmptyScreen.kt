@@ -26,10 +26,10 @@ import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EmptyScreen(
-    modifier: Modifier,
-    state: PullToRefreshState,
-    isRefreshing: Boolean,
-    onRefresh: () -> Unit,
+    modifier: Modifier? = null,
+    state: PullToRefreshState? = null,
+    isRefreshing: Boolean? = null,
+    onRefresh: () -> Unit = {},
     errorMessage: String,
 ) {
 //    PullToRefreshBox(
@@ -37,33 +37,33 @@ fun EmptyScreen(
 //        isRefreshing = isRefreshing,
 //        onRefresh = onRefresh,
 //    ) {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .absolutePadding(
-                    left = 16.dp,
-                    top = 0.dp,
-                    right = 16.dp,
-                    bottom = 16.dp,
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .absolutePadding(
+                left = 16.dp,
+                top = 0.dp,
+                right = 16.dp,
+                bottom = 16.dp,
 
-                    ),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceEvenly
-        ) {
-            items(1) {
-                Icon(
-                    modifier = Modifier.size(75.dp),
-                    imageVector = Lucide.WifiOff,
-                    tint = Color.White,
-                    contentDescription = stringResource(R.string.no_internet_connection),
-                )
-                Text(
-                    errorMessage,
-                    textAlign = TextAlign.Center
-                )
-            }
-
+                ),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceEvenly
+    ) {
+        items(1) {
+            Icon(
+                modifier = Modifier.size(75.dp),
+                imageVector = Lucide.WifiOff,
+                tint = Color.White,
+                contentDescription = "NO_INTERNET_CONECTION_ICON",
+            )
+            Text(
+                errorMessage,
+                textAlign = TextAlign.Center
+            )
         }
+
+    }
 //    }
 }
 

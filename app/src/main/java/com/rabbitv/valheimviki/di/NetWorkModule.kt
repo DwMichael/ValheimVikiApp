@@ -8,6 +8,7 @@ import com.rabbitv.valheimviki.data.remote.api.ApiOreDepositService
 import com.rabbitv.valheimviki.data.remote.api.ApiPointOfInterestService
 import com.rabbitv.valheimviki.data.remote.api.ApiRelationsService
 import com.rabbitv.valheimviki.data.remote.api.ApiTreeService
+import com.rabbitv.valheimviki.data.remote.api.ApiWeaponService
 import com.rabbitv.valheimviki.utils.Constants.BASE_URL
 import dagger.Module
 import dagger.Provides
@@ -91,6 +92,12 @@ object NetWorkModule {
     @Provides
     fun provideFoodService(retrofit: Retrofit): ApiFoodService {
         return retrofit.create(ApiFoodService::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideWeaponService(retrofit: Retrofit): ApiWeaponService {
+        return retrofit.create(ApiWeaponService::class.java)
     }
 
 }

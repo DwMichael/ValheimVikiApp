@@ -22,7 +22,7 @@ object DatabaseModule {
             ValheimVikiDatabase::class.java,
             "valheimViki_database"
         )
-            .fallbackToDestructiveMigration()//for migration only
+            .fallbackToDestructiveMigration(true)//for migration only
             .build()
     }
 
@@ -50,4 +50,7 @@ object DatabaseModule {
 
     @Provides
     fun provideFoodDao(appDatabase: ValheimVikiDatabase) = appDatabase.foodDao()
+
+    @Provides
+    fun provideWeaponDao(appDatabase: ValheimVikiDatabase) = appDatabase.weaponDao()
 }
