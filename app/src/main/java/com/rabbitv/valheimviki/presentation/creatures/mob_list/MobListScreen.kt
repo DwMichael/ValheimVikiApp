@@ -139,7 +139,7 @@ fun MobListScreen(
                         items = uiState.creatureList,
                         clickToNavigate = onItemClick,
                         lazyListState = lazyListState,
-                        uiState.selectedSubCategory,
+                         uiState.selectedSubCategory,
                     )
                 }
 

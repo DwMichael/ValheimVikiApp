@@ -10,7 +10,7 @@ import javax.inject.Inject
 class GetLocalWeaponsUseCase @Inject constructor(
     val weaponRepository: WeaponRepository
 ) {
-    fun invoke(): Flow<List<Weapon>> {
+    operator fun invoke(): Flow<List<Weapon>> {
         return try {
             weaponRepository.getLocalWeapons().map { weapon ->
                 weapon.sortedBy { it.order }

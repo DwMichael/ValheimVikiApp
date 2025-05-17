@@ -9,3 +9,4 @@ fun <T> Response<List<T>>.bodyList(): List<T> {
 
 fun String?.valid() =
     takeIf { !isNullOrBlank() && !equals("null", ignoreCase = true) }
+

@@ -33,7 +33,7 @@ class MiniBossDetailScreenViewModel @Inject constructor(
     private val creatureUseCases: CreatureUseCases,
     private val pointOfInterestUseCases: PointOfInterestUseCases,
     private val materialUseCases: MaterialUseCases,
-    private val relationUseCases: RelationUseCases
+    private val relationUseCases: RelationUseCases,
 ) : ViewModel() {
     private val miniBossId: String =
         checkNotNull(savedStateHandle[Constants.MINI_BOSS_ARGUMENT_KEY])
@@ -109,7 +109,7 @@ class MiniBossDetailScreenViewModel @Inject constructor(
                         } catch (e: MaterialsFetchLocalException) {
                             _dropItems.value = emptyList()
                         }
-                        //TODO: WHEN ADD WEAPON DATA MAKE SURE TO FETCH WEAPON AS DROP ITEM FOR LORD RETO
+                        //TODO: FOR LORD RETO MAYBE ADD AS MATERIALS fragments for DYRNWYN
                     }
                 )
                 deferreds.awaitAll()

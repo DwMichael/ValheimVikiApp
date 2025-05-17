@@ -2,6 +2,7 @@ package com.rabbitv.valheimviki.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -27,6 +28,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.rabbitv.valheimviki.R
@@ -45,17 +47,22 @@ fun ListContent(
     clickToNavigate: (String, Int) -> Unit,
     lazyListState: LazyListState,
     subCategoryNumber: Int,
+    imageScale: ContentScale = ContentScale.Crop,
+    horizontalPadding : Dp = BODY_CONTENT_PADDING.dp
 ) {
     LazyColumn(
         state = lazyListState,
         modifier = Modifier
-            .padding(horizontal = BODY_CONTENT_PADDING.dp)
+            .padding(horizontal = horizontalPadding)
             .fillMaxSize()
     ) {
         items(items) { item ->
-            ListItem(item = item, clickToNavigate = {
-                clickToNavigate(item.id, subCategoryNumber)
-            })
+            ListItem(
+                item = item, clickToNavigate = {
+                    clickToNavigate(item.id, subCategoryNumber)
+                },
+                imageScale = imageScale
+            )
             Spacer(modifier = Modifier.height(16.dp))
         }
 
@@ -66,7 +73,8 @@ fun ListContent(
 fun ListItem(
     item: ItemData,
     modifier: Modifier = Modifier,
-    clickToNavigate: () -> Unit
+    clickToNavigate: () -> Unit,
+    imageScale: ContentScale
 ) {
     Row(
         modifier = Modifier
@@ -84,7 +92,7 @@ fun ListItem(
                 .width(120.dp)
                 .clip(RoundedCornerShape(DETAIL_ITEM_SHAPE_PADDING)),
             placeholder = painterResource(R.drawable.ic_placeholder),
-            contentScale = ContentScale.Crop,
+            contentScale = imageScale,
         )
         Text(
             text = item.name,
@@ -116,7 +124,8 @@ private fun PreviewListItem() {
         ListItem(
             item = item,
             modifier = Modifier,
-            clickToNavigate = {}
+            clickToNavigate = {},
+            imageScale = ContentScale.Crop
         )
     }
 }

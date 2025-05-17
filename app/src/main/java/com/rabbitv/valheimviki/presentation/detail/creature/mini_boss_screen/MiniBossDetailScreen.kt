@@ -212,10 +212,7 @@ fun MiniBossContent(
                         )
                         SlavicDivider()
                         Box(modifier = Modifier.size(45.dp))
-
                     }
-
-
                 }
             )
         }
