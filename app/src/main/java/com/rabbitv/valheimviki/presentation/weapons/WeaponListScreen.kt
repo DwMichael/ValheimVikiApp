@@ -1,6 +1,7 @@
 package com.rabbitv.valheimviki.presentation.weapons
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
@@ -52,7 +53,9 @@ import com.composables.icons.lucide.WandSparkles
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.weapon.WeaponSubCategory
 import com.rabbitv.valheimviki.domain.model.weapon.WeaponSubType
+import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.ListContent
+import com.rabbitv.valheimviki.presentation.components.ShimmerEffect
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.ui.theme.YellowDT
@@ -75,7 +78,7 @@ enum class SegmentButtonOptions(val label: String) {
 data class WeaponChip(
     val subType: WeaponSubType,
     val icon: ImageVector,
-    val label: String                 // or @StringRes val label: Int
+    val label: String
 )
 
 @Composable
@@ -116,40 +119,37 @@ fun WeaponListStateRenderer(
             .then(modifier)
     ) {
 
-//        when{
-//            weaponListUiState.isLoading ||  (weaponListUiState.weaponList.isEmpty() && weaponListUiState.isConnection) ->
-//            {
-//                ShimmerEffect()
-//            }
-//
-//            (weaponListUiState.error != null || !weaponListUiState.isConnection) && weaponListUiState.weaponList.isEmpty() -> {
-//                Box(
-//                    modifier = Modifier.testTag("EmptyScreenWeaponList"),
-//                ) {
-//                    Box(
-//                        modifier = Modifier
-//                            .fillMaxSize()
-//                            .testTag("EmptyScreenWeaponList")
-//                    ) {
-//                        EmptyScreen(
-//                            modifier = Modifier.fillMaxSize(),
-//                            errorMessage = weaponListUiState.error
-//                                ?: "Connect to internet to fetch data"
-//                        )
-//                    }
-//                }
-//            }
-        WeaponListDisplay(
-            weaponListUiState = weaponListUiState,
-            onCategorySelected = onCategorySelected,
-            onChipSelected = onChipSelected,
-        )
+        when {
+            weaponListUiState.isLoading || (weaponListUiState.weaponList.isEmpty() && weaponListUiState.isConnection) -> {
+                ShimmerEffect()
+            }
 
-//            else ->{
-//
-//            }
+            (weaponListUiState.error != null || !weaponListUiState.isConnection) && weaponListUiState.weaponList.isEmpty() -> {
+                Box(
+                    modifier = Modifier.testTag("EmptyScreenWeaponList"),
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .testTag("EmptyScreenWeaponList")
+                    ) {
+                        EmptyScreen(
+                            modifier = Modifier.fillMaxSize(),
+                            errorMessage = weaponListUiState.error
+                                ?: "Connect to internet to fetch data"
+                        )
+                    }
+                }
+            }
 
-//        }
+            else -> {
+                WeaponListDisplay(
+                    weaponListUiState = weaponListUiState,
+                    onCategorySelected = onCategorySelected,
+                    onChipSelected = onChipSelected,
+                )
+            }
+        }
     }
 }
 

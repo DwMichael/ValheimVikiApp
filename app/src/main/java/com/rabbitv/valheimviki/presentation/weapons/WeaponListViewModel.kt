@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
@@ -37,7 +37,7 @@ class WeaponListViewModel @Inject constructor(
     private val _isLoading: MutableStateFlow<Boolean> = MutableStateFlow<Boolean>(false)
     private val _error: MutableStateFlow<String?> = MutableStateFlow<String?>(null)
 
-    val _weapons: StateFlow<List<Weapon>> =
+    private val _weapons: StateFlow<List<Weapon>> =
         combine(
             weaponRepository.getLocalWeaponsUseCase(),
             _selectedCategory,
@@ -55,10 +55,14 @@ class WeaponListViewModel @Inject constructor(
             }
             .catch { e ->
                 Log.e("WeaponListVM", "getLocalWeapons failed", e)
+                _isLoading.value = false
                 _error.value = e.message
                 emit(emptyList())
             }
-            .onCompletion { _isLoading.value = false }
+            .onEach {
+                _isLoading.value = false
+                _error.value = null
+            }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val uiState = combine(
