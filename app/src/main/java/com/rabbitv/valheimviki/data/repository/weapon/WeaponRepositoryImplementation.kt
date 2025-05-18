@@ -21,7 +21,7 @@ class WeaponRepositoryImplementation @Inject constructor(
     }
 
     override suspend fun insertWeapons(weapons: List<Weapon>) {
-        check(weapons.isNotEmpty()) { "Weapons list cannot be empty , cannot insert ${weapons.size} creatures" }
+        check(weapons.isNotEmpty()) { "Weapons list cannot be empty , cannot insert ${weapons.size} weapons" }
         weaponDao.insertWeapons(weapons)
     }
 }

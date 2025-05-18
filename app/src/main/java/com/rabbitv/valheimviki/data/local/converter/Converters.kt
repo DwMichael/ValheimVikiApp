@@ -1,6 +1,7 @@
 package com.rabbitv.valheimviki.data.local.converter
 
 import androidx.room.TypeConverter
+import com.rabbitv.valheimviki.domain.model.armor.UpgradeArmorInfo
 import com.rabbitv.valheimviki.domain.model.creature.aggresive.LevelCreatureData
 import com.rabbitv.valheimviki.domain.model.weapon.UpgradeInfo
 import kotlinx.serialization.json.Json
@@ -23,6 +24,13 @@ object Converters {
         return json.encodeToString(list)
     }
 
+    //Armor
+    @TypeConverter
+    @JvmStatic
+    fun fromUpgradeArmorInfo(list: List<UpgradeArmorInfo>): String {
+        return json.encodeToString(list)
+    }
+
     //TO
     //Creature
     @TypeConverter
@@ -36,6 +44,14 @@ object Converters {
     @TypeConverter
     @JvmStatic
     fun toUpgradeInfoList(data: String): List<UpgradeInfo> {
+        return if (data.isEmpty()) emptyList()
+        else json.decodeFromString(data)
+    }
+
+    //Armor
+    @TypeConverter
+    @JvmStatic
+    fun toUpgradeArmorInfoList(data: String): List<UpgradeArmorInfo> {
         return if (data.isEmpty()) emptyList()
         else json.decodeFromString(data)
     }
