@@ -1,5 +1,7 @@
 package com.rabbitv.valheimviki.utils
 
+import com.rabbitv.valheimviki.domain.model.armor.Armor
+import com.rabbitv.valheimviki.domain.model.armor.UpgradeArmorInfo
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.model.creature.npc.NPC
@@ -11,6 +13,37 @@ import com.rabbitv.valheimviki.domain.model.weapon.Weapon
 import com.rabbitv.valheimviki.presentation.detail.creature.npc.NpcDetailUiState
 
 object FakeData {
+
+    fun fakeArmorList(count: Int = 10): List<Armor> {
+        val baseArmor = Armor(
+            id = "iron_helmet",
+            imageUrl = "https://picsum.photos/200",
+            category = "Headgear",
+            subCategory = "Helmet",
+            name = "Iron Helmet",
+            description = "A sturdy iron helmet forged by village blacksmiths.",
+            upgradeInfoList = listOf(
+                UpgradeArmorInfo(
+                    armor = 35,
+                    effect = "+2 Defense",
+                    upgradeLevel = 1,
+                    durability = 120,
+                    stationLevel = 2,
+                    price = 50,
+                    usage = "Protects the wearer’s head."
+                )
+            ),
+            order = 1
+        )
+
+        return List(count) { idx ->
+            baseArmor.copy(
+                id = "${baseArmor.id}_$idx",
+                order = idx + 1
+            )
+        }
+    }
+
     val fakeWeaponList: List<Weapon> = listOf(
         Weapon(
             id = "wpn_001",

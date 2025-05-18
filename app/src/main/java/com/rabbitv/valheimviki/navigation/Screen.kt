@@ -38,6 +38,9 @@ sealed class Screen(val route: String) {
     object WeaponList : Screen("weapon_list_screen")
 
     @Serializable
+    object ArmorList : Screen("armor_list_screen")
+
+    @Serializable
     object BiomeDetail : Screen("biome_screen/{$BIOME_ARGUMENT_KEY}/{$TEXT_ARGUMENT_KEY}") {
         fun passBiomeIdAndText(biomeId: String, text: String): String {
             return "biome_screen/$biomeId/$text"
