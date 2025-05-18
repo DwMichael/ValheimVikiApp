@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -17,11 +16,7 @@ import androidx.compose.material3.ElevatedFilterChip
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SelectableChipColors
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,19 +33,15 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.composables.icons.lucide.Axe
-import com.composables.icons.lucide.Bomb
-import com.composables.icons.lucide.Grab
+import com.composables.icons.lucide.Blend
 import com.composables.icons.lucide.Lucide
-import com.composables.icons.lucide.Shield
-import com.composables.icons.lucide.Wand
-import com.composables.icons.lucide.WandSparkles
 import com.rabbitv.valheimviki.R
+import com.rabbitv.valheimviki.domain.model.armor.ArmorSubCategory
 import com.rabbitv.valheimviki.domain.model.weapon.WeaponSubCategory
 import com.rabbitv.valheimviki.domain.model.weapon.WeaponSubType
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
@@ -59,7 +50,6 @@ import com.rabbitv.valheimviki.presentation.components.ShimmerEffect
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.ui.theme.YellowDT
-import com.rabbitv.valheimviki.ui.theme.YellowDTBorder
 import com.rabbitv.valheimviki.ui.theme.YellowDTContainerNotSelected
 import com.rabbitv.valheimviki.ui.theme.YellowDTIconColor
 import com.rabbitv.valheimviki.ui.theme.YellowDTNotSelected
@@ -68,15 +58,9 @@ import com.rabbitv.valheimviki.utils.FakeData
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.launch
 
-enum class ArmorSegmentButtonOptions(val label: String) {
-    MELEE("Melee"),
-    RANGED("Ranged"),
-    MAGIC("Magic"),
-    AMMO("Ammo");
-}
 
 data class ArmorChip(
-    val subType: WeaponSubType,
+    val subCategory: ArmorSubCategory,
     val icon: ImageVector,
     val label: String
 )
@@ -89,11 +73,9 @@ fun ArmorListScreen(
     viewModel: ArmorListViewModel = hiltViewModel()
 ) {
     val weaponListUiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val onCategorySelected = { cat: WeaponSubCategory -> viewModel.onCategorySelected(cat) }
-    val onChipSelected = { chip: WeaponSubType? -> viewModel.onChipSelected(chip) }
+    val onChipSelected = { chip: ArmorSubCategory? -> viewModel.onChipSelected(chip) }
     ArmorListStateRenderer(
         armorListUiState = weaponListUiState,
-        onCategorySelected = onCategorySelected,
         onChipSelected = onChipSelected,
         paddingValues = paddingValues,
         modifier = modifier,
@@ -105,8 +87,7 @@ fun ArmorListScreen(
 @Composable
 fun ArmorListStateRenderer(
     armorListUiState: ArmorListUiState,
-    onCategorySelected: (WeaponSubCategory) -> Unit,
-    onChipSelected: (WeaponSubType?) -> Unit,
+    onChipSelected: (ArmorSubCategory?) -> Unit,
     paddingValues: PaddingValues,
     modifier: Modifier,
 ) {
@@ -120,11 +101,11 @@ fun ArmorListStateRenderer(
     ) {
 
         when {
-            armorListUiState.isLoading || (armorListUiState.weaponList.isEmpty() && armorListUiState.isConnection) -> {
+            armorListUiState.isLoading || (armorListUiState.armorList.isEmpty() && armorListUiState.isConnection) -> {
                 ShimmerEffect()
             }
 
-            (armorListUiState.error != null || !armorListUiState.isConnection) && armorListUiState.weaponList.isEmpty() -> {
+            (armorListUiState.error != null || !armorListUiState.isConnection) && armorListUiState.armorList.isEmpty() -> {
                 Box(
                     modifier = Modifier.testTag("EmptyScreenWeaponList"),
                 ) {
@@ -145,7 +126,6 @@ fun ArmorListStateRenderer(
             else -> {
                 ArmorListDisplay(
                     armorListUiState = armorListUiState,
-                    onCategorySelected = onCategorySelected,
                     onChipSelected = onChipSelected,
                 )
             }
@@ -158,8 +138,7 @@ fun ArmorListStateRenderer(
 @Composable
 fun ArmorListDisplay(
     armorListUiState: ArmorListUiState,
-    onCategorySelected: (WeaponSubCategory) -> Unit,
-    onChipSelected: (WeaponSubType?) -> Unit,
+    onChipSelected: (ArmorSubCategory?) -> Unit,
 ) {
     val scrollPosition = remember { mutableIntStateOf(0) }
     val lazyListState = rememberLazyListState(
@@ -167,13 +146,13 @@ fun ArmorListDisplay(
     )
     val selectedDifferentCategory = remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
-    val selectedChipIndex = getWeaponCategoryIndex(category = armorListUiState.selectedCategory)
 
-    LaunchedEffect(armorListUiState.selectedCategory) {
+
+    LaunchedEffect(armorListUiState.selectedChip) {
         if (selectedDifferentCategory.value) {
             coroutineScope.launch {
                 lazyListState.scrollToItem(0)
-                scrollPosition.value = 0
+                scrollPosition.intValue = 0
             }
             selectedDifferentCategory.value = false
         }
@@ -182,33 +161,23 @@ fun ArmorListDisplay(
     Column(
         horizontalAlignment = Alignment.Start
     ) {
-        SegmentedButtonSingleSelect(
-            selectedCategory = armorListUiState.selectedCategory,
-            onCategoryClick = { index ->
-                selectedDifferentCategory.value = true
-                onCategorySelected(getWeaponCategory(index))
-                onChipSelected(null)
-            }
-        )
-        Spacer(Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp, vertical = 5.dp))
         SingleChoiceChipGroup(
-            selectedCategory = armorListUiState.selectedCategory,
-            selectedSubType = armorListUiState.selectedChip,
-            onSelectedChange = { _, subType ->
-                if (armorListUiState.selectedChip == subType) {
+            selectedSubCategory = armorListUiState.selectedChip,
+            onSelectedChange = { _, subCategory ->
+                if (armorListUiState.selectedChip == subCategory) {
                     onChipSelected(null)
                 } else {
-                    onChipSelected(subType)
+                    onChipSelected(subCategory)
                 }
             },
             modifier = Modifier,
         )
         Spacer(Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp, vertical = 5.dp))
         ListContent(
-            items = armorListUiState.weaponList,
+            items = armorListUiState.armorList,
             clickToNavigate = { s, i -> {} },
             lazyListState = lazyListState,
-            subCategoryNumber = selectedChipIndex,
+            subCategoryNumber = 0,
             imageScale = ContentScale.Fit,
             horizontalPadding = 0.dp
         )
@@ -218,18 +187,17 @@ fun ArmorListDisplay(
 
 @Composable
 fun SingleChoiceChipGroup(
-    selectedCategory: WeaponSubCategory,
-    selectedSubType: WeaponSubType?,
-    onSelectedChange: (index: Int, subType: WeaponSubType?) -> Unit,
+    selectedSubCategory: ArmorSubCategory?,
+    onSelectedChange: (index: Int, subCategory: ArmorSubCategory) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val chips = getChipsForCategory(selectedCategory)
+    val chips = getChipsForCategory()
 
 
-    val selectedIndex = if (selectedSubType == null) {
+    val selectedIndex = if (selectedSubCategory == null) {
         null
     } else {
-        chips.indexOfFirst { it.subType == selectedSubType }
+        chips.indexOfFirst { it.subCategory == selectedSubCategory }
     }
 
     FlowRow(
@@ -237,14 +205,14 @@ fun SingleChoiceChipGroup(
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         chips.let { items ->
-            items.forEachIndexed { index, weaponChip ->
+            items.forEachIndexed { index, armorChip ->
                 CustomElevatedFilterChip(
                     index = index,
                     selectedChipIndex = selectedIndex,
                     onSelectedChange = onSelectedChange,
-                    label = weaponChip.label,
-                    icon = weaponChip.icon,
-                    subType = weaponChip.subType
+                    label = armorChip.label,
+                    icon = armorChip.icon,
+                    subCategory = armorChip.subCategory,
                 )
             }
         }
@@ -255,10 +223,10 @@ fun SingleChoiceChipGroup(
 fun CustomElevatedFilterChip(
     index: Int,
     selectedChipIndex: Int?,
-    onSelectedChange: (index: Int, subType: WeaponSubType?) -> Unit,
+    onSelectedChange: (index: Int, subCategory: ArmorSubCategory) -> Unit,
     label: String,
     icon: ImageVector,
-    subType: WeaponSubType,
+    subCategory: ArmorSubCategory,
 
     ) {
     val selectableChipColors = SelectableChipColors(
@@ -278,7 +246,7 @@ fun CustomElevatedFilterChip(
     )
     ElevatedFilterChip(
         selected = index == selectedChipIndex,
-        onClick = { onSelectedChange(index, subType) },
+        onClick = { onSelectedChange(index, subCategory) },
         label = { Text(label) },
         colors = selectableChipColors,
         leadingIcon = if (index == selectedChipIndex) {
@@ -303,179 +271,45 @@ fun CustomElevatedFilterChip(
 
 
 @Composable
-fun SegmentedButtonSingleSelect(
-    selectedCategory: WeaponSubCategory,
-    onCategoryClick: (index: Int) -> Unit,
-) {
-
-    val options: List<ArmorSegmentButtonOptions> = ArmorSegmentButtonOptions.entries
-
-    val segmentColors = SegmentedButtonDefaults.colors(
-        // selected (ON) state
-        activeContainerColor = YellowDT,
-        activeContentColor = YellowDTSelected,
-
-        // un-selected (OFF) state
-        inactiveContainerColor = YellowDTContainerNotSelected,
-        inactiveContentColor = YellowDTNotSelected,
-
-        // disabled states – optional but nice
-        disabledActiveContainerColor = YellowDT.copy(alpha = 0.38f),
-        disabledActiveContentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.38f),
-        disabledInactiveContainerColor = Color.Transparent,
-        disabledInactiveContentColor = YellowDT.copy(alpha = 0.38f),
-        activeBorderColor = YellowDTBorder,
-        inactiveBorderColor = YellowDTBorder,
-        disabledActiveBorderColor = YellowDTBorder,
-        disabledInactiveBorderColor = YellowDTBorder,
+private fun getChipsForCategory(): List<ArmorChip> {
+    return listOf(
+        ArmorChip(
+            ArmorSubCategory.CAPE,
+            ImageVector.vectorResource(id = R.drawable.cape),
+            "Capes"
+        ),
+        ArmorChip(
+            ArmorSubCategory.CHEST_ARMOR,
+            ImageVector.vectorResource(id = R.drawable.chest_armor),
+            "Chests Armor"
+        ),
+        ArmorChip(
+            ArmorSubCategory.LEG_ARMOR,
+            ImageVector.vectorResource(id = R.drawable.leg_armor),
+            "Legs Armor"
+        ),
+        ArmorChip(
+            ArmorSubCategory.ACCESSORIES,
+            Lucide.Blend,
+            "Accessories"
+        ),
+        ArmorChip(
+            ArmorSubCategory.HELMET,
+            ImageVector.vectorResource(id = R.drawable.helmet),
+            "Helmet"
+        ),
     )
-    SingleChoiceSegmentedButtonRow(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        options.forEachIndexed { index, label ->
-            SegmentedButton(
-                shape = SegmentedButtonDefaults.itemShape(index = index, count = options.size),
-                onClick = { onCategoryClick(index) },
-                selected = index == getWeaponCategoryIndex(selectedCategory),
-                colors = segmentColors,
-                icon = {}
-            ) {
-                Text(
-                    label.toString(),
-                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun getChipsForCategory(category: WeaponSubCategory): List<ArmorChip> {
-    return when (category) {
-        WeaponSubCategory.MELEE_WEAPON -> listOf(
-            ArmorChip(WeaponSubType.AXE, Lucide.Axe, "Axes"),
-            ArmorChip(
-                WeaponSubType.CLUB,
-                ImageVector.vectorResource(id = R.drawable.club),
-                "Clubs"
-            ),
-            ArmorChip(
-                WeaponSubType.SWORD,
-                ImageVector.vectorResource(id = R.drawable.sword),
-                "Swords"
-            ),
-            ArmorChip(
-                WeaponSubType.SPEAR,
-                ImageVector.vectorResource(id = R.drawable.spear),
-                "Spears"
-            ),
-            ArmorChip(
-                WeaponSubType.POLEARM,
-                ImageVector.vectorResource(id = R.drawable.polearm),
-                "Polearms"
-            ), // Fixed typo
-            ArmorChip(
-                WeaponSubType.KNIFES,
-                ImageVector.vectorResource(id = R.drawable.knife),
-                "Knives"
-            ),
-            ArmorChip(WeaponSubType.FISTS, Lucide.Grab, "Fists"),
-            ArmorChip(WeaponSubType.SHIELD, Lucide.Shield, "Shields")
-        )
-
-        WeaponSubCategory.RANGED_WEAPON -> listOf(
-            ArmorChip(
-                WeaponSubType.BOW,
-                ImageVector.vectorResource(id = R.drawable.bow_arrow),
-                "Bows"
-            ),
-            ArmorChip(
-                WeaponSubType.CROSSBOW,
-                ImageVector.vectorResource(id = R.drawable.crossbow),
-                "Crossbows"
-            )
-        )
-
-        WeaponSubCategory.MAGIC_WEAPON -> listOf(
-            ArmorChip(WeaponSubType.ELEMENTAL_MAGIC, Lucide.WandSparkles, "Elemental magic"),
-            ArmorChip(WeaponSubType.BLOOD_MAGIC, Lucide.Wand, "Blood magic")
-        )
-
-        WeaponSubCategory.AMMO -> listOf(
-            ArmorChip(
-                WeaponSubType.ARROW,
-                ImageVector.vectorResource(id = R.drawable.arrow),
-                "Arrows"
-            ),
-            ArmorChip(
-                WeaponSubType.BOLT,
-                ImageVector.vectorResource(id = R.drawable.bolt),
-                "Bolts"
-            ), // Fixed label
-            ArmorChip(
-                WeaponSubType.MISSILE,
-                ImageVector.vectorResource(id = R.drawable.missile),
-                "Missiles"
-            ),
-            ArmorChip(WeaponSubType.BOMB, Lucide.Bomb, "Bombs")
-        )
-    }
 }
 
 
-@Preview("SingleChoiceChipMeleePreview")
+@Preview("SingleChoiceChipPreview")
 @Composable
-fun PreviewSingleChoiceChipMelee() {
+fun PreviewSingleChoiceChip() {
     ValheimVikiAppTheme {
         SingleChoiceChipGroup(
-            selectedCategory = WeaponSubCategory.MELEE_WEAPON,
             onSelectedChange = { i, s -> {} },
             modifier = Modifier,
-            selectedSubType = WeaponSubType.SWORD,
-        )
-    }
-}
-
-@Preview("SingleChoiceChipRangedPreview")
-@Composable
-fun PreviewSingleChoiceChipRanged() {
-
-
-    ValheimVikiAppTheme {
-        SingleChoiceChipGroup(
-            selectedCategory = WeaponSubCategory.RANGED_WEAPON,
-            onSelectedChange = { i, s -> {} },
-            modifier = Modifier,
-            selectedSubType = WeaponSubType.BOW,
-
-            )
-    }
-}
-
-@Preview("SingleChoiceChipMagicPreview")
-@Composable
-fun PreviewSingleChoiceChipMagic() {
-
-    ValheimVikiAppTheme {
-        SingleChoiceChipGroup(
-            selectedCategory = WeaponSubCategory.MAGIC_WEAPON,
-            onSelectedChange = { i, s -> {} },
-            modifier = Modifier,
-            selectedSubType = WeaponSubType.ELEMENTAL_MAGIC,
-        )
-    }
-}
-
-@Preview("SingleChoiceChipAmmoPreview")
-@Composable
-fun PreviewSingleChoiceChipAmmo() {
-
-    ValheimVikiAppTheme {
-        SingleChoiceChipGroup(
-            selectedCategory = WeaponSubCategory.AMMO,
-            onSelectedChange = { i, s -> {} },
-            modifier = Modifier,
-            selectedSubType = WeaponSubType.BOMB,
+            selectedSubCategory = ArmorSubCategory.CAPE,
         )
     }
 }
@@ -491,7 +325,7 @@ fun PreviewCustomElevatedFilterChipSelected() {
             onSelectedChange = { i, s -> {} },
             label = "Axes",
             icon = Lucide.Axe,
-            subType = WeaponSubType.CROSSBOW,
+            subCategory = ArmorSubCategory.CAPE,
         )
     }
 
@@ -507,23 +341,13 @@ fun PreviewCustomElevatedFilterChipNotSelected() {
             onSelectedChange = { i, s -> {} },
             label = "Axes",
             icon = Lucide.Axe,
-            subType = WeaponSubType.CROSSBOW
+            subCategory = ArmorSubCategory.CAPE,
         )
     }
 
 }
 
-@Preview("SegmentedButtonSingleSelectPreview")
-@Composable
-fun PreviewSegmentedButtonSingleSelect() {
-    ValheimVikiAppTheme {
-        SegmentedButtonSingleSelect(
-            selectedCategory = WeaponSubCategory.MELEE_WEAPON,
-            onCategoryClick = { }
-        )
-    }
 
-}
 
 @Preview(name = "WeaponListStateRendererPreview")
 @Composable
@@ -531,34 +355,18 @@ fun PreviewWeaponListStateRenderer() {
     ValheimVikiAppTheme {
         ArmorListStateRenderer(
             armorListUiState = ArmorListUiState(
-                weaponList = FakeData.fakeWeaponList,
+                armorList = FakeData.fakeArmorList(),
                 isConnection = true,
                 isLoading = false,
                 error = null,
             ),
             paddingValues = PaddingValues(),
             modifier = Modifier,
-            onCategorySelected = {},
             onChipSelected = {},
         )
     }
 }
 
 
-private fun getWeaponCategoryIndex(category: WeaponSubCategory): Int {
-    return when (category) {
-        WeaponSubCategory.MELEE_WEAPON -> 0
-        WeaponSubCategory.RANGED_WEAPON -> 1
-        WeaponSubCategory.MAGIC_WEAPON -> 2
-        WeaponSubCategory.AMMO -> 3
-    }
-}
 
-private fun getWeaponCategory(index: Int): WeaponSubCategory {
-    return when (index) {
-        0 -> WeaponSubCategory.MELEE_WEAPON
-        1 -> WeaponSubCategory.RANGED_WEAPON
-        2 -> WeaponSubCategory.MAGIC_WEAPON
-        else -> WeaponSubCategory.AMMO
-    }
-}
+

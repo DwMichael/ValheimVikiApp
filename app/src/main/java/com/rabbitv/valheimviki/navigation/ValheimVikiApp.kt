@@ -43,8 +43,10 @@ import androidx.navigation.navArgument
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.MountainSnow
 import com.composables.icons.lucide.Rabbit
+import com.composables.icons.lucide.Shield
 import com.composables.icons.lucide.Swords
 import com.rabbitv.valheimviki.R
+import com.rabbitv.valheimviki.presentation.armor.ArmorListScreen
 import com.rabbitv.valheimviki.presentation.biome.BiomeScreen
 import com.rabbitv.valheimviki.presentation.components.DrawerItem
 import com.rabbitv.valheimviki.presentation.components.NavigationDrawer
@@ -108,7 +110,8 @@ fun MainContainer(
                 route.startsWith(Screen.Biome.route.substringBefore("{")) ||
                 route.startsWith(Screen.MiniBoss.route.substringBefore("{")) ||
                 route.startsWith(Screen.MobList.route.substringBefore("{")) ||
-                route.startsWith(Screen.WeaponList.route.substringBefore("{"))
+                route.startsWith(Screen.WeaponList.route.substringBefore("{")) ||
+                route.startsWith(Screen.ArmorList.route.substringBefore("{"))
     } == true
 
     val isNavigating = remember { mutableStateOf(false) }
@@ -251,6 +254,15 @@ fun MainContainer(
                         )
                     }
 
+                    composable(Screen.ArmorList.route) {
+                        ArmorListScreen(
+                            modifier = Modifier.padding(10.dp),
+                            onItemClick = {},
+                            paddingValues = innerPadding,
+                        )
+                    }
+
+
                     //Detail Screens
                     composable(
                         Screen.BiomeDetail.route,
@@ -369,6 +381,12 @@ private fun getDrawerItems(): List<DrawerItem> {
             label = "Weapons",
             contentDescription = "Weapons section",
             route = Screen.WeaponList.route
+        ),
+        DrawerItem(
+            icon = Lucide.Shield,
+            label = "Armor",
+            contentDescription = "Armor section",
+            route = Screen.ArmorList.route
         )
     )
 }
