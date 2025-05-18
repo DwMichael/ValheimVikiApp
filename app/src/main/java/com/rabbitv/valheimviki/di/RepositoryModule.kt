@@ -1,6 +1,7 @@
 package com.rabbitv.valheimviki.di
 
 import android.content.Context
+import com.rabbitv.valheimviki.data.local.dao.ArmorDao
 import com.rabbitv.valheimviki.data.local.dao.BiomeDao
 import com.rabbitv.valheimviki.data.local.dao.CreatureDao
 import com.rabbitv.valheimviki.data.local.dao.FoodDao
@@ -10,6 +11,7 @@ import com.rabbitv.valheimviki.data.local.dao.PointOfInterestDao
 import com.rabbitv.valheimviki.data.local.dao.RelationDao
 import com.rabbitv.valheimviki.data.local.dao.TreeDao
 import com.rabbitv.valheimviki.data.local.dao.WeaponDao
+import com.rabbitv.valheimviki.data.remote.api.ApiArmorService
 import com.rabbitv.valheimviki.data.remote.api.ApiBiomeService
 import com.rabbitv.valheimviki.data.remote.api.ApiCreatureService
 import com.rabbitv.valheimviki.data.remote.api.ApiFoodService
@@ -21,6 +23,7 @@ import com.rabbitv.valheimviki.data.remote.api.ApiTreeService
 import com.rabbitv.valheimviki.data.remote.api.ApiWeaponService
 import com.rabbitv.valheimviki.data.repository.DataStoreOperationsImpl
 import com.rabbitv.valheimviki.data.repository.DataStoreRepository
+import com.rabbitv.valheimviki.data.repository.armor.ArmorRepositoryImpl
 import com.rabbitv.valheimviki.data.repository.biome.BiomeRepositoryImpl
 import com.rabbitv.valheimviki.data.repository.creature.CreatureRepositoryImpl
 import com.rabbitv.valheimviki.data.repository.food.FoodRepositoryImpl
@@ -30,6 +33,7 @@ import com.rabbitv.valheimviki.data.repository.point_of_interest.PointOfInterest
 import com.rabbitv.valheimviki.data.repository.relation.RelationRepositoryImpl
 import com.rabbitv.valheimviki.data.repository.tree.TreeRepositoryImpl
 import com.rabbitv.valheimviki.data.repository.weapon.WeaponRepositoryImplementation
+import com.rabbitv.valheimviki.domain.repository.ArmorRepository
 import com.rabbitv.valheimviki.domain.repository.BiomeRepository
 import com.rabbitv.valheimviki.domain.repository.CreatureRepository
 import com.rabbitv.valheimviki.domain.repository.DataStoreOperations
@@ -41,6 +45,9 @@ import com.rabbitv.valheimviki.domain.repository.PointOfInterestRepository
 import com.rabbitv.valheimviki.domain.repository.RelationRepository
 import com.rabbitv.valheimviki.domain.repository.TreeRepository
 import com.rabbitv.valheimviki.domain.repository.WeaponRepository
+import com.rabbitv.valheimviki.domain.use_cases.armor.ArmorUseCases
+import com.rabbitv.valheimviki.domain.use_cases.armor.get_armors_by_sub_category_use_case.GetArmorsBySubCategoryUseCase
+import com.rabbitv.valheimviki.domain.use_cases.armor.get_local_armors_use_case.GetLocalArmorsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.biome.get_biome_by_id.GetBiomeByIdUseCase
 import com.rabbitv.valheimviki.domain.use_cases.biome.get_local_biomes.GetLocalBiomesUseCase
@@ -203,6 +210,15 @@ object RepositoryModule {
 
     @Provides
     @Singleton
+    fun provideArmorRepositoryImpl(
+        apiService: ApiArmorService,
+        armorDao: ArmorDao
+    ): ArmorRepository {
+        return ArmorRepositoryImpl(apiService, armorDao)
+    }
+
+    @Provides
+    @Singleton
     fun provideNetworkConnectivityObserver(
         @ApplicationContext context: Context
     ): NetworkConnectivity {
@@ -221,6 +237,7 @@ object RepositoryModule {
         treeRepository: TreeRepository,
         foodRepository: FoodRepository,
         weaponRepository: WeaponRepository,
+        armorRepository: ArmorRepository,
         dataStoreUseCases: DataStoreUseCases
     ): DataRefetchUseCase {
         return DataRefetchUseCase(
@@ -233,7 +250,8 @@ object RepositoryModule {
             pointOfInterestRepository = pointOfInterestRepository,
             treeRepository = treeRepository,
             foodRepository = foodRepository,
-            weaponRepository = weaponRepository
+            weaponRepository = weaponRepository,
+            armorRepository = armorRepository
         )
     }
 
@@ -371,6 +389,15 @@ object RepositoryModule {
             getLocalWeaponsUseCase = GetLocalWeaponsUseCase(weaponRepository),
             getWeaponsBySubCategoryUseCase = GetWeaponsBySubCategoryUseCase(),
             getWeaponsBySubTypeUseCase = GetWeaponsBySubTypeUseCase()
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideArmorUseCases(armorRepository: ArmorRepository): ArmorUseCases {
+        return ArmorUseCases(
+            getLocalArmorsUseCase = GetLocalArmorsUseCase(armorRepository),
+            getArmorsBySubCategoryUseCase = GetArmorsBySubCategoryUseCase()
         )
     }
 }

@@ -1,5 +1,6 @@
 package com.rabbitv.valheimviki.di
 
+import com.rabbitv.valheimviki.data.remote.api.ApiArmorService
 import com.rabbitv.valheimviki.data.remote.api.ApiBiomeService
 import com.rabbitv.valheimviki.data.remote.api.ApiCreatureService
 import com.rabbitv.valheimviki.data.remote.api.ApiFoodService
@@ -98,6 +99,12 @@ object NetWorkModule {
     @Provides
     fun provideWeaponService(retrofit: Retrofit): ApiWeaponService {
         return retrofit.create(ApiWeaponService::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideArmorService(retrofit: Retrofit): ApiArmorService {
+        return retrofit.create(ApiArmorService::class.java)
     }
 
 }

@@ -53,4 +53,7 @@ object DatabaseModule {
 
     @Provides
     fun provideWeaponDao(appDatabase: ValheimVikiDatabase) = appDatabase.weaponDao()
+
+    @Provides
+    fun provideArmorDao(appDatabase: ValheimVikiDatabase) = appDatabase.armorDao()
 }

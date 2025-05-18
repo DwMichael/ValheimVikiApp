@@ -48,3 +48,7 @@ class FoodByIdsFetchLocalException(message: String) : FetchLocalException(messag
 //Weapons
 class WeaponFetchLocalException(message: String) : FetchLocalException(message)
 class WeaponByIdsFetchLocalException(message: String) : FetchLocalException(message)
+
+//Armors
+class ArmorFetchLocalException(message: String) : FetchLocalException(message)
+class ArmorByIdsFetchLocalException(message: String) : FetchLocalException(message)
