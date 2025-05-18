@@ -9,6 +9,7 @@ import com.rabbitv.valheimviki.data.remote.api.ApiMeadService
 import com.rabbitv.valheimviki.data.remote.api.ApiOreDepositService
 import com.rabbitv.valheimviki.data.remote.api.ApiPointOfInterestService
 import com.rabbitv.valheimviki.data.remote.api.ApiRelationsService
+import com.rabbitv.valheimviki.data.remote.api.ApiToolService
 import com.rabbitv.valheimviki.data.remote.api.ApiTreeService
 import com.rabbitv.valheimviki.data.remote.api.ApiWeaponService
 import com.rabbitv.valheimviki.utils.Constants.BASE_URL
@@ -112,6 +113,12 @@ object NetWorkModule {
     @Provides
     fun provideMeadService(retrofit: Retrofit): ApiMeadService {
         return retrofit.create(ApiMeadService::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideToolService(retrofit: Retrofit): ApiToolService {
+        return retrofit.create(ApiToolService::class.java)
     }
 
 }

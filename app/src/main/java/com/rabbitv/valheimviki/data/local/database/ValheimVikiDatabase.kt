@@ -6,6 +6,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.example.domain.entities.tool.Tool
 import com.rabbitv.valheimviki.data.local.converter.Converters
 import com.rabbitv.valheimviki.data.local.dao.ArmorDao
 import com.rabbitv.valheimviki.data.local.dao.BiomeDao
@@ -16,6 +17,7 @@ import com.rabbitv.valheimviki.data.local.dao.MeadDao
 import com.rabbitv.valheimviki.data.local.dao.OreDepositDao
 import com.rabbitv.valheimviki.data.local.dao.PointOfInterestDao
 import com.rabbitv.valheimviki.data.local.dao.RelationDao
+import com.rabbitv.valheimviki.data.local.dao.ToolDao
 import com.rabbitv.valheimviki.data.local.dao.TreeDao
 import com.rabbitv.valheimviki.data.local.dao.WeaponDao
 import com.rabbitv.valheimviki.domain.model.armor.Armor
@@ -34,8 +36,8 @@ import com.rabbitv.valheimviki.domain.model.weapon.Weapon
     entities = [Biome::class, Creature::class,
         Relation::class, OreDeposit::class,
         Material::class, PointOfInterest::class,
-        Tree::class, Food::class, Weapon::class, Armor::class, Mead::class],
-    version = 15,
+        Tree::class, Food::class, Weapon::class, Armor::class, Mead::class, Tool::class],
+    version = 16,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -63,4 +65,5 @@ abstract class ValheimVikiDatabase : RoomDatabase() {
     abstract fun weaponDao(): WeaponDao
     abstract fun armorDao(): ArmorDao
     abstract fun meadDao(): MeadDao
+    abstract fun toolDao(): ToolDao
 }
