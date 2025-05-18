@@ -2,6 +2,7 @@ package com.rabbitv.valheimviki.di
 
 import com.rabbitv.valheimviki.data.remote.api.ApiArmorService
 import com.rabbitv.valheimviki.data.remote.api.ApiBiomeService
+import com.rabbitv.valheimviki.data.remote.api.ApiBuildingMaterialService
 import com.rabbitv.valheimviki.data.remote.api.ApiCreatureService
 import com.rabbitv.valheimviki.data.remote.api.ApiFoodService
 import com.rabbitv.valheimviki.data.remote.api.ApiMaterialsService
@@ -119,6 +120,12 @@ object NetWorkModule {
     @Provides
     fun provideToolService(retrofit: Retrofit): ApiToolService {
         return retrofit.create(ApiToolService::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideBuildingMaterialService(retrofit: Retrofit): ApiBuildingMaterialService {
+        return retrofit.create(ApiBuildingMaterialService::class.java)
     }
 
 }
