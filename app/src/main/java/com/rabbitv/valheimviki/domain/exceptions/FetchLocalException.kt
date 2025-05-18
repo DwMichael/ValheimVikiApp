@@ -52,3 +52,7 @@ class WeaponByIdsFetchLocalException(message: String) : FetchLocalException(mess
 //Armors
 class ArmorFetchLocalException(message: String) : FetchLocalException(message)
 class ArmorByIdsFetchLocalException(message: String) : FetchLocalException(message)
+
+//Meads
+class MeadFetchLocalException(message: String) : FetchLocalException(message)
+class MeadByIdsFetchLocalException(message: String) : FetchLocalException(message)

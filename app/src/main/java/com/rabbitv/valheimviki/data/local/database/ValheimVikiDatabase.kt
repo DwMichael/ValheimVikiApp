@@ -12,6 +12,7 @@ import com.rabbitv.valheimviki.data.local.dao.BiomeDao
 import com.rabbitv.valheimviki.data.local.dao.CreatureDao
 import com.rabbitv.valheimviki.data.local.dao.FoodDao
 import com.rabbitv.valheimviki.data.local.dao.MaterialDao
+import com.rabbitv.valheimviki.data.local.dao.MeadDao
 import com.rabbitv.valheimviki.data.local.dao.OreDepositDao
 import com.rabbitv.valheimviki.data.local.dao.PointOfInterestDao
 import com.rabbitv.valheimviki.data.local.dao.RelationDao
@@ -22,6 +23,7 @@ import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.model.food.Food
 import com.rabbitv.valheimviki.domain.model.material.Material
+import com.rabbitv.valheimviki.domain.model.mead.Mead
 import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
 import com.rabbitv.valheimviki.domain.model.relation.Relation
@@ -32,7 +34,9 @@ import com.rabbitv.valheimviki.domain.model.weapon.Weapon
     entities = [Biome::class, Creature::class,
         Relation::class, OreDeposit::class,
         Material::class, PointOfInterest::class,
-        Tree::class, Food::class, Weapon::class, Armor::class], version = 14, exportSchema = false
+        Tree::class, Food::class, Weapon::class, Armor::class, Mead::class],
+    version = 15,
+    exportSchema = false
 )
 @TypeConverters(Converters::class)
 abstract class ValheimVikiDatabase : RoomDatabase() {
@@ -58,4 +62,5 @@ abstract class ValheimVikiDatabase : RoomDatabase() {
     abstract fun foodDao(): FoodDao
     abstract fun weaponDao(): WeaponDao
     abstract fun armorDao(): ArmorDao
+    abstract fun meadDao(): MeadDao
 }

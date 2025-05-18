@@ -6,6 +6,7 @@ import com.rabbitv.valheimviki.data.local.dao.BiomeDao
 import com.rabbitv.valheimviki.data.local.dao.CreatureDao
 import com.rabbitv.valheimviki.data.local.dao.FoodDao
 import com.rabbitv.valheimviki.data.local.dao.MaterialDao
+import com.rabbitv.valheimviki.data.local.dao.MeadDao
 import com.rabbitv.valheimviki.data.local.dao.OreDepositDao
 import com.rabbitv.valheimviki.data.local.dao.PointOfInterestDao
 import com.rabbitv.valheimviki.data.local.dao.RelationDao
@@ -16,6 +17,7 @@ import com.rabbitv.valheimviki.data.remote.api.ApiBiomeService
 import com.rabbitv.valheimviki.data.remote.api.ApiCreatureService
 import com.rabbitv.valheimviki.data.remote.api.ApiFoodService
 import com.rabbitv.valheimviki.data.remote.api.ApiMaterialsService
+import com.rabbitv.valheimviki.data.remote.api.ApiMeadService
 import com.rabbitv.valheimviki.data.remote.api.ApiOreDepositService
 import com.rabbitv.valheimviki.data.remote.api.ApiPointOfInterestService
 import com.rabbitv.valheimviki.data.remote.api.ApiRelationsService
@@ -28,6 +30,7 @@ import com.rabbitv.valheimviki.data.repository.biome.BiomeRepositoryImpl
 import com.rabbitv.valheimviki.data.repository.creature.CreatureRepositoryImpl
 import com.rabbitv.valheimviki.data.repository.food.FoodRepositoryImpl
 import com.rabbitv.valheimviki.data.repository.material.MaterialRepositoryImpl
+import com.rabbitv.valheimviki.data.repository.mead.MeadRepositoryImpl
 import com.rabbitv.valheimviki.data.repository.ore_deposit.OreDepositRepositoryImpl
 import com.rabbitv.valheimviki.data.repository.point_of_interest.PointOfInterestRepositoryImpl
 import com.rabbitv.valheimviki.data.repository.relation.RelationRepositoryImpl
@@ -39,6 +42,7 @@ import com.rabbitv.valheimviki.domain.repository.CreatureRepository
 import com.rabbitv.valheimviki.domain.repository.DataStoreOperations
 import com.rabbitv.valheimviki.domain.repository.FoodRepository
 import com.rabbitv.valheimviki.domain.repository.MaterialRepository
+import com.rabbitv.valheimviki.domain.repository.MeadRepository
 import com.rabbitv.valheimviki.domain.repository.NetworkConnectivity
 import com.rabbitv.valheimviki.domain.repository.OreDepositRepository
 import com.rabbitv.valheimviki.domain.repository.PointOfInterestRepository
@@ -82,6 +86,9 @@ import com.rabbitv.valheimviki.domain.use_cases.material.get_materials_by_ids.Ge
 import com.rabbitv.valheimviki.domain.use_cases.material.get_materials_by_subcategory.GetMaterialsBySubCategoryUseCase
 import com.rabbitv.valheimviki.domain.use_cases.material.get_materials_by_subcategory_and_subtype.GetMaterialsBySubCategoryAndSubTypeUseCase
 import com.rabbitv.valheimviki.domain.use_cases.material.insert_materials.InsertMaterialsUseCase
+import com.rabbitv.valheimviki.domain.use_cases.mead.MeadUseCases
+import com.rabbitv.valheimviki.domain.use_cases.mead.get_local_meads_use_case.GetLocalMeadsUseCase
+import com.rabbitv.valheimviki.domain.use_cases.mead.get_meads_by_sub_category_use_case.GetMeadsBySubCategoryUseCase
 import com.rabbitv.valheimviki.domain.use_cases.ore_deposit.OreDepositUseCases
 import com.rabbitv.valheimviki.domain.use_cases.ore_deposit.get_local_ore_deposit.GetLocalOreDepositUseCase
 import com.rabbitv.valheimviki.domain.use_cases.ore_deposit.get_ore_deposit_by_id.GetOreDepositByIdUseCase
@@ -219,6 +226,15 @@ object RepositoryModule {
 
     @Provides
     @Singleton
+    fun provideMeadsRepositoryImpl(
+        apiService: ApiMeadService,
+        meadDao: MeadDao
+    ): MeadRepository {
+        return MeadRepositoryImpl(apiService, meadDao)
+    }
+
+    @Provides
+    @Singleton
     fun provideNetworkConnectivityObserver(
         @ApplicationContext context: Context
     ): NetworkConnectivity {
@@ -238,6 +254,7 @@ object RepositoryModule {
         foodRepository: FoodRepository,
         weaponRepository: WeaponRepository,
         armorRepository: ArmorRepository,
+        meadRepository: MeadRepository,
         dataStoreUseCases: DataStoreUseCases
     ): DataRefetchUseCase {
         return DataRefetchUseCase(
@@ -251,7 +268,8 @@ object RepositoryModule {
             treeRepository = treeRepository,
             foodRepository = foodRepository,
             weaponRepository = weaponRepository,
-            armorRepository = armorRepository
+            armorRepository = armorRepository,
+            meadRepository = meadRepository
         )
     }
 
@@ -398,6 +416,16 @@ object RepositoryModule {
         return ArmorUseCases(
             getLocalArmorsUseCase = GetLocalArmorsUseCase(armorRepository),
             getArmorsBySubCategoryUseCase = GetArmorsBySubCategoryUseCase()
+        )
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideMeadUseCases(meadRepository: MeadRepository): MeadUseCases {
+        return MeadUseCases(
+            getLocalMeadsUseCase = GetLocalMeadsUseCase(meadRepository),
+            getMeadsBySubCategoryUseCase = GetMeadsBySubCategoryUseCase()
         )
     }
 }
