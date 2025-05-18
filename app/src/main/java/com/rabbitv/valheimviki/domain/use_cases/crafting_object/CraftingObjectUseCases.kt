@@ -1,0 +1,9 @@
+package com.rabbitv.valheimviki.domain.use_cases.crafting_object
+
+import com.rabbitv.valheimviki.domain.use_cases.crafting_object.get_crafting_object_by_sub_category_use_case.GetCraftingObjectsBySubCategoryUseCase
+import com.rabbitv.valheimviki.domain.use_cases.crafting_object.get_local_crafting_object_use_case.GetLocalCraftingObjectsUseCase
+
+data class CraftingObjectUseCases(
+    val getLocalCraftingObjectsUseCase: GetLocalCraftingObjectsUseCase,
+    val getCraftingObjectsBySubCategoryUseCase: GetCraftingObjectsBySubCategoryUseCase,
+)

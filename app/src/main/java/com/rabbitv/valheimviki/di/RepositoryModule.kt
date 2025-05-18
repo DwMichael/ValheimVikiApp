@@ -4,6 +4,7 @@ import android.content.Context
 import com.rabbitv.valheimviki.data.local.dao.ArmorDao
 import com.rabbitv.valheimviki.data.local.dao.BiomeDao
 import com.rabbitv.valheimviki.data.local.dao.BuildingMaterialDao
+import com.rabbitv.valheimviki.data.local.dao.CraftingObjectDao
 import com.rabbitv.valheimviki.data.local.dao.CreatureDao
 import com.rabbitv.valheimviki.data.local.dao.FoodDao
 import com.rabbitv.valheimviki.data.local.dao.MaterialDao
@@ -17,6 +18,7 @@ import com.rabbitv.valheimviki.data.local.dao.WeaponDao
 import com.rabbitv.valheimviki.data.remote.api.ApiArmorService
 import com.rabbitv.valheimviki.data.remote.api.ApiBiomeService
 import com.rabbitv.valheimviki.data.remote.api.ApiBuildingMaterialService
+import com.rabbitv.valheimviki.data.remote.api.ApiCraftingService
 import com.rabbitv.valheimviki.data.remote.api.ApiCreatureService
 import com.rabbitv.valheimviki.data.remote.api.ApiFoodService
 import com.rabbitv.valheimviki.data.remote.api.ApiMaterialsService
@@ -32,6 +34,7 @@ import com.rabbitv.valheimviki.data.repository.DataStoreRepository
 import com.rabbitv.valheimviki.data.repository.armor.ArmorRepositoryImpl
 import com.rabbitv.valheimviki.data.repository.biome.BiomeRepositoryImpl
 import com.rabbitv.valheimviki.data.repository.building_material.BuildingMaterialRepositoryImpl
+import com.rabbitv.valheimviki.data.repository.crafting_object.CraftingObjectRepositoryImpl
 import com.rabbitv.valheimviki.data.repository.creature.CreatureRepositoryImpl
 import com.rabbitv.valheimviki.data.repository.food.FoodRepositoryImpl
 import com.rabbitv.valheimviki.data.repository.material.MaterialRepositoryImpl
@@ -45,6 +48,7 @@ import com.rabbitv.valheimviki.data.repository.weapon.WeaponRepositoryImplementa
 import com.rabbitv.valheimviki.domain.repository.ArmorRepository
 import com.rabbitv.valheimviki.domain.repository.BiomeRepository
 import com.rabbitv.valheimviki.domain.repository.BuildingMaterialRepository
+import com.rabbitv.valheimviki.domain.repository.CraftingObjectRepository
 import com.rabbitv.valheimviki.domain.repository.CreatureRepository
 import com.rabbitv.valheimviki.domain.repository.DataStoreOperations
 import com.rabbitv.valheimviki.domain.repository.FoodRepository
@@ -70,6 +74,9 @@ import com.rabbitv.valheimviki.domain.use_cases.building_material.get_building_m
 import com.rabbitv.valheimviki.domain.use_cases.building_material.get_building_materials_by_subcategory_and_subtype.GetBuildMaterialsBySubCategoryAndSubTypeUseCase
 import com.rabbitv.valheimviki.domain.use_cases.building_material.get_local_building_materials.GetLocalBuildMaterialsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.connection.NetworkConnectivityObserver
+import com.rabbitv.valheimviki.domain.use_cases.crafting_object.CraftingObjectUseCases
+import com.rabbitv.valheimviki.domain.use_cases.crafting_object.get_crafting_object_by_sub_category_use_case.GetCraftingObjectsBySubCategoryUseCase
+import com.rabbitv.valheimviki.domain.use_cases.crafting_object.get_local_crafting_object_use_case.GetLocalCraftingObjectsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
 import com.rabbitv.valheimviki.domain.use_cases.creature.get_aggressive_creatures.GetAggressiveCreatures
 import com.rabbitv.valheimviki.domain.use_cases.creature.get_creature_by_id.GetCreatureByIdUseCase
@@ -270,6 +277,15 @@ object RepositoryModule {
 
     @Provides
     @Singleton
+    fun provideCraftingObjectRepositoryImpl(
+        apiService: ApiCraftingService,
+        craftingObjectDao: CraftingObjectDao
+    ): CraftingObjectRepository {
+        return CraftingObjectRepositoryImpl(apiService, craftingObjectDao)
+    }
+
+    @Provides
+    @Singleton
     fun provideNetworkConnectivityObserver(
         @ApplicationContext context: Context
     ): NetworkConnectivity {
@@ -292,6 +308,7 @@ object RepositoryModule {
         meadRepository: MeadRepository,
         toolRepository: ToolRepository,
         buildingMaterialRepository: BuildingMaterialRepository,
+        craftingObjectRepository: CraftingObjectRepository,
         dataStoreUseCases: DataStoreUseCases
     ): DataRefetchUseCase {
         return DataRefetchUseCase(
@@ -308,7 +325,8 @@ object RepositoryModule {
             armorRepository = armorRepository,
             meadRepository = meadRepository,
             toolRepository = toolRepository,
-            buildingMaterialRepository = buildingMaterialRepository
+            buildingMaterialRepository = buildingMaterialRepository,
+            craftingObjectRepository = craftingObjectRepository
         )
     }
 
@@ -490,6 +508,15 @@ object RepositoryModule {
             getBuildMaterialsBySubCategoryAndSubType = GetBuildMaterialsBySubCategoryAndSubTypeUseCase(
                 buildingMaterialRepository
             ),
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideCraftingObjectUseCases(craftingObjectRepository: CraftingObjectRepository): CraftingObjectUseCases {
+        return CraftingObjectUseCases(
+            getLocalCraftingObjectsUseCase = GetLocalCraftingObjectsUseCase(craftingObjectRepository),
+            getCraftingObjectsBySubCategoryUseCase = GetCraftingObjectsBySubCategoryUseCase()
         )
     }
 }
