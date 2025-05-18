@@ -63,4 +63,11 @@ object DatabaseModule {
 
     @Provides
     fun provideToolDao(appDatabase: ValheimVikiDatabase) = appDatabase.toolDao()
+
+    @Provides
+    fun provideBuildingMaterialDao(appDatabase: ValheimVikiDatabase) =
+        appDatabase.buildingMaterialDao()
+
+    @Provides
+    fun provideCraftingObjectDao(appDatabase: ValheimVikiDatabase) = appDatabase.craftingObjectDao()
 }

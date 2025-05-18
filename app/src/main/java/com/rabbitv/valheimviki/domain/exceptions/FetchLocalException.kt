@@ -56,3 +56,6 @@ class ArmorFetchLocalException(message: String) : FetchLocalException(message)
 //Meads
 class MeadFetchLocalException(message: String) : FetchLocalException(message)
 //class MeadByIdsFetchLocalException(message: String) : FetchLocalException(message)
+
+//CraftingObject
+class CraftingObjectFetchLocalException(message: String) : FetchLocalException(message)

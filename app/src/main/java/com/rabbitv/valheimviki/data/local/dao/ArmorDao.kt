@@ -14,8 +14,8 @@ interface ArmorDao {
     @Query("SELECT * FROM armors")
     fun getLocalArmors(): Flow<List<Armor>>
 
-    @Query("SELECT * FROM armors")
-    fun getArmorsBySubCategory(): List<Armor>
+    @Query("SELECT * FROM armors where subCategory = :subCategory")
+    fun getArmorsBySubCategory(subCategory: String): List<Armor>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertArmors(armors: List<Armor>)

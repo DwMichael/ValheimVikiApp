@@ -4,6 +4,8 @@ import com.example.domain.entities.tool.Tool
 import com.rabbitv.valheimviki.domain.exceptions.FetchException
 import com.rabbitv.valheimviki.domain.model.armor.Armor
 import com.rabbitv.valheimviki.domain.model.biome.Biome
+import com.rabbitv.valheimviki.domain.model.building_material.BuildingMaterial
+import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.model.data_refetch_result.DataRefetchResult
 import com.rabbitv.valheimviki.domain.model.food.Food
@@ -16,6 +18,8 @@ import com.rabbitv.valheimviki.domain.model.tree.Tree
 import com.rabbitv.valheimviki.domain.model.weapon.Weapon
 import com.rabbitv.valheimviki.domain.repository.ArmorRepository
 import com.rabbitv.valheimviki.domain.repository.BiomeRepository
+import com.rabbitv.valheimviki.domain.repository.BuildingMaterialRepository
+import com.rabbitv.valheimviki.domain.repository.CraftingObjectRepository
 import com.rabbitv.valheimviki.domain.repository.CreatureRepository
 import com.rabbitv.valheimviki.domain.repository.FoodRepository
 import com.rabbitv.valheimviki.domain.repository.MaterialRepository
@@ -49,7 +53,9 @@ class DataRefetchUseCase @Inject constructor(
     private val armorRepository: ArmorRepository,
     private val meadRepository: MeadRepository,
     private val toolRepository: ToolRepository,
-    private val dataStoreUseCases: DataStoreUseCases,
+    private val buildingMaterialRepository: BuildingMaterialRepository,
+    private val craftingObjectRepository: CraftingObjectRepository,
+    val dataStoreUseCases: DataStoreUseCases,
 ) {
     suspend fun refetchAllData(): DataRefetchResult {
         return try {
@@ -70,6 +76,9 @@ class DataRefetchUseCase @Inject constructor(
             val armorResponse = armorRepository.fetchArmor(language)
             val meadResponse = meadRepository.fetchMeads(language)
             val toolResponse = toolRepository.fetchTools(language)
+            val buildingMaterialResponse =
+                buildingMaterialRepository.fetchBuildingMaterial(language)
+            val craftingObjectResponse = craftingObjectRepository.fetchCraftingObject(language)
             val relationResponse = relationsRepository.fetchRelations()
 
 
@@ -84,6 +93,8 @@ class DataRefetchUseCase @Inject constructor(
                 armorResponse.isSuccessful &&
                 meadResponse.isSuccessful &&
                 toolResponse.isSuccessful &&
+                buildingMaterialResponse.isSuccessful &&
+                craftingObjectResponse.isSuccessful &&
                 relationResponse.isSuccessful
             ) {
 
@@ -175,6 +186,22 @@ class DataRefetchUseCase @Inject constructor(
                     }
                 } ?: return DataRefetchResult.Error("Null tools data received")
 
+                buildingMaterialResponse.body()?.let { buildingMaterials ->
+                    if (buildingMaterials.isNotEmpty()) {
+                        buildingMaterialRepository.insertBuildingMaterial(buildingMaterials)
+                    } else {
+                        return DataRefetchResult.Error("Empty buildingMaterials data received")
+                    }
+                } ?: return DataRefetchResult.Error("Null buildingMaterials data received")
+
+                craftingObjectResponse.body()?.let { craftingObjects ->
+                    if (craftingObjects.isNotEmpty()) {
+                        craftingObjectRepository.insertCraftingObjects(craftingObjects)
+                    } else {
+                        return DataRefetchResult.Error("Empty craftingObjects data received")
+                    }
+                } ?: return DataRefetchResult.Error("Null craftingObjects data received")
+
                 relationResponse.body()?.let { relations ->
                     if (relations.isNotEmpty()) {
                         relationsRepository.insertRelations(relations)
@@ -197,6 +224,8 @@ class DataRefetchUseCase @Inject constructor(
                         (armorResponse.errorBody()?.string() ?: "") +
                         (meadResponse.errorBody()?.string() ?: "") +
                         (toolResponse.errorBody()?.string() ?: "") +
+                        (buildingMaterialResponse.errorBody()?.string() ?: "") +
+                        (craftingObjectResponse.errorBody()?.string() ?: "") +
                         (relationResponse.errorBody()?.string() ?: "")
                 DataRefetchResult.NetworkError(errorMessage)
             }
@@ -228,6 +257,8 @@ class DataRefetchUseCase @Inject constructor(
             async { armorRepository.getLocalArmors().first() },
             async { meadRepository.getLocalMeads().first() },
             async { toolRepository.getLocalTools().first() },
+            async { buildingMaterialRepository.getLocalBuildingMaterials().first() },
+            async { craftingObjectRepository.getLocalCraftingObjects().first() },
             async { relationsRepository.getLocalRelations().first() }
         )
 
@@ -244,7 +275,9 @@ class DataRefetchUseCase @Inject constructor(
         val armors = results[8] as List<Armor>
         val meads = results[9] as List<Mead>
         val tools = results[10] as List<Tool>
-        val relations = results[11] as List<Relation>
+        val buildingMaterials = results[11] as List<BuildingMaterial>
+        val craftingObjects = results[12] as List<CraftingObject>
+        val relations = results[13] as List<Relation>
 
         return@coroutineScope (
                 biomes.size == 9 &&
@@ -258,6 +291,8 @@ class DataRefetchUseCase @Inject constructor(
                         armors.size == 50 &&
                         meads.size == 40 &&
                         tools.size == 14 &&
+                        buildingMaterials.size == 248 &&
+                        craftingObjects.size == 46 &&
                         relations.size == 464
                 )
     }

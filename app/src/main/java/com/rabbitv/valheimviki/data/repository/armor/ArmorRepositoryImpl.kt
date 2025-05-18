@@ -20,8 +20,8 @@ class ArmorRepositoryImpl @Inject constructor(
         return armorDao.getLocalArmors()
     }
 
-    override fun getArmorsBySubCategory(): List<Armor> {
-        return armorDao.getArmorsBySubCategory()
+    override fun getArmorsBySubCategory(subCategory: String): List<Armor> {
+        return armorDao.getArmorsBySubCategory(subCategory)
     }
 
     override suspend fun insertArmors(armors: List<Armor>) {

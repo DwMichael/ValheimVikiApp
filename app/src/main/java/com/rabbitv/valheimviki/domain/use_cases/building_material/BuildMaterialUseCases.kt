@@ -1,0 +1,15 @@
+package com.rabbitv.valheimviki.domain.use_cases.building_material
+
+import com.rabbitv.valheimviki.domain.use_cases.building_material.get_building_material_by_id.GetBuildMaterialByIdUseCase
+import com.rabbitv.valheimviki.domain.use_cases.building_material.get_building_materials_by_ids.GetBuildMaterialsByIdsUseCase
+import com.rabbitv.valheimviki.domain.use_cases.building_material.get_building_materials_by_subcategory.GetBuildMaterialsBySubCategoryUseCase
+import com.rabbitv.valheimviki.domain.use_cases.building_material.get_building_materials_by_subcategory_and_subtype.GetBuildMaterialsBySubCategoryAndSubTypeUseCase
+import com.rabbitv.valheimviki.domain.use_cases.building_material.get_local_building_materials.GetLocalBuildMaterialsUseCase
+
+data class BuildMaterialUseCases(
+    val getLocalBuildMaterial: GetLocalBuildMaterialsUseCase,
+    val getBuildMaterialByIds: GetBuildMaterialsByIdsUseCase,
+    val getBuildMaterialById: GetBuildMaterialByIdUseCase,
+    val getBuildMaterialsBySubCategory: GetBuildMaterialsBySubCategoryUseCase,
+    val getBuildMaterialsBySubCategoryAndSubType: GetBuildMaterialsBySubCategoryAndSubTypeUseCase,
+)
