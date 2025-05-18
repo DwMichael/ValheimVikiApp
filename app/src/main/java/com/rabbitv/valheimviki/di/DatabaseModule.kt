@@ -60,4 +60,7 @@ object DatabaseModule {
 
     @Provides
     fun provideMeadDao(appDatabase: ValheimVikiDatabase) = appDatabase.meadDao()
+
+    @Provides
+    fun provideToolDao(appDatabase: ValheimVikiDatabase) = appDatabase.toolDao()
 }

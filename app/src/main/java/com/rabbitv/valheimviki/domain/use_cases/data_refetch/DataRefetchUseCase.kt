@@ -1,5 +1,6 @@
 package com.rabbitv.valheimviki.domain.use_cases.data_refetch
 
+import com.example.domain.entities.tool.Tool
 import com.rabbitv.valheimviki.domain.exceptions.FetchException
 import com.rabbitv.valheimviki.domain.model.armor.Armor
 import com.rabbitv.valheimviki.domain.model.biome.Biome
@@ -22,6 +23,7 @@ import com.rabbitv.valheimviki.domain.repository.MeadRepository
 import com.rabbitv.valheimviki.domain.repository.OreDepositRepository
 import com.rabbitv.valheimviki.domain.repository.PointOfInterestRepository
 import com.rabbitv.valheimviki.domain.repository.RelationRepository
+import com.rabbitv.valheimviki.domain.repository.ToolRepository
 import com.rabbitv.valheimviki.domain.repository.TreeRepository
 import com.rabbitv.valheimviki.domain.repository.WeaponRepository
 import com.rabbitv.valheimviki.domain.use_cases.datastore.DataStoreUseCases
@@ -46,6 +48,7 @@ class DataRefetchUseCase @Inject constructor(
     private val weaponRepository: WeaponRepository,
     private val armorRepository: ArmorRepository,
     private val meadRepository: MeadRepository,
+    private val toolRepository: ToolRepository,
     private val dataStoreUseCases: DataStoreUseCases,
 ) {
     suspend fun refetchAllData(): DataRefetchResult {
@@ -66,6 +69,7 @@ class DataRefetchUseCase @Inject constructor(
             val weaponResponse = weaponRepository.fetchWeapons(language)
             val armorResponse = armorRepository.fetchArmor(language)
             val meadResponse = meadRepository.fetchMeads(language)
+            val toolResponse = toolRepository.fetchTools(language)
             val relationResponse = relationsRepository.fetchRelations()
 
 
@@ -79,6 +83,7 @@ class DataRefetchUseCase @Inject constructor(
                 weaponResponse.isSuccessful &&
                 armorResponse.isSuccessful &&
                 meadResponse.isSuccessful &&
+                toolResponse.isSuccessful &&
                 relationResponse.isSuccessful
             ) {
 
@@ -162,6 +167,13 @@ class DataRefetchUseCase @Inject constructor(
                     }
                 } ?: return DataRefetchResult.Error("Null meads data received")
 
+                toolResponse.body()?.let { tools ->
+                    if (tools.isNotEmpty()) {
+                        toolRepository.insertTools(tools)
+                    } else {
+                        return DataRefetchResult.Error("Empty tools data received")
+                    }
+                } ?: return DataRefetchResult.Error("Null tools data received")
 
                 relationResponse.body()?.let { relations ->
                     if (relations.isNotEmpty()) {
@@ -184,6 +196,7 @@ class DataRefetchUseCase @Inject constructor(
                         (weaponResponse.errorBody()?.string() ?: "") +
                         (armorResponse.errorBody()?.string() ?: "") +
                         (meadResponse.errorBody()?.string() ?: "") +
+                        (toolResponse.errorBody()?.string() ?: "") +
                         (relationResponse.errorBody()?.string() ?: "")
                 DataRefetchResult.NetworkError(errorMessage)
             }
@@ -214,6 +227,7 @@ class DataRefetchUseCase @Inject constructor(
             async { weaponRepository.getLocalWeapons().first() },
             async { armorRepository.getLocalArmors().first() },
             async { meadRepository.getLocalMeads().first() },
+            async { toolRepository.getLocalTools().first() },
             async { relationsRepository.getLocalRelations().first() }
         )
 
@@ -229,7 +243,8 @@ class DataRefetchUseCase @Inject constructor(
         val weapons = results[7] as List<Weapon>
         val armors = results[8] as List<Armor>
         val meads = results[9] as List<Mead>
-        val relations = results[10] as List<Relation>
+        val tools = results[10] as List<Tool>
+        val relations = results[11] as List<Relation>
 
         return@coroutineScope (
                 biomes.size == 9 &&
@@ -242,6 +257,7 @@ class DataRefetchUseCase @Inject constructor(
                         weapons.size == 100 &&
                         armors.size == 50 &&
                         meads.size == 40 &&
+                        tools.size == 14 &&
                         relations.size == 464
                 )
     }
