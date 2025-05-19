@@ -46,6 +46,7 @@ import com.composables.icons.lucide.Rabbit
 import com.composables.icons.lucide.Shield
 import com.composables.icons.lucide.Swords
 import com.rabbitv.valheimviki.R
+import com.rabbitv.valheimviki.domain.model.creature.CreatureSubCategory
 import com.rabbitv.valheimviki.presentation.armor.ArmorListScreen
 import com.rabbitv.valheimviki.presentation.biome.BiomeScreen
 import com.rabbitv.valheimviki.presentation.components.DrawerItem
@@ -220,25 +221,28 @@ fun MainContainer(
                     composable(Screen.MobList.route) {
                         MobListScreen(
                             modifier = Modifier.padding(10.dp),
-                            onItemClick = { creatureId, creatureSubCategory ->
+                            onItemClick = { creatureId, creatureSubCategory : CreatureSubCategory ->
                                 when (creatureSubCategory) {
-                                    0 -> valheimVikiNavController.navigate(
+                                    CreatureSubCategory.PASSIVE_CREATURE -> valheimVikiNavController.navigate(
                                         Screen.PassiveCreatureDetail.passPassiveCreatureId(
                                             creatureId
                                         )
                                     )
 
-                                    1 -> valheimVikiNavController.navigate(
+                                    CreatureSubCategory.AGGRESSIVE_CREATURE -> valheimVikiNavController.navigate(
                                         Screen.AggressiveCreatureDetail.passAggressiveCreatureId(
                                             creatureId
                                         )
                                     )
 
-                                    2 -> valheimVikiNavController.navigate(
+                                    CreatureSubCategory.NPC -> valheimVikiNavController.navigate(
                                         Screen.NpcDetail.passNpcId(
                                             creatureId
                                         )
                                     )
+
+                                    CreatureSubCategory.BOSS -> null
+                                    CreatureSubCategory.MINI_BOSS -> null
                                 }
                             },
                             paddingValues = innerPadding,

@@ -45,6 +45,8 @@ import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.ListContent
 import com.rabbitv.valheimviki.presentation.components.ShimmerEffect
 import com.rabbitv.valheimviki.presentation.components.chip.ChipData
+import com.rabbitv.valheimviki.presentation.components.chip.CustomElevatedFilterChip
+import com.rabbitv.valheimviki.presentation.components.chip.SingleChoiceChipFlowRow
 import com.rabbitv.valheimviki.ui.theme.AppStyleDefaults
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
@@ -155,8 +157,9 @@ fun ArmorListDisplay(
     Column(
         horizontalAlignment = Alignment.Start
     ) {
-        SingleChoiceChipGroup(
-            selectedSubCategory = armorListUiState.selectedChip,
+        SingleChoiceChipFlowRow(
+            chips = getChipsForCategory(),
+            selectedOption = armorListUiState.selectedChip,
             onSelectedChange = { _, subCategory ->
                 if (armorListUiState.selectedChip == subCategory) {
                     onChipSelected(null)
@@ -179,75 +182,7 @@ fun ArmorListDisplay(
 }
 
 
-@Composable
-fun <T> SingleChoiceChipGroup(
-    selectedSubCategory: T?,
-    onSelectedChange: (index: Int, subCategory: T) -> Unit,
-    chips: List<ChipData<T>>,
-    modifier: Modifier = Modifier,
-) {
 
-
-    val selectedIndex = if (selectedSubCategory == null) {
-        null
-    } else {
-        chips.indexOfFirst { it.option == selectedSubCategory }
-    }
-
-    FlowRow(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        chips.let { items ->
-            items.forEachIndexed { index, armorChip ->
-                CustomElevatedFilterChip(
-                    index = index,
-                    selectedChipIndex = selectedIndex,
-                    onSelectedChange = onSelectedChange,
-                    label = armorChip.label,
-                    icon = armorChip.icon,
-                    subCategory = armorChip.subCategory,
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun CustomElevatedFilterChip(
-    index: Int,
-    selectedChipIndex: Int?,
-    onSelectedChange: (index: Int, subCategory: ArmorSubCategory) -> Unit,
-    label: String,
-    icon: ImageVector,
-    subCategory: ArmorSubCategory,
-
-    ) {
-
-    ElevatedFilterChip(
-        selected = index == selectedChipIndex,
-        onClick = { onSelectedChange(index, subCategory) },
-        label = { Text(label) },
-        colors = AppStyleDefaults.yellowDTSelectableChipColors(),
-        leadingIcon = if (index == selectedChipIndex) {
-            {
-                Icon(
-                    Icons.Default.Check,
-                    contentDescription = null,
-                    modifier = Modifier.size(FilterChipDefaults.IconSize)
-                )
-            }
-        } else {
-            {
-                Icon(
-                    icon,
-                    contentDescription = null,
-                    modifier = Modifier.size(FilterChipDefaults.IconSize)
-                )
-            }
-        }
-    )
-}
 
 
 @Composable
@@ -286,10 +221,11 @@ private fun getChipsForCategory(): List<ArmorChip> {
 @Composable
 fun PreviewSingleChoiceChip() {
     ValheimVikiAppTheme {
-        SingleChoiceChipGroup(
+        SingleChoiceChipFlowRow(
             onSelectedChange = { i, s -> {} },
             modifier = Modifier,
-            selectedSubCategory = ArmorSubCategory.CAPE,
+            selectedOption = ArmorSubCategory.CAPE,
+            chips = getChipsForCategory(),
         )
     }
 }
@@ -300,12 +236,13 @@ fun PreviewSingleChoiceChip() {
 fun PreviewCustomElevatedFilterChipSelected() {
     ValheimVikiAppTheme {
         CustomElevatedFilterChip(
+
             index = 0,
             selectedChipIndex = 0,
             onSelectedChange = { i, s -> {} },
             label = "Axes",
             icon = Lucide.Axe,
-            subCategory = ArmorSubCategory.CAPE,
+            option = ArmorSubCategory.CAPE,
         )
     }
 
@@ -321,7 +258,7 @@ fun PreviewCustomElevatedFilterChipNotSelected() {
             onSelectedChange = { i, s -> {} },
             label = "Axes",
             icon = Lucide.Axe,
-            subCategory = ArmorSubCategory.CAPE,
+            option = ArmorSubCategory.CAPE,
         )
     }
 
