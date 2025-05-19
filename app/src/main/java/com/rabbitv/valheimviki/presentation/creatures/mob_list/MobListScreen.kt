@@ -139,7 +139,8 @@ fun MobListScreen(
                 Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
 
                 Box(modifier = Modifier.fillMaxSize()) {
-                    if (uiState.isLoading && uiState.creatureList.isEmpty()) {
+                    if (uiState.isLoading && (uiState.creatureList.isEmpty() && uiState.isConnection) ) {
+                        Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
                         ShimmerEffect()
                     } else {
                         ListContent(
