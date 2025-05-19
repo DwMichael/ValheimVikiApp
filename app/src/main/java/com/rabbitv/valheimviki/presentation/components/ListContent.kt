@@ -42,11 +42,11 @@ import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ListContent(
+fun <T>ListContent(
     items: List<ItemData>,
-    clickToNavigate: (String, Int) -> Unit,
+    clickToNavigate: (String, T) -> Unit,
     lazyListState: LazyListState,
-    subCategoryNumber: Int,
+    subCategoryNumber: T,
     imageScale: ContentScale = ContentScale.Crop,
     horizontalPadding : Dp = BODY_CONTENT_PADDING.dp
 ) {

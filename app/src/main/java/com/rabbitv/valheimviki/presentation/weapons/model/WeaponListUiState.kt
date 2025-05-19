@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.weapons
+package com.rabbitv.valheimviki.presentation.weapons.model
 
 import com.rabbitv.valheimviki.domain.model.weapon.Weapon
 import com.rabbitv.valheimviki.domain.model.weapon.WeaponSubCategory

@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.creatures.mob_list
+package com.rabbitv.valheimviki.presentation.creatures.mob_list.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -9,62 +9,57 @@ import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.model.creature.CreatureSubCategory
 import com.rabbitv.valheimviki.domain.repository.NetworkConnectivity
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
+import com.rabbitv.valheimviki.presentation.creatures.mob_list.model.MobListUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-
 
 @HiltViewModel
 class MobListViewModel @Inject constructor(
     private val creatureCases: CreatureUseCases,
     private val connectivityObserver: NetworkConnectivity,
 ) : ViewModel() {
-    val isConnection: StateFlow<Boolean> = connectivityObserver.isConnected.stateIn(
+    private val _isConnection: StateFlow<Boolean> = connectivityObserver.isConnected.stateIn(
         scope = viewModelScope,
-        started = kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000),
+        started = SharingStarted.WhileSubscribed(5000),
         initialValue = false
     )
     private val _creatureList = MutableStateFlow<List<Creature>>(emptyList())
-    private val _selectedSubCategory = MutableStateFlow<Int>(0)
+    private val _selectedSubCategory =
+        MutableStateFlow<CreatureSubCategory>(CreatureSubCategory.PASSIVE_CREATURE)
 
-
-    private val _scrollPosition = MutableStateFlow(0)
-    val scrollPosition: StateFlow<Int> = _scrollPosition
-
-    fun saveScrollPosition(position: Int) {
-        _scrollPosition.value = position
-    }
-
-    private val _isRefreshing = MutableStateFlow(false)
-    val isRefreshing: StateFlow<Boolean>
-        get() = _isRefreshing.asStateFlow()
 
     private val _isLoading = MutableStateFlow(false)
     private val _error = MutableStateFlow<String?>(null)
 
+//    private val _showInitialLoading = combine(_isLoading, _creatureList) { loading, list ->
+//        loading && list.isEmpty()
+//    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+
     val uiState = combine(
         _creatureList,
         _selectedSubCategory,
-        _error,
-        _isLoading
+        _isConnection,
+        _isLoading,
+        _error
     ) { values ->
         @Suppress("UNCHECKED_CAST")
-        MobListUiState(
+        (MobListUiState(
             creatureList = values[0] as List<Creature>,
-            selectedSubCategory = values[1] as Int,
-            error = values[2] as String?,
-            isLoading = values[3] as Boolean
-        )
+            selectedSubCategory = values[1] as CreatureSubCategory,
+            isConnection = values[2] as Boolean,
+            isLoading = values[3] as Boolean,
+            error = values[4] as String?,
+        ))
     }.stateIn(
         viewModelScope,
-        SharingStarted.WhileSubscribed(5000),
+        SharingStarted.Companion.WhileSubscribed(5000),
         MobListUiState()
     )
 
@@ -80,10 +75,9 @@ class MobListViewModel @Inject constructor(
                 creatureCases.getCreaturesBySubCategory(subCategory)
                     .collect { creatures ->
                         _creatureList.value = creatures
-                        _isLoading.value = false
-                        _error.value = null
                     }
-
+                _isLoading.value = false
+                _error.value = null
             } catch (e: Exception) {
                 _isLoading.value = false
                 _error.value = "somthing goes wrong"
@@ -107,25 +101,8 @@ class MobListViewModel @Inject constructor(
         }
     }
 
-    fun selectCreaturesSubCategory(subCategory: CreatureSubCategory) {
-        when (subCategory) {
-            CreatureSubCategory.PASSIVE_CREATURE -> {
-                _selectedSubCategory.value = 0
-                launch(subCategory)
-            }
-
-            CreatureSubCategory.AGGRESSIVE_CREATURE -> {
-                _selectedSubCategory.value = 1
-                launch(subCategory)
-            }
-
-            CreatureSubCategory.NPC -> {
-                _selectedSubCategory.value = 2
-                launch(subCategory)
-            }
-
-            CreatureSubCategory.BOSS -> null
-            CreatureSubCategory.MINI_BOSS -> null
-        }
+    fun onCategorySelected(cat: CreatureSubCategory) {
+        _selectedSubCategory.value = cat
+        launch(cat)
     }
 }
