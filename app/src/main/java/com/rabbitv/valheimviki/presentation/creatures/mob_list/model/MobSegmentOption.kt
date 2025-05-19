@@ -9,6 +9,6 @@ enum class MobSegmentOption(
     override val value: CreatureSubCategory
 ) : SegmentedOption<CreatureSubCategory> {
     PASSIVE("Passive", CreatureSubCategory.PASSIVE_CREATURE),
-    AGGRESSIVE("Aggressive", CreatureSubCategory.AGGRESSIVE_CREATURE),
+    AGGRESSIVE("Hostile", CreatureSubCategory.AGGRESSIVE_CREATURE),
     NPC("Npc", CreatureSubCategory.NPC),
 }

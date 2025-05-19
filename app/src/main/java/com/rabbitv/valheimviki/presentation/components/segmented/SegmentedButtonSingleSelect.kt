@@ -42,7 +42,7 @@ fun <T> SegmentedButtonSingleSelect(
                 }
             ) {
                 Text(
-                    option.toString(),
+                    option.label.toString().uppercase(),
                     style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
                 )
             }
