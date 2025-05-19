@@ -49,6 +49,7 @@ import com.composables.icons.lucide.MountainSnow
 import com.composables.icons.lucide.Rabbit
 import com.composables.icons.lucide.Shield
 import com.composables.icons.lucide.Swords
+import com.composables.icons.lucide.Utensils
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.navigation.Screen
 import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
@@ -241,12 +242,18 @@ private fun PreviewNavigationDrawer() {
             route = Screen.WeaponList.route
         ),
         DrawerItem(
-                icon = Lucide.Shield,
-        label = "Armor",
-        contentDescription = "Armor section",
-        route = Screen.ArmorList.route
-    )
+            icon = Lucide.Shield,
+            label = "Armor",
+            contentDescription = "Armor section",
+            route = Screen.ArmorList.route
+        ),
+        DrawerItem(
+            icon = Lucide.Utensils,
+            label = "Food",
+            contentDescription = "Food section",
+            route = Screen.FoodList.route
         )
+    )
     ValheimVikiAppTheme {
         NavigationDrawer(
             modifier = Modifier,

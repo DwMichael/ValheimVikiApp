@@ -1,15 +1,15 @@
-package com.rabbitv.valheimviki.presentation.creatures.mob_list.viewmodel
+package com.rabbitv.valheimviki.presentation.food.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rabbitv.valheimviki.domain.exceptions.CreatureFetchException
-import com.rabbitv.valheimviki.domain.exceptions.CreaturesFetchLocalException
-import com.rabbitv.valheimviki.domain.model.creature.Creature
-import com.rabbitv.valheimviki.domain.model.creature.CreatureSubCategory
+import com.rabbitv.valheimviki.domain.exceptions.FoodFetchException
+import com.rabbitv.valheimviki.domain.exceptions.FoodFetchLocalException
+import com.rabbitv.valheimviki.domain.model.food.Food
+import com.rabbitv.valheimviki.domain.model.food.FoodSubCategory
 import com.rabbitv.valheimviki.domain.repository.NetworkConnectivity
-import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
-import com.rabbitv.valheimviki.presentation.creatures.mob_list.model.MobListUiState
+import com.rabbitv.valheimviki.domain.use_cases.food.FoodUseCases
+import com.rabbitv.valheimviki.presentation.food.model.FoodListUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
@@ -21,8 +21,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 @HiltViewModel
-class MobListViewModel @Inject constructor(
-    private val creatureCases: CreatureUseCases,
+class FoodListViewModel @Inject constructor(
+    private val foodUseCases: FoodUseCases,
     private val connectivityObserver: NetworkConnectivity,
 ) : ViewModel() {
     private val _isConnection: StateFlow<Boolean> = connectivityObserver.isConnected.stateIn(
@@ -30,37 +30,33 @@ class MobListViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = false
     )
-    private val _creatureList = MutableStateFlow<List<Creature>>(emptyList())
+    private val _foodList = MutableStateFlow<List<Food>>(emptyList())
     private val _selectedSubCategory =
-        MutableStateFlow<CreatureSubCategory>(CreatureSubCategory.PASSIVE_CREATURE)
+        MutableStateFlow<FoodSubCategory>(FoodSubCategory.COOKED_FOOD)
 
 
     private val _isLoading = MutableStateFlow(false)
     private val _error = MutableStateFlow<String?>(null)
 
-//    private val _showInitialLoading = combine(_isLoading, _creatureList) { loading, list ->
-//        loading && list.isEmpty()
-//    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
-
     val uiState = combine(
-        _creatureList,
+        _foodList,
         _selectedSubCategory,
         _isConnection,
         _isLoading,
         _error
     ) { values ->
-        @Suppress("UNCHECKED_CAST")
-        MobListUiState(
-            creatureList = values[0] as List<Creature>,
-            selectedSubCategory = values[1] as CreatureSubCategory,
+        FoodListUiState(
+            foodList = values[0] as List<Food>,
+            selectedSubCategory = values[1] as FoodSubCategory,
             isConnection = values[2] as Boolean,
             isLoading = values[3] as Boolean,
             error = values[4] as String?,
         )
+
     }.stateIn(
         viewModelScope,
         SharingStarted.Companion.WhileSubscribed(5000),
-        MobListUiState()
+        FoodListUiState()
     )
 
 
@@ -68,13 +64,13 @@ class MobListViewModel @Inject constructor(
         launch()
     }
 
-    internal fun launch(subCategory: CreatureSubCategory = CreatureSubCategory.PASSIVE_CREATURE) {
+    internal fun launch(subCategory: FoodSubCategory = FoodSubCategory.COOKED_FOOD) {
         _isLoading.value = true
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                creatureCases.getCreaturesBySubCategory(subCategory)
-                    .collect { creatures ->
-                        _creatureList.value = creatures
+                foodUseCases.getFoodBySubCategoryUseCase(subCategory)
+                    .collect { food ->
+                        _foodList.value = food
                     }
                 _isLoading.value = false
                 _error.value = null
@@ -82,18 +78,18 @@ class MobListViewModel @Inject constructor(
                 _isLoading.value = false
                 _error.value = "somthing goes wrong"
                 when (e) {
-                    is CreatureFetchException -> Log.e(
-                        "CreatureFetchException MobListScreenViewModel",
+                    is FoodFetchException -> Log.e(
+                        "FoodFetchException FoodListScreenViewModel",
                         "${e.message}"
                     )
 
-                    is CreaturesFetchLocalException -> Log.e(
-                        "CreaturesFetchLocalException MobListScreenViewModel",
+                    is FoodFetchLocalException -> Log.e(
+                        "FoodFetchLocalException FoodListScreenViewModel",
                         "${e.message}"
                     )
 
                     else -> Log.e(
-                        "Unexpected Exception occurred MobListScreenViewModel",
+                        "Unexpected Exception occurred FoodListScreenViewModel",
                         "${e.message}"
                     )
                 }
@@ -101,7 +97,7 @@ class MobListViewModel @Inject constructor(
         }
     }
 
-    fun onCategorySelected(cat: CreatureSubCategory) {
+    fun onCategorySelected(cat: FoodSubCategory) {
         _selectedSubCategory.value = cat
         launch(cat)
     }

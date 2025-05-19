@@ -1,0 +1,217 @@
+package com.rabbitv.valheimviki.presentation.food
+
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.Rat
+import com.composables.icons.lucide.Skull
+import com.composables.icons.lucide.User
+import com.rabbitv.valheimviki.domain.model.food.FoodSubCategory
+import com.rabbitv.valheimviki.presentation.components.EmptyScreen
+import com.rabbitv.valheimviki.presentation.components.ListContent
+import com.rabbitv.valheimviki.presentation.components.ShimmerEffect
+import com.rabbitv.valheimviki.presentation.components.segmented.SegmentedButtonSingleSelect
+import com.rabbitv.valheimviki.presentation.creatures.mob_list.model.MobSegmentOption
+import com.rabbitv.valheimviki.presentation.food.model.FoodSegmentOption
+import com.rabbitv.valheimviki.presentation.food.viewmodel.FoodListViewModel
+import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
+import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
+import com.rabbitv.valheimviki.ui.theme.ICON_CLICK_DIM
+import com.rabbitv.valheimviki.ui.theme.ICON_SIZE
+import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
+import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
+import kotlinx.coroutines.launch
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FoodListScreen(
+    onItemClick: (String, FoodSubCategory) -> Unit,
+    modifier: Modifier, paddingValues: PaddingValues,
+    viewModel: FoodListViewModel = hiltViewModel()
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val selectedDifferentCategory = remember { mutableStateOf(false) }
+    val scrollPosition = remember { mutableIntStateOf(0) }
+    val lazyListState = rememberLazyListState(
+        initialFirstVisibleItemIndex = scrollPosition.intValue
+    )
+    val coroutineScope = rememberCoroutineScope()
+    val backButtonVisibleState by remember {
+        derivedStateOf { lazyListState.firstVisibleItemIndex >= 2 }
+    }
+    val backToTopState = remember { mutableStateOf(false) }
+    val icons: List<ImageVector> = listOf(
+        Lucide.Rat,
+        Lucide.Skull,
+        Lucide.User
+    )
+
+    if (backToTopState.value) {
+        LaunchedEffect(backToTopState.value) {
+            lazyListState.animateScrollToItem(0)
+            scrollPosition.intValue = 0
+            backToTopState.value = false
+        }
+    }
+
+    LaunchedEffect(lazyListState) {
+        coroutineScope.launch {
+            if (lazyListState.firstVisibleItemIndex >= 0) {
+                scrollPosition.intValue = lazyListState.firstVisibleItemIndex
+            }
+        }
+    }
+
+    LaunchedEffect(uiState.selectedSubCategory) {
+        if (selectedDifferentCategory.value) {
+            coroutineScope.launch {
+                lazyListState.scrollToItem(0)
+                scrollPosition.intValue = 0
+            }
+            selectedDifferentCategory.value = false
+        }
+    }
+
+    Surface(
+        color = Color.Transparent,
+        modifier = Modifier
+            .testTag("FoodListSurface")
+            .fillMaxSize()
+            .padding(paddingValues)
+    ) {
+        if ((uiState.error != null || !uiState.isConnection) && uiState.foodList.isEmpty()) {
+            EmptyScreen(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .testTag("EmptyScreenFoodList"),
+                errorMessage = uiState.error ?: "Please connect to the internet to fetch data."
+            )
+        } else {
+            Column(
+                modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                SegmentedButtonSingleSelect(
+                    options = FoodSegmentOption.entries,
+                    selectedOption = uiState.selectedSubCategory,
+                    onOptionSelected = {
+                        selectedDifferentCategory.value = true
+                        viewModel.onCategorySelected(it)
+                    },
+                    icons = icons
+                )
+                Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
+
+                Box(modifier = Modifier.fillMaxSize()) {
+                    if (uiState.isLoading && (uiState.foodList.isEmpty() && uiState.isConnection)) {
+                        Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
+                        ShimmerEffect()
+                    } else {
+                        ListContent(
+                            items = uiState.foodList,
+                            clickToNavigate = onItemClick,
+                            lazyListState = lazyListState,
+                            subCategoryNumber = uiState.selectedSubCategory,
+                            horizontalPadding = 0.dp,
+                            imageScale = ContentScale.Fit
+                        )
+                    }
+                }
+            }
+
+            CustomFloatingActionButton(
+                backButtonVisibleState = backButtonVisibleState,
+                backToTopState = backToTopState
+            )
+        }
+    }
+}
+
+@Composable
+fun CustomFloatingActionButton(
+    backButtonVisibleState: Boolean,
+    backToTopState: MutableState<Boolean>,
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        AnimatedVisibility(
+            visible = backButtonVisibleState,
+            enter = fadeIn(animationSpec = tween(300)),
+            exit = fadeOut(animationSpec = tween(300)),
+            modifier = Modifier.align(Alignment.BottomEnd)
+        ) {
+            FloatingActionButton(
+                onClick = {
+                    backToTopState.value = true
+                },
+                shape = RoundedCornerShape(BODY_CONTENT_PADDING.dp),
+                containerColor = ForestGreen10Dark,
+                contentColor = PrimaryWhite,
+                elevation = FloatingActionButtonDefaults.elevation(),
+                modifier = Modifier.size(ICON_CLICK_DIM)
+            ) {
+                Icon(
+                    Icons.Filled.KeyboardArrowUp,
+                    contentDescription = "Button Up",
+                    modifier = Modifier.size(ICON_SIZE)
+                )
+            }
+        }
+    }
+}
+
+@Preview("CustomFloatingActionButton", widthDp = 80, heightDp = 80)
+@Composable
+fun PreviewCustomFloatingActionButton() {
+    val backButtonVisibleState = true
+
+    val backToTopState = remember { mutableStateOf(false) }
+    ValheimVikiAppTheme {
+        CustomFloatingActionButton(
+            backButtonVisibleState = backButtonVisibleState,
+            backToTopState = backToTopState
+        )
+    }
+}

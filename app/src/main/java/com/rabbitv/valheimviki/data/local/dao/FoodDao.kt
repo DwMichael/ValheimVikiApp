@@ -14,7 +14,7 @@ interface FoodDao {
     fun getLocalFoodList(): Flow<List<Food>>
 
     @Query("SELECT * FROM food where subCategory = :subCategory")
-    fun getFoodListBySubCategory(subCategory: String): List<Food>
+    fun getFoodListBySubCategory(subCategory: String): Flow<List<Food>>
 
     @Query("SELECT * FROM food where id IN (:ids)")
     fun getFoodListByIds(ids: List<String>): List<Food>
