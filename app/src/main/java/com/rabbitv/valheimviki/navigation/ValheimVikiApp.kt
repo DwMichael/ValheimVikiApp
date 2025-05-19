@@ -45,8 +45,10 @@ import com.composables.icons.lucide.MountainSnow
 import com.composables.icons.lucide.Rabbit
 import com.composables.icons.lucide.Shield
 import com.composables.icons.lucide.Swords
+import com.composables.icons.lucide.Utensils
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.creature.CreatureSubCategory
+import com.rabbitv.valheimviki.domain.model.food.FoodSubCategory
 import com.rabbitv.valheimviki.presentation.armor.ArmorListScreen
 import com.rabbitv.valheimviki.presentation.biome.BiomeScreen
 import com.rabbitv.valheimviki.presentation.components.DrawerItem
@@ -60,6 +62,7 @@ import com.rabbitv.valheimviki.presentation.detail.creature.main_boss_screen.Mai
 import com.rabbitv.valheimviki.presentation.detail.creature.mini_boss_screen.MiniBossDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.creature.npc.NpcDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.creature.passive_screen.PassiveCreatureDetailScreen
+import com.rabbitv.valheimviki.presentation.food.FoodListScreen
 import com.rabbitv.valheimviki.presentation.home.MainAppBar
 import com.rabbitv.valheimviki.presentation.intro.WelcomeScreen
 import com.rabbitv.valheimviki.presentation.splash.SplashScreen
@@ -112,7 +115,8 @@ fun MainContainer(
                 route.startsWith(Screen.MiniBoss.route.substringBefore("{")) ||
                 route.startsWith(Screen.MobList.route.substringBefore("{")) ||
                 route.startsWith(Screen.WeaponList.route.substringBefore("{")) ||
-                route.startsWith(Screen.ArmorList.route.substringBefore("{"))
+                route.startsWith(Screen.ArmorList.route.substringBefore("{")) ||
+                route.startsWith(Screen.FoodList.route.substringBefore("{"))
     } == true
 
     val isNavigating = remember { mutableStateOf(false) }
@@ -243,6 +247,20 @@ fun MainContainer(
 
                                     CreatureSubCategory.BOSS -> null
                                     CreatureSubCategory.MINI_BOSS -> null
+                                }
+                            },
+                            paddingValues = innerPadding,
+//                            animatedVisibilityScope = this@composable
+                        )
+                    }
+
+                    composable(Screen.FoodList.route) {
+                        FoodListScreen(
+                            modifier = Modifier.padding(10.dp),
+                            onItemClick = { foodId, foodSubCategory : FoodSubCategory ->
+                                when (foodSubCategory) {
+                                    FoodSubCategory.UNCOOKED_FOOD -> null
+                                    FoodSubCategory.COOKED_FOOD -> null
                                 }
                             },
                             paddingValues = innerPadding,
@@ -391,6 +409,12 @@ private fun getDrawerItems(): List<DrawerItem> {
             label = "Armor",
             contentDescription = "Armor section",
             route = Screen.ArmorList.route
+        ),
+        DrawerItem(
+            icon = Lucide.Utensils,
+            label = "Food",
+            contentDescription = "Food section",
+            route = Screen.FoodList.route
         )
     )
 }
