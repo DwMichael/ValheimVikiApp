@@ -41,7 +41,7 @@ import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.ListContent
 import com.rabbitv.valheimviki.presentation.components.ShimmerEffect
 import com.rabbitv.valheimviki.presentation.components.chip.ChipData
-import com.rabbitv.valheimviki.presentation.components.chip.SingleChoiceChipFlowRow
+import com.rabbitv.valheimviki.presentation.components.chip.SearchFilterBar
 import com.rabbitv.valheimviki.presentation.components.segmented.SegmentedButtonSingleSelect
 import com.rabbitv.valheimviki.presentation.weapons.model.WeaponListUiState
 import com.rabbitv.valheimviki.presentation.weapons.model.WeaponSegmentOption
@@ -143,6 +143,7 @@ fun WeaponListDisplay(
     val lazyListState = rememberLazyListState(
         initialFirstVisibleItemIndex = scrollPosition.intValue
     )
+    val showAll = remember { mutableStateOf(false) }
     val selectedDifferentCategory = remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
     val selectedChipIndex = getWeaponCategoryIndex(category = weaponListUiState.selectedCategory)
@@ -151,7 +152,7 @@ fun WeaponListDisplay(
         if (selectedDifferentCategory.value) {
             coroutineScope.launch {
                 lazyListState.scrollToItem(0)
-                scrollPosition.value = 0
+                scrollPosition.intValue = 0
             }
             selectedDifferentCategory.value = false
         }
@@ -170,9 +171,10 @@ fun WeaponListDisplay(
             }
         )
         Spacer(Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp, vertical = 5.dp))
-        SingleChoiceChipFlowRow(
-            selectedOption = weaponListUiState.selectedChip,
+
+        SearchFilterBar(
             chips = getChipsForCategory(weaponListUiState.selectedCategory),
+            selectedOption = weaponListUiState.selectedChip,
             onSelectedChange = { _, subType ->
                 if (weaponListUiState.selectedChip == subType) {
                     onChipSelected(null)
@@ -180,8 +182,10 @@ fun WeaponListDisplay(
                     onChipSelected(subType)
                 }
             },
-            modifier = Modifier,
+            modifier = Modifier
         )
+
+
         Spacer(Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp, vertical = 5.dp))
         ListContent(
             items = weaponListUiState.weaponList,
@@ -273,7 +277,7 @@ private fun getChipsForCategory(category: WeaponSubCategory): List<WeaponChip> {
 @Composable
 fun PreviewSingleChoiceChipMelee() {
     ValheimVikiAppTheme {
-        SingleChoiceChipFlowRow(
+        SearchFilterBar(
             chips = getChipsForCategory(WeaponSubCategory.MELEE_WEAPON),
             selectedOption = WeaponSubType.SWORD,
             onSelectedChange = { i, s -> {} },
@@ -288,7 +292,7 @@ fun PreviewSingleChoiceChipRanged() {
 
 
     ValheimVikiAppTheme {
-        SingleChoiceChipFlowRow(
+        SearchFilterBar(
             chips = getChipsForCategory(WeaponSubCategory.RANGED_WEAPON),
             selectedOption = WeaponSubType.BOW,
             onSelectedChange = { i, s -> {} },
@@ -302,7 +306,7 @@ fun PreviewSingleChoiceChipRanged() {
 fun PreviewSingleChoiceChipMagic() {
 
     ValheimVikiAppTheme {
-        SingleChoiceChipFlowRow(
+        SearchFilterBar(
             chips = getChipsForCategory(WeaponSubCategory.MAGIC_WEAPON),
             selectedOption = WeaponSubType.ELEMENTAL_MAGIC,
             onSelectedChange = { i, s -> {} },
@@ -316,7 +320,7 @@ fun PreviewSingleChoiceChipMagic() {
 fun PreviewSingleChoiceChipAmmo() {
 
     ValheimVikiAppTheme {
-        SingleChoiceChipFlowRow(
+        SearchFilterBar(
             selectedOption = WeaponSubType.BOMB,
             onSelectedChange = { i, s -> {} },
             chips = getChipsForCategory(WeaponSubCategory.AMMO),

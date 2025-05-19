@@ -1,23 +1,14 @@
 package com.rabbitv.valheimviki.presentation.armor
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.ElevatedFilterChip
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChipDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -46,8 +37,7 @@ import com.rabbitv.valheimviki.presentation.components.ListContent
 import com.rabbitv.valheimviki.presentation.components.ShimmerEffect
 import com.rabbitv.valheimviki.presentation.components.chip.ChipData
 import com.rabbitv.valheimviki.presentation.components.chip.CustomElevatedFilterChip
-import com.rabbitv.valheimviki.presentation.components.chip.SingleChoiceChipFlowRow
-import com.rabbitv.valheimviki.ui.theme.AppStyleDefaults
+import com.rabbitv.valheimviki.presentation.components.chip.SearchFilterBar
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
@@ -136,6 +126,7 @@ fun ArmorListDisplay(
     armorListUiState: ArmorListUiState,
     onChipSelected: (ArmorSubCategory?) -> Unit,
 ) {
+    val showAll = remember { mutableStateOf(false) }
     val scrollPosition = remember { mutableIntStateOf(0) }
     val lazyListState = rememberLazyListState(
         initialFirstVisibleItemIndex = scrollPosition.intValue
@@ -157,7 +148,7 @@ fun ArmorListDisplay(
     Column(
         horizontalAlignment = Alignment.Start
     ) {
-        SingleChoiceChipFlowRow(
+        SearchFilterBar(
             chips = getChipsForCategory(),
             selectedOption = armorListUiState.selectedChip,
             onSelectedChange = { _, subCategory ->
@@ -180,9 +171,6 @@ fun ArmorListDisplay(
         )
     }
 }
-
-
-
 
 
 @Composable
@@ -221,11 +209,11 @@ private fun getChipsForCategory(): List<ArmorChip> {
 @Composable
 fun PreviewSingleChoiceChip() {
     ValheimVikiAppTheme {
-        SingleChoiceChipFlowRow(
+        SearchFilterBar(
             onSelectedChange = { i, s -> {} },
             modifier = Modifier,
             selectedOption = ArmorSubCategory.CAPE,
-            chips = getChipsForCategory(),
+            chips = getChipsForCategory()
         )
     }
 }
