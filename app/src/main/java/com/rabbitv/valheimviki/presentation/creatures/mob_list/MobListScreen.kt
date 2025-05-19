@@ -134,7 +134,8 @@ fun MobListScreen(
                     onOptionSelected = {
                         selectedDifferentCategory.value = true
                         viewModel.onCategorySelected(it)
-                    }
+                    },
+                    icons = icons
                 )
                 Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
 
