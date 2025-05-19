@@ -16,7 +16,6 @@ import androidx.compose.material3.ElevatedFilterChip
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.SelectableChipColors
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -42,28 +41,23 @@ import com.composables.icons.lucide.Blend
 import com.composables.icons.lucide.Lucide
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.armor.ArmorSubCategory
-import com.rabbitv.valheimviki.domain.model.weapon.WeaponSubCategory
-import com.rabbitv.valheimviki.domain.model.weapon.WeaponSubType
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.ListContent
 import com.rabbitv.valheimviki.presentation.components.ShimmerEffect
+import com.rabbitv.valheimviki.presentation.components.chip.ChipData
+import com.rabbitv.valheimviki.ui.theme.AppStyleDefaults
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
-import com.rabbitv.valheimviki.ui.theme.YellowDT
-import com.rabbitv.valheimviki.ui.theme.YellowDTContainerNotSelected
-import com.rabbitv.valheimviki.ui.theme.YellowDTIconColor
-import com.rabbitv.valheimviki.ui.theme.YellowDTNotSelected
-import com.rabbitv.valheimviki.ui.theme.YellowDTSelected
 import com.rabbitv.valheimviki.utils.FakeData
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.launch
 
 
-data class ArmorChip(
-    val subCategory: ArmorSubCategory,
-    val icon: ImageVector,
-    val label: String
-)
+class ArmorChip(
+    override val option: ArmorSubCategory,
+    override val icon: ImageVector,
+    override val label: String
+) : ChipData<ArmorSubCategory>
 
 @Composable
 fun ArmorListScreen(
@@ -186,18 +180,18 @@ fun ArmorListDisplay(
 
 
 @Composable
-fun SingleChoiceChipGroup(
-    selectedSubCategory: ArmorSubCategory?,
-    onSelectedChange: (index: Int, subCategory: ArmorSubCategory) -> Unit,
+fun <T> SingleChoiceChipGroup(
+    selectedSubCategory: T?,
+    onSelectedChange: (index: Int, subCategory: T) -> Unit,
+    chips: List<ChipData<T>>,
     modifier: Modifier = Modifier,
 ) {
-    val chips = getChipsForCategory()
 
 
     val selectedIndex = if (selectedSubCategory == null) {
         null
     } else {
-        chips.indexOfFirst { it.subCategory == selectedSubCategory }
+        chips.indexOfFirst { it.option == selectedSubCategory }
     }
 
     FlowRow(
@@ -229,26 +223,12 @@ fun CustomElevatedFilterChip(
     subCategory: ArmorSubCategory,
 
     ) {
-    val selectableChipColors = SelectableChipColors(
-        containerColor = YellowDTContainerNotSelected,
-        labelColor = YellowDTNotSelected,
-        leadingIconColor = YellowDTIconColor,
-        trailingIconColor = YellowDTIconColor,
-        disabledContainerColor = YellowDTContainerNotSelected,
-        disabledLabelColor = YellowDTNotSelected,
-        disabledLeadingIconColor = YellowDTIconColor,
-        disabledTrailingIconColor = YellowDTIconColor,
-        selectedContainerColor = YellowDT,
-        disabledSelectedContainerColor = YellowDTSelected,
-        selectedLabelColor = YellowDTSelected,
-        selectedLeadingIconColor = YellowDTSelected,
-        selectedTrailingIconColor = YellowDTSelected
-    )
+
     ElevatedFilterChip(
         selected = index == selectedChipIndex,
         onClick = { onSelectedChange(index, subCategory) },
         label = { Text(label) },
-        colors = selectableChipColors,
+        colors = AppStyleDefaults.yellowDTSelectableChipColors(),
         leadingIcon = if (index == selectedChipIndex) {
             {
                 Icon(
@@ -346,7 +326,6 @@ fun PreviewCustomElevatedFilterChipNotSelected() {
     }
 
 }
-
 
 
 @Preview(name = "WeaponListStateRendererPreview")

@@ -1,29 +1,14 @@
 package com.rabbitv.valheimviki.presentation.weapons
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.ElevatedFilterChip
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChipDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SelectableChipColors
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -38,7 +23,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -56,30 +40,24 @@ import com.rabbitv.valheimviki.domain.model.weapon.WeaponSubType
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.ListContent
 import com.rabbitv.valheimviki.presentation.components.ShimmerEffect
+import com.rabbitv.valheimviki.presentation.components.chip.ChipData
+import com.rabbitv.valheimviki.presentation.components.chip.SingleChoiceChipFlowRow
+import com.rabbitv.valheimviki.presentation.components.segmented.SegmentedButtonSingleSelect
+import com.rabbitv.valheimviki.presentation.weapons.model.WeaponListUiState
+import com.rabbitv.valheimviki.presentation.weapons.model.WeaponSegmentOption
+import com.rabbitv.valheimviki.presentation.weapons.viewmodel.WeaponListViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
-import com.rabbitv.valheimviki.ui.theme.YellowDT
-import com.rabbitv.valheimviki.ui.theme.YellowDTBorder
-import com.rabbitv.valheimviki.ui.theme.YellowDTContainerNotSelected
-import com.rabbitv.valheimviki.ui.theme.YellowDTIconColor
-import com.rabbitv.valheimviki.ui.theme.YellowDTNotSelected
-import com.rabbitv.valheimviki.ui.theme.YellowDTSelected
 import com.rabbitv.valheimviki.utils.FakeData
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.launch
 
-enum class SegmentButtonOptions(val label: String) {
-    MELEE("Melee"),
-    RANGED("Ranged"),
-    MAGIC("Magic"),
-    AMMO("Ammo");
-}
 
 data class WeaponChip(
-    val subType: WeaponSubType,
-    val icon: ImageVector,
-    val label: String
-)
+    override val option: WeaponSubType,
+    override val icon: ImageVector,
+    override val label: String
+) : ChipData<WeaponSubType>
 
 @Composable
 fun WeaponListScreen(
@@ -183,17 +161,18 @@ fun WeaponListDisplay(
         horizontalAlignment = Alignment.Start
     ) {
         SegmentedButtonSingleSelect(
-            selectedCategory = weaponListUiState.selectedCategory,
-            onCategoryClick = { index ->
+            options = WeaponSegmentOption.entries,
+            selectedOption = weaponListUiState.selectedCategory,
+            onOptionSelected = { index ->
                 selectedDifferentCategory.value = true
-                onCategorySelected(getWeaponCategory(index))
+                onCategorySelected(index)
                 onChipSelected(null)
             }
         )
         Spacer(Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp, vertical = 5.dp))
-        SingleChoiceChipGroup(
-            selectedCategory = weaponListUiState.selectedCategory,
-            selectedSubType = weaponListUiState.selectedChip,
+        SingleChoiceChipFlowRow(
+            selectedOption = weaponListUiState.selectedChip,
+            chips = getChipsForCategory(weaponListUiState.selectedCategory),
             onSelectedChange = { _, subType ->
                 if (weaponListUiState.selectedChip == subType) {
                     onChipSelected(null)
@@ -215,139 +194,6 @@ fun WeaponListDisplay(
     }
 }
 
-
-@Composable
-fun SingleChoiceChipGroup(
-    selectedCategory: WeaponSubCategory,
-    selectedSubType: WeaponSubType?,
-    onSelectedChange: (index: Int, subType: WeaponSubType?) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val chips = getChipsForCategory(selectedCategory)
-
-
-    val selectedIndex = if (selectedSubType == null) {
-        null
-    } else {
-        chips.indexOfFirst { it.subType == selectedSubType }
-    }
-
-    FlowRow(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        chips.let { items ->
-            items.forEachIndexed { index, weaponChip ->
-                CustomElevatedFilterChip(
-                    index = index,
-                    selectedChipIndex = selectedIndex,
-                    onSelectedChange = onSelectedChange,
-                    label = weaponChip.label,
-                    icon = weaponChip.icon,
-                    subType = weaponChip.subType
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun CustomElevatedFilterChip(
-    index: Int,
-    selectedChipIndex: Int?,
-    onSelectedChange: (index: Int, subType: WeaponSubType?) -> Unit,
-    label: String,
-    icon: ImageVector,
-    subType: WeaponSubType,
-
-    ) {
-    val selectableChipColors = SelectableChipColors(
-        containerColor = YellowDTContainerNotSelected,
-        labelColor = YellowDTNotSelected,
-        leadingIconColor = YellowDTIconColor,
-        trailingIconColor = YellowDTIconColor,
-        disabledContainerColor = YellowDTContainerNotSelected,
-        disabledLabelColor = YellowDTNotSelected,
-        disabledLeadingIconColor = YellowDTIconColor,
-        disabledTrailingIconColor = YellowDTIconColor,
-        selectedContainerColor = YellowDT,
-        disabledSelectedContainerColor = YellowDTSelected,
-        selectedLabelColor = YellowDTSelected,
-        selectedLeadingIconColor = YellowDTSelected,
-        selectedTrailingIconColor = YellowDTSelected
-    )
-    ElevatedFilterChip(
-        selected = index == selectedChipIndex,
-        onClick = { onSelectedChange(index, subType) },
-        label = { Text(label) },
-        colors = selectableChipColors,
-        leadingIcon = if (index == selectedChipIndex) {
-            {
-                Icon(
-                    Icons.Default.Check,
-                    contentDescription = null,
-                    modifier = Modifier.size(FilterChipDefaults.IconSize)
-                )
-            }
-        } else {
-            {
-                Icon(
-                    icon,
-                    contentDescription = null,
-                    modifier = Modifier.size(FilterChipDefaults.IconSize)
-                )
-            }
-        }
-    )
-}
-
-
-@Composable
-fun SegmentedButtonSingleSelect(
-    selectedCategory: WeaponSubCategory,
-    onCategoryClick: (index: Int) -> Unit,
-) {
-
-    val options: List<SegmentButtonOptions> = SegmentButtonOptions.entries
-
-    val segmentColors = SegmentedButtonDefaults.colors(
-        // selected (ON) state
-        activeContainerColor = YellowDT,
-        activeContentColor = YellowDTSelected,
-
-        // un-selected (OFF) state
-        inactiveContainerColor = YellowDTContainerNotSelected,
-        inactiveContentColor = YellowDTNotSelected,
-
-        // disabled states – optional but nice
-        disabledActiveContainerColor = YellowDT.copy(alpha = 0.38f),
-        disabledActiveContentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.38f),
-        disabledInactiveContainerColor = Color.Transparent,
-        disabledInactiveContentColor = YellowDT.copy(alpha = 0.38f),
-        activeBorderColor = YellowDTBorder,
-        inactiveBorderColor = YellowDTBorder,
-        disabledActiveBorderColor = YellowDTBorder,
-        disabledInactiveBorderColor = YellowDTBorder,
-    )
-    SingleChoiceSegmentedButtonRow(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        options.forEachIndexed { index, label ->
-            SegmentedButton(
-                shape = SegmentedButtonDefaults.itemShape(index = index, count = options.size),
-                onClick = { onCategoryClick(index) },
-                selected = index == getWeaponCategoryIndex(selectedCategory),
-                colors = segmentColors,
-                icon = {}
-            ) {
-                Text(
-                    label.toString(),
-                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
-                )
-            }
-        }
-    }
-}
 
 @Composable
 private fun getChipsForCategory(category: WeaponSubCategory): List<WeaponChip> {
@@ -427,11 +273,11 @@ private fun getChipsForCategory(category: WeaponSubCategory): List<WeaponChip> {
 @Composable
 fun PreviewSingleChoiceChipMelee() {
     ValheimVikiAppTheme {
-        SingleChoiceChipGroup(
-            selectedCategory = WeaponSubCategory.MELEE_WEAPON,
+        SingleChoiceChipFlowRow(
+            chips = getChipsForCategory(WeaponSubCategory.MELEE_WEAPON),
+            selectedOption = WeaponSubType.SWORD,
             onSelectedChange = { i, s -> {} },
             modifier = Modifier,
-            selectedSubType = WeaponSubType.SWORD,
         )
     }
 }
@@ -442,13 +288,12 @@ fun PreviewSingleChoiceChipRanged() {
 
 
     ValheimVikiAppTheme {
-        SingleChoiceChipGroup(
-            selectedCategory = WeaponSubCategory.RANGED_WEAPON,
+        SingleChoiceChipFlowRow(
+            chips = getChipsForCategory(WeaponSubCategory.RANGED_WEAPON),
+            selectedOption = WeaponSubType.BOW,
             onSelectedChange = { i, s -> {} },
             modifier = Modifier,
-            selectedSubType = WeaponSubType.BOW,
-
-            )
+        )
     }
 }
 
@@ -457,11 +302,11 @@ fun PreviewSingleChoiceChipRanged() {
 fun PreviewSingleChoiceChipMagic() {
 
     ValheimVikiAppTheme {
-        SingleChoiceChipGroup(
-            selectedCategory = WeaponSubCategory.MAGIC_WEAPON,
+        SingleChoiceChipFlowRow(
+            chips = getChipsForCategory(WeaponSubCategory.MAGIC_WEAPON),
+            selectedOption = WeaponSubType.ELEMENTAL_MAGIC,
             onSelectedChange = { i, s -> {} },
             modifier = Modifier,
-            selectedSubType = WeaponSubType.ELEMENTAL_MAGIC,
         )
     }
 }
@@ -471,59 +316,15 @@ fun PreviewSingleChoiceChipMagic() {
 fun PreviewSingleChoiceChipAmmo() {
 
     ValheimVikiAppTheme {
-        SingleChoiceChipGroup(
-            selectedCategory = WeaponSubCategory.AMMO,
+        SingleChoiceChipFlowRow(
+            selectedOption = WeaponSubType.BOMB,
             onSelectedChange = { i, s -> {} },
+            chips = getChipsForCategory(WeaponSubCategory.AMMO),
             modifier = Modifier,
-            selectedSubType = WeaponSubType.BOMB,
         )
     }
 }
 
-
-@Preview("CustomElevatedFilterChipSelectedPreview")
-@Composable
-fun PreviewCustomElevatedFilterChipSelected() {
-    ValheimVikiAppTheme {
-        CustomElevatedFilterChip(
-            index = 0,
-            selectedChipIndex = 0,
-            onSelectedChange = { i, s -> {} },
-            label = "Axes",
-            icon = Lucide.Axe,
-            subType = WeaponSubType.CROSSBOW,
-        )
-    }
-
-}
-
-@Preview("CustomElevatedFilterChipNotSelectedPreview")
-@Composable
-fun PreviewCustomElevatedFilterChipNotSelected() {
-    ValheimVikiAppTheme {
-        CustomElevatedFilterChip(
-            index = 1,
-            selectedChipIndex = 0,
-            onSelectedChange = { i, s -> {} },
-            label = "Axes",
-            icon = Lucide.Axe,
-            subType = WeaponSubType.CROSSBOW
-        )
-    }
-
-}
-
-@Preview("SegmentedButtonSingleSelectPreview")
-@Composable
-fun PreviewSegmentedButtonSingleSelect() {
-    ValheimVikiAppTheme {
-        SegmentedButtonSingleSelect(
-            selectedCategory = WeaponSubCategory.MELEE_WEAPON,
-            onCategoryClick = { }
-        )
-    }
-
-}
 
 @Preview(name = "WeaponListStateRendererPreview")
 @Composable

@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.weapons
+package com.rabbitv.valheimviki.presentation.weapons.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -8,6 +8,7 @@ import com.rabbitv.valheimviki.domain.model.weapon.WeaponSubCategory
 import com.rabbitv.valheimviki.domain.model.weapon.WeaponSubType
 import com.rabbitv.valheimviki.domain.repository.NetworkConnectivity
 import com.rabbitv.valheimviki.domain.use_cases.weapon.WeaponUseCases
+import com.rabbitv.valheimviki.presentation.weapons.model.WeaponListUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,7 +29,7 @@ class WeaponListViewModel @Inject constructor(
 ) : ViewModel() {
     private val _isConnection: StateFlow<Boolean> = connectivityObserver.isConnected.stateIn(
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
+        started = SharingStarted.Companion.WhileSubscribed(5000),
         initialValue = false
     )
     private val _selectedCategory = MutableStateFlow(WeaponSubCategory.MELEE_WEAPON)
@@ -63,7 +64,7 @@ class WeaponListViewModel @Inject constructor(
                 _isLoading.value = false
                 _error.value = null
             }
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+            .stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5000), emptyList())
 
     val uiState = combine(
         _weapons,
@@ -74,17 +75,17 @@ class WeaponListViewModel @Inject constructor(
         _error
     ) { values ->
         @Suppress("UNCHECKED_CAST")
-        WeaponListUiState(
+        (WeaponListUiState(
             weaponList = values[0] as List<Weapon>,
             selectedCategory = values[1] as WeaponSubCategory,
             selectedChip = values[2] as WeaponSubType?,
             isConnection = values[3] as Boolean,
             isLoading = values[4] as Boolean,
             error = values[5] as String?
-        )
+        ))
     }.stateIn(
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
+        started = SharingStarted.Companion.WhileSubscribed(5000),
         initialValue = WeaponListUiState()
     )
 
@@ -97,5 +98,3 @@ class WeaponListViewModel @Inject constructor(
         _selectedChip.value = chip
     }
 }
-
-
