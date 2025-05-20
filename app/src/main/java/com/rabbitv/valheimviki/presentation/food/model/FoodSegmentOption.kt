@@ -8,6 +8,6 @@ enum class FoodSegmentOption(
     override val label: String,
     override val value: FoodSubCategory
 ) : SegmentedOption<FoodSubCategory> {
-    COOKED("Passive", FoodSubCategory.COOKED_FOOD),
-    UNCOOKED("Aggressive", FoodSubCategory.UNCOOKED_FOOD),
+    COOKED("COOKED", FoodSubCategory.COOKED_FOOD),
+    UNCOOKED("UNCOOKED", FoodSubCategory.UNCOOKED_FOOD),
 }
