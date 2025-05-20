@@ -44,6 +44,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.composables.icons.lucide.FlaskRound
+import com.composables.icons.lucide.Gavel
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.MountainSnow
 import com.composables.icons.lucide.Rabbit
@@ -252,6 +254,18 @@ private fun PreviewNavigationDrawer() {
             label = "Food",
             contentDescription = "Food section",
             route = Screen.FoodList.route
+        ),
+        DrawerItem(
+            icon = Lucide.FlaskRound,
+            label = "Mead",
+            contentDescription = "Mead section",
+            route = Screen.MeadList.route
+        ),
+        DrawerItem(
+            icon = Lucide.Gavel,
+            label = "Tools",
+            contentDescription = "Tools section",
+            route = Screen.ToolList.route
         )
     )
     ValheimVikiAppTheme {

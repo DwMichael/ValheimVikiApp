@@ -4,18 +4,19 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 import com.rabbitv.valheimviki.domain.model.tool.pickaxe.Pickaxe
+import com.rabbitv.valheimviki.domain.repository.ItemData
 import kotlinx.serialization.Serializable
 
 @Entity("tools")
 @Serializable
 data class Tool(
     @PrimaryKey(autoGenerate = false)
-    val id: String,
-    val imageUrl: String,
-    val category: String,
+    override val id: String,
+    override val imageUrl: String,
+    override val category: String,
     val subCategory: String,
-    val name: String,
+    override val name: String,
     val description: String,
     @SerializedName("UpgradeInfo") val upgradeInfoList: List<Pickaxe>? = emptyList(),
     val order: Int,
-)
+) : ItemData

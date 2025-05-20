@@ -1,9 +1,5 @@
-package com.rabbitv.valheimviki.presentation.food
+package com.rabbitv.valheimviki.presentation.mead
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -11,19 +7,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -36,38 +24,30 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.composables.icons.lucide.FlaskConical
 import com.composables.icons.lucide.Lucide
-import com.composables.icons.lucide.Rat
-import com.composables.icons.lucide.Skull
-import com.composables.icons.lucide.User
-import com.rabbitv.valheimviki.domain.model.food.FoodSubCategory
+import com.composables.icons.lucide.Soup
+import com.rabbitv.valheimviki.domain.model.mead.MeadSubCategory
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.ListContent
 import com.rabbitv.valheimviki.presentation.components.ShimmerEffect
 import com.rabbitv.valheimviki.presentation.components.floating_action_button.CustomFloatingActionButton
 import com.rabbitv.valheimviki.presentation.components.segmented.SegmentedButtonSingleSelect
-import com.rabbitv.valheimviki.presentation.creatures.mob_list.model.MobSegmentOption
-import com.rabbitv.valheimviki.presentation.food.model.FoodSegmentOption
-import com.rabbitv.valheimviki.presentation.food.viewmodel.FoodListViewModel
+import com.rabbitv.valheimviki.presentation.mead.model.MeadSegmentOption
+import com.rabbitv.valheimviki.presentation.mead.viewmodel.MeadListViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
-import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
-import com.rabbitv.valheimviki.ui.theme.ICON_CLICK_DIM
-import com.rabbitv.valheimviki.ui.theme.ICON_SIZE
-import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
-import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FoodListScreen(
-    onItemClick: (String, FoodSubCategory) -> Unit,
+fun MeadListScreen(
+    onItemClick: (String, MeadSubCategory) -> Unit,
     modifier: Modifier, paddingValues: PaddingValues,
-    viewModel: FoodListViewModel = hiltViewModel()
+    viewModel: MeadListViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val selectedDifferentCategory = remember { mutableStateOf(false) }
@@ -81,9 +61,8 @@ fun FoodListScreen(
     }
     val backToTopState = remember { mutableStateOf(false) }
     val icons: List<ImageVector> = listOf(
-        Lucide.Rat,
-        Lucide.Skull,
-        Lucide.User
+        Lucide.Soup,
+        Lucide.FlaskConical,
     )
 
     if (backToTopState.value) {
@@ -115,15 +94,15 @@ fun FoodListScreen(
     Surface(
         color = Color.Transparent,
         modifier = Modifier
-            .testTag("FoodListSurface")
+            .testTag("MeadListSurface")
             .fillMaxSize()
             .padding(paddingValues)
     ) {
-        if ((uiState.error != null || !uiState.isConnection) && uiState.foodList.isEmpty()) {
+        if ((uiState.error != null || !uiState.isConnection) && uiState.meadList.isEmpty()) {
             EmptyScreen(
                 modifier = Modifier
                     .fillMaxSize()
-                    .testTag("EmptyScreenFoodList"),
+                    .testTag("EmptyScreenMeadList"),
                 errorMessage = uiState.error ?: "Please connect to the internet to fetch data."
             )
         } else {
@@ -132,7 +111,7 @@ fun FoodListScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 SegmentedButtonSingleSelect(
-                    options = FoodSegmentOption.entries,
+                    options = MeadSegmentOption.entries,
                     selectedOption = uiState.selectedSubCategory,
                     onOptionSelected = {
                         selectedDifferentCategory.value = true
@@ -143,12 +122,12 @@ fun FoodListScreen(
                 Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
 
                 Box(modifier = Modifier.fillMaxSize()) {
-                    if (uiState.isLoading && (uiState.foodList.isEmpty() && uiState.isConnection)) {
+                    if (uiState.isLoading && (uiState.meadList.isEmpty() && uiState.isConnection)) {
                         Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
                         ShimmerEffect()
                     } else {
                         ListContent(
-                            items = uiState.foodList,
+                            items = uiState.meadList,
                             clickToNavigate = onItemClick,
                             lazyListState = lazyListState,
                             subCategoryNumber = uiState.selectedSubCategory,

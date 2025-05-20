@@ -4,6 +4,6 @@ import com.rabbitv.valheimviki.domain.use_cases.tool.get_local_tools_use_case.Ge
 import com.rabbitv.valheimviki.domain.use_cases.tool.get_tools_by_sub_category_use_case.GetToolsBySubCategoryUseCase
 
 data class ToolUseCases(
-    val getLocalMeadsUseCase: GetLocalToolsUseCase,
-    val getMeadsBySubCategoryUseCase: GetToolsBySubCategoryUseCase,
+    val getLocalToolsUseCase: GetLocalToolsUseCase,
+    val getToolsBySubCategoryUseCase: GetToolsBySubCategoryUseCase,
 )
