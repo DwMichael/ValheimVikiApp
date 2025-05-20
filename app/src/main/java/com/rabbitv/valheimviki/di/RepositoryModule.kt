@@ -490,8 +490,8 @@ object RepositoryModule {
     @Singleton
     fun provideToolUseCases(toolRepository: ToolRepository): ToolUseCases {
         return ToolUseCases(
-            getLocalMeadsUseCase = GetLocalToolsUseCase(toolRepository),
-            getMeadsBySubCategoryUseCase = GetToolsBySubCategoryUseCase()
+            getLocalToolsUseCase = GetLocalToolsUseCase(toolRepository),
+            getToolsBySubCategoryUseCase = GetToolsBySubCategoryUseCase()
         )
     }
 

@@ -1,9 +1,5 @@
 package com.rabbitv.valheimviki.presentation.creatures.mob_list
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -11,19 +7,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -47,14 +35,11 @@ import com.rabbitv.valheimviki.domain.model.creature.CreatureSubCategory
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.ListContent
 import com.rabbitv.valheimviki.presentation.components.ShimmerEffect
+import com.rabbitv.valheimviki.presentation.components.floating_action_button.CustomFloatingActionButton
 import com.rabbitv.valheimviki.presentation.components.segmented.SegmentedButtonSingleSelect
 import com.rabbitv.valheimviki.presentation.creatures.mob_list.model.MobSegmentOption
 import com.rabbitv.valheimviki.presentation.creatures.mob_list.viewmodel.MobListViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
-import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
-import com.rabbitv.valheimviki.ui.theme.ICON_CLICK_DIM
-import com.rabbitv.valheimviki.ui.theme.ICON_SIZE
-import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import kotlinx.coroutines.launch
 
@@ -140,7 +125,7 @@ fun MobListScreen(
                 Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
 
                 Box(modifier = Modifier.fillMaxSize()) {
-                    if (uiState.isLoading && (uiState.creatureList.isEmpty() && uiState.isConnection) ) {
+                    if (uiState.isLoading && (uiState.creatureList.isEmpty() && uiState.isConnection)) {
                         Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
                         ShimmerEffect()
                     } else {
@@ -163,41 +148,6 @@ fun MobListScreen(
     }
 }
 
-@Composable
-fun CustomFloatingActionButton(
-    backButtonVisibleState: Boolean,
-    backToTopState: MutableState<Boolean>,
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        AnimatedVisibility(
-            visible = backButtonVisibleState,
-            enter = fadeIn(animationSpec = tween(300)),
-            exit = fadeOut(animationSpec = tween(300)),
-            modifier = Modifier.align(Alignment.BottomEnd)
-        ) {
-            FloatingActionButton(
-                onClick = {
-                    backToTopState.value = true
-                },
-                shape = RoundedCornerShape(BODY_CONTENT_PADDING.dp),
-                containerColor = ForestGreen10Dark,
-                contentColor = PrimaryWhite,
-                elevation = FloatingActionButtonDefaults.elevation(),
-                modifier = Modifier.size(ICON_CLICK_DIM)
-            ) {
-                Icon(
-                    Icons.Filled.KeyboardArrowUp,
-                    contentDescription = "Button Up",
-                    modifier = Modifier.size(ICON_SIZE)
-                )
-            }
-        }
-    }
-}
 
 @Preview("CustomFloatingActionButton", widthDp = 80, heightDp = 80)
 @Composable

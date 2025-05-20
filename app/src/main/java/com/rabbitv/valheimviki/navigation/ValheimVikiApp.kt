@@ -40,6 +40,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.composables.icons.lucide.FlaskRound
+import com.composables.icons.lucide.Gavel
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.MountainSnow
 import com.composables.icons.lucide.Rabbit
@@ -49,6 +51,7 @@ import com.composables.icons.lucide.Utensils
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.creature.CreatureSubCategory
 import com.rabbitv.valheimviki.domain.model.food.FoodSubCategory
+import com.rabbitv.valheimviki.domain.model.mead.MeadSubCategory
 import com.rabbitv.valheimviki.presentation.armor.ArmorListScreen
 import com.rabbitv.valheimviki.presentation.biome.BiomeScreen
 import com.rabbitv.valheimviki.presentation.components.DrawerItem
@@ -65,7 +68,9 @@ import com.rabbitv.valheimviki.presentation.detail.creature.passive_screen.Passi
 import com.rabbitv.valheimviki.presentation.food.FoodListScreen
 import com.rabbitv.valheimviki.presentation.home.MainAppBar
 import com.rabbitv.valheimviki.presentation.intro.WelcomeScreen
+import com.rabbitv.valheimviki.presentation.mead.MeadListScreen
 import com.rabbitv.valheimviki.presentation.splash.SplashScreen
+import com.rabbitv.valheimviki.presentation.tool.ToolListScreen
 import com.rabbitv.valheimviki.presentation.weapons.WeaponListScreen
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.Constants.AGGRESSIVE_CREATURE_KEY
@@ -116,7 +121,9 @@ fun MainContainer(
                 route.startsWith(Screen.MobList.route.substringBefore("{")) ||
                 route.startsWith(Screen.WeaponList.route.substringBefore("{")) ||
                 route.startsWith(Screen.ArmorList.route.substringBefore("{")) ||
-                route.startsWith(Screen.FoodList.route.substringBefore("{"))
+                route.startsWith(Screen.FoodList.route.substringBefore("{")) ||
+                route.startsWith(Screen.MeadList.route.substringBefore("{")) ||
+                route.startsWith(Screen.ToolList.route.substringBefore("{"))
     } == true
 
     val isNavigating = remember { mutableStateOf(false) }
@@ -225,7 +232,7 @@ fun MainContainer(
                     composable(Screen.MobList.route) {
                         MobListScreen(
                             modifier = Modifier.padding(10.dp),
-                            onItemClick = { creatureId, creatureSubCategory : CreatureSubCategory ->
+                            onItemClick = { creatureId, creatureSubCategory: CreatureSubCategory ->
                                 when (creatureSubCategory) {
                                     CreatureSubCategory.PASSIVE_CREATURE -> valheimVikiNavController.navigate(
                                         Screen.PassiveCreatureDetail.passPassiveCreatureId(
@@ -254,20 +261,6 @@ fun MainContainer(
                         )
                     }
 
-                    composable(Screen.FoodList.route) {
-                        FoodListScreen(
-                            modifier = Modifier.padding(10.dp),
-                            onItemClick = { foodId, foodSubCategory : FoodSubCategory ->
-                                when (foodSubCategory) {
-                                    FoodSubCategory.UNCOOKED_FOOD -> null
-                                    FoodSubCategory.COOKED_FOOD -> null
-                                }
-                            },
-                            paddingValues = innerPadding,
-//                            animatedVisibilityScope = this@composable
-                        )
-                    }
-
                     composable(Screen.WeaponList.route) {
                         WeaponListScreen(
                             modifier = Modifier.padding(10.dp),
@@ -283,8 +276,39 @@ fun MainContainer(
                             paddingValues = innerPadding,
                         )
                     }
+                    composable(Screen.FoodList.route) {
+                        FoodListScreen(
+                            modifier = Modifier.padding(10.dp),
+                            onItemClick = { foodId, foodSubCategory: FoodSubCategory ->
+                                when (foodSubCategory) {
+                                    FoodSubCategory.UNCOOKED_FOOD -> null
+                                    FoodSubCategory.COOKED_FOOD -> null
+                                }
+                            },
+                            paddingValues = innerPadding,
+                        )
+                    }
 
-
+                    composable(Screen.MeadList.route) {
+                        MeadListScreen(
+                            modifier = Modifier.padding(10.dp),
+                            onItemClick = { meadId, meadSubCategory: MeadSubCategory ->
+                                when (meadSubCategory) {
+                                    MeadSubCategory.MEAD_BASE -> null
+                                    MeadSubCategory.POTION -> null
+                                }
+                            },
+                            paddingValues = innerPadding,
+                        )
+                    }
+                    composable(Screen.ToolList.route) {
+                        ToolListScreen(
+                            modifier = Modifier.padding(10.dp),
+                            onItemClick = {toolId, _ ->
+                            },
+                            paddingValues = innerPadding,
+                        )
+                    }
                     //Detail Screens
                     composable(
                         Screen.BiomeDetail.route,
@@ -406,7 +430,7 @@ private fun getDrawerItems(): List<DrawerItem> {
         ),
         DrawerItem(
             icon = Lucide.Shield,
-            label = "Armor",
+            label = "Armors",
             contentDescription = "Armor section",
             route = Screen.ArmorList.route
         ),
@@ -415,6 +439,18 @@ private fun getDrawerItems(): List<DrawerItem> {
             label = "Food",
             contentDescription = "Food section",
             route = Screen.FoodList.route
+        ),
+        DrawerItem(
+            icon = Lucide.FlaskRound,
+            label = "Meads",
+            contentDescription = "Mead section",
+            route = Screen.MeadList.route
+        ),
+        DrawerItem(
+            icon = Lucide.Gavel,
+            label = "Tools",
+            contentDescription = "Tools section",
+            route = Screen.ToolList.route
         )
     )
 }
