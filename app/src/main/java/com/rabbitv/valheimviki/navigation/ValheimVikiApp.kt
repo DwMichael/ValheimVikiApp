@@ -40,6 +40,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.composables.icons.lucide.Cuboid
 import com.composables.icons.lucide.FlaskRound
 import com.composables.icons.lucide.Gavel
 import com.composables.icons.lucide.Lucide
@@ -68,6 +69,7 @@ import com.rabbitv.valheimviki.presentation.detail.creature.passive_screen.Passi
 import com.rabbitv.valheimviki.presentation.food.FoodListScreen
 import com.rabbitv.valheimviki.presentation.home.MainAppBar
 import com.rabbitv.valheimviki.presentation.intro.WelcomeScreen
+import com.rabbitv.valheimviki.presentation.material.MaterialListScreen
 import com.rabbitv.valheimviki.presentation.mead.MeadListScreen
 import com.rabbitv.valheimviki.presentation.splash.SplashScreen
 import com.rabbitv.valheimviki.presentation.tool.ToolListScreen
@@ -123,7 +125,8 @@ fun MainContainer(
                 route.startsWith(Screen.ArmorList.route.substringBefore("{")) ||
                 route.startsWith(Screen.FoodList.route.substringBefore("{")) ||
                 route.startsWith(Screen.MeadList.route.substringBefore("{")) ||
-                route.startsWith(Screen.ToolList.route.substringBefore("{"))
+                route.startsWith(Screen.ToolList.route.substringBefore("{")) ||
+                route.startsWith(Screen.MaterialList.route.substringBefore("{"))
     } == true
 
     val isNavigating = remember { mutableStateOf(false) }
@@ -304,7 +307,17 @@ fun MainContainer(
                     composable(Screen.ToolList.route) {
                         ToolListScreen(
                             modifier = Modifier.padding(10.dp),
-                            onItemClick = {toolId, _ ->
+                            onItemClick = { toolId, _ ->
+                            },
+                            paddingValues = innerPadding,
+                        )
+                    }
+
+                    composable(Screen.MaterialList.route) {
+                        MaterialListScreen(
+                            modifier = Modifier.padding(10.dp),
+                            onItemClick = { category ->
+                                {}
                             },
                             paddingValues = innerPadding,
                         )
@@ -451,6 +464,12 @@ private fun getDrawerItems(): List<DrawerItem> {
             label = "Tools",
             contentDescription = "Tools section",
             route = Screen.ToolList.route
+        ),
+        DrawerItem(
+            icon = Lucide.Cuboid,
+            label = "Materials",
+            contentDescription = "Materials section",
+            route = Screen.MaterialList.route
         )
     )
 }

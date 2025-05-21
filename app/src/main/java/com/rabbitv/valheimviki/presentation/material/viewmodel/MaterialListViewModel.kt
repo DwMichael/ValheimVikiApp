@@ -3,11 +3,12 @@ package com.rabbitv.valheimviki.presentation.material.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rabbitv.valheimviki.domain.model.mead.Mead
-import com.rabbitv.valheimviki.domain.model.mead.MeadSubCategory
+import com.rabbitv.valheimviki.domain.model.material.Material
+import com.rabbitv.valheimviki.domain.model.material.MaterialSubCategory
+import com.rabbitv.valheimviki.domain.model.material.MaterialSubType
 import com.rabbitv.valheimviki.domain.repository.NetworkConnectivity
-import com.rabbitv.valheimviki.domain.use_cases.mead.MeadUseCases
-import com.rabbitv.valheimviki.presentation.mead.model.MeadListUiState
+import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
+import com.rabbitv.valheimviki.presentation.material.model.MaterialListUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
@@ -22,8 +23,8 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 
 @HiltViewModel
-class MeadListViewModel @Inject constructor(
-    private val meadUseCases: MeadUseCases,
+class MaterialListViewModel @Inject constructor(
+    private val materialUseCases: MaterialUseCases,
     private val connectivityObserver: NetworkConnectivity,
 ) : ViewModel() {
     private val _isConnection: StateFlow<Boolean> = connectivityObserver.isConnected.stateIn(
@@ -33,19 +34,24 @@ class MeadListViewModel @Inject constructor(
     )
 
     private val _selectedSubCategory =
-        MutableStateFlow<MeadSubCategory>(MeadSubCategory.MEAD_BASE)
+        MutableStateFlow<MaterialSubCategory?>(null)
+ 
 
+    private val _selectedSubType =
+        MutableStateFlow<MaterialSubType?>(null)
 
     private val _isLoading = MutableStateFlow(false)
     private val _error = MutableStateFlow<String?>(null)
 
-    private val _meadList: StateFlow<List<Mead>> =
+    private val _materialList: StateFlow<List<Material>> =
         combine(
-            meadUseCases.getLocalMeadsUseCase(),
+            materialUseCases.getLocalMaterials(),
             _selectedSubCategory,
-        ) { allMead, category ->
-            allMead
+            _selectedSubType
+        ) { allMaterials, category, type ->
+            allMaterials
                 .filter { it.subCategory == category.toString() }
+                .filter { it.subCategory == type.toString() }
         }
             .flowOn(Dispatchers.Default)
             .onStart {
@@ -53,7 +59,7 @@ class MeadListViewModel @Inject constructor(
                 _error.value = null
             }
             .catch { e ->
-                Log.e("MeadListVM", "getLocalMead failed", e)
+                Log.e("MaterialListVM", "getLocalMaterial failed", e)
                 _isLoading.value = false
                 _error.value = e.message
                 emit(emptyList())
@@ -66,28 +72,34 @@ class MeadListViewModel @Inject constructor(
 
 
     val uiState = combine(
-        _meadList,
+        _materialList,
         _selectedSubCategory,
+        _selectedSubType,
         _isConnection,
         _isLoading,
         _error
     ) { values ->
         @Suppress("UNCHECKED_CAST")
-        MeadListUiState(
-            meadList = values[0] as List<Mead>,
-            selectedSubCategory = values[1] as MeadSubCategory,
-            isConnection = values[2] as Boolean,
-            isLoading = values[3] as Boolean,
-            error = values[4] as String?,
+        MaterialListUiState(
+            materialsList = values[0] as List<Material>,
+            selectedSubCategory = values[1] as MaterialSubCategory?,
+            selectedSubType = values[2] as MaterialSubType?,
+            isConnection = values[3] as Boolean,
+            isLoading = values[4] as Boolean,
+            error = values[5] as String?,
         )
 
     }.stateIn(
         viewModelScope,
         SharingStarted.Companion.WhileSubscribed(5000),
-        MeadListUiState()
+        MaterialListUiState()
     )
 
-    fun onCategorySelected(cat: MeadSubCategory) {
+    fun onCategorySelected(cat: MaterialSubCategory?) {
         _selectedSubCategory.value = cat
+    }
+
+    fun onTypeSelected(type: MaterialSubType?) {
+        _selectedSubType.value = type
     }
 }

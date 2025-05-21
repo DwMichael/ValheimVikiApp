@@ -25,7 +25,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
-import com.rabbitv.valheimviki.presentation.components.GridContent
+import com.rabbitv.valheimviki.presentation.components.grid.grid_category.DefaultGrid
 import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerGridEffect
 import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_TWO_COLUMNS
 import com.rabbitv.valheimviki.utils.Constants.NORMAL_SIZE_GRID
@@ -84,7 +84,7 @@ fun MiniBossScreen(
                     Box(
                         modifier = Modifier.testTag("MiniBossGird"),
                     ) {
-                        GridContent(
+                        DefaultGrid(
                             modifier = Modifier,
                             items = uiState.miniBosses,
                             onItemClick = onItemClick,
