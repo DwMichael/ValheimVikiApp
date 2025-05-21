@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.components.main_detail_images
+package com.rabbitv.valheimviki.presentation.components.main_detail_image
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi

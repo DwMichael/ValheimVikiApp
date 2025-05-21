@@ -38,9 +38,10 @@ import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.tool.ToolSubCategory
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.ListContent
-import com.rabbitv.valheimviki.presentation.components.ShimmerEffect
+import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerGridEffect
 import com.rabbitv.valheimviki.presentation.components.chip.SearchFilterBar
 import com.rabbitv.valheimviki.presentation.components.floating_action_button.CustomFloatingActionButton
+import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerListEffect
 import com.rabbitv.valheimviki.presentation.tool.model.ToolChip
 import com.rabbitv.valheimviki.presentation.tool.viewmodel.ToolListViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
@@ -121,7 +122,7 @@ fun ToolListScreen(
                 Box(modifier = Modifier.fillMaxSize()) {
                     if (uiState.isLoading && (uiState.toolList.isEmpty() && uiState.isConnection)) {
                         Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
-                        ShimmerEffect()
+                        ShimmerListEffect()
                     } else {
                         ListContent(
                             items = uiState.toolList,

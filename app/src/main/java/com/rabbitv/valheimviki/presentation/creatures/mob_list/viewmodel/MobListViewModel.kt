@@ -37,10 +37,7 @@ class MobListViewModel @Inject constructor(
 
     private val _isLoading = MutableStateFlow(false)
     private val _error = MutableStateFlow<String?>(null)
-
-//    private val _showInitialLoading = combine(_isLoading, _creatureList) { loading, list ->
-//        loading && list.isEmpty()
-//    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+    
 
     val uiState = combine(
         _creatureList,

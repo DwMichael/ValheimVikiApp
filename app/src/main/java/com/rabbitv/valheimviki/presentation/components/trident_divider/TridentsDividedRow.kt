@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.components.trident_dividers
+package com.rabbitv.valheimviki.presentation.components.trident_divider
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row

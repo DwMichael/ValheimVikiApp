@@ -53,8 +53,8 @@ import com.rabbitv.valheimviki.domain.model.creature.aggresive.AggressiveCreatur
 import com.rabbitv.valheimviki.domain.model.creature.aggresive.LevelCreatureData
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
-import com.rabbitv.valheimviki.presentation.components.main_detail_images.MainDetailImage
-import com.rabbitv.valheimviki.presentation.components.trident_dividers.TridentsDividedRow
+import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDetailImage
+import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardStatDetails
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
 import com.rabbitv.valheimviki.presentation.detail.creature.components.horizontal_pager.CreatureHorizontalPager

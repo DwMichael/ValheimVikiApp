@@ -39,10 +39,11 @@ import com.rabbitv.valheimviki.domain.model.weapon.WeaponSubCategory
 import com.rabbitv.valheimviki.domain.model.weapon.WeaponSubType
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.ListContent
-import com.rabbitv.valheimviki.presentation.components.ShimmerEffect
+import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerGridEffect
 import com.rabbitv.valheimviki.presentation.components.chip.ChipData
 import com.rabbitv.valheimviki.presentation.components.chip.SearchFilterBar
 import com.rabbitv.valheimviki.presentation.components.segmented.SegmentedButtonSingleSelect
+import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerListEffect
 import com.rabbitv.valheimviki.presentation.weapons.model.WeaponListUiState
 import com.rabbitv.valheimviki.presentation.weapons.model.WeaponSegmentOption
 import com.rabbitv.valheimviki.presentation.weapons.viewmodel.WeaponListViewModel
@@ -99,7 +100,7 @@ fun WeaponListStateRenderer(
 
         when {
             weaponListUiState.isLoading || (weaponListUiState.weaponList.isEmpty() && weaponListUiState.isConnection) -> {
-                ShimmerEffect()
+                ShimmerListEffect()
             }
 
             (weaponListUiState.error != null || !weaponListUiState.isConnection) && weaponListUiState.weaponList.isEmpty() -> {
