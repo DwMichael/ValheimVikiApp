@@ -67,57 +67,109 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
-    implementation("com.squareup.retrofit2:retrofit:2.11.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
-    implementation("androidx.core:core-splashscreen:1.0.1")
-    implementation("androidx.navigation:navigation-compose:2.9.0")
-    androidTestImplementation("androidx.navigation:navigation-testing:2.9.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
-    implementation("com.google.dagger:hilt-android:2.56.2")
+
+    implementation(libs.okhttp)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.navigation.compose)
+    androidTestImplementation(libs.androidx.navigation.testing)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.hilt.android)
 //    ksp("com.google.dagger:hilt-compiler:2.56.1")
-    ksp("com.google.dagger:hilt-android-compiler:2.56.2")
-    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
-    implementation("androidx.appcompat:appcompat:1.7.0")
-    implementation("com.google.android.material:material:1.12.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.2.1")
-    implementation("com.composables:icons-lucide:1.1.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
+    ksp(libs.hilt.android.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.icons.lucide)
+    implementation(libs.kotlinx.coroutines.android)
 
-    implementation("androidx.work:work-runtime-ktx:2.10.1")
-    androidTestImplementation("androidx.work:work-testing:2.10.1")
+    implementation(libs.androidx.work.runtime.ktx)
+    androidTestImplementation(libs.androidx.work.testing)
 
-    implementation("io.coil-kt.coil3:coil-compose:3.2.0")
-    implementation("io.coil-kt.coil3:coil-network-okhttp:3.2.0")
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
 
-    implementation("androidx.compose.ui:ui-text-google-fonts:1.8.1")
-    implementation("androidx.datastore:datastore-preferences:1.1.6")
-    implementation("androidx.room:room-runtime:2.7.1")
-    implementation("androidx.room:room-ktx:2.7.1")
+    implementation(libs.androidx.ui.text.google.fonts)
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
 
-
-    implementation(platform("androidx.compose:compose-bom:2025.05.00"))
-    implementation("androidx.activity:activity-compose:1.10.1")
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.material:material")
-    implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.ui)
+    implementation(libs.androidx.material)
+    implementation(libs.ui.tooling.preview)
 
 
-    androidTestImplementation("com.google.dagger:hilt-android-testing:2.56.2")
-    ksp("androidx.room:room-compiler:2.7.1")
+    androidTestImplementation(libs.hilt.android.testing)
+    ksp(libs.androidx.room.compiler)
 
-    kspTest("com.google.dagger:hilt-compiler:2.56.2")
-    kspAndroidTest("com.google.dagger:hilt-compiler:2.56.2")
-    implementation("androidx.hilt:hilt-work:1.2.0")
+    kspTest(libs.hilt.compiler)
+    kspAndroidTest(libs.hilt.compiler)
+    implementation(libs.androidx.hilt.work)
 
 
-    debugImplementation("androidx.compose.ui:ui-tooling")
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
-    testImplementation("org.mockito:mockito-core:5.17.0")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
-    testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:2.1.21")
+    debugImplementation(libs.ui.tooling)
+    debugImplementation(libs.ui.test.manifest)
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.kotlin.test.junit)
+
+
+    ///IF SOMETHING AGAIN WILL TURN OFF BC OF LIBRARIES THEN USE DOES UNDER WITH NEWER VERSION
+
+//    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+//    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+//    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+//    implementation("androidx.core:core-splashscreen:1.0.1")
+//    implementation("androidx.navigation:navigation-compose:2.9.0")
+//    androidTestImplementation("androidx.navigation:navigation-testing:2.9.0")
+//    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
+//    implementation("com.google.dagger:hilt-android:2.56.2")
+////    ksp("com.google.dagger:hilt-compiler:2.56.1")
+//    ksp("com.google.dagger:hilt-android-compiler:2.56.2")
+//    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+//    implementation("androidx.appcompat:appcompat:1.7.0")
+//    implementation("com.google.android.material:material:1.12.0")
+//    implementation("androidx.constraintlayout:constraintlayout:2.2.1")
+//    implementation("com.composables:icons-lucide:1.1.0")
+//    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
+//
+//    implementation("androidx.work:work-runtime-ktx:2.10.1")
+//    androidTestImplementation("androidx.work:work-testing:2.10.1")
+//
+//    implementation("io.coil-kt.coil3:coil-compose:3.2.0")
+//    implementation("io.coil-kt.coil3:coil-network-okhttp:3.2.0")
+//
+//    implementation("androidx.compose.ui:ui-text-google-fonts:1.8.1")
+//    implementation("androidx.datastore:datastore-preferences:1.1.6")
+//    implementation("androidx.room:room-runtime:2.7.1")
+//    implementation("androidx.room:room-ktx:2.7.1")
+//
+//
+//    implementation(platform("androidx.compose:compose-bom:2025.05.00"))
+//    implementation("androidx.activity:activity-compose:1.10.1")
+//    implementation("androidx.compose.ui:ui")
+//    implementation("androidx.compose.material:material")
+//    implementation("androidx.compose.ui:ui-tooling-preview")
+//
+//
+//    androidTestImplementation("com.google.dagger:hilt-android-testing:2.56.2")
+//    ksp("androidx.room:room-compiler:2.7.1")
+//
+//    kspTest("com.google.dagger:hilt-compiler:2.56.2")
+//    kspAndroidTest("com.google.dagger:hilt-compiler:2.56.2")
+//    implementation("androidx.hilt:hilt-work:1.2.0")
+//
+//
+//    debugImplementation("androidx.compose.ui:ui-tooling")
+//    debugImplementation("androidx.compose.ui:ui-test-manifest")
+//    testImplementation("org.mockito:mockito-core:5.17.0")
+//    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
+//    testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
+//    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:2.1.21")
 }
 
 tasks.withType<Test> {
