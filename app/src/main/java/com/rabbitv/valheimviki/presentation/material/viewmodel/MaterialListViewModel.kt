@@ -35,7 +35,7 @@ class MaterialListViewModel @Inject constructor(
 
     private val _selectedSubCategory =
         MutableStateFlow<MaterialSubCategory?>(null)
- 
+
 
     private val _selectedSubType =
         MutableStateFlow<MaterialSubType?>(null)
@@ -48,27 +48,25 @@ class MaterialListViewModel @Inject constructor(
             materialUseCases.getLocalMaterials(),
             _selectedSubCategory,
             _selectedSubType
-        ) { allMaterials, category, type ->
-            allMaterials
-                .filter { it.subCategory == category.toString() }
-                .filter { it.subCategory == type.toString() }
+        ) { all, category, type ->
+            all
+                .filter { category == null || it.subCategory == category.toString() }
+                .filter { type == null || it.subType == type.toString() }
+                .sortedBy { it.order }
         }
             .flowOn(Dispatchers.Default)
             .onStart {
                 _isLoading.value = true
                 _error.value = null
-            }
-            .catch { e ->
+            }.catch { e ->
                 Log.e("MaterialListVM", "getLocalMaterial failed", e)
                 _isLoading.value = false
                 _error.value = e.message
                 emit(emptyList())
-            }
-            .onEach {
+            }.onEach {
                 _isLoading.value = false
                 _error.value = null
-            }
-            .stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5000), emptyList())
+            }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5000), emptyList())
 
 
     val uiState = combine(
@@ -96,6 +94,7 @@ class MaterialListViewModel @Inject constructor(
     )
 
     fun onCategorySelected(cat: MaterialSubCategory?) {
+        Log.e("MATERIALSUBCATEGOYR ", "onCategorySelected: $cat")
         _selectedSubCategory.value = cat
     }
 

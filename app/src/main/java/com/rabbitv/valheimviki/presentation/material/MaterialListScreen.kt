@@ -3,16 +3,20 @@ package com.rabbitv.valheimviki.presentation.material
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Surface
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonColors
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -25,23 +29,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.composables.icons.lucide.Amphora
-import com.composables.icons.lucide.Anvil
-import com.composables.icons.lucide.Bone
-import com.composables.icons.lucide.Crown
 import com.composables.icons.lucide.Cuboid
-import com.composables.icons.lucide.Eclipse
-import com.composables.icons.lucide.Flame
-import com.composables.icons.lucide.Gem
-import com.composables.icons.lucide.Ghost
 import com.composables.icons.lucide.Lucide
-import com.composables.icons.lucide.Magnet
 import com.composables.icons.lucide.Mountain
-import com.composables.icons.lucide.ShoppingCart
-import com.composables.icons.lucide.Sprout
-import com.composables.icons.lucide.Star
 import com.composables.icons.lucide.Trophy
 import com.rabbitv.valheimviki.domain.model.material.MaterialSubCategory
 import com.rabbitv.valheimviki.domain.model.material.MaterialSubType
@@ -50,11 +42,11 @@ import com.rabbitv.valheimviki.presentation.components.ListContent
 import com.rabbitv.valheimviki.presentation.components.chip.ChipData
 import com.rabbitv.valheimviki.presentation.components.chip.SearchFilterBar
 import com.rabbitv.valheimviki.presentation.components.floating_action_button.CustomFloatingActionButton
-import com.rabbitv.valheimviki.presentation.components.grid.grid_category.CategoryGrid
-import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerGridEffect
-import com.rabbitv.valheimviki.presentation.material.model.MaterialSegmentOption
+import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerListEffect
 import com.rabbitv.valheimviki.presentation.material.viewmodel.MaterialListViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
+import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
+import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 
 class MaterialChip(
     override val option: MaterialSubType,
@@ -62,14 +54,14 @@ class MaterialChip(
     override val label: String
 ) : ChipData<MaterialSubType>
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MaterialListScreen(
-    onItemClick: (String) -> Unit,
-    modifier: Modifier, paddingValues: PaddingValues,
-    viewModel: MaterialListViewModel = hiltViewModel()
+    onBackClick: () -> Unit,
+    onItemClick: (String, Int) -> Unit,
+    viewModel: MaterialListViewModel,
 ) {
+
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val scrollPosition = remember { mutableIntStateOf(0) }
     val lazyListState = rememberLazyListState(
@@ -80,98 +72,115 @@ fun MaterialListScreen(
         derivedStateOf { lazyListState.firstVisibleItemIndex >= 2 }
     }
     val backToTopState = remember { mutableStateOf(false) }
-
-
-    val icons: List<ImageVector> = listOf(
-        Lucide.Bone,
-        Lucide.Anvil,
-        Lucide.Eclipse,
-        Lucide.Ghost,
-        Lucide.Gem,
-        Lucide.Crown,
-        Lucide.Sprout,
-        Lucide.Flame,
-        Lucide.Magnet,
-        Lucide.ShoppingCart,
-        Lucide.Star
-    )
-
-    Surface(
-        color = Color.Transparent,
-        modifier = Modifier
-            .testTag("MaterialListSurface")
-            .fillMaxSize()
-            .padding(paddingValues)
-    ) {
-        if ((uiState.error != null || !uiState.isConnection) && uiState.materialsList.isEmpty()) {
-            EmptyScreen(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .testTag("EmptyScreenMaterialList"),
-                errorMessage = uiState.error ?: "Please connect to the internet to fetch data."
-            )
-        } else {
-            Column(
-                modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Top
+    if (backToTopState.value) {
+        LaunchedEffect(backToTopState.value) {
+            lazyListState.animateScrollToItem(0)
+            scrollPosition.intValue = 0
+            backToTopState.value = false
+        }
+    }
+    Scaffold(
+        topBar = {
+            IconButton(
+                onClick = {
+                    viewModel.onCategorySelected(null)
+                    viewModel.onTypeSelected(null)
+                    onBackClick()
+                },
+                modifier = Modifier.padding(
+                    start = BODY_CONTENT_PADDING.dp,
+                    end = BODY_CONTENT_PADDING.dp,
+                    top = 40.dp,
+                    bottom = 0.dp,
+                ),
+                colors = IconButtonColors(
+                    containerColor = ForestGreen10Dark,
+                    contentColor = PrimaryWhite,
+                    disabledContainerColor = Color.Black,
+                    disabledContentColor = Color.Black,
+                ),
             ) {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    if (uiState.isLoading && (uiState.materialsList.isEmpty() && uiState.isConnection)) {
-                        Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
-                        ShimmerGridEffect()
-                    } else {
-
-                        if (uiState.selectedSubCategory == null) {
-                            CategoryGrid(
-                                modifier = modifier,
-                                items = MaterialSegmentOption.entries,
-                                onItemClick = { category ->
-                                    viewModel.onCategorySelected(category)
-                                },
-                                numbersOfColumns = 2,
-                                height = 120.dp,
-                                icons = icons,
-                                lazyGridState = rememberLazyGridState()
-                            )
-                        } else {
-                            SearchFilterBar(
-                                chips = getChipsForCategory(uiState.selectedSubCategory),
-                                selectedOption = uiState.selectedSubType,
-                                onSelectedChange = { _, subCategory ->
-                                    if (uiState.selectedSubType == subCategory) {
-                                        viewModel.onTypeSelected(null)
-                                    } else {
-                                        viewModel.onTypeSelected(subCategory)
-                                    }
-                                },
-                                modifier = Modifier,
-                            )
-                            Spacer(
-                                Modifier.padding(
-                                    horizontal = BODY_CONTENT_PADDING.dp,
-                                    vertical = 5.dp
-                                )
-                            )
-                            ListContent(
-                                items = uiState.materialsList,
-                                clickToNavigate = { s, i -> {} },
-                                lazyListState = lazyListState,
-                                subCategoryNumber = 0,
-                                imageScale = ContentScale.Fit,
-                                horizontalPadding = 0.dp
-                            )
-                        }
-                    }
-                }
+                Icon(
+                    Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Back"
+                )
             }
-
+        },
+        modifier = Modifier
+            .testTag("MaterialListScaffold"),
+        floatingActionButton = {
             CustomFloatingActionButton(
                 backButtonVisibleState = backButtonVisibleState,
                 backToTopState = backToTopState
             )
+        },
+        content = { innerScaffoldPadding ->
+            if ((uiState.error != null || !uiState.isConnection) && uiState.materialsList.isEmpty()) {
+                EmptyScreen(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .testTag("EmptyScreenMaterialList")
+                        .padding(innerScaffoldPadding),
+                    errorMessage = uiState.error
+                        ?: "Please connect to the internet to fetch data."
+                )
+            } else {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerScaffoldPadding),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Top
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(BODY_CONTENT_PADDING.dp)
+                    ) {
+                        if (uiState.isLoading && (uiState.materialsList.isEmpty() && uiState.isConnection)) {
+                            Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
+                            ShimmerListEffect()
+                        } else {
+                            Column(
+
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                if (uiState.selectedSubCategory != null) {
+                                    SearchFilterBar(
+                                        chips = getChipsForCategory(uiState.selectedSubCategory),
+                                        selectedOption = uiState.selectedSubType,
+                                        onSelectedChange = { _, subCategory ->
+                                            if (uiState.selectedSubType == subCategory) {
+                                                viewModel.onTypeSelected(null)
+                                            } else {
+                                                viewModel.onTypeSelected(subCategory)
+                                            }
+                                        },
+                                        modifier = Modifier,
+                                    )
+                                    Spacer(
+                                        Modifier.padding(
+                                            horizontal = BODY_CONTENT_PADDING.dp,
+                                            vertical = 5.dp
+                                        )
+                                    )
+                                }
+
+                                ListContent(
+                                    items = uiState.materialsList,
+                                    clickToNavigate = onItemClick,
+                                    lazyListState = lazyListState,
+                                    subCategoryNumber = 0,
+                                    imageScale = ContentScale.Fit,
+                                    horizontalPadding = 0.dp
+                                )
+                            }
+                        }
+                    }
+                }
+            }
         }
-    }
+    )
 }
 
 
@@ -183,6 +192,11 @@ private fun getChipsForCategory(category: MaterialSubCategory?): List<MaterialCh
                 MaterialSubType.ITEM,
                 Lucide.Amphora,
                 "Item"
+            ),
+            MaterialChip(
+                MaterialSubType.TROPHY,
+                Lucide.Trophy,
+                "Trophy"
             )
         )
 
@@ -192,7 +206,7 @@ private fun getChipsForCategory(category: MaterialSubCategory?): List<MaterialCh
                 MaterialSubType.TROPHY,
                 Lucide.Trophy,
                 "Trophy"
-            )
+            ),
         )
 
         MaterialSubCategory.FORSAKEN_ALTAR_OFFERING -> emptyList()
@@ -205,7 +219,8 @@ private fun getChipsForCategory(category: MaterialSubCategory?): List<MaterialCh
                 MaterialSubType.INGOTS,
                 Lucide.Cuboid,
                 "Ingots"
-            ), MaterialChip(MaterialSubType.ORES, Lucide.Mountain, "Ores")
+            ),
+            MaterialChip(MaterialSubType.ORES, Lucide.Mountain, "Ores")
         )
 
         MaterialSubCategory.SHOP -> emptyList()

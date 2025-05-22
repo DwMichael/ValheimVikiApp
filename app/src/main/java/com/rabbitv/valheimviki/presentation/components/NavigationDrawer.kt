@@ -272,7 +272,7 @@ private fun PreviewNavigationDrawer() {
             icon = Lucide.Cuboid,
             label = "Materials",
             contentDescription = "Materials section",
-            route = Screen.MaterialList.route
+            route = Screen.MaterialCategory.route
         )
     )
     ValheimVikiAppTheme {

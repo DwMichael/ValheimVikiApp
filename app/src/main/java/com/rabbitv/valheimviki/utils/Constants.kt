@@ -29,8 +29,10 @@ object Constants {
     const val AGGRESSIVE_CREATURE_KEY = "aggressiveCId"
     const val PASSIVE_CREATURE_KEY = "passiveCId"
     const val NPC_KEY = "npcId"
+    const val CATEGORY_ARGUMENT_KEY = "category"
+    const val MATERIAL_ARGUMENT_KEY = "materialId"
 
-        //GROUP ROUTE NAMES
+    //GROUP ROUTE NAMES
     const val MAIN_ROUTE_GRAPH = "mainGraph"
     const val DETAIL_ROUTE_GRAPH = "detailGraph"
 
