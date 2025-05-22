@@ -33,13 +33,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.composables.icons.lucide.Cuboid
 import com.composables.icons.lucide.FlaskRound
 import com.composables.icons.lucide.Gavel
 import com.composables.icons.lucide.Lucide
@@ -68,6 +71,9 @@ import com.rabbitv.valheimviki.presentation.detail.creature.passive_screen.Passi
 import com.rabbitv.valheimviki.presentation.food.FoodListScreen
 import com.rabbitv.valheimviki.presentation.home.MainAppBar
 import com.rabbitv.valheimviki.presentation.intro.WelcomeScreen
+import com.rabbitv.valheimviki.presentation.material.MaterialCategoryScreen
+import com.rabbitv.valheimviki.presentation.material.MaterialListScreen
+import com.rabbitv.valheimviki.presentation.material.viewmodel.MaterialListViewModel
 import com.rabbitv.valheimviki.presentation.mead.MeadListScreen
 import com.rabbitv.valheimviki.presentation.splash.SplashScreen
 import com.rabbitv.valheimviki.presentation.tool.ToolListScreen
@@ -123,7 +129,8 @@ fun MainContainer(
                 route.startsWith(Screen.ArmorList.route.substringBefore("{")) ||
                 route.startsWith(Screen.FoodList.route.substringBefore("{")) ||
                 route.startsWith(Screen.MeadList.route.substringBefore("{")) ||
-                route.startsWith(Screen.ToolList.route.substringBefore("{"))
+                route.startsWith(Screen.ToolList.route.substringBefore("{")) ||
+                route.startsWith(Screen.MaterialCategory.route.substringBefore("{"))
     } == true
 
     val isNavigating = remember { mutableStateOf(false) }
@@ -304,11 +311,70 @@ fun MainContainer(
                     composable(Screen.ToolList.route) {
                         ToolListScreen(
                             modifier = Modifier.padding(10.dp),
-                            onItemClick = {toolId, _ ->
+                            onItemClick = { toolId, _ ->
                             },
                             paddingValues = innerPadding,
                         )
                     }
+
+                    navigation(
+                        startDestination = Screen.MaterialCategory.route,
+                        route = "material_graph"    // <-- group them under one graph
+                    ) {
+                        composable(Screen.MaterialCategory.route) { backStackEntry ->
+                            val parentEntry = remember(backStackEntry) {
+                                valheimVikiNavController.getBackStackEntry("material_graph")
+                            }
+                            val vm = hiltViewModel<MaterialListViewModel>(parentEntry)
+                            MaterialCategoryScreen(
+                                modifier = Modifier.padding(10.dp),
+                                paddingValues = innerPadding,
+                                onGridCategoryClick = {
+                                    valheimVikiNavController.navigate(Screen.MaterialList.route)
+                                },
+                                viewModel = vm
+                            )
+                        }
+
+                        composable(Screen.MaterialList.route) { backStackEntry ->
+
+                            val parentEntry = remember(backStackEntry) {
+                                valheimVikiNavController.getBackStackEntry("material_graph")
+                            }
+                            val vm = hiltViewModel<MaterialListViewModel>(parentEntry)
+                            MaterialListScreen(
+                                onItemClick = { materialId, _ ->
+                                    {}
+                                },
+                                onBackClick = {
+                                    valheimVikiNavController.popBackStack()
+                                },
+                                viewModel = vm
+                            )
+                        }
+                    }
+//                    composable(Screen.MaterialCategory.route) {
+//                        MaterialCategoryScreen(
+//                            modifier = Modifier.padding(10.dp),
+//                            paddingValues = innerPadding,
+//                            onGridCategoryClick = {
+//                                valheimVikiNavController.navigate(Screen.MaterialList.route)
+//                            },
+//                        )
+//                    }
+//
+//
+//                    composable(route = Screen.MaterialList.route) {
+//                        MaterialListScreen(
+//                            onItemClick = { materialId, _ ->
+//                                {}
+//                            },
+//                            onBackClick = {
+//                                valheimVikiNavController.popBackStack()
+//                            },
+//
+//                        )
+//                    }
                     //Detail Screens
                     composable(
                         Screen.BiomeDetail.route,
@@ -451,6 +517,12 @@ private fun getDrawerItems(): List<DrawerItem> {
             label = "Tools",
             contentDescription = "Tools section",
             route = Screen.ToolList.route
+        ),
+        DrawerItem(
+            icon = Lucide.Cuboid,
+            label = "Materials",
+            contentDescription = "Materials section",
+            route = Screen.MaterialCategory.route
         )
     )
 }

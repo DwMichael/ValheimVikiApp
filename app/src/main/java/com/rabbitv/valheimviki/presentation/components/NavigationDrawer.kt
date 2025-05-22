@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.composables.icons.lucide.Cuboid
 import com.composables.icons.lucide.FlaskRound
 import com.composables.icons.lucide.Gavel
 import com.composables.icons.lucide.Lucide
@@ -266,6 +267,12 @@ private fun PreviewNavigationDrawer() {
             label = "Tools",
             contentDescription = "Tools section",
             route = Screen.ToolList.route
+        ),
+        DrawerItem(
+            icon = Lucide.Cuboid,
+            label = "Materials",
+            contentDescription = "Materials section",
+            route = Screen.MaterialCategory.route
         )
     )
     ValheimVikiAppTheme {

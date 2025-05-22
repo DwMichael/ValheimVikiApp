@@ -56,8 +56,8 @@ import com.rabbitv.valheimviki.presentation.components.GreenTorchesDivider
 import com.rabbitv.valheimviki.presentation.components.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.ImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
-import com.rabbitv.valheimviki.presentation.components.main_detail_images.MainDetailImageAnimated
-import com.rabbitv.valheimviki.presentation.components.trident_dividers.TridentsDividedRow
+import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDetailImageAnimated
+import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardStatDetails
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithImageAndTitle
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel

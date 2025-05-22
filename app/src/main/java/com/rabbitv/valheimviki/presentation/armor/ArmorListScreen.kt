@@ -34,10 +34,10 @@ import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.armor.ArmorSubCategory
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.ListContent
-import com.rabbitv.valheimviki.presentation.components.ShimmerEffect
 import com.rabbitv.valheimviki.presentation.components.chip.ChipData
 import com.rabbitv.valheimviki.presentation.components.chip.CustomElevatedFilterChip
 import com.rabbitv.valheimviki.presentation.components.chip.SearchFilterBar
+import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerListEffect
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
@@ -88,7 +88,7 @@ fun ArmorListStateRenderer(
 
         when {
             armorListUiState.isLoading || (armorListUiState.armorList.isEmpty() && armorListUiState.isConnection) -> {
-                ShimmerEffect()
+                ShimmerListEffect()
             }
 
             (armorListUiState.error != null || !armorListUiState.isConnection) && armorListUiState.armorList.isEmpty() -> {

@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.components
+package com.rabbitv.valheimviki.presentation.components.grid.grid_item
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
@@ -6,7 +6,6 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.core.ExperimentalAnimationSpecApi
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,13 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyGridState
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -31,7 +24,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -52,46 +44,10 @@ import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.SMALL_PADDING
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
-private const val boundsAnimationDurationMillis = 500
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun GridContent(
-    modifier: Modifier,
-    items: List<ItemData>,
-    onItemClick: (String, String) -> Unit,
-    numbersOfColumns: Int,
-    height: Dp,
-    animatedVisibilityScope: AnimatedVisibilityScope,
-    lazyGridState: LazyGridState,
-) {
-
-    LazyVerticalGrid(
-        state = lazyGridState,
-        columns = GridCells.Fixed(numbersOfColumns),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-
-        ) {
-        items(items, key = { item -> item.id }) { item ->
-            Box(
-                modifier = modifier.testTag("GirdItem ${item.name}")
-            ) {
-                GridItem(
-                    item = item,
-                    onItemClick = onItemClick,
-                    height = height,
-                    animatedVisibilityScope = animatedVisibilityScope
-                )
-            }
-        }
-    }
-}
-
 
 @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalAnimationSpecApi::class)
 @Composable
-fun GridItem(
+fun AnimatedGridItem(
     item: ItemData,
     onItemClick: (String, String) -> Unit,
     height: Dp,
@@ -168,7 +124,6 @@ fun GridItem(
     }
 }
 
-
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Preview(name = "GridItem", showBackground = true)
 @Composable
@@ -184,7 +139,7 @@ private fun PreviewGridItem() {
     )
     ValheimVikiAppTheme {
         AnimatedVisibility(true) {
-            GridItem(
+            AnimatedGridItem(
                 item = item,
                 onItemClick = { _, _ -> },
                 height = ITEM_HEIGHT_TWO_COLUMNS,
@@ -193,42 +148,4 @@ private fun PreviewGridItem() {
         }
     }
 
-}
-
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
-@Preview(name = "ContentGrid", showBackground = true)
-@Composable
-private fun PreviewContentGrid() {
-
-    val sampleBiomes = listOf(
-        Biome(
-            id = "123123",
-            category = "BIOME",
-            name = "Forest Forest", description = "A dense and lush forest.",
-            imageUrl = "",
-            order = 1
-        ),
-        Biome(
-            id = "123123",
-            category = "BIOME",
-            name = "Desert", description = "A vast and arid desert.",
-            imageUrl = "",
-            order = 2
-        ),
-    )
-
-
-    ValheimVikiAppTheme {
-        AnimatedVisibility(true) {
-            GridContent(
-                modifier = Modifier,
-                items = sampleBiomes,
-                onItemClick = { _, _ -> {} },
-                numbersOfColumns = 2,
-                height = ITEM_HEIGHT_TWO_COLUMNS,
-                this,
-                rememberLazyGridState()
-            )
-        }
-    }
 }

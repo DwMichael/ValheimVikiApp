@@ -27,8 +27,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
-import com.rabbitv.valheimviki.presentation.components.GridContent
-import com.rabbitv.valheimviki.presentation.components.ShimmerEffect
+import com.rabbitv.valheimviki.presentation.components.grid.grid_category.DefaultGrid
+import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerGridEffect
 import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_TWO_COLUMNS
 import com.rabbitv.valheimviki.utils.Constants.NORMAL_SIZE_GRID
 import kotlinx.coroutines.flow.collectLatest
@@ -66,58 +66,58 @@ fun BossScreen(
             }
     }
 
-        Box(
-            modifier = modifier
+    Box(
+        modifier = modifier
+    ) {
+        Surface(
+            color = Color.Transparent,
+            modifier = Modifier
+                .testTag("BossSurface")
+                .fillMaxSize()
+                .padding(paddingValues)
         ) {
-            Surface(
-                color = Color.Transparent,
-                modifier = Modifier
-                    .testTag("BossSurface")
-                    .fillMaxSize()
-                    .padding(paddingValues)
-            ) {
-                when {
-                    uiState.isLoading || (uiState.bosses.isEmpty() && isConnection)  -> {
-                        ShimmerEffect()
-                    }
+            when {
+                uiState.isLoading || (uiState.bosses.isEmpty() && isConnection) -> {
+                    ShimmerGridEffect()
+                }
 
-                    uiState.bosses.isNotEmpty() -> {
-                        Box(
-                            modifier = Modifier.testTag("BossGrid"),
-                        ) {
-                            GridContent(
-                                modifier = Modifier,
-                                items = uiState.bosses,
-                                onItemClick = onItemClick,
-                                numbersOfColumns = NORMAL_SIZE_GRID,
-                                height = ITEM_HEIGHT_TWO_COLUMNS,
-                                animatedVisibilityScope = animatedVisibilityScope,
-                                lazyGridState = lazyGridState
-                            )
-                        }
+                uiState.bosses.isNotEmpty() -> {
+                    Box(
+                        modifier = Modifier.testTag("BossGrid"),
+                    ) {
+                        DefaultGrid(
+                            modifier = Modifier,
+                            items = uiState.bosses,
+                            onItemClick = onItemClick,
+                            numbersOfColumns = NORMAL_SIZE_GRID,
+                            height = ITEM_HEIGHT_TWO_COLUMNS,
+                            animatedVisibilityScope = animatedVisibilityScope,
+                            lazyGridState = lazyGridState
+                        )
                     }
+                }
 
-                    uiState.error != null ->{
-                        Box(
-                            modifier = Modifier.testTag("EmptyScreenBoss"),
-                        ) {
-                            EmptyScreen(
-                                modifier = Modifier,
-                                state = refreshState,
-                                isRefreshing = refreshing,
-                                onRefresh = {
-                                    viewModel.refetchBosses()
-                                    scope.launch {
-                                        refreshState.animateToHidden()
-                                    }
-                                },
-                                errorMessage = uiState.error.toString()
-                            )
-                        }
+                uiState.error != null -> {
+                    Box(
+                        modifier = Modifier.testTag("EmptyScreenBoss"),
+                    ) {
+                        EmptyScreen(
+                            modifier = Modifier,
+                            state = refreshState,
+                            isRefreshing = refreshing,
+                            onRefresh = {
+                                viewModel.refetchBosses()
+                                scope.launch {
+                                    refreshState.animateToHidden()
+                                }
+                            },
+                            errorMessage = uiState.error.toString()
+                        )
                     }
                 }
             }
         }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
