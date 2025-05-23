@@ -14,7 +14,8 @@ import com.rabbitv.valheimviki.data.remote.api.ApiRelationsService
 import com.rabbitv.valheimviki.data.remote.api.ApiToolService
 import com.rabbitv.valheimviki.data.remote.api.ApiTreeService
 import com.rabbitv.valheimviki.data.remote.api.ApiWeaponService
-import com.rabbitv.valheimviki.utils.Constants.BASE_URL
+import com.rabbitv.valheimviki.utils.ApiKey
+
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -44,7 +45,7 @@ object NetWorkModule {
     @Provides
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(ApiKey.BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()

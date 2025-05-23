@@ -64,7 +64,8 @@ import com.rabbitv.valheimviki.ui.theme.PrimaryOrange
 import com.rabbitv.valheimviki.ui.theme.SecondTextWhite
 import com.rabbitv.valheimviki.ui.theme.Shapes
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
-import com.rabbitv.valheimviki.utils.Constants.BASE_URL
+import com.rabbitv.valheimviki.utils.ApiKey
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -180,7 +181,7 @@ fun SearchListItem(
     val sizeResolver = rememberConstraintsSizeResolver()
     val painter = rememberAsyncImagePainter(
         ImageRequest.Builder(LocalPlatformContext.current)
-            .data("$BASE_URL${item.imageUrl}")
+            .data("${ApiKey.BASE_URL}{item.imageUrl}")
             .placeholder(R.drawable.ic_placeholder)
             .error(R.drawable.ic_placeholder)
             .size(sizeResolver)

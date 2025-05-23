@@ -3,8 +3,7 @@ package com.rabbitv.valheimviki.utils
 import com.rabbitv.valheimviki.domain.model.creature.CreatureSubCategory
 
 object Constants {
-    //API URL
-    const val BASE_URL = "http://192.168.1.130:8100/"
+
 
     //Languages
     const val DEFAULT_LANG = "en"
@@ -30,7 +29,7 @@ object Constants {
     const val PASSIVE_CREATURE_KEY = "passiveCId"
     const val NPC_KEY = "npcId"
 
-        //GROUP ROUTE NAMES
+    //GROUP ROUTE NAMES
     const val MAIN_ROUTE_GRAPH = "mainGraph"
     const val DETAIL_ROUTE_GRAPH = "detailGraph"
 
