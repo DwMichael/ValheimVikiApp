@@ -46,8 +46,8 @@ import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.ImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
-import com.rabbitv.valheimviki.presentation.components.main_detail_images.MainDetailImageAnimated
-import com.rabbitv.valheimviki.presentation.components.trident_dividers.TridentsDividedRow
+import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDetailImageAnimated
+import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
 import kotlinx.coroutines.delay

@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.components
+package com.rabbitv.valheimviki.presentation.components.shimmering_effect
 
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
@@ -29,25 +29,25 @@ import com.rabbitv.valheimviki.ui.theme.SMALL_PADDING
 import com.rabbitv.valheimviki.ui.theme.ShimmerDarkGray
 
 @Composable
-fun ShimmerEffect() {
+fun ShimmerGridEffect() {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
-        )
+    )
     {
-        items(6){
-            AnimatedShimmerItem()
+        items(6) {
+            AnimatedShimmerGridItem()
         }
     }
 
 }
 
 @Composable
-fun AnimatedShimmerItem() {
+fun AnimatedShimmerGridItem() {
     val transition = rememberInfiniteTransition()
     val alphaAnim by transition.animateFloat(
-    initialValue = 1f,
+        initialValue = 1f,
         targetValue = 0f,
         animationSpec = infiniteRepeatable(
             animation = tween(
@@ -58,35 +58,37 @@ fun AnimatedShimmerItem() {
         ),
     )
 
-    ShimmerItem(alpha = alphaAnim)
+    ShimmerGridItem(alpha = alphaAnim)
 
 }
 
 
 @Composable
-fun ShimmerItem(alpha: Float ){
-    Surface (
+fun ShimmerGridItem(alpha: Float) {
+    Surface(
         modifier = Modifier
             .fillMaxWidth()
             .height(ITEM_HEIGHT_TWO_COLUMNS),
         color = Color.Black,
         shape = RoundedCornerShape(size = MEDIUM_PADDING),
-    ){
+    ) {
         Column(
             modifier = Modifier.padding(MEDIUM_PADDING),
-            verticalArrangement = Arrangement.Bottom)
-         {
-             Surface(
-                 modifier = Modifier
-                     .alpha(alpha)
-                     .fillMaxWidth(0.5f)
-                     .height(24.dp).clip(
-                         RoundedCornerShape(
-                             size = SMALL_PADDING
-                         )
-                     ),
-                 color = ShimmerDarkGray,
-             ) {}
+            verticalArrangement = Arrangement.Bottom
+        )
+        {
+            Surface(
+                modifier = Modifier
+                    .alpha(alpha)
+                    .fillMaxWidth(0.5f)
+                    .height(24.dp)
+                    .clip(
+                        RoundedCornerShape(
+                            size = SMALL_PADDING
+                        )
+                    ),
+                color = ShimmerDarkGray,
+            ) {}
 
         }
     }
@@ -94,17 +96,15 @@ fun ShimmerItem(alpha: Float ){
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewShimmerItem() {
-    AnimatedShimmerItem()
+fun PreviewAnimatedShimmerGridItem() {
+    AnimatedShimmerGridItem()
 }
-
-
 
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewShimmerEffect() {
-    ShimmerEffect()
+fun PreviewShimmerGridEffect() {
+    ShimmerGridEffect()
 }
 
 

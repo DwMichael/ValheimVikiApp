@@ -33,9 +33,9 @@ import com.composables.icons.lucide.Soup
 import com.rabbitv.valheimviki.domain.model.mead.MeadSubCategory
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.ListContent
-import com.rabbitv.valheimviki.presentation.components.ShimmerEffect
 import com.rabbitv.valheimviki.presentation.components.floating_action_button.CustomFloatingActionButton
 import com.rabbitv.valheimviki.presentation.components.segmented.SegmentedButtonSingleSelect
+import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerListEffect
 import com.rabbitv.valheimviki.presentation.mead.model.MeadSegmentOption
 import com.rabbitv.valheimviki.presentation.mead.viewmodel.MeadListViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
@@ -124,7 +124,7 @@ fun MeadListScreen(
                 Box(modifier = Modifier.fillMaxSize()) {
                     if (uiState.isLoading && (uiState.meadList.isEmpty() && uiState.isConnection)) {
                         Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
-                        ShimmerEffect()
+                        ShimmerListEffect()
                     } else {
                         ListContent(
                             items = uiState.meadList,

@@ -3,7 +3,6 @@ package com.rabbitv.valheimviki.presentation.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -36,6 +35,8 @@ import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.repository.ItemData
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
+import com.rabbitv.valheimviki.ui.theme.DEFAULT_LIST_ITEM_HEIGHT
+import com.rabbitv.valheimviki.ui.theme.DEFAULT_WITH_LIST_IMAGE
 import com.rabbitv.valheimviki.ui.theme.DETAIL_ITEM_SHAPE_PADDING
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ShimmerDarkGray
@@ -43,13 +44,13 @@ import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun <T>ListContent(
+fun <T> ListContent(
     items: List<ItemData>,
     clickToNavigate: (String, T) -> Unit,
     lazyListState: LazyListState,
     subCategoryNumber: T,
     imageScale: ContentScale = ContentScale.Crop,
-    horizontalPadding : Dp = BODY_CONTENT_PADDING.dp
+    horizontalPadding: Dp = BODY_CONTENT_PADDING.dp
 ) {
     LazyColumn(
         state = lazyListState,
@@ -67,7 +68,7 @@ fun <T>ListContent(
             Spacer(modifier = Modifier.height(16.dp))
         }
         item {
-            Box(modifier = Modifier.padding(25.dp))
+            Box(modifier = Modifier.padding(16.dp))
         }
 
     }
@@ -83,7 +84,7 @@ fun ListItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(80.dp)
+            .height(DEFAULT_LIST_ITEM_HEIGHT)
             .clip(RoundedCornerShape(DETAIL_ITEM_SHAPE_PADDING))
             .background(ShimmerDarkGray)
             .clickable { clickToNavigate() },
@@ -93,7 +94,7 @@ fun ListItem(
             contentDescription = item.name,
             modifier = modifier
                 .fillMaxHeight()
-                .width(120.dp)
+                .width(DEFAULT_WITH_LIST_IMAGE)
                 .clip(RoundedCornerShape(DETAIL_ITEM_SHAPE_PADDING)),
             placeholder = painterResource(R.drawable.ic_placeholder),
             contentScale = imageScale,
