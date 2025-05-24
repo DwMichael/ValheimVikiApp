@@ -30,29 +30,18 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.composables.icons.lucide.Amphora
 import com.composables.icons.lucide.Archive
 import com.composables.icons.lucide.Armchair
 import com.composables.icons.lucide.Box
 import com.composables.icons.lucide.Cog
-import com.composables.icons.lucide.Cuboid
-import com.composables.icons.lucide.Film
 import com.composables.icons.lucide.Flag
-import com.composables.icons.lucide.Flame
 import com.composables.icons.lucide.Grid2x2
-import com.composables.icons.lucide.IndentDecrease
 import com.composables.icons.lucide.Lucide
-import com.composables.icons.lucide.Mountain
-import com.composables.icons.lucide.RockingChair
 import com.composables.icons.lucide.Sailboat
 import com.composables.icons.lucide.Star
-import com.composables.icons.lucide.Store
 import com.composables.icons.lucide.Table
-import com.composables.icons.lucide.Trophy
 import com.rabbitv.valheimviki.domain.model.building_material.BuildingMaterialSubCategory
 import com.rabbitv.valheimviki.domain.model.building_material.BuildingMaterialSubType
-import com.rabbitv.valheimviki.domain.model.material.MaterialSubCategory
-import com.rabbitv.valheimviki.domain.model.material.MaterialSubType
 import com.rabbitv.valheimviki.presentation.building_material.viewmodel.BuildingMaterialListViewModel
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.ListContent
@@ -60,7 +49,6 @@ import com.rabbitv.valheimviki.presentation.components.chip.ChipData
 import com.rabbitv.valheimviki.presentation.components.chip.SearchFilterBar
 import com.rabbitv.valheimviki.presentation.components.floating_action_button.CustomFloatingActionButton
 import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerListEffect
-import com.rabbitv.valheimviki.presentation.material.viewmodel.MaterialListViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
@@ -73,7 +61,7 @@ class BuildingMaterialChip(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MaterialListScreen(
+fun BuildingMaterialListScreen(
     onBackClick: () -> Unit,
     onItemClick: (String, Int) -> Unit,
     viewModel: BuildingMaterialListViewModel,
@@ -124,7 +112,7 @@ fun MaterialListScreen(
             }
         },
         modifier = Modifier
-            .testTag("MaterialListScaffold"),
+            .testTag("BuildingMaterialListScaffold"),
         floatingActionButton = {
             CustomFloatingActionButton(
                 backButtonVisibleState = backButtonVisibleState,
@@ -136,7 +124,7 @@ fun MaterialListScreen(
                 EmptyScreen(
                     modifier = Modifier
                         .fillMaxSize()
-                        .testTag("EmptyScreenMaterialList")
+                        .testTag("EmptyScreenBuildingMaterialList")
                         .padding(innerScaffoldPadding),
                     errorMessage = uiState.error
                         ?: "Please connect to the internet to fetch data."
@@ -245,8 +233,6 @@ private fun getChipsForCategory(category: BuildingMaterialSubCategory?): List<Bu
         )
 
 
-
-
         null -> emptyList() // Handle the null case explicitly
         BuildingMaterialSubCategory.WOOD -> emptyList()
         BuildingMaterialSubCategory.CORE_WOOD -> emptyList()
@@ -258,11 +244,12 @@ private fun getChipsForCategory(category: BuildingMaterialSubCategory?): List<Bu
                 "Misc"
             ),
             BuildingMaterialChip(
-                    BuildingMaterialSubType.BOAT,
-            Lucide.Sailboat,
-            "Boat"
+                BuildingMaterialSubType.BOAT,
+                Lucide.Sailboat,
+                "Boat"
+            )
         )
-        )
+
         BuildingMaterialSubCategory.DEFENSE -> emptyList()
         BuildingMaterialSubCategory.SIEGE -> emptyList()
         BuildingMaterialSubCategory.DECORATIVE -> emptyList()
