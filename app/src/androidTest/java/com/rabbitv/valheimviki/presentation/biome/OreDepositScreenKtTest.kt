@@ -22,7 +22,7 @@ import javax.inject.Inject
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
-class BiomeScreenKtTest {
+class OreDepositScreenKtTest {
     @get:Rule(order = 0)
     val hiltRule = HiltAndroidRule(this)
 

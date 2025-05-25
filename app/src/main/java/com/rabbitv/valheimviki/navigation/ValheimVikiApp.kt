@@ -48,6 +48,7 @@ import com.composables.icons.lucide.Gavel
 import com.composables.icons.lucide.House
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.MountainSnow
+import com.composables.icons.lucide.Pickaxe
 import com.composables.icons.lucide.Rabbit
 import com.composables.icons.lucide.Shield
 import com.composables.icons.lucide.Swords
@@ -79,6 +80,7 @@ import com.rabbitv.valheimviki.presentation.material.MaterialCategoryScreen
 import com.rabbitv.valheimviki.presentation.material.MaterialListScreen
 import com.rabbitv.valheimviki.presentation.material.viewmodel.MaterialListViewModel
 import com.rabbitv.valheimviki.presentation.mead.MeadListScreen
+import com.rabbitv.valheimviki.presentation.ore_deposit.OreDepositScreen
 import com.rabbitv.valheimviki.presentation.splash.SplashScreen
 import com.rabbitv.valheimviki.presentation.tool.ToolListScreen
 import com.rabbitv.valheimviki.presentation.weapons.WeaponListScreen
@@ -135,7 +137,8 @@ fun MainContainer(
                 route.startsWith(Screen.MeadList.route.substringBefore("{")) ||
                 route.startsWith(Screen.ToolList.route.substringBefore("{")) ||
                 route.startsWith(Screen.MaterialCategory.route.substringBefore("{")) ||
-                route.startsWith(Screen.BuildingMaterialCategory.route.substringBefore("{"))
+                route.startsWith(Screen.BuildingMaterialCategory.route.substringBefore("{")) ||
+                route.startsWith(Screen.OreDeposit.route.substringBefore("{"))
     } == true
 
     val isNavigating = remember { mutableStateOf(false) }
@@ -394,6 +397,19 @@ fun MainContainer(
                             )
                         }
                     }
+
+                    composable(Screen.OreDeposit.route) {
+                        OreDepositScreen(
+                            modifier = Modifier.padding(10.dp),
+                            onItemClick = { itemId, text ->
+//                                valheimVikiNavController.navigate(
+//                                    Screen.BiomeDetail.passBiomeIdAndText(itemId, text)
+//                                )
+                            },
+                            paddingValues = innerPadding,
+                            animatedVisibilityScope = this@composable
+                        )
+                    }
                     //Detail Screens
                     composable(
                         Screen.BiomeDetail.route,
@@ -548,6 +564,12 @@ private fun getDrawerItems(): List<DrawerItem> {
             label = "Building Materials",
             contentDescription = "Building Materials section",
             route = Screen.BuildingMaterialCategory.route
+        ),
+        DrawerItem(
+            icon = Lucide.Pickaxe,
+            label = "Ore Deposits",
+            contentDescription = "Ore Deposits section",
+            route = Screen.OreDeposit.route
         )
     )
 }

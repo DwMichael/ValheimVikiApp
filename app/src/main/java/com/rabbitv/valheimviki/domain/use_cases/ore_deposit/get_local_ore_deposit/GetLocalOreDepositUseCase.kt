@@ -4,11 +4,12 @@ import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
 import com.rabbitv.valheimviki.domain.repository.OreDepositRepository
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class GetLocalOreDepositUseCase @Inject constructor(
     private val repository: OreDepositRepository
 ) {
     operator fun invoke():Flow<List<OreDeposit>>{
-        return repository.getLocalOreDeposits()
+        return repository.getLocalOreDeposits().map { oreDeposits -> oreDeposits.sortedBy { it.order } }
     }
 }

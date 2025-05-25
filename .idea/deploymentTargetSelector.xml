@@ -2,12 +2,15 @@
 <project version="4">
   <component name="deploymentTargetSelector">
     <selectionStates>
-      <SelectionState runConfigName="app">
+      <SelectionState runConfigName="Android Projects.ValheimVikiApp.app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-05-21T20:15:36.191649200Z">
+      </SelectionState>
+      <SelectionState runConfigName="ValheimViki">
+        <option name="selectionMode" value="DROPDOWN" />
+        <DropdownSelection timestamp="2025-05-25T12:50:07.360190100Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="PhysicalDevice" identifier="serial=RFCW60EHDNV" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\Legio\.android\avd\Galaxy_S25.avd" />
             </handle>
           </Target>
         </DropdownSelection>
