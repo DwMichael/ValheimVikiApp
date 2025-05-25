@@ -9,6 +9,7 @@ import com.rabbitv.valheimviki.domain.model.material.MaterialSubType
 import com.rabbitv.valheimviki.domain.repository.NetworkConnectivity
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.presentation.material.model.MaterialListUiState
+import com.rabbitv.valheimviki.presentation.material.model.MaterialSegmentOption
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
@@ -101,4 +102,9 @@ class MaterialListViewModel @Inject constructor(
     fun onTypeSelected(type: MaterialSubType?) {
         _selectedSubType.value = type
     }
+
+    fun getLabelFor(subCategory: MaterialSubCategory): String =
+        MaterialSegmentOption.entries
+            .first { it.value == subCategory }
+            .label
 }

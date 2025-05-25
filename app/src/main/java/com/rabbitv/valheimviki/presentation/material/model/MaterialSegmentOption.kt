@@ -1,25 +1,52 @@
 package com.rabbitv.valheimviki.presentation.material.model
 
+import androidx.compose.ui.graphics.vector.ImageVector
+import com.composables.icons.lucide.Anvil
+import com.composables.icons.lucide.Bone
+import com.composables.icons.lucide.Crown
+import com.composables.icons.lucide.Cuboid
+import com.composables.icons.lucide.Eclipse
+import com.composables.icons.lucide.Flame
+import com.composables.icons.lucide.Gem
+import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.ShoppingCart
+import com.composables.icons.lucide.Skull
+import com.composables.icons.lucide.Sprout
+import com.composables.icons.lucide.Star
+import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.material.MaterialSubCategory
 import com.rabbitv.valheimviki.presentation.components.grid.grid_category.GridCategoryOption
 
 
 enum class MaterialSegmentOption(
+    override val image: Int,
+    override val icon: ImageVector,
     override val label: String,
     override val value: MaterialSubCategory
 ) : GridCategoryOption<MaterialSubCategory> {
-    CREATURE_DROP("CREATURE DROPS", MaterialSubCategory.CREATURE_DROP),
-    CRAFTED("CRAFTED", MaterialSubCategory.CRAFTED),
-    MISCELLANEOUS("GENERAL", MaterialSubCategory.MISCELLANEOUS),
-    MINI_BOSS_DROP("MINI BOSS DROPS", MaterialSubCategory.MINI_BOSS_DROP),
-    GEMSTONE("GEMSTONES", MaterialSubCategory.GEMSTONE),
-    BOSS_DROP("BOSS DROP", MaterialSubCategory.BOSS_DROP),
-    SEED("SEEDS", MaterialSubCategory.SEED),
+    CREATURE_DROP(
+        R.drawable.creature_drops,
+        Lucide.Bone,
+        "MOB DROP",
+        MaterialSubCategory.CREATURE_DROP
+    ),
+    CRAFTED(R.drawable.crafted, Lucide.Anvil, "CRAFTED", MaterialSubCategory.CRAFTED),
+    MISCELLANEOUS(R.drawable.general, Lucide.Eclipse, "GENERAL", MaterialSubCategory.MISCELLANEOUS),
+    MINI_BOSS_DROP(
+        R.drawable.mini_boss_drop,
+        Lucide.Skull,
+        "WARLORD DROP",
+        MaterialSubCategory.MINI_BOSS_DROP
+    ),
+    GEMSTONE(R.drawable.gemstone, Lucide.Gem, "GEMSTONES", MaterialSubCategory.GEMSTONE),
+    BOSS_DROP(R.drawable.boss, Lucide.Crown, "BOSS DROP", MaterialSubCategory.BOSS_DROP),
+    SEED(R.drawable.seed, Lucide.Cuboid, "SEEDS", MaterialSubCategory.SEED),
     FORSAKEN_ALTAR_OFFERING(
-        "FORSAKEN ALTAR OFFERINGS",
+        R.drawable.forsaken_altar, Lucide.Flame,
+        "OFFERINGS",
         MaterialSubCategory.FORSAKEN_ALTAR_OFFERING
     ),
-    METAL("METAL", MaterialSubCategory.METAL),
-    SHOP("SHOP", MaterialSubCategory.SHOP),
-    VALUABLE("VALUABLE", MaterialSubCategory.VALUABLE)
+    METAL(R.drawable.metal, Lucide.Sprout, "METAL", MaterialSubCategory.METAL),
+    SHOP(R.drawable.shop, Lucide.ShoppingCart, "SHOP", MaterialSubCategory.SHOP),
+    VALUABLE(R.drawable.valuable, Lucide.Star, "VALUABLE", MaterialSubCategory.VALUABLE)
 }

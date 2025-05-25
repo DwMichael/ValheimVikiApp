@@ -5,16 +5,20 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -67,7 +71,7 @@ fun MaterialListScreen(
     val lazyListState = rememberLazyListState(
         initialFirstVisibleItemIndex = scrollPosition.intValue
     )
-
+    val title = uiState.selectedSubCategory?.let { viewModel.getLabelFor(it) }
     val backButtonVisibleState by remember {
         derivedStateOf { lazyListState.firstVisibleItemIndex >= 2 }
     }
@@ -81,29 +85,45 @@ fun MaterialListScreen(
     }
     Scaffold(
         topBar = {
-            IconButton(
-                onClick = {
-                    viewModel.onCategorySelected(null)
-                    viewModel.onTypeSelected(null)
-                    onBackClick()
-                },
-                modifier = Modifier.padding(
-                    start = BODY_CONTENT_PADDING.dp,
-                    end = BODY_CONTENT_PADDING.dp,
-                    top = 40.dp,
-                    bottom = 0.dp,
-                ),
-                colors = IconButtonColors(
-                    containerColor = ForestGreen10Dark,
-                    contentColor = PrimaryWhite,
-                    disabledContainerColor = Color.Black,
-                    disabledContentColor = Color.Black,
-                ),
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 40.dp)
             ) {
-                Icon(
-                    Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back"
-                )
+                IconButton(
+                    onClick = {
+                        viewModel.onCategorySelected(null)
+                        viewModel.onTypeSelected(null)
+                        onBackClick()
+                    },
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(
+                            start = BODY_CONTENT_PADDING.dp,
+                            end = BODY_CONTENT_PADDING.dp
+                        ),
+                    colors = IconButtonColors(
+                        containerColor = ForestGreen10Dark,
+                        contentColor = PrimaryWhite,
+                        disabledContainerColor = Color.Black,
+                        disabledContentColor = Color.Black,
+                    ),
+                ) {
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back"
+                    )
+                }
+
+                if (title != null) {
+                    Text(
+                        text = title,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        style = MaterialTheme.typography.headlineLarge,
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                    )
+                }
             }
         },
         modifier = Modifier
@@ -114,6 +134,7 @@ fun MaterialListScreen(
                 backToTopState = backToTopState
             )
         },
+        floatingActionButtonPosition = FabPosition.End,
         content = { innerScaffoldPadding ->
             if ((uiState.error != null || !uiState.isConnection) && uiState.materialsList.isEmpty()) {
                 EmptyScreen(

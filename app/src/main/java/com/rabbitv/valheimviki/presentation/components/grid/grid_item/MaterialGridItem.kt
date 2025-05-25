@@ -1,7 +1,6 @@
 package com.rabbitv.valheimviki.presentation.components.grid.grid_item
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,32 +12,28 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.BlurredEdgeTreatment
-import androidx.compose.ui.draw.blur
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
-import com.composables.icons.lucide.Cuboid
-import com.composables.icons.lucide.Lucide
 import com.rabbitv.valheimviki.presentation.components.grid.grid_category.GridCategoryOption
 import com.rabbitv.valheimviki.presentation.material.model.MaterialSegmentOption
 import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_TWO_COLUMNS
-import com.rabbitv.valheimviki.ui.theme.PrimaryOrange
+import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
+import com.rabbitv.valheimviki.ui.theme.SMALL_PADDING
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.ui.theme.YellowDT
 import com.rabbitv.valheimviki.ui.theme.YellowDTIconColor
@@ -48,71 +43,63 @@ import com.rabbitv.valheimviki.ui.theme.YellowDTIconColor
 fun <T> MaterialGridItem(
     item: GridCategoryOption<T>,
     onClick: () -> Unit,
-    icon: ImageVector? = null,
     modifier: Modifier = Modifier,
-    height: Dp = 120.dp,
+    height: Dp = 150.dp,
 ) {
-    Card(
+
+    ElevatedCard(
         onClick = onClick,
-        shape = RoundedCornerShape(16.dp),
-        border = BorderStroke(1.dp, color = Color(0x25FFFFFF)),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.Transparent
-        ),
         modifier = modifier
             .fillMaxWidth()
-            .height(height)
+            .height(height),
+        shape = RoundedCornerShape(SMALL_PADDING),
+        colors = CardDefaults.cardColors(
+            containerColor = YellowDT
+        ),
+        elevation = CardDefaults.elevatedCardElevation(2.dp)
     ) {
-        Box(Modifier.fillMaxSize()) {
-            Column(
+        Column(
+            modifier = Modifier
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = painterResource(item.image),
+                contentDescription = "Grid item image",
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 12.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                if (icon != null) {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
+                    .fillMaxWidth()
+                    .height(160.dp)
+                    .clip(RoundedCornerShape(SMALL_PADDING)),
+                contentScale = ContentScale.Crop,
+            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .padding(
+                        8.dp
+                    ),
 
-                Spacer(Modifier.height(6.dp))
+                ) {
+                Icon(
+                    imageVector = item.icon,
+                    tint = YellowDTIconColor,
+                    contentDescription = "Icon ${item.label}",
+                )
+                Spacer(Modifier.size(8.dp))
                 Text(
                     text = item.label.uppercase(),
                     maxLines = 2,
-                    textAlign = TextAlign.Center,
-                    color = Color.White,
+                    textAlign = TextAlign.Start,
+                    color = PrimaryWhite,
                     style = MaterialTheme.typography.titleMedium
                 )
             }
 
-            Box(
-                modifier = Modifier
-                    .matchParentSize()
-                    .zIndex(-1f)
-                    .blur(
-                        radius = 28.dp,
-                        edgeTreatment = BlurredEdgeTreatment.Unbounded
-                    )
-                    .background(
-                        Brush.radialGradient(
-                            colors = listOf(
-                                Color(0x12FFFFFF),
-                                YellowDT,
-                                PrimaryOrange,
-                                YellowDTIconColor,
-
-                                ),
-                            radius = 1000f,
-                            center = Offset.Infinite
-                        )
-                    )
-            )
         }
+
+
     }
 }
 
@@ -123,18 +110,17 @@ private fun PreviewMaterialGridItem() {
 
     val item = MaterialSegmentOption.CREATURE_DROP
     ValheimVikiAppTheme {
-        Row(Modifier.fillMaxWidth()) {
+        Column(Modifier.fillMaxWidth()) {
             Box(
                 modifier = Modifier
-                    .width(250.dp)
-                    .height(200.dp)
+                    .width(200.dp)
+                    .height(300.dp)
             )
             {
                 MaterialGridItem(
                     item = item,
                     onClick = { },
                     height = ITEM_HEIGHT_TWO_COLUMNS,
-                    icon = Lucide.Cuboid,
                     modifier = Modifier,
                 )
             }

@@ -16,22 +16,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.composables.icons.lucide.Anvil
-import com.composables.icons.lucide.Bone
-import com.composables.icons.lucide.Crown
-import com.composables.icons.lucide.Cuboid
-import com.composables.icons.lucide.Eclipse
-import com.composables.icons.lucide.Flame
-import com.composables.icons.lucide.Gem
-import com.composables.icons.lucide.Ghost
-import com.composables.icons.lucide.Lucide
-import com.composables.icons.lucide.ShoppingCart
-import com.composables.icons.lucide.Sprout
-import com.composables.icons.lucide.Star
 import com.rabbitv.valheimviki.domain.model.material.MaterialSubCategory
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.grid.grid_category.CategoryGrid
@@ -53,19 +40,7 @@ fun MaterialCategoryScreen(
     val lazyGridState = rememberLazyGridState()
 
     val materialCategories = MaterialSegmentOption.entries.sortedBy { it.label }
-    val icons: List<ImageVector> = listOf(
-        Lucide.Bone,
-        Lucide.Anvil,
-        Lucide.Eclipse,
-        Lucide.Ghost,
-        Lucide.Gem,
-        Lucide.Crown,
-        Lucide.Cuboid,
-        Lucide.Flame,
-        Lucide.Sprout,
-        Lucide.ShoppingCart,
-        Lucide.Star
-    )
+
 
     Surface(
         color = Color.Transparent,
@@ -99,8 +74,7 @@ fun MaterialCategoryScreen(
                                 onGridCategoryClick()
                             },
                             numbersOfColumns = 2,
-                            height = 120.dp,
-                            icons = icons,
+                            height = 200.dp,
                             lazyGridState = lazyGridState
                         )
 

@@ -20,9 +20,8 @@ import com.rabbitv.valheimviki.presentation.material.model.MaterialSegmentOption
 import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_TWO_COLUMNS
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
-private const val boundsAnimationDurationMillis = 500
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun <T> CategoryGrid(
     modifier: Modifier,
@@ -31,7 +30,6 @@ fun <T> CategoryGrid(
     numbersOfColumns: Int,
     height: Dp,
     lazyGridState: LazyGridState,
-    icons: List<ImageVector>? = emptyList(),
 ) {
     LazyVerticalGrid(
         state = lazyGridState,
@@ -46,7 +44,6 @@ fun <T> CategoryGrid(
                     item = item,
                     onClick = { onItemClick(item.value) },
                     height = height,
-                    icon = if (icons.isNullOrEmpty()) null else icons[index]
                 )
             }
         }
@@ -54,7 +51,6 @@ fun <T> CategoryGrid(
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Preview(name = "CategoryGrid", showBackground = true)
 @Composable
 private fun PreviewCategoryGrid() {

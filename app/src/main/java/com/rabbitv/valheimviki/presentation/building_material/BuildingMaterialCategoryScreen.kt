@@ -53,19 +53,7 @@ fun BuildingMaterialCategoryScreen(
     val lazyGridState = rememberLazyGridState()
 
     val buildingMaterialCategories = BuildingMaterialSegmentOption.entries.sortedBy { it.label }
-    val icons: List<ImageVector> = listOf(
-        Lucide.Trees,
-        Lucide.Layers,
-        Lucide.Package,
-        Lucide.Hammer,
-        Lucide.Truck,
-        Lucide.Shield,
-        Lucide.Armchair,
-        Lucide.Crosshair,
-        Lucide.Lamp,
-        Lucide.Star,
-        Lucide.House
-    )
+
 
     Surface(
         color = Color.Transparent,
@@ -99,8 +87,7 @@ fun BuildingMaterialCategoryScreen(
                                 onGridCategoryClick()
                             },
                             numbersOfColumns = 2,
-                            height = 120.dp,
-                            icons = icons,
+                            height = 200.dp,
                             lazyGridState = lazyGridState
                         )
 
