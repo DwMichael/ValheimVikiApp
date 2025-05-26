@@ -49,11 +49,13 @@ import com.composables.icons.lucide.FlaskRound
 import com.composables.icons.lucide.Gavel
 import com.composables.icons.lucide.House
 import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.MapPinned
 import com.composables.icons.lucide.MountainSnow
 import com.composables.icons.lucide.Pickaxe
 import com.composables.icons.lucide.Rabbit
 import com.composables.icons.lucide.Shield
 import com.composables.icons.lucide.Swords
+import com.composables.icons.lucide.Trees
 import com.composables.icons.lucide.Utensils
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.navigation.Screen
@@ -183,6 +185,7 @@ fun NavigationDrawer(
                                 )
                         )
                     }
+                    Spacer(Modifier.height(24.dp))
                 }
             }
         },
@@ -287,6 +290,18 @@ private fun PreviewNavigationDrawer() {
             label = "Ore Deposits",
             contentDescription = "Ore Deposits section",
             route = Screen.OreDeposit.route
+        ),
+        DrawerItem(
+            icon = Lucide.Trees,
+            label = "Trees",
+            contentDescription = "Trees section",
+            route = Screen.Tree.route
+        ),
+        DrawerItem(
+            icon = Lucide.MapPinned,
+            label = "Points Of Interest",
+            contentDescription = "Points Of Interest section",
+            route = Screen.PointOfInterest.route
         )
     )
     ValheimVikiAppTheme {

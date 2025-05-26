@@ -47,16 +47,19 @@ import com.composables.icons.lucide.FlaskRound
 import com.composables.icons.lucide.Gavel
 import com.composables.icons.lucide.House
 import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.MapPinned
 import com.composables.icons.lucide.MountainSnow
 import com.composables.icons.lucide.Pickaxe
 import com.composables.icons.lucide.Rabbit
 import com.composables.icons.lucide.Shield
 import com.composables.icons.lucide.Swords
+import com.composables.icons.lucide.Trees
 import com.composables.icons.lucide.Utensils
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.creature.CreatureSubCategory
 import com.rabbitv.valheimviki.domain.model.food.FoodSubCategory
 import com.rabbitv.valheimviki.domain.model.mead.MeadSubCategory
+import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterestSubCategory
 import com.rabbitv.valheimviki.presentation.armor.ArmorListScreen
 import com.rabbitv.valheimviki.presentation.biome.BiomeScreen
 import com.rabbitv.valheimviki.presentation.building_material.BuildingMaterialCategoryScreen
@@ -81,8 +84,10 @@ import com.rabbitv.valheimviki.presentation.material.MaterialListScreen
 import com.rabbitv.valheimviki.presentation.material.viewmodel.MaterialListViewModel
 import com.rabbitv.valheimviki.presentation.mead.MeadListScreen
 import com.rabbitv.valheimviki.presentation.ore_deposit.OreDepositScreen
+import com.rabbitv.valheimviki.presentation.points_of_interest.PoiListScreen
 import com.rabbitv.valheimviki.presentation.splash.SplashScreen
 import com.rabbitv.valheimviki.presentation.tool.ToolListScreen
+import com.rabbitv.valheimviki.presentation.tree.TreeScreen
 import com.rabbitv.valheimviki.presentation.weapons.WeaponListScreen
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.Constants.AGGRESSIVE_CREATURE_KEY
@@ -138,7 +143,9 @@ fun MainContainer(
                 route.startsWith(Screen.ToolList.route.substringBefore("{")) ||
                 route.startsWith(Screen.MaterialCategory.route.substringBefore("{")) ||
                 route.startsWith(Screen.BuildingMaterialCategory.route.substringBefore("{")) ||
-                route.startsWith(Screen.OreDeposit.route.substringBefore("{"))
+                route.startsWith(Screen.OreDeposit.route.substringBefore("{")) ||
+                route.startsWith(Screen.Tree.route.substringBefore("{")) ||
+                route.startsWith(Screen.PointOfInterest.route.substringBefore("{"))
     } == true
 
     val isNavigating = remember { mutableStateOf(false) }
@@ -410,6 +417,30 @@ fun MainContainer(
                             animatedVisibilityScope = this@composable
                         )
                     }
+                    composable(Screen.Tree.route) {
+                        TreeScreen(
+                            modifier = Modifier.padding(10.dp),
+                            onItemClick = { itemId, text ->
+//                                valheimVikiNavController.navigate(
+//                                    Screen.BiomeDetail.passBiomeIdAndText(itemId, text)
+//                                )
+                            },
+                            paddingValues = innerPadding,
+                            animatedVisibilityScope = this@composable
+                        )
+                    }
+                    composable(Screen.PointOfInterest.route) {
+                        PoiListScreen(
+                            modifier = Modifier.padding(10.dp),
+                            onItemClick = { poiId, poiSubCategory: PointOfInterestSubCategory ->
+                                when (poiSubCategory) {
+                                    PointOfInterestSubCategory.FORSAKEN_ALTAR -> null
+                                    PointOfInterestSubCategory.STRUCTURE -> null
+                                }
+                            },
+                            paddingValues = innerPadding,
+                        )
+                    }
                     //Detail Screens
                     composable(
                         Screen.BiomeDetail.route,
@@ -570,6 +601,18 @@ private fun getDrawerItems(): List<DrawerItem> {
             label = "Ore Deposits",
             contentDescription = "Ore Deposits section",
             route = Screen.OreDeposit.route
+        ),
+        DrawerItem(
+            icon = Lucide.Trees,
+            label = "Trees",
+            contentDescription = "Trees section",
+            route = Screen.Tree.route
+        ),
+        DrawerItem(
+            icon = Lucide.MapPinned,
+            label = "Points Of Interest",
+            contentDescription = "Points Of Interest section",
+            route = Screen.PointOfInterest.route
         )
     )
 }
