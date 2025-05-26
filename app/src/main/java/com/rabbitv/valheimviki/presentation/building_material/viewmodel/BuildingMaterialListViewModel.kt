@@ -6,14 +6,10 @@ import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.model.building_material.BuildingMaterial
 import com.rabbitv.valheimviki.domain.model.building_material.BuildingMaterialSubCategory
 import com.rabbitv.valheimviki.domain.model.building_material.BuildingMaterialSubType
-import com.rabbitv.valheimviki.domain.model.material.Material
-import com.rabbitv.valheimviki.domain.model.material.MaterialSubCategory
-import com.rabbitv.valheimviki.domain.model.material.MaterialSubType
 import com.rabbitv.valheimviki.domain.repository.NetworkConnectivity
 import com.rabbitv.valheimviki.domain.use_cases.building_material.BuildMaterialUseCases
-import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.presentation.building_material.model.BuildingMaterialListUiState
-import com.rabbitv.valheimviki.presentation.material.model.MaterialListUiState
+import com.rabbitv.valheimviki.presentation.building_material.model.BuildingMaterialSegmentOption
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
@@ -105,4 +101,10 @@ class BuildingMaterialListViewModel @Inject constructor(
     fun onTypeSelected(type: BuildingMaterialSubType?) {
         _selectedSubType.value = type
     }
+
+
+    fun getLabelFor(subCategory: BuildingMaterialSubCategory): String =
+        BuildingMaterialSegmentOption.entries
+            .first { it.value == subCategory }
+            .label
 }

@@ -43,25 +43,23 @@ enum class BuildingMaterialSegmentOption(
         "BLOCKS",
         BuildingMaterialSubCategory.STONE_AND_METAL
     ),
+    LIGHT_SOURCE(
+        R.drawable.light_source,
+        Lucide.Lamp,
+        "LIGHTS",
+        BuildingMaterialSubCategory.LIGHT_SOURCE
+    ),
     TRANSPORT(
         R.drawable.transport,
         Lucide.Truck,
         "TRANSPORTS",
         BuildingMaterialSubCategory.TRANSPORT
     ),
-    DEFENSE(R.drawable.defense, Lucide.Shield, "DEFENSE", BuildingMaterialSubCategory.DEFENSE),
     FURNITURE(
         R.drawable.furniture,
         Lucide.Armchair,
         "FURNITURE",
         BuildingMaterialSubCategory.FURNITURE
-    ),
-    SIEGE(R.drawable.siege, Lucide.Crosshair, "SIEGE", BuildingMaterialSubCategory.SIEGE),
-    LIGHT_SOURCE(
-        R.drawable.light_source,
-        Lucide.Lamp,
-        "LIGHTS",
-        BuildingMaterialSubCategory.LIGHT_SOURCE
     ),
     DECORATIVE(
         R.drawable.decorative,
@@ -70,4 +68,6 @@ enum class BuildingMaterialSegmentOption(
         BuildingMaterialSubCategory.DECORATIVE
     ),
     ROOF(R.drawable.roof, Lucide.House, "ROOFS", BuildingMaterialSubCategory.ROOF),
+    DEFENSE(R.drawable.defense, Lucide.Shield, "DEFENSE", BuildingMaterialSubCategory.DEFENSE),
+    SIEGE(R.drawable.siege, Lucide.Crosshair, "SIEGE", BuildingMaterialSubCategory.SIEGE),
 }

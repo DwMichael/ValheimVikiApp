@@ -16,22 +16,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.composables.icons.lucide.Armchair
-import com.composables.icons.lucide.Crosshair
-import com.composables.icons.lucide.Hammer
-import com.composables.icons.lucide.House
-import com.composables.icons.lucide.Lamp
-import com.composables.icons.lucide.Layers
-import com.composables.icons.lucide.Lucide
-import com.composables.icons.lucide.Package
-import com.composables.icons.lucide.Shield
-import com.composables.icons.lucide.Star
-import com.composables.icons.lucide.Trees
-import com.composables.icons.lucide.Truck
 import com.rabbitv.valheimviki.domain.model.building_material.BuildingMaterialSubCategory
 import com.rabbitv.valheimviki.presentation.building_material.model.BuildingMaterialSegmentOption
 import com.rabbitv.valheimviki.presentation.building_material.viewmodel.BuildingMaterialListViewModel
@@ -52,7 +39,7 @@ fun BuildingMaterialCategoryScreen(
 
     val lazyGridState = rememberLazyGridState()
 
-    val buildingMaterialCategories = BuildingMaterialSegmentOption.entries.sortedBy { it.label }
+    val buildingMaterialCategories = BuildingMaterialSegmentOption.entries
 
 
     Surface(

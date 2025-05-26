@@ -1,10 +1,12 @@
 package com.rabbitv.valheimviki.presentation.building_material
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -14,10 +16,11 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -47,7 +50,6 @@ import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.ListContent
 import com.rabbitv.valheimviki.presentation.components.chip.ChipData
 import com.rabbitv.valheimviki.presentation.components.chip.SearchFilterBar
-import com.rabbitv.valheimviki.presentation.components.floating_action_button.CustomFloatingActionButton
 import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerListEffect
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
@@ -72,10 +74,8 @@ fun BuildingMaterialListScreen(
     val lazyListState = rememberLazyListState(
         initialFirstVisibleItemIndex = scrollPosition.intValue
     )
+    val title = uiState.selectedSubCategory?.let { viewModel.getLabelFor(it) }
 
-    val backButtonVisibleState by remember {
-        derivedStateOf { lazyListState.firstVisibleItemIndex >= 2 }
-    }
     val backToTopState = remember { mutableStateOf(false) }
     if (backToTopState.value) {
         LaunchedEffect(backToTopState.value) {
@@ -84,40 +84,53 @@ fun BuildingMaterialListScreen(
             backToTopState.value = false
         }
     }
+    BackHandler(onBack = {
+        viewModel.onCategorySelected(null)
+        viewModel.onTypeSelected(null)
+        onBackClick()
+    })
     Scaffold(
         topBar = {
-            IconButton(
-                onClick = {
-                    viewModel.onCategorySelected(null)
-                    viewModel.onTypeSelected(null)
-                    onBackClick()
-                },
-                modifier = Modifier.padding(
-                    start = BODY_CONTENT_PADDING.dp,
-                    end = BODY_CONTENT_PADDING.dp,
-                    top = 40.dp,
-                    bottom = 0.dp,
-                ),
-                colors = IconButtonColors(
-                    containerColor = ForestGreen10Dark,
-                    contentColor = PrimaryWhite,
-                    disabledContainerColor = Color.Black,
-                    disabledContentColor = Color.Black,
-                ),
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 40.dp)
             ) {
-                Icon(
-                    Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back"
-                )
+                IconButton(
+                    onClick = {
+                        viewModel.onCategorySelected(null)
+                        viewModel.onTypeSelected(null)
+                        onBackClick()
+                    },
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(
+                            start = BODY_CONTENT_PADDING.dp,
+                            end = BODY_CONTENT_PADDING.dp
+                        ),
+                    colors = IconButtonColors(
+                        containerColor = ForestGreen10Dark,
+                        contentColor = PrimaryWhite,
+                        disabledContainerColor = Color.Black,
+                        disabledContentColor = Color.Black,
+                    ),
+                ) {
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back"
+                    )
+                }
+
+                if (title != null) {
+                    Text(
+                        text = title,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        style = MaterialTheme.typography.headlineSmall,
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                    )
+                }
             }
-        },
-        modifier = Modifier
-            .testTag("BuildingMaterialListScaffold"),
-        floatingActionButton = {
-            CustomFloatingActionButton(
-                backButtonVisibleState = backButtonVisibleState,
-                backToTopState = backToTopState
-            )
         },
         content = { innerScaffoldPadding ->
             if ((uiState.error != null || !uiState.isConnection) && uiState.buildingMaterialList.isEmpty()) {

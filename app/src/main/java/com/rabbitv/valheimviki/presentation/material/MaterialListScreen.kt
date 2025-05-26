@@ -1,5 +1,6 @@
 package com.rabbitv.valheimviki.presentation.material
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -83,6 +84,11 @@ fun MaterialListScreen(
             backToTopState.value = false
         }
     }
+    BackHandler(onBack = {
+        viewModel.onCategorySelected(null)
+        viewModel.onTypeSelected(null)
+        onBackClick()
+    })
     Scaffold(
         topBar = {
             Box(
@@ -119,7 +125,7 @@ fun MaterialListScreen(
                     Text(
                         text = title,
                         color = MaterialTheme.colorScheme.onPrimaryContainer,
-                        style = MaterialTheme.typography.headlineLarge,
+                        style = MaterialTheme.typography.headlineSmall,
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
                     )

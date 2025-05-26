@@ -24,29 +24,29 @@ enum class MaterialSegmentOption(
     override val label: String,
     override val value: MaterialSubCategory
 ) : GridCategoryOption<MaterialSubCategory> {
+    BOSS_DROP(R.drawable.boss, Lucide.Crown, "BOSS DROP", MaterialSubCategory.BOSS_DROP),
+    MINI_BOSS_DROP(
+        R.drawable.mini_boss_drop,
+        Lucide.Skull,
+        "MINI BOSS DROP",
+        MaterialSubCategory.MINI_BOSS_DROP
+    ),
     CREATURE_DROP(
         R.drawable.creature_drops,
         Lucide.Bone,
         "MOB DROP",
         MaterialSubCategory.CREATURE_DROP
     ),
-    CRAFTED(R.drawable.crafted, Lucide.Anvil, "CRAFTED", MaterialSubCategory.CRAFTED),
-    MISCELLANEOUS(R.drawable.general, Lucide.Eclipse, "GENERAL", MaterialSubCategory.MISCELLANEOUS),
-    MINI_BOSS_DROP(
-        R.drawable.mini_boss_drop,
-        Lucide.Skull,
-        "WARLORD DROP",
-        MaterialSubCategory.MINI_BOSS_DROP
-    ),
-    GEMSTONE(R.drawable.gemstone, Lucide.Gem, "GEMSTONES", MaterialSubCategory.GEMSTONE),
-    BOSS_DROP(R.drawable.boss, Lucide.Crown, "BOSS DROP", MaterialSubCategory.BOSS_DROP),
-    SEED(R.drawable.seed, Lucide.Cuboid, "SEEDS", MaterialSubCategory.SEED),
     FORSAKEN_ALTAR_OFFERING(
         R.drawable.forsaken_altar, Lucide.Flame,
         "OFFERINGS",
         MaterialSubCategory.FORSAKEN_ALTAR_OFFERING
     ),
+    CRAFTED(R.drawable.crafted, Lucide.Anvil, "CRAFTED", MaterialSubCategory.CRAFTED),
     METAL(R.drawable.metal, Lucide.Sprout, "METAL", MaterialSubCategory.METAL),
+    MISCELLANEOUS(R.drawable.general, Lucide.Eclipse, "GENERAL", MaterialSubCategory.MISCELLANEOUS),
+    GEMSTONE(R.drawable.gemstone, Lucide.Gem, "GEMSTONES", MaterialSubCategory.GEMSTONE),
+    SEED(R.drawable.seed, Lucide.Cuboid, "SEEDS", MaterialSubCategory.SEED),
     SHOP(R.drawable.shop, Lucide.ShoppingCart, "SHOP", MaterialSubCategory.SHOP),
     VALUABLE(R.drawable.valuable, Lucide.Star, "VALUABLE", MaterialSubCategory.VALUABLE)
 }

@@ -39,7 +39,7 @@ fun MaterialCategoryScreen(
 
     val lazyGridState = rememberLazyGridState()
 
-    val materialCategories = MaterialSegmentOption.entries.sortedBy { it.label }
+    val materialCategories = MaterialSegmentOption.entries
 
 
     Surface(
