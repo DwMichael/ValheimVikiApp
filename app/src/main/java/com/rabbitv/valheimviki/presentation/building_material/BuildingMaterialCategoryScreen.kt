@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.material
+package com.rabbitv.valheimviki.presentation.building_material
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,27 +19,27 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.rabbitv.valheimviki.domain.model.material.MaterialSubCategory
+import com.rabbitv.valheimviki.domain.model.building_material.BuildingMaterialSubCategory
+import com.rabbitv.valheimviki.presentation.building_material.model.BuildingMaterialSegmentOption
+import com.rabbitv.valheimviki.presentation.building_material.viewmodel.BuildingMaterialListViewModel
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.grid.grid_category.CategoryGrid
 import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerGridEffect
-import com.rabbitv.valheimviki.presentation.material.model.MaterialSegmentOption
-import com.rabbitv.valheimviki.presentation.material.viewmodel.MaterialListViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MaterialCategoryScreen(
+fun BuildingMaterialCategoryScreen(
     onGridCategoryClick: () -> Unit,
     modifier: Modifier, paddingValues: PaddingValues,
-    viewModel: MaterialListViewModel
+    viewModel: BuildingMaterialListViewModel
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     val lazyGridState = rememberLazyGridState()
 
-    val materialCategories = MaterialSegmentOption.entries
+    val buildingMaterialCategories = BuildingMaterialSegmentOption.entries
 
 
     Surface(
@@ -49,7 +49,7 @@ fun MaterialCategoryScreen(
             .fillMaxSize()
             .padding(paddingValues)
     ) {
-        if ((uiState.error != null || !uiState.isConnection) && uiState.materialsList.isEmpty()) {
+        if ((uiState.error != null || !uiState.isConnection) && uiState.buildingMaterialList.isEmpty()) {
             EmptyScreen(
                 modifier = Modifier
                     .fillMaxSize()
@@ -62,13 +62,13 @@ fun MaterialCategoryScreen(
                 verticalArrangement = Arrangement.Top
             ) {
                 Box(modifier = Modifier.fillMaxSize()) {
-                    if (uiState.isLoading && (uiState.materialsList.isEmpty() && uiState.isConnection)) {
+                    if (uiState.isLoading && (uiState.buildingMaterialList.isEmpty() && uiState.isConnection)) {
                         Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
                         ShimmerGridEffect()
                     } else {
-                        CategoryGrid<MaterialSubCategory>(
+                        CategoryGrid<BuildingMaterialSubCategory>(
                             modifier = modifier,
-                            items = materialCategories,
+                            items = buildingMaterialCategories,
                             onItemClick = { categorySegmentOption ->
                                 viewModel.onCategorySelected(categorySegmentOption)
                                 onGridCategoryClick()

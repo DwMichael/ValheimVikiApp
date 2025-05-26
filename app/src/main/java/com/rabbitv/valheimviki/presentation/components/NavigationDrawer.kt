@@ -47,8 +47,10 @@ import androidx.navigation.compose.rememberNavController
 import com.composables.icons.lucide.Cuboid
 import com.composables.icons.lucide.FlaskRound
 import com.composables.icons.lucide.Gavel
+import com.composables.icons.lucide.House
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.MountainSnow
+import com.composables.icons.lucide.Pickaxe
 import com.composables.icons.lucide.Rabbit
 import com.composables.icons.lucide.Shield
 import com.composables.icons.lucide.Swords
@@ -273,6 +275,18 @@ private fun PreviewNavigationDrawer() {
             label = "Materials",
             contentDescription = "Materials section",
             route = Screen.MaterialCategory.route
+        ),
+        DrawerItem(
+            icon = Lucide.House,
+            label = "Building Materials",
+            contentDescription = "Building Materials section",
+            route = Screen.BuildingMaterialCategory.route
+        ),
+        DrawerItem(
+            icon = Lucide.Pickaxe,
+            label = "Ore Deposits",
+            contentDescription = "Ore Deposits section",
+            route = Screen.OreDeposit.route
         )
     )
     ValheimVikiAppTheme {

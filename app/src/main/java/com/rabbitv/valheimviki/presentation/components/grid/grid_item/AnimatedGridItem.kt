@@ -45,7 +45,7 @@ import com.rabbitv.valheimviki.ui.theme.SMALL_PADDING
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
 
-@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalAnimationSpecApi::class)
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun AnimatedGridItem(
     item: ItemData,
@@ -124,7 +124,7 @@ fun AnimatedGridItem(
     }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
+
 @Preview(name = "GridItem", showBackground = true)
 @Composable
 private fun PreviewGridItem() {

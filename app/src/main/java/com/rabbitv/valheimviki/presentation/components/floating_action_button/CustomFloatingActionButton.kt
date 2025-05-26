@@ -4,9 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -24,7 +21,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
-import com.rabbitv.valheimviki.ui.theme.ICON_CLICK_DIM
 import com.rabbitv.valheimviki.ui.theme.ICON_SIZE
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
@@ -34,33 +30,25 @@ fun CustomFloatingActionButton(
     backButtonVisibleState: Boolean,
     backToTopState: MutableState<Boolean>,
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
+    AnimatedVisibility(
+        visible = backButtonVisibleState,
+        enter = fadeIn(animationSpec = tween(300)),
+        exit = fadeOut(animationSpec = tween(300)),
     ) {
-        AnimatedVisibility(
-            visible = backButtonVisibleState,
-            enter = fadeIn(animationSpec = tween(300)),
-            exit = fadeOut(animationSpec = tween(300)),
-            modifier = Modifier.align(Alignment.BottomEnd)
+        FloatingActionButton(
+            onClick = {
+                backToTopState.value = true
+            },
+            shape = RoundedCornerShape(BODY_CONTENT_PADDING.dp),
+            containerColor = ForestGreen10Dark,
+            contentColor = PrimaryWhite,
+            elevation = FloatingActionButtonDefaults.elevation(),
         ) {
-            FloatingActionButton(
-                onClick = {
-                    backToTopState.value = true
-                },
-                shape = RoundedCornerShape(BODY_CONTENT_PADDING.dp),
-                containerColor = ForestGreen10Dark,
-                contentColor = PrimaryWhite,
-                elevation = FloatingActionButtonDefaults.elevation(),
-                modifier = Modifier.size(ICON_CLICK_DIM)
-            ) {
-                Icon(
-                    Icons.Filled.KeyboardArrowUp,
-                    contentDescription = "Button Up",
-                    modifier = Modifier.size(ICON_SIZE)
-                )
-            }
+            Icon(
+                Icons.Filled.KeyboardArrowUp,
+                contentDescription = "Button Up",
+                modifier = Modifier.size(ICON_SIZE)
+            )
         }
     }
 }
