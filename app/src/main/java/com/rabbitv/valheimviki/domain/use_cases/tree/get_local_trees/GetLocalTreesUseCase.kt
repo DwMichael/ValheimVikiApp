@@ -4,11 +4,12 @@ import com.rabbitv.valheimviki.domain.model.tree.Tree
 import com.rabbitv.valheimviki.domain.repository.TreeRepository
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
-class GetLocalTreesUseCase@Inject constructor(
+class GetLocalTreesUseCase @Inject constructor(
     private val treeRepository: TreeRepository
 ) {
     operator fun invoke(): Flow<List<Tree>> {
-        return treeRepository.getLocalTrees()
+        return treeRepository.getLocalTrees().map { it.sortedBy { it.order } }
     }
 }

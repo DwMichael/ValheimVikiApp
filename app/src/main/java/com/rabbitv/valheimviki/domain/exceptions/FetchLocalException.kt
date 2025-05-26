@@ -37,7 +37,7 @@ class PointOfInterestBySubCategoryAndIdFetchLocalException(message: String) :
     FetchLocalException(message)
 
 //Trees
-//class TreesFetchLocalException(message: String) : FetchLocalException(message)
+class TreesFetchLocalException(message: String) : FetchLocalException(message)
 class TreesByIdFetchLocalException(message: String) : FetchLocalException(message)
 class TreesByIdsFetchLocalException(message: String) : FetchLocalException(message)
 

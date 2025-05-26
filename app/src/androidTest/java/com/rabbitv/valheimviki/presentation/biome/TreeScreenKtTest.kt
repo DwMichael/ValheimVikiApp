@@ -22,7 +22,7 @@ import javax.inject.Inject
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
-class OreDepositScreenKtTest {
+class TreeScreenKtTest {
     @get:Rule(order = 0)
     val hiltRule = HiltAndroidRule(this)
 
@@ -131,7 +131,7 @@ class OreDepositScreenKtTest {
             swipe(start = topCenter, end = Offset(center.x, endY), durationMillis = 300)
         }
 
-      
+
 
         composeTestRule.waitUntilDoesNotExist(hasTestTag("LoadingIndicator"), timeoutMillis = 5000)
 
