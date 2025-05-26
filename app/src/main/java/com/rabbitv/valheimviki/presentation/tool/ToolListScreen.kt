@@ -38,7 +38,6 @@ import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.tool.ToolSubCategory
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.ListContent
-import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerGridEffect
 import com.rabbitv.valheimviki.presentation.components.chip.SearchFilterBar
 import com.rabbitv.valheimviki.presentation.components.floating_action_button.CustomFloatingActionButton
 import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerListEffect
@@ -93,53 +92,58 @@ fun ToolListScreen(
             .fillMaxSize()
             .padding(paddingValues)
     ) {
-        if ((uiState.error != null || !uiState.isConnection) && uiState.toolList.isEmpty()) {
-            EmptyScreen(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .testTag("EmptyScreenFoodList"),
-                errorMessage = uiState.error ?: "Please connect to the internet to fetch data."
-            )
-        } else {
-            Column(
-                modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                SearchFilterBar(
-                    chips = getChipsForCategory(),
-                    selectedOption = uiState.selectedChip,
-                    onSelectedChange = { _, subCategory ->
-                        if (uiState.selectedChip == subCategory) {
-                            viewModel.onChipSelected(null)
-                        } else {
-                            viewModel.onChipSelected(subCategory)
-                        }
-                    },
-                    modifier = Modifier,
+        Box(modifier = Modifier.fillMaxSize()) {
+            if ((uiState.error != null || !uiState.isConnection) && uiState.toolList.isEmpty()) {
+                EmptyScreen(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .testTag("EmptyScreenFoodList"),
+                    errorMessage = uiState.error ?: "Please connect to the internet to fetch data."
                 )
-                Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
+            } else {
+                Column(
+                    modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    SearchFilterBar(
+                        chips = getChipsForCategory(),
+                        selectedOption = uiState.selectedChip,
+                        onSelectedChange = { _, subCategory ->
+                            if (uiState.selectedChip == subCategory) {
+                                viewModel.onChipSelected(null)
+                            } else {
+                                viewModel.onChipSelected(subCategory)
+                            }
+                        },
+                        modifier = Modifier,
+                    )
+                    Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
 
-                Box(modifier = Modifier.fillMaxSize()) {
-                    if (uiState.isLoading && (uiState.toolList.isEmpty() && uiState.isConnection)) {
-                        Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
-                        ShimmerListEffect()
-                    } else {
-                        ListContent(
-                            items = uiState.toolList,
-                            clickToNavigate = onItemClick,
-                            lazyListState = lazyListState,
-                            subCategoryNumber = ToolSubCategory.BUILDING,
-                            horizontalPadding = 0.dp,
-                            imageScale = ContentScale.Fit
-                        )
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        if (uiState.isLoading && (uiState.toolList.isEmpty() && uiState.isConnection)) {
+                            Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
+                            ShimmerListEffect()
+                        } else {
+                            ListContent(
+                                items = uiState.toolList,
+                                clickToNavigate = onItemClick,
+                                lazyListState = lazyListState,
+                                subCategoryNumber = ToolSubCategory.BUILDING,
+                                horizontalPadding = 0.dp,
+                                imageScale = ContentScale.Fit
+                            )
+                        }
                     }
                 }
-            }
 
-            CustomFloatingActionButton(
-                backButtonVisibleState = backButtonVisibleState,
-                backToTopState = backToTopState
-            )
+                CustomFloatingActionButton(
+                    backButtonVisibleState = backButtonVisibleState,
+                    backToTopState = backToTopState,
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(BODY_CONTENT_PADDING.dp)
+                )
+            }
         }
     }
 }

@@ -100,50 +100,55 @@ fun FoodListScreen(
             .fillMaxSize()
             .padding(paddingValues)
     ) {
-        if ((uiState.error != null || !uiState.isConnection) && uiState.foodList.isEmpty()) {
-            EmptyScreen(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .testTag("EmptyScreenFoodList"),
-                errorMessage = uiState.error ?: "Please connect to the internet to fetch data."
-            )
-        } else {
-            Column(
-                modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                SegmentedButtonSingleSelect(
-                    options = FoodSegmentOption.entries,
-                    selectedOption = uiState.selectedSubCategory,
-                    onOptionSelected = {
-                        selectedDifferentCategory.value = true
-                        viewModel.onCategorySelected(it)
-                    },
-                    icons = icons
+        Box(modifier = Modifier.fillMaxSize()) {
+            if ((uiState.error != null || !uiState.isConnection) && uiState.foodList.isEmpty()) {
+                EmptyScreen(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .testTag("EmptyScreenFoodList"),
+                    errorMessage = uiState.error ?: "Please connect to the internet to fetch data."
                 )
-                Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
+            } else {
+                Column(
+                    modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    SegmentedButtonSingleSelect(
+                        options = FoodSegmentOption.entries,
+                        selectedOption = uiState.selectedSubCategory,
+                        onOptionSelected = {
+                            selectedDifferentCategory.value = true
+                            viewModel.onCategorySelected(it)
+                        },
+                        icons = icons
+                    )
+                    Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
 
-                Box(modifier = Modifier.fillMaxSize()) {
-                    if (uiState.isLoading && (uiState.foodList.isEmpty() && uiState.isConnection)) {
-                        Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
-                        ShimmerListEffect()
-                    } else {
-                        ListContent(
-                            items = uiState.foodList,
-                            clickToNavigate = onItemClick,
-                            lazyListState = lazyListState,
-                            subCategoryNumber = uiState.selectedSubCategory,
-                            horizontalPadding = 0.dp,
-                            imageScale = ContentScale.Fit
-                        )
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        if (uiState.isLoading && (uiState.foodList.isEmpty() && uiState.isConnection)) {
+                            Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
+                            ShimmerListEffect()
+                        } else {
+                            ListContent(
+                                items = uiState.foodList,
+                                clickToNavigate = onItemClick,
+                                lazyListState = lazyListState,
+                                subCategoryNumber = uiState.selectedSubCategory,
+                                horizontalPadding = 0.dp,
+                                imageScale = ContentScale.Fit
+                            )
+                        }
                     }
                 }
-            }
 
-            CustomFloatingActionButton(
-                backButtonVisibleState = backButtonVisibleState,
-                backToTopState = backToTopState
-            )
+                CustomFloatingActionButton(
+                    backButtonVisibleState = backButtonVisibleState,
+                    backToTopState = backToTopState,
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(BODY_CONTENT_PADDING.dp)
+                )
+            }
         }
     }
 }
