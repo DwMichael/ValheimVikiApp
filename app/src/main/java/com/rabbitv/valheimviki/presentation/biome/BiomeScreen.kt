@@ -22,6 +22,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rabbitv.valheimviki.R
+import com.rabbitv.valheimviki.domain.model.biome.Biome
+import com.rabbitv.valheimviki.domain.model.ui_state.UIState
+import com.rabbitv.valheimviki.presentation.biome.viewmodel.BiomeScreenViewModel
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.grid.grid_category.DefaultGrid
 import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerGridEffect
@@ -43,9 +46,7 @@ fun BiomeScreen(
 ) {
 
 
-    val biomeUIState: BiomesUIState by viewModel.biomeUIState.collectAsStateWithLifecycle()
-    val isConnection: Boolean by viewModel.isConnection.collectAsStateWithLifecycle()
-
+    val biomeUIState: UIState<Biome> by viewModel.biomeUIState.collectAsStateWithLifecycle()
     val scrollPosition = remember { mutableIntStateOf(0) }
 
 
@@ -75,11 +76,11 @@ fun BiomeScreen(
 
         ) {
             when {
-                biomeUIState.isLoading || (biomeUIState.biomes.isEmpty() && isConnection) -> {
+                biomeUIState.isLoading || (biomeUIState.list.isEmpty() && biomeUIState.isConnection) -> {
                     ShimmerGridEffect()
                 }
 
-                (biomeUIState.error != null || !isConnection) && biomeUIState.biomes.isEmpty() -> {
+                (biomeUIState.error != null || !biomeUIState.isConnection) && biomeUIState.list.isEmpty() -> {
                     Box(
                         modifier = Modifier.testTag("EmptyScreenBiome"),
                     ) {
@@ -103,7 +104,7 @@ fun BiomeScreen(
                     ) {
                         DefaultGrid(
                             modifier = Modifier,
-                            items = biomeUIState.biomes,
+                            items = biomeUIState.list,
                             onItemClick = onItemClick,
                             numbersOfColumns = BIOME_GRID_COLUMNS,
                             height = ITEM_HEIGHT_TWO_COLUMNS,
