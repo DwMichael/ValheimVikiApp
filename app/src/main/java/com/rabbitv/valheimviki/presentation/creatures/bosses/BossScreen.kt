@@ -45,10 +45,8 @@ fun BossScreen(
     viewModel: BossesViewModel = hiltViewModel(),
     animatedVisibilityScope: AnimatedVisibilityScope
 ) {
-    val scope = rememberCoroutineScope()
-    val refreshState = rememberPullToRefreshState()
+
     val uiState: BossUiState by viewModel.bossUIState.collectAsStateWithLifecycle()
-    val refreshing: Boolean by viewModel.isRefreshing.collectAsStateWithLifecycle()
     val isConnection: Boolean by viewModel.isConnection.collectAsStateWithLifecycle()
 
     val initialScrollPosition by viewModel.scrollPosition.collectAsStateWithLifecycle()
@@ -102,15 +100,6 @@ fun BossScreen(
                         modifier = Modifier.testTag("EmptyScreenBoss"),
                     ) {
                         EmptyScreen(
-                            modifier = Modifier,
-                            state = refreshState,
-                            isRefreshing = refreshing,
-                            onRefresh = {
-                                viewModel.refetchBosses()
-                                scope.launch {
-                                    refreshState.animateToHidden()
-                                }
-                            },
                             errorMessage = uiState.error.toString()
                         )
                     }

@@ -45,7 +45,7 @@ fun DefaultGrid(
         verticalArrangement = Arrangement.spacedBy(BODY_CONTENT_PADDING.dp),
 
         ) {
-        items(items, key = { item -> item.id }) { item ->
+        items(items, key = { item -> "${item.id}-${item.name}" }) { item ->
             Box(
                 modifier = modifier.testTag("GirdItem ${item.name}")
             ) {

@@ -127,10 +127,6 @@ fun MainContainer(
     val navBackStackEntry by valheimVikiNavController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-//    BackHandler {
-//
-//    }
-
     val showTopAppBar = currentRoute?.let { route ->
         route.startsWith(Screen.Boss.route.substringBefore("{")) ||
                 route.startsWith(Screen.Biome.route.substringBefore("{")) ||
@@ -180,7 +176,6 @@ fun MainContainer(
                     visible = topBarVisible.value,
                     enter = slideInVertically(
                         initialOffsetY = { -it },
-//                        animationSpec = tween(durationMillis = 300)
                     ),
                     exit = slideOutVertically(
                         targetOffsetY = { -it },
@@ -446,7 +441,8 @@ fun MainContainer(
                         Screen.BiomeDetail.route,
                         arguments = listOf(
                             navArgument(BIOME_ARGUMENT_KEY) { type = NavType.StringType },
-                            navArgument(TEXT_ARGUMENT_KEY) { type = NavType.StringType }
+                            navArgument(TEXT_ARGUMENT_KEY) { type = NavType.StringType },
+
                         )
                     ) { backStackEntry ->
                         BiomeDetailScreen(

@@ -144,10 +144,6 @@ fun MaterialListScreen(
         content = { innerScaffoldPadding ->
             if ((uiState.error != null || !uiState.isConnection) && uiState.materialsList.isEmpty()) {
                 EmptyScreen(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .testTag("EmptyScreenMaterialList")
-                        .padding(innerScaffoldPadding),
                     errorMessage = uiState.error
                         ?: "Please connect to the internet to fetch data."
                 )

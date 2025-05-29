@@ -104,9 +104,6 @@ fun MobListScreen(
         Box(modifier =Modifier.fillMaxSize()) {
             if ((uiState.error != null || !uiState.isConnection) && uiState.creatureList.isEmpty()) {
                 EmptyScreen(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .testTag("EmptyScreenMobList"),
                     errorMessage = uiState.error ?: "Please connect to the internet to fetch data."
                 )
             } else {

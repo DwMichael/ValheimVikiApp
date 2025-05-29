@@ -90,7 +90,6 @@ fun OreDepositScreen(
                                 .testTag("EmptyScreenOreDeposit")
                         ) {
                             EmptyScreen(
-                                modifier = Modifier.fillMaxSize(),
                                 errorMessage = oreDepositUIState.error
                                     ?: stringResource(R.string.no_internet_connection_ms)
                             )

@@ -30,7 +30,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.composables.icons.lucide.Archive
@@ -135,10 +134,6 @@ fun BuildingMaterialListScreen(
         content = { innerScaffoldPadding ->
             if ((uiState.error != null || !uiState.isConnection) && uiState.buildingMaterialList.isEmpty()) {
                 EmptyScreen(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .testTag("EmptyScreenBuildingMaterialList")
-                        .padding(innerScaffoldPadding),
                     errorMessage = uiState.error
                         ?: "Please connect to the internet to fetch data."
                 )

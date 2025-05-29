@@ -30,9 +30,6 @@ class MiniBossesViewModel @Inject constructor(
         initialValue = false
     )
 
-    private val _isRefreshing = MutableStateFlow(false)
-    val isRefreshing: StateFlow<Boolean>
-        get() = _isRefreshing.asStateFlow()
 
 
     private val _miniBossesUiState = MutableStateFlow(MiniBossesUiState())
@@ -64,32 +61,9 @@ class MiniBossesViewModel @Inject constructor(
             } catch (e: Exception) {
                 _miniBossesUiState.value =
                     _miniBossesUiState.value.copy(isLoading = false, error = e.message)
-            } finally {
-                _isRefreshing.emit(false)
             }
         }
     }
 
-    fun refetchBiomes() {
-        _miniBossesUiState.value = _miniBossesUiState.value.copy(isLoading = true, error = null)
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                creatureUseCases.refetchCreaturesUseCase("en", RefetchUseCases.GET_MINI_BOSSES)
-                    .collect { sortedMiniBosses ->
-                        _miniBossesUiState.update { current ->
-                            current.copy(miniBosses = sortedMiniBosses.toMiniBosses(), isLoading = false)
-                        }
-                    }
-            } catch (e: FetchException) {
-                _miniBossesUiState.value =
-                    _miniBossesUiState.value.copy(isLoading = false, error = e.message)
-            } catch (e: Exception) {
-                _miniBossesUiState.value =
-                    _miniBossesUiState.value.copy(isLoading = false, error = e.message)
-            } finally {
-                _isRefreshing.emit(false)
-            }
-        }
-    }
 
 }

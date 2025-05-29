@@ -7,6 +7,7 @@ import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -39,6 +40,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.ContentAlpha
 import coil3.compose.AsyncImage
+import coil3.compose.AsyncImagePainter
+import coil3.memory.MemoryCache
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.rabbitv.valheimviki.R
@@ -48,7 +51,6 @@ import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData.generateFakeMaterials
-import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -58,47 +60,65 @@ fun MainDetailImageAnimated(
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
     textAlign: TextAlign = TextAlign.Start,
+    painter: AsyncImagePainter? = null,
+    state: AsyncImagePainter.State? = null
 ) {
+
     val backButtonVisibleState = remember { mutableStateOf(false) }
 
 
-    LaunchedEffect(Unit) {
-        delay(450)
-        backButtonVisibleState.value = true
+    LaunchedEffect(animatedVisibilityScope.transition.isRunning) {
+        backButtonVisibleState.value = !animatedVisibilityScope.transition.isRunning
     }
-
+    val imageMemoryCacheKey = MemoryCache.Key("image-${itemData.id}")
     with(sharedTransitionScope) {
         Box(
             modifier = Modifier
                 .heightIn(min = 200.dp, max = 320.dp),
+        ) {
+            if (painter != null && state != null) {
 
-            ) {
-            AsyncImage(
-                modifier = Modifier
-                    .sharedElement(
-                        sharedContentState = rememberSharedContentState(key = "image-${itemData.id}"),
-                        animatedVisibilityScope = animatedVisibilityScope,
-                        boundsTransform = { _, _ ->
-                            tween(durationMillis = 600)
-                        }
-                    )
-                    .fillMaxSize(),
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(itemData.imageUrl)
-                    .crossfade(true)
-                    .build(),
-                contentDescription = stringResource(R.string.item_grid_image),
-                contentScale = ContentScale.Crop,
-            )
+                Image(
+                    modifier = Modifier
+                        .sharedElement(
+                            sharedContentState = rememberSharedContentState(key = "image-${itemData.id}"),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                            boundsTransform = { _, _ -> tween(durationMillis = 600) },
+                        )
+                        .fillMaxSize(),
+                    painter = painter,
+                    contentDescription = stringResource(R.string.item_grid_image),
+                    contentScale = ContentScale.Crop,
+                )
+
+
+            } else {
+                AsyncImage(
+                    modifier = Modifier
+                        .sharedElement(
+                            sharedContentState = rememberSharedContentState(key = "image-${itemData.id}"),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                            boundsTransform = { _, _ -> tween(durationMillis = 600) },
+                        )
+                        .fillMaxSize(),
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(itemData.imageUrl)
+                        .placeholderMemoryCacheKey(imageMemoryCacheKey)
+                        .memoryCacheKey(imageMemoryCacheKey)
+                        .crossfade(false)
+                        .build(),
+                    contentDescription = stringResource(R.string.item_grid_image),
+                    contentScale = ContentScale.Crop,
+                )
+            }
+
             Surface(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .sharedElement(
                         sharedContentState = rememberSharedContentState(key = "Surface-${itemData.id}"),
                         animatedVisibilityScope = animatedVisibilityScope,
-                        boundsTransform = { _, _ ->
-                            tween(durationMillis = 600)
-                        }
+                        boundsTransform = { _, _ -> tween(durationMillis = 600) },
                     )
                     .fillMaxHeight(0.2f)
                     .fillMaxWidth(),
@@ -114,8 +134,9 @@ fun MainDetailImageAnimated(
                             animatedVisibilityScope = animatedVisibilityScope,
                             boundsTransform = { _, _ ->
                                 tween(durationMillis = 600)
-                            }
+                            },
                         )
+                        .skipToLookaheadSize()
                         .wrapContentHeight(Alignment.CenterVertically),
                     textAlign = textAlign,
                     text = itemData.name,
