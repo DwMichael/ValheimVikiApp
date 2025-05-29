@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.rabbitv.valheimviki.presentation.creatures.mini_bosses.MiniBossScreen
-import com.rabbitv.valheimviki.presentation.creatures.mini_bosses.MiniBossesViewModel
+import com.rabbitv.valheimviki.presentation.creatures.mini_bosses.viewmodel.MiniBossesViewModel
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest

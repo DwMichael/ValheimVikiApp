@@ -15,7 +15,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -56,28 +55,20 @@ fun ToolListScreen(
     viewModel: ToolListViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val selectedDifferentCategory = remember { mutableStateOf(false) }
     val scrollPosition = remember { mutableIntStateOf(0) }
     val lazyListState = rememberLazyListState(
         initialFirstVisibleItemIndex = scrollPosition.intValue
     )
-    val coroutineScope = rememberCoroutineScope()
+    val scope = rememberCoroutineScope()
     val backButtonVisibleState by remember {
         derivedStateOf { lazyListState.firstVisibleItemIndex >= 2 }
     }
-    val backToTopState = remember { mutableStateOf(false) }
 
 
-    if (backToTopState.value) {
-        LaunchedEffect(backToTopState.value) {
-            lazyListState.animateScrollToItem(0)
-            scrollPosition.intValue = 0
-            backToTopState.value = false
-        }
-    }
+
 
     LaunchedEffect(lazyListState) {
-        coroutineScope.launch {
+        scope.launch {
             if (lazyListState.firstVisibleItemIndex >= 0) {
                 scrollPosition.intValue = lazyListState.firstVisibleItemIndex
             }
@@ -134,8 +125,12 @@ fun ToolListScreen(
                 }
 
                 CustomFloatingActionButton(
-                    backButtonVisibleState = backButtonVisibleState,
-                    backToTopState = backToTopState,
+                    showBackButton = backButtonVisibleState,
+                    onClick = {
+                        scope.launch {
+                            lazyListState.animateScrollToItem(0)
+                        }
+                    },
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
                         .padding(BODY_CONTENT_PADDING.dp)

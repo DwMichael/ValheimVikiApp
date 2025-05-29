@@ -21,12 +21,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -52,6 +51,7 @@ import com.rabbitv.valheimviki.presentation.material.viewmodel.MaterialListViewM
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
+import kotlinx.coroutines.launch
 
 class MaterialChip(
     override val option: MaterialSubType,
@@ -72,18 +72,12 @@ fun MaterialListScreen(
     val lazyListState = rememberLazyListState(
         initialFirstVisibleItemIndex = scrollPosition.intValue
     )
+    val scope = rememberCoroutineScope()
     val title = uiState.selectedSubCategory?.let { viewModel.getLabelFor(it) }
     val backButtonVisibleState by remember {
         derivedStateOf { lazyListState.firstVisibleItemIndex >= 2 }
     }
-    val backToTopState = remember { mutableStateOf(false) }
-    if (backToTopState.value) {
-        LaunchedEffect(backToTopState.value) {
-            lazyListState.animateScrollToItem(0)
-            scrollPosition.intValue = 0
-            backToTopState.value = false
-        }
-    }
+
     BackHandler(onBack = {
         viewModel.onCategorySelected(null)
         viewModel.onTypeSelected(null)
@@ -136,8 +130,12 @@ fun MaterialListScreen(
             .testTag("MaterialListScaffold"),
         floatingActionButton = {
             CustomFloatingActionButton(
-                backButtonVisibleState = backButtonVisibleState,
-                backToTopState = backToTopState
+                showBackButton = backButtonVisibleState,
+                onClick = {
+                    scope.launch {
+                        lazyListState.animateScrollToItem(0)
+                    }
+                }
             )
         },
         floatingActionButtonPosition = FabPosition.End,

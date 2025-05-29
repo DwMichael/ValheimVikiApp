@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.map
 
 class GetPassiveCreature @Inject constructor(private val creatureRepository: CreatureRepository) {
     @OptIn(ExperimentalCoroutinesApi::class)
-    operator fun invoke(language: String): Flow<List<PassiveCreature>> {
+    operator fun invoke(): Flow<List<PassiveCreature>> {
         val creatureSubCategory = CreatureSubCategory.PASSIVE_CREATURE
         return creatureRepository.getCreaturesBySubCategory(creatureSubCategory.toString())
             .map { creatures -> creatures.toPassiveCreatures().sortedBy { it.order } }

@@ -13,11 +13,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,18 +25,20 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.rabbitv.valheimviki.domain.model.creature.Creature
+import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
+import com.rabbitv.valheimviki.domain.model.ui_state.UiState
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.grid.grid_category.DefaultGrid
 import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerGridEffect
+import com.rabbitv.valheimviki.presentation.creatures.bosses.viewmodel.BossesViewModel
 import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_TWO_COLUMNS
-import com.rabbitv.valheimviki.utils.Constants.NORMAL_SIZE_GRID
+import com.rabbitv.valheimviki.utils.Constants.BIOME_GRID_COLUMNS
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.debounce
 
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class, FlowPreview::class)
 @Composable
 fun BossScreen(
     modifier: Modifier,
@@ -46,20 +48,18 @@ fun BossScreen(
     animatedVisibilityScope: AnimatedVisibilityScope
 ) {
 
-    val uiState: BossUiState by viewModel.bossUIState.collectAsStateWithLifecycle()
-    val isConnection: Boolean by viewModel.isConnection.collectAsStateWithLifecycle()
-
-    val initialScrollPosition by viewModel.scrollPosition.collectAsStateWithLifecycle()
+    val mainBossUiState: UiState<MainBoss> by viewModel.mainBossUiState.collectAsStateWithLifecycle()
+    val scrollPosition = rememberSaveable { mutableIntStateOf(0) }
     val lazyGridState = rememberLazyGridState(
-        initialFirstVisibleItemIndex = initialScrollPosition
+        initialFirstVisibleItemIndex = scrollPosition.intValue
     )
 
     LaunchedEffect(lazyGridState) {
         snapshotFlow { lazyGridState.firstVisibleItemIndex }
-            .distinctUntilChanged()
+            .debounce(500L)
             .collectLatest { index ->
                 if (index >= 0) {
-                    viewModel.saveScrollPosition(index)
+                    scrollPosition.intValue = index
                 }
             }
     }
@@ -74,36 +74,19 @@ fun BossScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            when {
-                uiState.isLoading || (uiState.bosses.isEmpty() && isConnection) -> {
-                    ShimmerGridEffect()
-                }
+            when (val state = mainBossUiState) {
+                is UiState.Loading -> ShimmerGridEffect()
+                is UiState.Error -> EmptyScreen(errorMessage = state.message.toString())
+                is UiState.Success -> DefaultGrid(
+                    modifier = Modifier,
+                    items = state.list,
+                    onItemClick = onItemClick,
+                    numbersOfColumns = BIOME_GRID_COLUMNS,
+                    height = ITEM_HEIGHT_TWO_COLUMNS,
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    lazyGridState = lazyGridState,
+                )
 
-                uiState.bosses.isNotEmpty() -> {
-                    Box(
-                        modifier = Modifier.testTag("BossGrid"),
-                    ) {
-                        DefaultGrid(
-                            modifier = Modifier,
-                            items = uiState.bosses,
-                            onItemClick = onItemClick,
-                            numbersOfColumns = NORMAL_SIZE_GRID,
-                            height = ITEM_HEIGHT_TWO_COLUMNS,
-                            animatedVisibilityScope = animatedVisibilityScope,
-                            lazyGridState = lazyGridState
-                        )
-                    }
-                }
-
-                uiState.error != null -> {
-                    Box(
-                        modifier = Modifier.testTag("EmptyScreenBoss"),
-                    ) {
-                        EmptyScreen(
-                            errorMessage = uiState.error.toString()
-                        )
-                    }
-                }
             }
         }
     }
@@ -113,8 +96,6 @@ fun BossScreen(
 @Preview(showBackground = true)
 @Composable
 fun PreviewBossListScreen() {
-    val sampleCreatures = emptyList<Creature>()
-
 
     Scaffold(
         topBar = {

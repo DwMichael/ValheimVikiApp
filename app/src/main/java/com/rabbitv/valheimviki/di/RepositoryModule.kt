@@ -89,7 +89,6 @@ import com.rabbitv.valheimviki.domain.use_cases.creature.get_main_bosses.GetMain
 import com.rabbitv.valheimviki.domain.use_cases.creature.get_mini_bosses.GetMiniBossesUseCase
 import com.rabbitv.valheimviki.domain.use_cases.creature.get_npcs.GetNPCsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.creature.get_passive_creatures.GetPassiveCreature
-import com.rabbitv.valheimviki.domain.use_cases.creature.refetch_creatures.RefetchCreaturesUseCase
 import com.rabbitv.valheimviki.domain.use_cases.data_refetch.DataRefetchUseCase
 import com.rabbitv.valheimviki.domain.use_cases.datastore.DataStoreUseCases
 import com.rabbitv.valheimviki.domain.use_cases.datastore.get_onboarding_state.ReadOnBoardingState
@@ -361,10 +360,6 @@ object RepositoryModule {
                 creatureRepository
             ),
             getCreaturesBySubCategory = GetCreatureBySubCategoryUseCase(creatureRepository),
-            refetchCreaturesUseCase = RefetchCreaturesUseCase(
-                creatureRepository,
-                relationsRepository
-            ),
         )
     }
 

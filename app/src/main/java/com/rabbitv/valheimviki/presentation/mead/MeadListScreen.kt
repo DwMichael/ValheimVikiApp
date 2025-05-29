@@ -55,41 +55,26 @@ fun MeadListScreen(
     val lazyListState = rememberLazyListState(
         initialFirstVisibleItemIndex = scrollPosition.intValue
     )
-    val coroutineScope = rememberCoroutineScope()
+    val scope = rememberCoroutineScope()
     val backButtonVisibleState by remember {
         derivedStateOf { lazyListState.firstVisibleItemIndex >= 2 }
     }
-    val backToTopState = remember { mutableStateOf(false) }
+
     val icons: List<ImageVector> = listOf(
         Lucide.Soup,
         Lucide.FlaskConical,
     )
 
-    if (backToTopState.value) {
-        LaunchedEffect(backToTopState.value) {
-            lazyListState.animateScrollToItem(0)
-            scrollPosition.intValue = 0
-            backToTopState.value = false
-        }
-    }
 
     LaunchedEffect(lazyListState) {
-        coroutineScope.launch {
+        scope.launch {
             if (lazyListState.firstVisibleItemIndex >= 0) {
                 scrollPosition.intValue = lazyListState.firstVisibleItemIndex
             }
         }
     }
 
-    LaunchedEffect(uiState.selectedSubCategory) {
-        if (selectedDifferentCategory.value) {
-            coroutineScope.launch {
-                lazyListState.scrollToItem(0)
-                scrollPosition.intValue = 0
-            }
-            selectedDifferentCategory.value = false
-        }
-    }
+
 
     Surface(
         color = Color.Transparent,
@@ -112,7 +97,9 @@ fun MeadListScreen(
                         options = MeadSegmentOption.entries,
                         selectedOption = uiState.selectedSubCategory,
                         onOptionSelected = {
-                            selectedDifferentCategory.value = true
+                            scope.launch {
+                                lazyListState.animateScrollToItem(0)
+                            }
                             viewModel.onCategorySelected(it)
                         },
                         icons = icons
@@ -137,8 +124,12 @@ fun MeadListScreen(
                 }
 
                 CustomFloatingActionButton(
-                    backButtonVisibleState = backButtonVisibleState,
-                    backToTopState = backToTopState,
+                    showBackButton = backButtonVisibleState,
+                    onClick = {
+                        scope.launch {
+                            lazyListState.animateScrollToItem(0)
+                        }
+                    },
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
                         .padding(BODY_CONTENT_PADDING.dp)
