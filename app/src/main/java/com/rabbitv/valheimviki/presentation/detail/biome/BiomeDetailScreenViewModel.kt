@@ -28,6 +28,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -43,7 +44,8 @@ class BiomeDetailScreenViewModel @Inject constructor(
     private val treeUseCases: TreeUseCases,
     private val oreDepositUseCases: OreDepositUseCases
 ) : ViewModel() {
-    private val _biome = MutableStateFlow<Biome?>(null)
+    private val _biome = MutableStateFlow<Biome?
+            >(null)
     private val _mainBoss = MutableStateFlow<MainBoss?>(null)
     private val _relatedCreatures = MutableStateFlow<List<Creature>>(emptyList())
     private val _relatedOreDeposits = MutableStateFlow<List<OreDeposit>>(emptyList())
@@ -89,7 +91,15 @@ class BiomeDetailScreenViewModel @Inject constructor(
             try {
                 _isLoading.value = true
                 val biomeId = savedStateHandle.get<String>(BIOME_ARGUMENT_KEY).toString()
-                _biome.value = biomeId.let { biomeUseCases.getBiomeByIdUseCase(biomeId = biomeId) }
+                val biomeData = biomeUseCases.getBiomeByIdUseCase(biomeId = biomeId).firstOrNull()
+                _biome.value = biomeData
+
+                if (biomeData == null) {
+                    _error.value = "Biome not found."
+                    _isLoading.value = false
+                    Log.w("BiomeDetailScreenVM", "Biome with ID $biomeId not found.")
+                    return@launch
+                }
 
                 val relatedObjects: List<RelatedItem> = async {
                     relationsUseCase.getRelatedIdsUseCase(biomeId)

@@ -103,9 +103,6 @@ fun FoodListScreen(
         Box(modifier = Modifier.fillMaxSize()) {
             if ((uiState.error != null || !uiState.isConnection) && uiState.foodList.isEmpty()) {
                 EmptyScreen(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .testTag("EmptyScreenFoodList"),
                     errorMessage = uiState.error ?: "Please connect to the internet to fetch data."
                 )
             } else {

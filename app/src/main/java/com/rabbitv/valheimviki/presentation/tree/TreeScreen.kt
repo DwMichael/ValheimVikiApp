@@ -89,7 +89,6 @@ fun TreeScreen(
                                 .testTag("EmptyScreenOreDeposit")
                         ) {
                             EmptyScreen(
-                                modifier = Modifier.fillMaxSize(),
                                 errorMessage = treeUIState.error
                                     ?: stringResource(R.string.no_internet_connection_ms)
                             )

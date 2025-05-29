@@ -21,20 +21,10 @@ import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.WifiOff
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EmptyScreen(
-    modifier: Modifier? = null,
-    state: PullToRefreshState? = null,
-    isRefreshing: Boolean? = null,
-    onRefresh: () -> Unit = {},
     errorMessage: String,
 ) {
-//    PullToRefreshBox(
-//        state = state,
-//        isRefreshing = isRefreshing,
-//        onRefresh = onRefresh,
-//    ) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -69,12 +59,6 @@ fun EmptyScreen(
 @Composable
 private fun PreviewEmptyScreen() {
     ValheimVikiAppTheme {
-        EmptyScreen(
-            modifier = Modifier,
-            state = rememberPullToRefreshState(),
-            isRefreshing = false,
-            onRefresh = {},
-            errorMessage = "Connection False"
-        )
+        EmptyScreen(errorMessage = "Connection False")
     }
 }

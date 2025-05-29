@@ -17,12 +17,12 @@ class BiomeRepositoryImpl @Inject constructor(
         return biomeDao.getAllBiomes()
     }
 
-    override fun getBiomeById(biomeId: String): Biome {
+    override fun getBiomeById(biomeId: String): Flow<Biome?> {
         return biomeDao.getBiomeById(biomeId)
     }
 
-    override suspend fun fetchBiomes(lang: String): Response<List<Biome>>  {
-            return apiService.fetchBiomes(lang)
+    override suspend fun fetchBiomes(lang: String): Response<List<Biome>> {
+        return apiService.fetchBiomes(lang)
     }
 
     override suspend fun storeBiomes(biomes: List<Biome>) {

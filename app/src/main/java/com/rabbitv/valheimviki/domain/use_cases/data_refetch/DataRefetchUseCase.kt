@@ -283,7 +283,7 @@ class DataRefetchUseCase @Inject constructor(
                 biomes.size == 9 &&
                         creatures.size == 83 &&
                         oreDeposits.size == 9 &&
-                        materials.size == 267 &&
+                        materials.size == 266 &&
                         pointsOfInterest.size == 51 &&
                         trees.size == 8 &&
                         food.size == 76 &&
@@ -291,7 +291,7 @@ class DataRefetchUseCase @Inject constructor(
                         armors.size == 50 &&
                         meads.size == 40 &&
                         tools.size == 14 &&
-                        buildingMaterials.size == 248 &&
+                        buildingMaterials.size == 247 &&
                         craftingObjects.size == 46 &&
                         relations.size == 464
                 )

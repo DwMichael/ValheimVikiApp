@@ -32,9 +32,7 @@ class BossesViewModel @Inject constructor(
         initialValue = false
     )
 
-    private val _isRefreshing = MutableStateFlow(false)
-    val isRefreshing: StateFlow<Boolean>
-        get() = _isRefreshing.asStateFlow()
+
 
 
     private val _bossUiState = MutableStateFlow(BossUiState())
@@ -66,31 +64,10 @@ class BossesViewModel @Inject constructor(
                 _bossUiState.value = _bossUiState.value.copy(isLoading = false, error = e.message)
             } catch (e: Exception) {
                 _bossUiState.value = _bossUiState.value.copy(isLoading = false, error = e.message)
-            } finally {
-                _isRefreshing.emit(false)
             }
         }
     }
 
-    fun refetchBosses() {
-        _bossUiState.value = _bossUiState.value.copy(isLoading = true, error = null)
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                creatureUseCases.refetchCreaturesUseCase(DEFAULT_LANG, RefetchUseCases.GET_BOSSES)
-                    .collect { sortedBosses ->
-                        _bossUiState.update { current ->
-                            current.copy(bosses = sortedBosses.toMainBosses(), isLoading = false)
-                        }
-                    }
-            } catch (e: FetchException) {
-                _bossUiState.value = _bossUiState.value.copy(isLoading = false, error = e.message)
-            } catch (e: Exception) {
-                _bossUiState.value = _bossUiState.value.copy(isLoading = false, error = e.message)
-            } finally {
-                _isRefreshing.emit(false)
-            }
-        }
-    }
 
 
 }

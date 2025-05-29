@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.ContentAlpha
 import coil3.compose.AsyncImage
+import coil3.memory.MemoryCache
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.rabbitv.valheimviki.R
@@ -56,7 +57,7 @@ fun AnimatedGridItem(
     val sharedTransitionScope = LocalSharedTransitionScope.current
         ?: throw IllegalStateException("No Scope found")
 
-
+    val imageMemoryCacheKey = MemoryCache.Key("image-${item.id}")
     with(sharedTransitionScope) {
         Box(
             modifier = Modifier
@@ -76,14 +77,14 @@ fun AnimatedGridItem(
                     .clip(RoundedCornerShape(MEDIUM_PADDING)),
                 model = ImageRequest.Builder(context = LocalContext.current)
                     .data(item.imageUrl.toString())
+                    .memoryCacheKey(imageMemoryCacheKey)
                     .crossfade(true)
                     .build(),
-                error = painterResource(R.drawable.ic_placeholder),
-                placeholder = painterResource(R.drawable.ic_placeholder),
+                error = painterResource(R.drawable.ic_placeholder), //
+                placeholder = painterResource(R.drawable.ic_placeholder), //
                 contentDescription = stringResource(R.string.item_grid_image),
                 contentScale = ContentScale.Crop,
-
-                )
+            )
 
             Surface(
                 modifier = Modifier

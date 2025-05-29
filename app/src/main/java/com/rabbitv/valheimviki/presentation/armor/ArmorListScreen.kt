@@ -101,7 +101,6 @@ fun ArmorListStateRenderer(
                             .testTag("EmptyScreenWeaponList")
                     ) {
                         EmptyScreen(
-                            modifier = Modifier.fillMaxSize(),
                             errorMessage = armorListUiState.error
                                 ?: "Connect to internet to fetch data"
                         )

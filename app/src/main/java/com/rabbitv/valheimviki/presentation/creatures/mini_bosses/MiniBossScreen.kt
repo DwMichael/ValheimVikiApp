@@ -46,7 +46,7 @@ fun MiniBossScreen(
     val uiState: MiniBossesUiState by viewModel.miniBossesUIState
         .collectAsStateWithLifecycle()
 
-    val refreshing: Boolean by viewModel.isRefreshing.collectAsStateWithLifecycle()
+
     val isConnection: Boolean by viewModel.isConnection.collectAsStateWithLifecycle()
     val initialScrollPosition by viewModel.scrollPosition.collectAsStateWithLifecycle()
 
@@ -101,7 +101,6 @@ fun MiniBossScreen(
                         modifier = Modifier.testTag("EmptyScreenMiniBoss"),
                     ) {
                         EmptyScreen(
-                            modifier = Modifier,
                             errorMessage = uiState.error.toString()
                         )
                     }

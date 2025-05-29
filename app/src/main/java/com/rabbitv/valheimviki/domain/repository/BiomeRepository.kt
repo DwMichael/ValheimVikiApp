@@ -8,6 +8,6 @@ import retrofit2.Response
 interface BiomeRepository {
     fun getLocalBiomes(): Flow<List<Biome>>
     suspend fun fetchBiomes(lang: String): Response<List<Biome>>
-    fun getBiomeById(biomeId: String): Biome
+    fun getBiomeById(biomeId: String): Flow<Biome?>
     suspend fun storeBiomes(biomes: List<Biome>)
 }

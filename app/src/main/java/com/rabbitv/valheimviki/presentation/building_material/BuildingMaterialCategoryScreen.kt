@@ -51,9 +51,6 @@ fun BuildingMaterialCategoryScreen(
     ) {
         if ((uiState.error != null || !uiState.isConnection) && uiState.buildingMaterialList.isEmpty()) {
             EmptyScreen(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .testTag("EmptyScreenMaterialList"),
                 errorMessage = uiState.error ?: "Please connect to the internet to fetch data."
             )
         } else {
