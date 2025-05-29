@@ -16,13 +16,9 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -32,6 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.rememberAsyncImagePainter
 import com.composables.icons.lucide.Gem
 import com.composables.icons.lucide.House
 import com.composables.icons.lucide.Lucide
@@ -50,7 +47,6 @@ import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDet
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
-import kotlinx.coroutines.delay
 
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -61,6 +57,7 @@ fun BiomeDetailScreen(
     animatedVisibilityScope: AnimatedVisibilityScope
 ) {
     val biomeUiState by viewModel.uiState.collectAsStateWithLifecycle()
+
 
     val sharedTransitionScope = LocalSharedTransitionScope.current
         ?: throw IllegalStateException("No Scope found")
@@ -83,136 +80,120 @@ fun BiomeDetailContent(
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
-    val transitionComplete = remember { mutableStateOf(false) }
-    val scrollEnabled = remember { derivedStateOf { transitionComplete.value } }
-
-    LaunchedEffect(Unit) {
-        delay(700)
-        transitionComplete.value = true
-    }
+    val isTransitionRunning = animatedVisibilityScope.transition.isRunning
+    val painter = rememberAsyncImagePainter(biomeUiState.biome?.imageUrl)
+    val state by painter.state.collectAsState()
     Scaffold(
         content = { padding ->
-            val scrollModifier = if (scrollEnabled.value) {
+            val scrollModifier = if (!isTransitionRunning) {
                 Modifier.verticalScroll(rememberScrollState())
             } else {
                 Modifier
             }
-            when {
-                biomeUiState.isLoading -> {
-                    Box(modifier = Modifier.size(45.dp))
-                }
-
-                biomeUiState.biome != null -> {
-                    Image(
-                        painter = painterResource(id = R.drawable.main_background),
-                        contentDescription = "BackgroundImage",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxSize(),
+            Image(
+                painter = painterResource(id = R.drawable.main_background),
+                contentDescription = "BackgroundImage",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize(),
+            )
+            Column(
+                modifier = Modifier
+                    .testTag("BiomeDetailScreen")
+                    .fillMaxSize()
+                    .padding(padding)
+                    .then(scrollModifier),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.Start,
+            ) {
+                if (biomeUiState.biome != null) {
+                    MainDetailImageAnimated(
+                        onBack = onBack,
+                        itemData = biomeUiState.biome,
+                        sharedTransitionScope = sharedTransitionScope,
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        painter = painter,
+                        state = state,
                     )
-                    Column(
-                        modifier = Modifier
-                            .testTag("BiomeDetailScreen")
-                            .fillMaxSize()
-                            .padding(padding)
-                            .then(scrollModifier),
-                        verticalArrangement = Arrangement.Top,
-                        horizontalAlignment = Alignment.Start,
-                    ) {
-
-                        MainDetailImageAnimated(
-                            onBack = onBack,
-                            itemData = biomeUiState.biome,
-                            sharedTransitionScope = sharedTransitionScope,
-                            animatedVisibilityScope = animatedVisibilityScope,
-                        )
-                        DetailExpandableText(text = biomeUiState.biome.description.toString())
-                        biomeUiState.mainBoss?.let { mainBoss ->
-                            ImageWithTopLabel(
-                                itemData = mainBoss,
-                                subTitle = "BOSS",
-                            )
-                        }
-                        SlavicDivider()
-                        if (biomeUiState.relatedCreatures.isNotEmpty()) {
-                            HorizontalPagerSection(
-                                rememberPagerState(
-                                    initialPage = 1,
-                                    pageCount = { biomeUiState.relatedCreatures.size }),
-                                biomeUiState.relatedCreatures,
-                                Lucide.PawPrint,
-                                "Creatures",
-                                "Creatures you may encounter in this biome",
-                                ContentScale.Crop,
-                            )
-                        }
-
-                        if (biomeUiState.relatedOreDeposits.isNotEmpty()) {
-                            TridentsDividedRow()
-                            HorizontalPagerSection(
-                                rememberPagerState(
-                                    initialPage = 1,
-                                    pageCount = { biomeUiState.relatedOreDeposits.size }),
-                                biomeUiState.relatedOreDeposits,
-                                Lucide.Pickaxe,
-                                "Ore Deposits",
-                                "Ore Deposits you may encounter in this biome",
-                                ContentScale.Crop,
-                            )
-                        }
-
-                        if (biomeUiState.relatedMaterials.isNotEmpty()) {
-                            TridentsDividedRow()
-                            HorizontalPagerSection(
-                                rememberPagerState(
-                                    initialPage = 1,
-                                    pageCount = { biomeUiState.relatedMaterials.size }),
-                                biomeUiState.relatedMaterials,
-                                Lucide.Gem,
-                                "Materials",
-                                "Unique materials you may encounter in this biome",
-                                ContentScale.Crop,
-                                iconModifier = Modifier
-                            )
-                        }
-                        if (biomeUiState.relatedPointOfInterest.isNotEmpty()) {
-                            TridentsDividedRow()
-                            HorizontalPagerSection(
-                                rememberPagerState(
-                                    initialPage = 1,
-                                    pageCount = { biomeUiState.relatedPointOfInterest.size }),
-                                biomeUiState.relatedPointOfInterest,
-                                Lucide.House,
-                                "Points Of Interest",
-                                "Points Of Interest you may encounter in this biome",
-                                ContentScale.Crop,
-                                iconModifier = Modifier
-                            )
-                        }
-                        if (biomeUiState.relatedPointOfInterest.isNotEmpty()) {
-                            TridentsDividedRow()
-                            HorizontalPagerSection(
-                                rememberPagerState(
-                                    initialPage = 1,
-                                    pageCount = { biomeUiState.relatedTrees.size }),
-                                biomeUiState.relatedTrees,
-                                Lucide.Trees,
-                                "Trees",
-                                "Trees you may encounter in this biome",
-                                ContentScale.Crop,
-                                iconModifier = Modifier
-                            )
-                        }
-                        Box(modifier = Modifier.size(45.dp))
-                    }
-
                 }
 
-                biomeUiState.error != null -> {
-                    Box(modifier = Modifier.size(45.dp))
-                    {
-                        Text(text = biomeUiState.error)
-                    }
+                DetailExpandableText(text = biomeUiState.biome?.description.toString())
+                biomeUiState.mainBoss?.let { mainBoss ->
+                    ImageWithTopLabel(
+                        itemData = mainBoss,
+                        subTitle = "BOSS",
+                    )
                 }
+                SlavicDivider()
+                if (biomeUiState.relatedCreatures.isNotEmpty()) {
+                    HorizontalPagerSection(
+                        rememberPagerState(
+                            initialPage = 1,
+                            pageCount = { biomeUiState.relatedCreatures.size }),
+                        biomeUiState.relatedCreatures,
+                        Lucide.PawPrint,
+                        "Creatures",
+                        "Creatures you may encounter in this biome",
+                        ContentScale.Crop,
+                    )
+                }
+
+                if (biomeUiState.relatedOreDeposits.isNotEmpty()) {
+                    TridentsDividedRow()
+                    HorizontalPagerSection(
+                        rememberPagerState(
+                            initialPage = 1,
+                            pageCount = { biomeUiState.relatedOreDeposits.size }),
+                        biomeUiState.relatedOreDeposits,
+                        Lucide.Pickaxe,
+                        "Ore Deposits",
+                        "Ore Deposits you may encounter in this biome",
+                        ContentScale.Crop,
+                    )
+                }
+
+                if (biomeUiState.relatedMaterials.isNotEmpty()) {
+                    TridentsDividedRow()
+                    HorizontalPagerSection(
+                        rememberPagerState(
+                            initialPage = 1,
+                            pageCount = { biomeUiState.relatedMaterials.size }),
+                        biomeUiState.relatedMaterials,
+                        Lucide.Gem,
+                        "Materials",
+                        "Unique materials you may encounter in this biome",
+                        ContentScale.Crop,
+                        iconModifier = Modifier
+                    )
+                }
+                if (biomeUiState.relatedPointOfInterest.isNotEmpty()) {
+                    TridentsDividedRow()
+                    HorizontalPagerSection(
+                        rememberPagerState(
+                            initialPage = 1,
+                            pageCount = { biomeUiState.relatedPointOfInterest.size }),
+                        biomeUiState.relatedPointOfInterest,
+                        Lucide.House,
+                        "Points Of Interest",
+                        "Points Of Interest you may encounter in this biome",
+                        ContentScale.Crop,
+                        iconModifier = Modifier
+                    )
+                }
+                if (biomeUiState.relatedPointOfInterest.isNotEmpty()) {
+                    TridentsDividedRow()
+                    HorizontalPagerSection(
+                        rememberPagerState(
+                            initialPage = 1,
+                            pageCount = { biomeUiState.relatedTrees.size }),
+                        biomeUiState.relatedTrees,
+                        Lucide.Trees,
+                        "Trees",
+                        "Trees you may encounter in this biome",
+                        ContentScale.Crop,
+                        iconModifier = Modifier
+                    )
+                }
+                Box(modifier = Modifier.size(45.dp))
             }
         }
     )
