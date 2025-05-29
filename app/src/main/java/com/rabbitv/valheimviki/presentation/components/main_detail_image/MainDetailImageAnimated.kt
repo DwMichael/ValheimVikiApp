@@ -33,17 +33,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.ContentAlpha
-import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
-import coil3.memory.MemoryCache
-import coil3.request.ImageRequest
-import coil3.request.crossfade
+import coil3.compose.rememberAsyncImagePainter
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.repository.ItemData
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
@@ -60,58 +56,30 @@ fun MainDetailImageAnimated(
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
     textAlign: TextAlign = TextAlign.Start,
-    painter: AsyncImagePainter? = null,
-    state: AsyncImagePainter.State? = null
+    painter: AsyncImagePainter
 ) {
-
     val backButtonVisibleState = remember { mutableStateOf(false) }
-
-
     LaunchedEffect(animatedVisibilityScope.transition.isRunning) {
         backButtonVisibleState.value = !animatedVisibilityScope.transition.isRunning
     }
-    val imageMemoryCacheKey = MemoryCache.Key("image-${itemData.id}")
+
     with(sharedTransitionScope) {
         Box(
             modifier = Modifier
                 .heightIn(min = 200.dp, max = 320.dp),
         ) {
-            if (painter != null && state != null) {
-
-                Image(
-                    modifier = Modifier
-                        .sharedElement(
-                            sharedContentState = rememberSharedContentState(key = "image-${itemData.id}"),
-                            animatedVisibilityScope = animatedVisibilityScope,
-                            boundsTransform = { _, _ -> tween(durationMillis = 600) },
-                        )
-                        .fillMaxSize(),
-                    painter = painter,
-                    contentDescription = stringResource(R.string.item_grid_image),
-                    contentScale = ContentScale.Crop,
-                )
-
-
-            } else {
-                AsyncImage(
-                    modifier = Modifier
-                        .sharedElement(
-                            sharedContentState = rememberSharedContentState(key = "image-${itemData.id}"),
-                            animatedVisibilityScope = animatedVisibilityScope,
-                            boundsTransform = { _, _ -> tween(durationMillis = 600) },
-                        )
-                        .fillMaxSize(),
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(itemData.imageUrl)
-                        .placeholderMemoryCacheKey(imageMemoryCacheKey)
-                        .memoryCacheKey(imageMemoryCacheKey)
-                        .crossfade(false)
-                        .build(),
-                    contentDescription = stringResource(R.string.item_grid_image),
-                    contentScale = ContentScale.Crop,
-                )
-            }
-
+            Image(
+                modifier = Modifier
+                    .sharedElement(
+                        sharedContentState = rememberSharedContentState(key = "image-${itemData.id}"),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        boundsTransform = { _, _ -> tween(durationMillis = 600) },
+                    )
+                    .fillMaxSize(),
+                painter = painter,
+                contentDescription = stringResource(R.string.item_grid_image),
+                contentScale = ContentScale.Crop,
+            )
             Surface(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
@@ -187,6 +155,7 @@ fun PreviewMainDetailImageAnimated() {
                     itemData = itemsData.first(),
                     sharedTransitionScope = this@SharedTransitionLayout,
                     animatedVisibilityScope = this,
+                    painter = rememberAsyncImagePainter(""),
                 )
             }
         }

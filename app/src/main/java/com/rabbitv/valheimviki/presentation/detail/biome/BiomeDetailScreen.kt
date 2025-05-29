@@ -17,7 +17,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
 import com.composables.icons.lucide.Gem
 import com.composables.icons.lucide.House
@@ -57,16 +57,15 @@ fun BiomeDetailScreen(
     animatedVisibilityScope: AnimatedVisibilityScope
 ) {
     val biomeUiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-
     val sharedTransitionScope = LocalSharedTransitionScope.current
         ?: throw IllegalStateException("No Scope found")
-
+    val painter = rememberAsyncImagePainter(biomeUiState.biome?.imageUrl)
     BiomeDetailContent(
         onBack = onBack,
         sharedTransitionScope = sharedTransitionScope,
         animatedVisibilityScope = animatedVisibilityScope,
         biomeUiState = biomeUiState,
+        painter = painter
     )
 
 }
@@ -79,10 +78,10 @@ fun BiomeDetailContent(
     biomeUiState: BiomeDetailUiState,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
+    painter: AsyncImagePainter
 ) {
     val isTransitionRunning = animatedVisibilityScope.transition.isRunning
-    val painter = rememberAsyncImagePainter(biomeUiState.biome?.imageUrl)
-    val state by painter.state.collectAsState()
+
     Scaffold(
         content = { padding ->
             val scrollModifier = if (!isTransitionRunning) {
@@ -112,7 +111,6 @@ fun BiomeDetailContent(
                         sharedTransitionScope = sharedTransitionScope,
                         animatedVisibilityScope = animatedVisibilityScope,
                         painter = painter,
-                        state = state,
                     )
                 }
 
@@ -250,6 +248,7 @@ fun PreviewBiomeDetailContent() {
                     sharedTransitionScope = this@SharedTransitionLayout,
                     animatedVisibilityScope = this,
                     biomeUiState = uiState,
+                    painter = TODO(),
                 )
             }
         }

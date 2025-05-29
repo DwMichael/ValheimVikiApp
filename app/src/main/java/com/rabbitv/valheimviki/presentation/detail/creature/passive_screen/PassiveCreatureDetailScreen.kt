@@ -85,17 +85,9 @@ fun PassiveCreatureDetailContent(
     onBack: () -> Unit,
     uiState: PassiveCreatureDetailUiState,
 ) {
-    val backButtonVisibleState = remember { mutableStateOf(false) }
-    mutableListOf<String?>(uiState.passiveCreature?.imageUrl)
-    LaunchedEffect(Unit) {
-        delay(450)
-        backButtonVisibleState.value = true
-    }
-
     val pagerState =
         rememberPagerState(
             pageCount = { uiState.passiveCreature?.levels?.size ?: 0 },
-
             )
     val sharedScrollState = rememberScrollState()
     val isExpandable = remember { mutableStateOf(false) }
@@ -260,13 +252,6 @@ fun PageIndicator(
     }
 }
 
-//@Composable
-//fun NoteCustomLayout(
-//    noteText: String
-//) {
-//
-//}
-
 
 @Preview(name = "CreaturePage")
 @Composable
@@ -296,11 +281,3 @@ fun PreviewCreaturePage() {
 
 }
 
-
-//@Preview(name = "AggressiveCreatureDetailScreen")
-//@Composable
-//private fun PreviewAggressiveCreatureDetailScreen() {
-//    AggressiveCreatureDetailContent(
-//        uiState = AggressiveCreatureDetailUiState()
-//    )
-//}

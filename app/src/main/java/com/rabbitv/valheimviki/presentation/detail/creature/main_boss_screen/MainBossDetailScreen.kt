@@ -36,7 +36,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -45,9 +44,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
-import coil3.request.ImageRequest
-import coil3.request.crossfade
 import com.composables.icons.lucide.Flame
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.TreePine
@@ -68,9 +66,7 @@ import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.Car
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.OverlayLabel
 import com.rabbitv.valheimviki.presentation.detail.creature.components.rows.CustomRowLayout
 import com.rabbitv.valheimviki.presentation.detail.creature.components.rows.StatsFlowRow
-
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
-import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -82,12 +78,13 @@ fun MainBossDetailScreen(
     val mainBossUiState by viewModel.uiState.collectAsStateWithLifecycle()
     val sharedTransitionScope = LocalSharedTransitionScope.current
         ?: throw IllegalStateException("No Scope found")
-
+    val painter = rememberAsyncImagePainter(mainBossUiState.mainBoss?.imageUrl)
     MainBossContent(
         onBack = onBack,
         animatedVisibilityScope = animatedVisibilityScope,
         sharedTransitionScope = sharedTransitionScope,
         mainBossUiState = mainBossUiState,
+        painter = painter
     )
 
 }
@@ -100,15 +97,14 @@ fun MainBossContent(
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
     mainBossUiState: MainBossDetailUiState,
+    painter: AsyncImagePainter
 ) {
     val transitionComplete = remember { mutableStateOf(false) }
     val scrollEnabled = remember { derivedStateOf { transitionComplete.value } }
 
-    LaunchedEffect(Unit) {
-        delay(700)
-        transitionComplete.value = true
+    LaunchedEffect(animatedVisibilityScope.transition.isRunning) {
+        transitionComplete.value = !animatedVisibilityScope.transition.isRunning
     }
-
     Scaffold(
         content = { padding ->
             val scrollModifier = if (scrollEnabled.value) {
@@ -143,6 +139,7 @@ fun MainBossContent(
                             sharedTransitionScope = sharedTransitionScope,
                             animatedVisibilityScope = animatedVisibilityScope,
                             textAlign = TextAlign.Center,
+                            painter = painter
                         )
                         DetailExpandableText(text = mainBossUiState.mainBoss.description.toString())
                         TridentsDividedRow(text = "BOSS DETAIL")

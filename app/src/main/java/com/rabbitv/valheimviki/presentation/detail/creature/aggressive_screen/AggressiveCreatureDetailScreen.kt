@@ -25,7 +25,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -57,10 +56,8 @@ import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.Car
 import com.rabbitv.valheimviki.presentation.detail.creature.components.horizontal_pager.CreatureHorizontalPager
 import com.rabbitv.valheimviki.presentation.detail.creature.components.rows.StarLevelRow
 import com.rabbitv.valheimviki.presentation.detail.creature.components.rows.StatsFlowRow
-
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
@@ -73,7 +70,7 @@ fun AggressiveCreatureDetailScreen(
 
     AggressiveCreatureDetailContent(
         uiState = uiState,
-        onBack = onBack
+        onBack = onBack,
     )
 
 }
@@ -84,18 +81,9 @@ fun AggressiveCreatureDetailContent(
     onBack: () -> Unit,
     uiState: AggressiveCreatureDetailUiState,
 ) {
-    val backButtonVisibleState = remember { mutableStateOf(false) }
-    mutableListOf<String?>(uiState.aggressiveCreature?.imageUrl)
-    LaunchedEffect(Unit) {
-        delay(450)
-        backButtonVisibleState.value = true
-    }
 
     val pagerState =
-        rememberPagerState(
-            pageCount = { uiState.aggressiveCreature?.levels?.size ?: 0 },
-
-            )
+        rememberPagerState(pageCount = { uiState.aggressiveCreature?.levels?.size ?: 0 })
     val sharedScrollState = rememberScrollState()
     val isExpandable = remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
@@ -233,7 +221,7 @@ fun PageIndicator(
     ) {
         repeat(pagerState.pageCount) { iteration ->
             val color =
-                if (pagerState.currentPage == iteration) Color.LightGray  else Color.DarkGray
+                if (pagerState.currentPage == iteration) Color.LightGray else Color.DarkGray
             Box(
                 modifier = Modifier
                     .padding(2.dp)

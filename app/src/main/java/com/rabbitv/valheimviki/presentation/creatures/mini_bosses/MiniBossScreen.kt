@@ -14,11 +14,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
@@ -34,10 +30,7 @@ import com.rabbitv.valheimviki.presentation.components.shimmering_effect.Shimmer
 import com.rabbitv.valheimviki.presentation.creatures.mini_bosses.viewmodel.MiniBossesViewModel
 import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_TWO_COLUMNS
 import com.rabbitv.valheimviki.utils.Constants.BIOME_GRID_COLUMNS
-import com.rabbitv.valheimviki.utils.Constants.NORMAL_SIZE_GRID
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.debounce
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class, FlowPreview::class)
@@ -51,20 +44,7 @@ fun MiniBossScreen(
 
 ) {
     val miniBossUiState: UiState<MiniBoss> by viewModel.miniBossUiState.collectAsStateWithLifecycle()
-    val scrollPosition = rememberSaveable { mutableIntStateOf(0) }
-    val lazyGridState = rememberLazyGridState(
-        initialFirstVisibleItemIndex = scrollPosition.intValue
-    )
-
-    LaunchedEffect(lazyGridState) {
-        snapshotFlow { lazyGridState.firstVisibleItemIndex }
-            .debounce(500L)
-            .collectLatest { index ->
-                if (index >= 0) {
-                    scrollPosition.intValue = index
-                }
-            }
-    }
+    val lazyGridState = rememberLazyGridState()
 
     Box(
         modifier = modifier
