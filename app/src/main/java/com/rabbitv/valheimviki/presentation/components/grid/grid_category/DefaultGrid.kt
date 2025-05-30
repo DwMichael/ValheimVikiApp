@@ -31,7 +31,7 @@ private const val boundsAnimationDurationMillis = 500
 fun DefaultGrid(
     modifier: Modifier,
     items: List<ItemData>,
-    onItemClick: (String, String, String) -> Unit,
+    onItemClick: (String) -> Unit,
     numbersOfColumns: Int,
     height: Dp,
     animatedVisibilityScope: AnimatedVisibilityScope,
@@ -89,7 +89,7 @@ private fun PreviewContentGrid() {
             DefaultGrid(
                 modifier = Modifier,
                 items = sampleBiomes,
-                onItemClick = { _, _, _ -> {} },
+                onItemClick = { _ -> {} },
                 numbersOfColumns = 2,
                 height = ITEM_HEIGHT_TWO_COLUMNS,
                 this,

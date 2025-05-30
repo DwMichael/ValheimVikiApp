@@ -59,9 +59,6 @@ import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun MiniBossDetailScreen(
-    id: String,
-    imageUrl: String,
-    name: String,
     onBack: () -> Unit,
     viewModel: MiniBossDetailScreenViewModel = hiltViewModel(),
     animatedVisibilityScope: AnimatedVisibilityScope,
@@ -74,10 +71,7 @@ fun MiniBossDetailScreen(
         onBack = onBack,
         miniBossUiSate = miniBossUiState,
         sharedTransitionScope = sharedTransitionScope,
-        animatedVisibilityScope = animatedVisibilityScope,
-        id = id,
-        imageUrl = imageUrl,
-        name = name,
+        animatedVisibilityScope = animatedVisibilityScope
     )
 }
 
@@ -88,10 +82,7 @@ fun MiniBossContent(
     miniBossUiSate: MiniBossDetailUiState,
     onBack: () -> Unit,
     sharedTransitionScope: SharedTransitionScope,
-    animatedVisibilityScope: AnimatedVisibilityScope,
-    id: String,
-    imageUrl: String,
-    name: String,
+    animatedVisibilityScope: AnimatedVisibilityScope
 ) {
     val transitionComplete = remember { mutableStateOf(false) }
     val scrollEnabled = remember { derivedStateOf { transitionComplete.value } }
@@ -133,9 +124,9 @@ fun MiniBossContent(
                             sharedTransitionScope = sharedTransitionScope,
                             animatedVisibilityScope = animatedVisibilityScope,
                             textAlign = TextAlign.Center,
-                            id = id,
-                            imageUrl = imageUrl,
-                            title = name
+                            id = miniBossUiSate.miniBoss.id,
+                            imageUrl = miniBossUiSate.miniBoss.imageUrl,
+                            title = miniBossUiSate.miniBoss.name
                         )
                         DetailExpandableText(text = miniBossUiSate.miniBoss.description.toString())
                         TridentsDividedRow(text = "BOSS DETAIL")

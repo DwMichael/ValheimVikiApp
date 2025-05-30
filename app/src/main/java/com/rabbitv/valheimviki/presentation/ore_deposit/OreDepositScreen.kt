@@ -36,7 +36,7 @@ import kotlinx.coroutines.flow.debounce
 @Composable
 fun OreDepositScreen(
     modifier: Modifier,
-    onItemClick: (String, String, String) -> Unit,
+    onItemClick: (String) -> Unit,
     paddingValues: PaddingValues,
     viewModel: OreDepositScreenViewModel = hiltViewModel(),
     animatedVisibilityScope: AnimatedVisibilityScope

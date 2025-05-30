@@ -70,9 +70,6 @@ import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun MainBossDetailScreen(
-    id: String,
-    imageUrl: String,
-    name: String,
     onBack: () -> Unit,
     viewModel: MainBossScreenViewModel = hiltViewModel(),
     animatedVisibilityScope: AnimatedVisibilityScope,
@@ -84,10 +81,7 @@ fun MainBossDetailScreen(
         onBack = onBack,
         animatedVisibilityScope = animatedVisibilityScope,
         sharedTransitionScope = sharedTransitionScope,
-        mainBossUiState = mainBossUiState,
-        id = id,
-        imageUrl = imageUrl,
-        name = name,
+        mainBossUiState = mainBossUiState
     )
 
 }
@@ -96,9 +90,6 @@ fun MainBossDetailScreen(
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun MainBossContent(
-    id: String,
-    imageUrl: String,
-    name: String,
     onBack: () -> Unit,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
@@ -143,9 +134,9 @@ fun MainBossContent(
                             sharedTransitionScope = sharedTransitionScope,
                             animatedVisibilityScope = animatedVisibilityScope,
                             textAlign = TextAlign.Center,
-                            id = id,
-                            imageUrl = imageUrl,
-                            title = name
+                            id = mainBossUiState.mainBoss.id,
+                            imageUrl = mainBossUiState.mainBoss.imageUrl,
+                            title = mainBossUiState.mainBoss.name
                         )
                         DetailExpandableText(text = mainBossUiState.mainBoss.description.toString())
                         TridentsDividedRow(text = "BOSS DETAIL")
@@ -299,11 +290,7 @@ private fun PreviewCreatureDetail() {
         AnimatedVisibility(visible = true) {
             MainBossDetailScreen(
                 onBack = { },
-                animatedVisibilityScope = this,
-                id = "",
-                imageUrl = "",
-                name = "",
-
+                animatedVisibilityScope = this
                 )
         }
     }

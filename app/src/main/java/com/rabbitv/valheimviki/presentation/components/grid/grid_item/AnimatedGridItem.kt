@@ -48,7 +48,7 @@ import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 @Composable
 fun AnimatedGridItem(
     item: ItemData,
-    onItemClick: (String, String, String) -> Unit,
+    onItemClick: (String) -> Unit,
     height: Dp,
     animatedVisibilityScope: AnimatedVisibilityScope
 ) {
@@ -63,7 +63,7 @@ fun AnimatedGridItem(
             modifier = Modifier
                 .height(height)
                 .clickable {
-                    onItemClick(item.id, item.imageUrl, item.name)
+                    onItemClick(item.id)
                 },
             contentAlignment = Alignment.BottomStart
         ) {
@@ -143,7 +143,7 @@ private fun PreviewGridItem() {
         AnimatedVisibility(true) {
             AnimatedGridItem(
                 item = item,
-                onItemClick = { _, _, _ -> },
+                onItemClick = { _ -> },
                 height = ITEM_HEIGHT_TWO_COLUMNS,
                 animatedVisibilityScope = this,
             )

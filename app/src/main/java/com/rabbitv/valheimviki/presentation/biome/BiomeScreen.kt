@@ -30,7 +30,7 @@ import kotlinx.coroutines.FlowPreview
 @Composable
 fun BiomeScreen(
     modifier: Modifier,
-    onItemClick: (String, String, String) -> Unit,
+    onItemClick: (String) -> Unit,
     paddingValues: PaddingValues,
     viewModel: BiomeScreenViewModel = hiltViewModel(),
     animatedVisibilityScope: AnimatedVisibilityScope

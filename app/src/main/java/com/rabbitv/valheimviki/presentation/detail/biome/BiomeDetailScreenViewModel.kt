@@ -90,15 +90,9 @@ class BiomeDetailScreenViewModel @Inject constructor(
             try {
                 _isLoading.value = true
                 val biomeId = savedStateHandle.get<String>(BIOME_ARGUMENT_KEY).toString()
+
                 val biomeData = biomeUseCases.getBiomeByIdUseCase(biomeId = biomeId).firstOrNull()
                 _biome.value = biomeData
-
-                if (biomeData == null) {
-                    _error.value = "Biome not found."
-                    _isLoading.value = false
-                    Log.w("BiomeDetailScreenVM", "Biome with ID $biomeId not found.")
-                    return@launch
-                }
 
                 val relatedObjects: List<RelatedItem> = async {
                     relationsUseCase.getRelatedIdsUseCase(biomeId)

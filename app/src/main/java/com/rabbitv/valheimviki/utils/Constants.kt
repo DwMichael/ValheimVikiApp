@@ -22,16 +22,12 @@ object Constants {
 
     //DATA NAVIGATION ARGUMENT KEYS
     const val BIOME_ARGUMENT_KEY = "biomeId"
-    const val BIOME_NAME_KEY = "biomeName"
-    const val BIOME_IMAGE_URL_KEY = "biomeImageUrl"
+
 
     const val MAIN_BOSS_ARGUMENT_KEY = "mainBossId"
-    const val MAIN_BOSS_NAME_KEY = "mainBossName"
-    const val MAIN_BOSS_IMAGE_URL_KEY = "mainBossImageUrl"
 
     const val MINI_BOSS_ARGUMENT_KEY = "miniBossId"
-    const val MINI_BOSS_NAME_KEY = "miniBossName"
-    const val MINI_BOSS_IMAGE_URL_KEY = "miniBossImageUrl"
+
 
     const val AGGRESSIVE_CREATURE_KEY = "aggressiveCId"
     const val PASSIVE_CREATURE_KEY = "passiveCId"
