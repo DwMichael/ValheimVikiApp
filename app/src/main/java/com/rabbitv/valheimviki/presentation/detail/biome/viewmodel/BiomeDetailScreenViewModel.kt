@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.detail.biome
+package com.rabbitv.valheimviki.presentation.detail.biome.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.SavedStateHandle
@@ -21,7 +21,8 @@ import com.rabbitv.valheimviki.domain.use_cases.ore_deposit.OreDepositUseCases
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.PointOfInterestUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.domain.use_cases.tree.TreeUseCases
-import com.rabbitv.valheimviki.utils.Constants.BIOME_ARGUMENT_KEY
+import com.rabbitv.valheimviki.presentation.detail.biome.BiomeDetailUiState
+import com.rabbitv.valheimviki.utils.Constants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -68,7 +69,7 @@ class BiomeDetailScreenViewModel @Inject constructor(
         _error
     ) { values ->
         @Suppress("UNCHECKED_CAST")
-        BiomeDetailUiState(
+        (BiomeDetailUiState(
             biome = values[0] as Biome?,
             mainBoss = values[1] as MainBoss?,
             relatedCreatures = values[2] as List<Creature>,
@@ -78,10 +79,10 @@ class BiomeDetailScreenViewModel @Inject constructor(
             relatedTrees = values[6] as List<Tree>,
             isLoading = values[7] as Boolean,
             error = values[8] as String?
-        )
+        ))
     }.stateIn(
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
+        started = SharingStarted.Companion.WhileSubscribed(5000),
         initialValue = BiomeDetailUiState()
     )
 
@@ -89,7 +90,7 @@ class BiomeDetailScreenViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 _isLoading.value = true
-                val biomeId = savedStateHandle.get<String>(BIOME_ARGUMENT_KEY).toString()
+                val biomeId = savedStateHandle.get<String>(Constants.BIOME_ARGUMENT_KEY).toString()
 
                 val biomeData = biomeUseCases.getBiomeByIdUseCase(biomeId = biomeId).firstOrNull()
                 _biome.value = biomeData
@@ -155,7 +156,3 @@ class BiomeDetailScreenViewModel @Inject constructor(
         }
     }
 }
-
-
-
-

@@ -1,6 +1,5 @@
 package com.rabbitv.valheimviki.presentation.detail.biome
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -44,6 +43,7 @@ import com.rabbitv.valheimviki.presentation.components.ImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDetailImageAnimated
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
+import com.rabbitv.valheimviki.presentation.detail.biome.viewmodel.BiomeDetailScreenViewModel
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
 
@@ -78,7 +78,7 @@ fun BiomeDetailContent(
     animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
     val isTransitionRunning = animatedVisibilityScope.transition.isRunning
-    Log.e("BiomeDetailContent", "${biomeUiState.biome}")
+
     Scaffold(
         content = { padding ->
             val scrollModifier = if (!isTransitionRunning) {
