@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 class GetLocalCreaturesUseCase @Inject constructor(private val creatureRepository: CreatureRepository) {
     @OptIn(ExperimentalCoroutinesApi::class)
-    operator fun invoke(lang: String): Flow<List<Creature>> {
+    operator fun invoke(): Flow<List<Creature>> {
         return creatureRepository.getLocalCreatures().map { creatures ->
             creatures.sortedBy { it.order }
         }

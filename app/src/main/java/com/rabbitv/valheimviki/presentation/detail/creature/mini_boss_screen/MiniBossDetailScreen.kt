@@ -32,7 +32,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -42,8 +41,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.rememberAsyncImagePainter
-import coil3.request.ImageRequest
-import coil3.request.crossfade
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Trophy
 import com.rabbitv.valheimviki.R
@@ -56,9 +53,7 @@ import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsD
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardStatDetails
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
 import com.rabbitv.valheimviki.presentation.detail.creature.components.rows.StatsFlowRow
-
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
-import kotlinx.coroutines.delay
 
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -76,7 +71,7 @@ fun MiniBossDetailScreen(
         onBack = onBack,
         miniBossUiSate = miniBossUiState,
         sharedTransitionScope = sharedTransitionScope,
-        animatedVisibilityScope = animatedVisibilityScope,
+        animatedVisibilityScope = animatedVisibilityScope
     )
 }
 
@@ -87,14 +82,13 @@ fun MiniBossContent(
     miniBossUiSate: MiniBossDetailUiState,
     onBack: () -> Unit,
     sharedTransitionScope: SharedTransitionScope,
-    animatedVisibilityScope: AnimatedVisibilityScope,
+    animatedVisibilityScope: AnimatedVisibilityScope
 ) {
     val transitionComplete = remember { mutableStateOf(false) }
     val scrollEnabled = remember { derivedStateOf { transitionComplete.value } }
 
-    LaunchedEffect(Unit) {
-        delay(700)
-        transitionComplete.value = true
+    LaunchedEffect(animatedVisibilityScope.transition.isRunning) {
+        transitionComplete.value = !animatedVisibilityScope.transition.isRunning
     }
 
     when {
@@ -127,11 +121,12 @@ fun MiniBossContent(
                     ) {
                         MainDetailImageAnimated(
                             onBack = onBack,
-                            itemData = miniBossUiSate.miniBoss,
                             sharedTransitionScope = sharedTransitionScope,
                             animatedVisibilityScope = animatedVisibilityScope,
                             textAlign = TextAlign.Center,
-
+                            id = miniBossUiSate.miniBoss.id,
+                            imageUrl = miniBossUiSate.miniBoss.imageUrl,
+                            title = miniBossUiSate.miniBoss.name
                         )
                         DetailExpandableText(text = miniBossUiSate.miniBoss.description.toString())
                         TridentsDividedRow(text = "BOSS DETAIL")

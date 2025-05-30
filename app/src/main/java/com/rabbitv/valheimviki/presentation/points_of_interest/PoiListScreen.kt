@@ -15,7 +15,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -50,46 +49,31 @@ fun PoiListScreen(
     viewModel: PoiListViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val selectedDifferentCategory = remember { mutableStateOf(false) }
+
     val scrollPosition = remember { mutableIntStateOf(0) }
     val lazyListState = rememberLazyListState(
         initialFirstVisibleItemIndex = scrollPosition.intValue
     )
-    val coroutineScope = rememberCoroutineScope()
+    val scope = rememberCoroutineScope()
     val backButtonVisibleState by remember {
         derivedStateOf { lazyListState.firstVisibleItemIndex >= 2 }
     }
-    val backToTopState = remember { mutableStateOf(false) }
+
     val icons: List<ImageVector> = listOf(
         Lucide.Soup,
         Lucide.FlaskConical,
     )
 
-    if (backToTopState.value) {
-        LaunchedEffect(backToTopState.value) {
-            lazyListState.animateScrollToItem(0)
-            scrollPosition.intValue = 0
-            backToTopState.value = false
-        }
-    }
+
 
     LaunchedEffect(lazyListState) {
-        coroutineScope.launch {
+        scope.launch {
             if (lazyListState.firstVisibleItemIndex >= 0) {
                 scrollPosition.intValue = lazyListState.firstVisibleItemIndex
             }
         }
     }
 
-    LaunchedEffect(uiState.selectedSubCategory) {
-        if (selectedDifferentCategory.value) {
-            coroutineScope.launch {
-                lazyListState.scrollToItem(0)
-                scrollPosition.intValue = 0
-            }
-            selectedDifferentCategory.value = false
-        }
-    }
 
     Surface(
         color = Color.Transparent,
@@ -112,7 +96,9 @@ fun PoiListScreen(
                         options = PoiSegmentOption.entries,
                         selectedOption = uiState.selectedSubCategory,
                         onOptionSelected = {
-                            selectedDifferentCategory.value = true
+                            scope.launch {
+                                lazyListState.animateScrollToItem(0)
+                            }
                             viewModel.onCategorySelected(it)
                         },
                         icons = icons
@@ -137,8 +123,12 @@ fun PoiListScreen(
                 }
 
                 CustomFloatingActionButton(
-                    backButtonVisibleState = backButtonVisibleState,
-                    backToTopState = backToTopState,
+                    showBackButton = backButtonVisibleState,
+                    onClick = {
+                        scope.launch {
+                            lazyListState.animateScrollToItem(0)
+                        }
+                    },
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
                         .padding(BODY_CONTENT_PADDING.dp)

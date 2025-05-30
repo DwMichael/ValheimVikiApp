@@ -77,8 +77,10 @@ fun DetailExpandableText(
             maxLines = if (isExpanded.value) Int.MAX_VALUE else collapsedMaxLine,
             onTextLayout = { textLayoutResult ->
                 if (!isExpanded.value && textLayoutResult.hasVisualOverflow) {
+                    val maxLineIndex = (collapsedMaxLine - 1)
+                        .coerceAtMost(textLayoutResult.lineCount - 1)
+                    lastCharIndex = textLayoutResult.getLineEnd(maxLineIndex)
                     clickable = true
-                    lastCharIndex = textLayoutResult.getLineEnd(collapsedMaxLine - 1)
                 }
             },
             style = MaterialTheme.typography.bodyLarge,

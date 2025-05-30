@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.map
 
 class GetMiniBossesUseCase @Inject constructor(private val creatureRepository: CreatureRepository) {
     @OptIn(ExperimentalCoroutinesApi::class)
-    operator fun invoke(language: String): Flow<List<MiniBoss>> {
+    operator fun invoke(): Flow<List<MiniBoss>> {
         val creatureSubCategory = CreatureSubCategory.MINI_BOSS
         return creatureRepository.getCreaturesBySubCategory(creatureSubCategory.toString())
             .map { mainBosses -> mainBosses.toMiniBosses().sortedBy { it.order } }

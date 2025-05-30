@@ -15,7 +15,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -50,48 +49,32 @@ fun FoodListScreen(
     modifier: Modifier, paddingValues: PaddingValues,
     viewModel: FoodListViewModel = hiltViewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val selectedDifferentCategory = remember { mutableStateOf(false) }
-    val scrollPosition = remember { mutableIntStateOf(0) }
-    val lazyListState = rememberLazyListState(
-        initialFirstVisibleItemIndex = scrollPosition.intValue
-    )
-    val coroutineScope = rememberCoroutineScope()
-    val backButtonVisibleState by remember {
-        derivedStateOf { lazyListState.firstVisibleItemIndex >= 2 }
-    }
-    val backToTopState = remember { mutableStateOf(false) }
     val icons: List<ImageVector> = listOf(
         Lucide.Rat,
         Lucide.Skull,
         Lucide.User
     )
-
-    if (backToTopState.value) {
-        LaunchedEffect(backToTopState.value) {
-            lazyListState.animateScrollToItem(0)
-            scrollPosition.intValue = 0
-            backToTopState.value = false
-        }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val scrollPosition = remember { mutableIntStateOf(0) }
+    val lazyListState = rememberLazyListState(
+        initialFirstVisibleItemIndex = scrollPosition.intValue
+    )
+    val scope = rememberCoroutineScope()
+    val backButtonVisibleState by remember {
+        derivedStateOf { lazyListState.firstVisibleItemIndex >= 2 }
     }
 
+
+
     LaunchedEffect(lazyListState) {
-        coroutineScope.launch {
+        scope.launch {
             if (lazyListState.firstVisibleItemIndex >= 0) {
                 scrollPosition.intValue = lazyListState.firstVisibleItemIndex
             }
         }
     }
 
-    LaunchedEffect(uiState.selectedSubCategory) {
-        if (selectedDifferentCategory.value) {
-            coroutineScope.launch {
-                lazyListState.scrollToItem(0)
-                scrollPosition.intValue = 0
-            }
-            selectedDifferentCategory.value = false
-        }
-    }
+
 
     Surface(
         color = Color.Transparent,
@@ -113,10 +96,7 @@ fun FoodListScreen(
                     SegmentedButtonSingleSelect(
                         options = FoodSegmentOption.entries,
                         selectedOption = uiState.selectedSubCategory,
-                        onOptionSelected = {
-                            selectedDifferentCategory.value = true
-                            viewModel.onCategorySelected(it)
-                        },
+                        onOptionSelected = { viewModel.onCategorySelected(it) },
                         icons = icons
                     )
                     Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
@@ -139,8 +119,12 @@ fun FoodListScreen(
                 }
 
                 CustomFloatingActionButton(
-                    backButtonVisibleState = backButtonVisibleState,
-                    backToTopState = backToTopState,
+                    showBackButton = backButtonVisibleState,
+                    onClick = {
+                        scope.launch {
+                            lazyListState.animateScrollToItem(0)
+                        }
+                    },
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
                         .padding(BODY_CONTENT_PADDING.dp)

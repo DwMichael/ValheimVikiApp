@@ -14,9 +14,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
@@ -24,46 +22,28 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rabbitv.valheimviki.domain.model.creature.Creature
+import com.rabbitv.valheimviki.domain.model.creature.mini_boss.MiniBoss
+import com.rabbitv.valheimviki.domain.model.ui_state.UiState
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.grid.grid_category.DefaultGrid
 import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerGridEffect
+import com.rabbitv.valheimviki.presentation.creatures.mini_bosses.viewmodel.MiniBossesViewModel
 import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_TWO_COLUMNS
-import com.rabbitv.valheimviki.utils.Constants.NORMAL_SIZE_GRID
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.distinctUntilChanged
+import com.rabbitv.valheimviki.utils.Constants.BIOME_GRID_COLUMNS
+import kotlinx.coroutines.FlowPreview
 
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class, FlowPreview::class)
 @Composable
 fun MiniBossScreen(
     modifier: Modifier,
-    onItemClick: (String, String) -> Unit,
+    onItemClick: (String) -> Unit,
     paddingValues: PaddingValues,
     viewModel: MiniBossesViewModel = hiltViewModel(),
     animatedVisibilityScope: AnimatedVisibilityScope
-
 ) {
-    val uiState: MiniBossesUiState by viewModel.miniBossesUIState
-        .collectAsStateWithLifecycle()
-
-
-    val isConnection: Boolean by viewModel.isConnection.collectAsStateWithLifecycle()
-    val initialScrollPosition by viewModel.scrollPosition.collectAsStateWithLifecycle()
-
-    val lazyGridState = rememberLazyGridState(
-        initialFirstVisibleItemIndex = initialScrollPosition
-    )
-
-    LaunchedEffect(lazyGridState) {
-        snapshotFlow { lazyGridState.firstVisibleItemIndex }
-            .distinctUntilChanged()
-            .collectLatest { index ->
-                if (index >= 0) {
-                    viewModel.saveScrollPosition(index)
-                }
-            }
-    }
-
+    val miniBossUiState: UiState<MiniBoss> by viewModel.miniBossUiState.collectAsStateWithLifecycle()
+    val lazyGridState = rememberLazyGridState()
 
     Box(
         modifier = modifier
@@ -75,36 +55,18 @@ fun MiniBossScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            when {
-                uiState.isLoading || (uiState.miniBosses.isEmpty() && isConnection) -> {
-                    ShimmerGridEffect()
-                }
-
-                uiState.miniBosses.isNotEmpty() -> {
-                    Box(
-                        modifier = Modifier.testTag("MiniBossGird"),
-                    ) {
-                        DefaultGrid(
-                            modifier = Modifier,
-                            items = uiState.miniBosses,
-                            onItemClick = onItemClick,
-                            numbersOfColumns = NORMAL_SIZE_GRID,
-                            height = ITEM_HEIGHT_TWO_COLUMNS,
-                            animatedVisibilityScope = animatedVisibilityScope,
-                            lazyGridState = lazyGridState
-                        )
-                    }
-                }
-
-                uiState.error != null -> {
-                    Box(
-                        modifier = Modifier.testTag("EmptyScreenMiniBoss"),
-                    ) {
-                        EmptyScreen(
-                            errorMessage = uiState.error.toString()
-                        )
-                    }
-                }
+            when (val state = miniBossUiState) {
+                is UiState.Loading -> ShimmerGridEffect()
+                is UiState.Error -> EmptyScreen(errorMessage = state.message.toString())
+                is UiState.Success -> DefaultGrid(
+                    modifier = Modifier,
+                    items = state.list,
+                    onItemClick = onItemClick,
+                    numbersOfColumns = BIOME_GRID_COLUMNS,
+                    height = ITEM_HEIGHT_TWO_COLUMNS,
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    lazyGridState = lazyGridState,
+                )
             }
         }
     }

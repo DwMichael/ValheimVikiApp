@@ -9,11 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
@@ -28,34 +24,19 @@ import com.rabbitv.valheimviki.presentation.components.shimmering_effect.Shimmer
 import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_TWO_COLUMNS
 import com.rabbitv.valheimviki.utils.Constants.BIOME_GRID_COLUMNS
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.debounce
 
 
 @OptIn(FlowPreview::class)
 @Composable
 fun BiomeScreen(
     modifier: Modifier,
-    onItemClick: (String, String) -> Unit,
+    onItemClick: (String) -> Unit,
     paddingValues: PaddingValues,
     viewModel: BiomeScreenViewModel = hiltViewModel(),
     animatedVisibilityScope: AnimatedVisibilityScope
 ) {
     val biomeUiState: UiState<Biome> by viewModel.biomeUiState.collectAsStateWithLifecycle()
-    val scrollPosition = rememberSaveable { mutableIntStateOf(0) }
-    val lazyGridState = rememberLazyGridState(
-        initialFirstVisibleItemIndex = scrollPosition.intValue
-    )
-
-    LaunchedEffect(lazyGridState) {
-        snapshotFlow { lazyGridState.firstVisibleItemIndex }
-            .debounce(500L)
-            .collectLatest { index ->
-                if (index >= 0) {
-                    scrollPosition.intValue = index
-                }
-            }
-    }
+    val lazyGridState = rememberLazyGridState()
 
     Box(
         modifier = modifier

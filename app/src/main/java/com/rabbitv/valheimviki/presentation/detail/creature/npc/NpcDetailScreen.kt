@@ -28,7 +28,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -78,7 +77,6 @@ import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
 import com.rabbitv.valheimviki.utils.FakeData.fakeNpcDetailUiState
 import com.rabbitv.valheimviki.utils.valid
-import kotlinx.coroutines.delay
 
 
 @Composable
@@ -101,12 +99,6 @@ fun NpcDetailContent(
     onBack: () -> Unit,
     uiState: NpcDetailUiState,
 ) {
-    val backButtonVisibleState = remember { mutableStateOf(false) }
-    mutableListOf<String?>(uiState.npc?.imageUrl)
-    LaunchedEffect(Unit) {
-        delay(450)
-        backButtonVisibleState.value = true
-    }
     val isExpandable = remember { mutableStateOf(false) }
     val isExpandableLocation = remember { mutableStateOf(false) }
     val isExpandableBiography = remember { mutableStateOf(false) }
@@ -511,7 +503,9 @@ fun ShopItemsTable(
         TableHeader(headers)
         itemList.forEach {
             if (it.name == "Barber kit") {
-                Log.e("BARBER KIT", "effect = ${it.effect}, type = ${it.effect?.let { it::class.qualifiedName } ?: "null"}")
+                Log.e(
+                    "BARBER KIT",
+                    "effect = ${it.effect}, type = ${it.effect?.let { it::class.qualifiedName } ?: "null"}")
 
 
             }
@@ -569,8 +563,16 @@ fun ShopItemsTable(
                 it.effect.valid()?.let { effectText ->
                     Spacer(Modifier.height(10.dp))
                     Row {
-                        Text("Effect: ", Modifier.weight(0.2f), style = MaterialTheme.typography.bodyLarge)
-                        Text(effectText,   Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
+                        Text(
+                            "Effect: ",
+                            Modifier.weight(0.2f),
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                        Text(
+                            effectText,
+                            Modifier.weight(1f),
+                            style = MaterialTheme.typography.bodyLarge
+                        )
                     }
                 }
 
@@ -756,7 +758,7 @@ fun PreviewNPCPage() {
 @Preview(name = "PreviewNPCPage")
 @Composable
 fun PreviewNPCPageSmal() {
-  val npc =  NPC(
+    val npc = NPC(
         id = "1",
         category = "",
         subCategory = "sdasd",
@@ -772,7 +774,7 @@ fun PreviewNPCPageSmal() {
         NpcDetailContent(
             onBack = {},
             uiState = NpcDetailUiState(
-                npc =  NPC(
+                npc = NPC(
                     id = "npc_blacksmith",
                     name = "Bjorn the Blacksmith",
                     imageUrl = "https://example.com/images/npcs/blacksmith.png",

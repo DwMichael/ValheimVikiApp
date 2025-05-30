@@ -27,4 +27,25 @@
     <string name="hildir_text_sixth">Returning a chest to Hildir will enable new Events, which will cause the chest\'s respective boss and their minions to invade your base.</string>
     <string name="hildir_html_text"><![CDATA[<ul><li>Smouldering Tombs: Each 3000 meters apart, between 3000 - 8000 meters from the world center, at an altitude of at least 1 meter.</li>\n                        <li>Howling Caverns: Each 2000 meters apart, between 1000 - 8000 meters from the world center, at an altitude of at least 200 meters.</li>\n                        <li>Sealed Tower: Each 3000 meters apart, at an altitude of at least 8 meters.</li></ul>]]></string>
     <string name="no_internet_connection_ms">Connect to internet to fetch data</string>
+    <string name="background">Background</string>
+    <string name="weapons">Weapons</string>
+    <string name="weapons_section">Weapons section</string>
+    <string name="armors">Armors</string>
+    <string name="food">Food</string>
+    <string name="meads">Meads</string>
+    <string name="tools">Tools</string>
+    <string name="materials">Materials</string>
+    <string name="building_materials">Building Materials</string>
+    <string name="ore_deposits">Ore Deposits</string>
+    <string name="trees">Trees</string>
+    <string name="points_of_interest">Points Of Interest</string>
+    <string name="points_of_interest_section">Points Of Interest section</string>
+    <string name="trees_section">Trees section</string>
+    <string name="ore_deposits_section">Ore Deposits section</string>
+    <string name="building_materials_section">Building Materials section</string>
+    <string name="materials_section">Materials section</string>
+    <string name="tools_section">Tools section</string>
+    <string name="mead_section">Mead section</string>
+    <string name="food_section">Food section</string>
+    <string name="armor_section">Armor section</string>
 </resources>

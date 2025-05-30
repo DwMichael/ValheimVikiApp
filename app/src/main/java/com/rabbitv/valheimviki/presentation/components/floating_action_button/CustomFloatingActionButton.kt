@@ -26,20 +26,18 @@ import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
 @Composable
 fun CustomFloatingActionButton(
-    backButtonVisibleState: Boolean,
-    backToTopState: MutableState<Boolean>,
+    showBackButton: Boolean,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     AnimatedVisibility(
-        visible = backButtonVisibleState,
+        visible = showBackButton,
         enter = fadeIn(animationSpec = tween(300)),
         exit = fadeOut(animationSpec = tween(300)),
         modifier = modifier
     ) {
         FloatingActionButton(
-            onClick = {
-                backToTopState.value = true
-            },
+            onClick = onClick,
             shape = RoundedCornerShape(BODY_CONTENT_PADDING.dp),
             containerColor = ForestGreen10Dark,
             contentColor = PrimaryWhite,
@@ -63,8 +61,9 @@ fun PreviewCustomFloatingActionButton() {
     val backToTopState = remember { mutableStateOf(false) }
     ValheimVikiAppTheme {
         CustomFloatingActionButton(
-            backButtonVisibleState = backButtonVisibleState,
-            backToTopState = backToTopState
+            showBackButton = backButtonVisibleState,
+            onClick = { backToTopState.value = true },
+
         )
     }
 }
