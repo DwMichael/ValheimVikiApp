@@ -3,6 +3,7 @@ package com.rabbitv.valheimviki.presentation.components.grid.grid_item
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope.PlaceHolderSize.Companion.animatedSize
 import androidx.compose.animation.core.ExperimentalAnimationSpecApi
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
@@ -50,39 +51,40 @@ import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 @Composable
 fun AnimatedGridItem(
     item: ItemData,
-    onItemClick: (String) -> Unit,
+    onItemClick: (String, String, String) -> Unit,
     height: Dp,
     animatedVisibilityScope: AnimatedVisibilityScope
 ) {
-    val sharedTransitionScope = LocalSharedTransitionScope.current
-        ?: throw IllegalStateException("No Scope found")
+    val scope = LocalSharedTransitionScope.current
+        ?: error("No SharedTransitionScope")
 
-    val imageMemoryCacheKey = MemoryCache.Key("image-${item.id}")
-    with(sharedTransitionScope) {
+    with(scope) {
+        val imageState = rememberSharedContentState("image-${item.id}")
+        val surfaceState = rememberSharedContentState("surface-${item.id}")
+        val textState = rememberSharedContentState("text-${item.id}")
         Box(
             modifier = Modifier
                 .height(height)
                 .clickable {
-                    onItemClick(item.id)
+                    onItemClick(item.id,item.imageUrl,item.name)
                 },
             contentAlignment = Alignment.BottomStart
         ) {
             AsyncImage(
                 modifier = Modifier
-
                     .sharedElement(
-                        sharedContentState = rememberSharedContentState(key = "image-${item.id}"),
+                        sharedContentState = imageState,
                         animatedVisibilityScope = animatedVisibilityScope,
+                        placeHolderSize = animatedSize
                     )
                     .fillMaxSize()
                     .clip(RoundedCornerShape(MEDIUM_PADDING)),
                 model = ImageRequest.Builder(context = LocalContext.current)
                     .data(item.imageUrl.toString())
-                    .memoryCacheKey(imageMemoryCacheKey)
                     .crossfade(true)
                     .build(),
-                error = painterResource(R.drawable.ic_placeholder), //
-                placeholder = painterResource(R.drawable.ic_placeholder), //
+                error = painterResource(R.drawable.ic_placeholder),
+                placeholder = painterResource(R.drawable.ic_placeholder),
                 contentDescription = stringResource(R.string.item_grid_image),
                 contentScale = ContentScale.Crop,
             )
@@ -90,8 +92,9 @@ fun AnimatedGridItem(
             Surface(
                 modifier = Modifier
                     .sharedElement(
-                        sharedContentState = rememberSharedContentState(key = "Surface-${item.id}"),
+                        sharedContentState = surfaceState,
                         animatedVisibilityScope = animatedVisibilityScope,
+                        placeHolderSize = animatedSize
                     )
                     .fillMaxHeight(0.2f)
                     .fillMaxWidth()
@@ -109,10 +112,8 @@ fun AnimatedGridItem(
                         .padding
                             (horizontal = 8.dp)
                         .sharedElement(
-                            sharedContentState = rememberSharedContentState(key = "text-${item.id}"),
-                            boundsTransform = { _, _ ->
-                                tween(durationMillis = 600)
-                            },
+                            sharedContentState = textState,
+                            placeHolderSize = animatedSize,
                             animatedVisibilityScope = animatedVisibilityScope,
 
                             )
@@ -145,7 +146,7 @@ private fun PreviewGridItem() {
         AnimatedVisibility(true) {
             AnimatedGridItem(
                 item = item,
-                onItemClick = { _-> },
+                onItemClick = { _,_,_-> },
                 height = ITEM_HEIGHT_TWO_COLUMNS,
                 animatedVisibilityScope = this,
             )

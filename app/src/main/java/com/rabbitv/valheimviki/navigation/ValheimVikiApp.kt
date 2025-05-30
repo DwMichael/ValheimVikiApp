@@ -92,11 +92,12 @@ import com.rabbitv.valheimviki.presentation.weapons.WeaponListScreen
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.Constants.AGGRESSIVE_CREATURE_KEY
 import com.rabbitv.valheimviki.utils.Constants.BIOME_ARGUMENT_KEY
+import com.rabbitv.valheimviki.utils.Constants.BIOME_IMAGE_URL_KEY
+import com.rabbitv.valheimviki.utils.Constants.BIOME_NAME_KEY
 import com.rabbitv.valheimviki.utils.Constants.MAIN_BOSS_ARGUMENT_KEY
 import com.rabbitv.valheimviki.utils.Constants.MINI_BOSS_ARGUMENT_KEY
 import com.rabbitv.valheimviki.utils.Constants.NPC_KEY
 import com.rabbitv.valheimviki.utils.Constants.PASSIVE_CREATURE_KEY
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Preview
@@ -143,21 +144,11 @@ fun MainContainer(
                 route.startsWith(Screen.PointOfInterest.route.substringBefore("{"))
     } == true
 
-    val isNavigating = remember { mutableStateOf(false) }
     val topBarVisible = remember { mutableStateOf(showTopAppBar) }
-    LaunchedEffect(currentRoute) {
-        items.find { it.route == currentRoute }?.let {
-            selectedItem.value = it
-        }
-        if (!showTopAppBar) {
-            isNavigating.value = true
-            delay(250)
-            topBarVisible.value = false
-            isNavigating.value = false
-        } else {
-            topBarVisible.value = true
-        }
+    LaunchedEffect(showTopAppBar) {
+        topBarVisible.value = showTopAppBar
     }
+
 
 
     NavigationDrawer(
@@ -211,9 +202,9 @@ fun MainContainer(
                     composable(Screen.Biome.route) {
                         BiomeScreen(
                             modifier = Modifier.padding(10.dp),
-                            onItemClick = { itemId ->
+                            onItemClick = { id, imageUrl, name ->
                                 valheimVikiNavController.navigate(
-                                    Screen.BiomeDetail.passBiomeIdAndText(itemId)
+                                    Screen.BiomeDetail.passArguments(id, imageUrl, name)
                                 )
                             },
                             paddingValues = innerPadding,
@@ -224,7 +215,7 @@ fun MainContainer(
                     composable(Screen.Boss.route) {
                         BossScreen(
                             modifier = Modifier.padding(10.dp),
-                            onItemClick = { mainBossId ->
+                            onItemClick = { mainBossId, _, _ ->
                                 valheimVikiNavController.navigate(
                                     Screen.MainBossDetail.passCreatureId(mainBossId)
                                 )
@@ -236,7 +227,7 @@ fun MainContainer(
                     composable(Screen.MiniBoss.route) {
                         MiniBossScreen(
                             modifier = Modifier.padding(10.dp),
-                            onItemClick = { miniBossId ->
+                            onItemClick = { miniBossId, _, _ ->
                                 valheimVikiNavController.navigate(
                                     Screen.MiniBossDetail.passMiniBossId(miniBossId)
                                 )
@@ -402,7 +393,7 @@ fun MainContainer(
                     composable(Screen.OreDeposit.route) {
                         OreDepositScreen(
                             modifier = Modifier.padding(10.dp),
-                            onItemClick = { itemId ->
+                            onItemClick = { itemId, _, _ ->
 //                                valheimVikiNavController.navigate(
 //                                    Screen.BiomeDetail.passBiomeIdAndText(itemId, text)
 //                                )
@@ -414,7 +405,7 @@ fun MainContainer(
                     composable(Screen.Tree.route) {
                         TreeScreen(
                             modifier = Modifier.padding(10.dp),
-                            onItemClick = { itemId ->
+                            onItemClick = { itemId, _, _ ->
 //                                valheimVikiNavController.navigate(
 //                                    Screen.BiomeDetail.passBiomeIdAndText(itemId, text)
 //                                )
@@ -439,14 +430,38 @@ fun MainContainer(
                     composable(
                         Screen.BiomeDetail.route,
                         arguments = listOf(
-                            navArgument(BIOME_ARGUMENT_KEY) { type = NavType.StringType }
+                            navArgument(BIOME_ARGUMENT_KEY) { type = NavType.StringType },
+                            navArgument(BIOME_IMAGE_URL_KEY) {
+                                type = NavType.StringType
+                            },
+                            navArgument(BIOME_NAME_KEY) {
+                                type = NavType.StringType
+                            }
                         )
                     ) { backStackEntry ->
+
+                        val biomeId: String =
+                            checkNotNull(backStackEntry.arguments?.getString(BIOME_ARGUMENT_KEY)) {
+                                "BIOME_ARGUMENT_KEY cannot be null. Check NavGraph definition and navigation call."
+                            }
+                        val imageUrl: String =
+                            checkNotNull(backStackEntry.arguments?.getString(BIOME_IMAGE_URL_KEY)) {
+                                "BIOME_IMAGE_URL_KEY cannot be null. Check NavGraph definition and navigation call."
+                            }
+                        val name: String =
+                            checkNotNull(backStackEntry.arguments?.getString(BIOME_NAME_KEY)) {
+                                "BIOME_NAME_KEY cannot be null. Check NavGraph definition and navigation call."
+                            }
+
+
                         BiomeDetailScreen(
                             onBack = {
                                 valheimVikiNavController.popBackStack()
                             },
-                            animatedVisibilityScope = this@composable
+                            animatedVisibilityScope = this@composable,
+                            id = biomeId,
+                            imageUrl = imageUrl,
+                            name = name,
                         )
                     }
                     composable(

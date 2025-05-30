@@ -27,8 +27,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil3.compose.AsyncImagePainter
-import coil3.compose.rememberAsyncImagePainter
 import com.composables.icons.lucide.Gem
 import com.composables.icons.lucide.House
 import com.composables.icons.lucide.Lucide
@@ -52,6 +50,9 @@ import com.rabbitv.valheimviki.utils.FakeData
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun BiomeDetailScreen(
+    id: String,
+    imageUrl: String,
+    name: String,
     onBack: () -> Unit,
     viewModel: BiomeDetailScreenViewModel = hiltViewModel(),
     animatedVisibilityScope: AnimatedVisibilityScope
@@ -59,13 +60,14 @@ fun BiomeDetailScreen(
     val biomeUiState by viewModel.uiState.collectAsStateWithLifecycle()
     val sharedTransitionScope = LocalSharedTransitionScope.current
         ?: throw IllegalStateException("No Scope found")
-    val painter = rememberAsyncImagePainter(biomeUiState.biome?.imageUrl)
     BiomeDetailContent(
         onBack = onBack,
         sharedTransitionScope = sharedTransitionScope,
         animatedVisibilityScope = animatedVisibilityScope,
         biomeUiState = biomeUiState,
-        painter = painter
+        id = id,
+        imageUrl = imageUrl,
+        name = name,
     )
 
 }
@@ -78,7 +80,9 @@ fun BiomeDetailContent(
     biomeUiState: BiomeDetailUiState,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
-    painter: AsyncImagePainter
+    id: String,
+    imageUrl: String,
+    name: String,
 ) {
     val isTransitionRunning = animatedVisibilityScope.transition.isRunning
 
@@ -104,15 +108,15 @@ fun BiomeDetailContent(
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.Start,
             ) {
-                if (biomeUiState.biome != null) {
-                    MainDetailImageAnimated(
-                        onBack = onBack,
-                        itemData = biomeUiState.biome,
-                        sharedTransitionScope = sharedTransitionScope,
-                        animatedVisibilityScope = animatedVisibilityScope,
-                        painter = painter,
-                    )
-                }
+                MainDetailImageAnimated(
+                    onBack = onBack,
+                    sharedTransitionScope = sharedTransitionScope,
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    id = id,
+                    imageUrl = imageUrl,
+                    title = name
+                )
+
 
                 DetailExpandableText(text = biomeUiState.biome?.description.toString())
                 biomeUiState.mainBoss?.let { mainBoss ->
@@ -248,7 +252,9 @@ fun PreviewBiomeDetailContent() {
                     sharedTransitionScope = this@SharedTransitionLayout,
                     animatedVisibilityScope = this,
                     biomeUiState = uiState,
-                    painter = TODO(),
+                    id = "",
+                    imageUrl = "",
+                    name = "",
                 )
             }
         }

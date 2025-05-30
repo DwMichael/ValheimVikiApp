@@ -30,14 +30,14 @@ import kotlinx.coroutines.FlowPreview
 @Composable
 fun BiomeScreen(
     modifier: Modifier,
-    onItemClick: (String) -> Unit,
+    onItemClick: (String, String, String) -> Unit,
     paddingValues: PaddingValues,
     viewModel: BiomeScreenViewModel = hiltViewModel(),
     animatedVisibilityScope: AnimatedVisibilityScope
 ) {
     val biomeUiState: UiState<Biome> by viewModel.biomeUiState.collectAsStateWithLifecycle()
     val lazyGridState = rememberLazyGridState()
-    
+
     Box(
         modifier = modifier
     ) {

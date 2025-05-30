@@ -40,7 +40,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Trophy
@@ -67,14 +66,14 @@ fun MiniBossDetailScreen(
     val miniBossUiState by viewModel.uiState.collectAsStateWithLifecycle()
     val sharedTransitionScope = LocalSharedTransitionScope.current
         ?: throw IllegalStateException("No Scope found")
-    val painter = rememberAsyncImagePainter(miniBossUiState.miniBoss?.imageUrl)
+
     MiniBossContent(
         onBack = onBack,
         miniBossUiSate = miniBossUiState,
         sharedTransitionScope = sharedTransitionScope,
         animatedVisibilityScope = animatedVisibilityScope,
-        painter = painter
-    )
+
+        )
 }
 
 
@@ -85,8 +84,8 @@ fun MiniBossContent(
     onBack: () -> Unit,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
-    painter: AsyncImagePainter
-) {
+
+    ) {
     val transitionComplete = remember { mutableStateOf(false) }
     val scrollEnabled = remember { derivedStateOf { transitionComplete.value } }
 
@@ -124,11 +123,13 @@ fun MiniBossContent(
                     ) {
                         MainDetailImageAnimated(
                             onBack = onBack,
-                            itemData = miniBossUiSate.miniBoss,
+
                             sharedTransitionScope = sharedTransitionScope,
                             animatedVisibilityScope = animatedVisibilityScope,
                             textAlign = TextAlign.Center,
-                            painter = painter
+                            id = miniBossUiSate.miniBoss.id,
+                            imageUrl = miniBossUiSate.miniBoss.imageUrl,
+                            title = miniBossUiSate.miniBoss.name,
                         )
                         DetailExpandableText(text = miniBossUiSate.miniBoss.description.toString())
                         TridentsDividedRow(text = "BOSS DETAIL")

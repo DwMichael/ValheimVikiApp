@@ -1,8 +1,11 @@
 package com.rabbitv.valheimviki.navigation
 
 
+import android.net.Uri
 import com.rabbitv.valheimviki.utils.Constants.AGGRESSIVE_CREATURE_KEY
 import com.rabbitv.valheimviki.utils.Constants.BIOME_ARGUMENT_KEY
+import com.rabbitv.valheimviki.utils.Constants.BIOME_IMAGE_URL_KEY
+import com.rabbitv.valheimviki.utils.Constants.BIOME_NAME_KEY
 import com.rabbitv.valheimviki.utils.Constants.MAIN_BOSS_ARGUMENT_KEY
 import com.rabbitv.valheimviki.utils.Constants.MINI_BOSS_ARGUMENT_KEY
 import com.rabbitv.valheimviki.utils.Constants.NPC_KEY
@@ -69,9 +72,10 @@ sealed class Screen(val route: String) {
     object PointOfInterest : Screen("point_of_interest_screen")
 
     @Serializable
-    object BiomeDetail : Screen("biome_screen/{$BIOME_ARGUMENT_KEY}") {
-        fun passBiomeIdAndText(biomeId: String): String {
-            return "biome_screen/$biomeId"
+    object BiomeDetail :
+        Screen("biome_detail/{$BIOME_ARGUMENT_KEY}/{$BIOME_IMAGE_URL_KEY}/{$BIOME_NAME_KEY}") {
+        fun passArguments(id: String, imageUrl: String, name: String): String {
+            return "biome_detail/$id/${Uri.encode(imageUrl)}/${Uri.encode(name)}"
         }
     }
 

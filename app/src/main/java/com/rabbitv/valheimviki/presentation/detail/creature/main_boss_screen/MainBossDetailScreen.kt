@@ -44,7 +44,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
 import com.composables.icons.lucide.Flame
 import com.composables.icons.lucide.Lucide
@@ -78,13 +77,11 @@ fun MainBossDetailScreen(
     val mainBossUiState by viewModel.uiState.collectAsStateWithLifecycle()
     val sharedTransitionScope = LocalSharedTransitionScope.current
         ?: throw IllegalStateException("No Scope found")
-    val painter = rememberAsyncImagePainter(mainBossUiState.mainBoss?.imageUrl)
     MainBossContent(
         onBack = onBack,
         animatedVisibilityScope = animatedVisibilityScope,
         sharedTransitionScope = sharedTransitionScope,
         mainBossUiState = mainBossUiState,
-        painter = painter
     )
 
 }
@@ -97,7 +94,6 @@ fun MainBossContent(
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
     mainBossUiState: MainBossDetailUiState,
-    painter: AsyncImagePainter
 ) {
     val transitionComplete = remember { mutableStateOf(false) }
     val scrollEnabled = remember { derivedStateOf { transitionComplete.value } }
@@ -135,11 +131,12 @@ fun MainBossContent(
                     ) {
                         MainDetailImageAnimated(
                             onBack = onBack,
-                            itemData = mainBossUiState.mainBoss,
                             sharedTransitionScope = sharedTransitionScope,
                             animatedVisibilityScope = animatedVisibilityScope,
                             textAlign = TextAlign.Center,
-                            painter = painter
+                            id = mainBossUiState.mainBoss.id,
+                            imageUrl = mainBossUiState.mainBoss.imageUrl,
+                            title = mainBossUiState.mainBoss.name
                         )
                         DetailExpandableText(text = mainBossUiState.mainBoss.description.toString())
                         TridentsDividedRow(text = "BOSS DETAIL")

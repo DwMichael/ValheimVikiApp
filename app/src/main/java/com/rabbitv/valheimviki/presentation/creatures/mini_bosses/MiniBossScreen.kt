@@ -37,7 +37,7 @@ import kotlinx.coroutines.FlowPreview
 @Composable
 fun MiniBossScreen(
     modifier: Modifier,
-    onItemClick: (String) -> Unit,
+    onItemClick: (String, String, String) -> Unit,
     paddingValues: PaddingValues,
     viewModel: MiniBossesViewModel = hiltViewModel(),
     animatedVisibilityScope: AnimatedVisibilityScope
