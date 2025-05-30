@@ -80,15 +80,15 @@ fun MainDetailImageAnimated(
                     AsyncImage(
                         model = ImageRequest.Builder(LocalContext.current)
                             .data(imageUrl)
-                            .placeholderMemoryCacheKey("image-$id")
-                            .memoryCacheKey("image-$id")
+                            .placeholderMemoryCacheKey("image--$id")
+                            .memoryCacheKey("image--$id")
                             .crossfade(!isRunning)
                             .build(),
                         contentDescription = stringResource(R.string.item_grid_image),
                         contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier
+                            .fillMaxSize()
                     )
-
                     Surface(
                         color = Color.Black.copy(alpha = 0.6f),
                         tonalElevation = 0.dp,
@@ -98,10 +98,9 @@ fun MainDetailImageAnimated(
                             .fillMaxHeight(0.22f)
                             .sharedElement(
                                 surfaceState,
-                                animatedVisibilityScope, placeHolderSize = animatedSize
-//                                boundsTransform = { _, _ -> tween(600) }
+                                animatedVisibilityScope, placeHolderSize = animatedSize,
                             )
-                            .skipToLookaheadSize()
+
                     ) {
                         Text(
                             text = title,
@@ -112,9 +111,9 @@ fun MainDetailImageAnimated(
                                 .padding(horizontal = 8.dp)
                                 .sharedElement(
                                     textState,
-                                    animatedVisibilityScope, placeHolderSize = animatedSize
-//                                    boundsTransform = { _, _ -> tween(600) }
+                                    animatedVisibilityScope, placeHolderSize = animatedSize,
                                 )
+                                .skipToLookaheadSize()
                                 .wrapContentHeight(Alignment.CenterVertically)
 
                         )

@@ -8,11 +8,14 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DrawerValue
@@ -20,15 +23,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -100,6 +101,24 @@ import com.rabbitv.valheimviki.utils.Constants.NPC_KEY
 import com.rabbitv.valheimviki.utils.Constants.PASSIVE_CREATURE_KEY
 import kotlinx.coroutines.launch
 
+private val topBarScreens = setOf(
+    Screen.Boss,
+    Screen.Biome,
+    Screen.MiniBoss,
+    Screen.MobList,
+    Screen.WeaponList,
+    Screen.ArmorList,
+    Screen.FoodList,
+    Screen.MeadList,
+    Screen.ToolList,
+    Screen.MaterialCategory,
+    Screen.BuildingMaterialCategory,
+    Screen.OreDeposit,
+    Screen.Tree,
+    Screen.PointOfInterest,
+)
+
+
 @Preview
 @Composable
 fun ValheimVikiApp() {
@@ -122,32 +141,19 @@ fun MainContainer(
 ) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    val items = getDrawerItems()
-    val selectedItem: MutableState<DrawerItem> = remember { mutableStateOf(items[0]) }
-    val navBackStackEntry by valheimVikiNavController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
+
+    val drawerItems: List<DrawerItem> = rememberDrawerItems()
+    val selectedItem = remember { mutableStateOf(drawerItems.first()) }
+
+    val currentBackStackEntry by valheimVikiNavController.currentBackStackEntryAsState()
+    val currentRoute = currentBackStackEntry?.destination?.route
+
 
     val showTopAppBar = currentRoute?.let { route ->
-        route.startsWith(Screen.Boss.route.substringBefore("{")) ||
-                route.startsWith(Screen.Biome.route.substringBefore("{")) ||
-                route.startsWith(Screen.MiniBoss.route.substringBefore("{")) ||
-                route.startsWith(Screen.MobList.route.substringBefore("{")) ||
-                route.startsWith(Screen.WeaponList.route.substringBefore("{")) ||
-                route.startsWith(Screen.ArmorList.route.substringBefore("{")) ||
-                route.startsWith(Screen.FoodList.route.substringBefore("{")) ||
-                route.startsWith(Screen.MeadList.route.substringBefore("{")) ||
-                route.startsWith(Screen.ToolList.route.substringBefore("{")) ||
-                route.startsWith(Screen.MaterialCategory.route.substringBefore("{")) ||
-                route.startsWith(Screen.BuildingMaterialCategory.route.substringBefore("{")) ||
-                route.startsWith(Screen.OreDeposit.route.substringBefore("{")) ||
-                route.startsWith(Screen.Tree.route.substringBefore("{")) ||
-                route.startsWith(Screen.PointOfInterest.route.substringBefore("{"))
+        topBarScreens.any { screen ->
+            route.startsWith(screen.route.substringBefore("{"))
+        }
     } == true
-
-    val topBarVisible = remember { mutableStateOf(showTopAppBar) }
-    LaunchedEffect(showTopAppBar) {
-        topBarVisible.value = showTopAppBar
-    }
 
 
 
@@ -156,471 +162,561 @@ fun MainContainer(
         drawerState = drawerState,
         scope = scope,
         childNavController = valheimVikiNavController,
-        items = items,
+        items = drawerItems,
         selectedItem = selectedItem,
-        isDetailScreen = !showTopAppBar,
+        isDetailScreen = showTopAppBar,
+        currentRoute = currentRoute,
     ) {
         Scaffold(
             topBar = {
                 AnimatedVisibility(
-                    visible = topBarVisible.value,
-                    enter = slideInVertically(
-                        initialOffsetY = { -it },
-                    ),
-                    exit = slideOutVertically(
-                        targetOffsetY = { -it },
-                        animationSpec = tween(durationMillis = 200)
-                    ) + fadeOut(animationSpec = tween(durationMillis = 200))
+                    visible = showTopAppBar,
+                    enter = slideInVertically { -it },
+                    exit = slideOutVertically { -it } + fadeOut(),
                 ) {
                     MainAppBar(
                         onSearchBarClick = {},
                         onMenuClick = { scope.launch { drawerState.open() } },
                         onBookMarkClick = {},
                         scope = scope,
-                        drawerState = drawerState
+                        drawerState = drawerState,
                     )
                 }
             },
-            content = { innerPadding ->
-                Image(
-                    painter = painterResource(id = R.drawable.main_background),
-                    contentDescription = "BackgroundImage",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize(),
+        ) { innerPadding ->
+            val targetTopPadding = if (showTopAppBar) innerPadding.calculateTopPadding() else 0.dp
+            val animatedTopPadding by animateDpAsState(
+                targetValue = targetTopPadding,
+                animationSpec = tween(durationMillis = 650, easing = LinearOutSlowInEasing)
+            )
+
+            Box(
+                modifier = Modifier
+                    .padding(top = animatedTopPadding)
+                    .fillMaxSize()
+
+            ) {
+                ValheimNavGraph(
+                    valheimVikiNavController = valheimVikiNavController,
+                    innerPadding = PaddingValues(0.dp)
                 )
-                NavHost(
-                    navController = valheimVikiNavController,
-                    startDestination = Screen.Splash.route,
-                ) {
-                    composable(route = Screen.Splash.route) {
-                        SplashScreen(valheimVikiNavController)
-                    }
-                    composable(route = Screen.Welcome.route) {
-                        WelcomeScreen(valheimVikiNavController)
-                    }
-                    //Drawer Screens
-                    composable(Screen.Biome.route) {
-                        BiomeScreen(
-                            modifier = Modifier.padding(10.dp),
-                            onItemClick = { id, imageUrl, name ->
-                                valheimVikiNavController.navigate(
-                                    Screen.BiomeDetail.passArguments(id, imageUrl, name)
-                                )
-                            },
-                            paddingValues = innerPadding,
-                            animatedVisibilityScope = this@composable
-                        )
-                    }
-
-                    composable(Screen.Boss.route) {
-                        BossScreen(
-                            modifier = Modifier.padding(10.dp),
-                            onItemClick = { mainBossId, _, _ ->
-                                valheimVikiNavController.navigate(
-                                    Screen.MainBossDetail.passCreatureId(mainBossId)
-                                )
-                            },
-                            paddingValues = innerPadding,
-                            animatedVisibilityScope = this@composable
-                        )
-                    }
-                    composable(Screen.MiniBoss.route) {
-                        MiniBossScreen(
-                            modifier = Modifier.padding(10.dp),
-                            onItemClick = { miniBossId, _, _ ->
-                                valheimVikiNavController.navigate(
-                                    Screen.MiniBossDetail.passMiniBossId(miniBossId)
-                                )
-                            },
-                            paddingValues = innerPadding,
-                            animatedVisibilityScope = this@composable
-                        )
-                    }
-                    composable(Screen.MobList.route) {
-                        MobListScreen(
-                            modifier = Modifier.padding(10.dp),
-                            onItemClick = { creatureId, creatureSubCategory: CreatureSubCategory ->
-                                when (creatureSubCategory) {
-                                    CreatureSubCategory.PASSIVE_CREATURE -> valheimVikiNavController.navigate(
-                                        Screen.PassiveCreatureDetail.passPassiveCreatureId(
-                                            creatureId
-                                        )
-                                    )
-
-                                    CreatureSubCategory.AGGRESSIVE_CREATURE -> valheimVikiNavController.navigate(
-                                        Screen.AggressiveCreatureDetail.passAggressiveCreatureId(
-                                            creatureId
-                                        )
-                                    )
-
-                                    CreatureSubCategory.NPC -> valheimVikiNavController.navigate(
-                                        Screen.NpcDetail.passNpcId(
-                                            creatureId
-                                        )
-                                    )
-
-                                    CreatureSubCategory.BOSS -> null
-                                    CreatureSubCategory.MINI_BOSS -> null
-                                }
-                            },
-                            paddingValues = innerPadding,
-//                            animatedVisibilityScope = this@composable
-                        )
-                    }
-
-                    composable(Screen.WeaponList.route) {
-                        WeaponListScreen(
-                            modifier = Modifier.padding(10.dp),
-                            onItemClick = {},
-                            paddingValues = innerPadding,
-                        )
-                    }
-
-                    composable(Screen.ArmorList.route) {
-                        ArmorListScreen(
-                            modifier = Modifier.padding(10.dp),
-                            onItemClick = {},
-                            paddingValues = innerPadding,
-                        )
-                    }
-                    composable(Screen.FoodList.route) {
-                        FoodListScreen(
-                            modifier = Modifier.padding(10.dp),
-                            onItemClick = { foodId, foodSubCategory: FoodSubCategory ->
-                                when (foodSubCategory) {
-                                    FoodSubCategory.UNCOOKED_FOOD -> null
-                                    FoodSubCategory.COOKED_FOOD -> null
-                                }
-                            },
-                            paddingValues = innerPadding,
-                        )
-                    }
-
-                    composable(Screen.MeadList.route) {
-                        MeadListScreen(
-                            modifier = Modifier.padding(10.dp),
-                            onItemClick = { meadId, meadSubCategory: MeadSubCategory ->
-                                when (meadSubCategory) {
-                                    MeadSubCategory.MEAD_BASE -> null
-                                    MeadSubCategory.POTION -> null
-                                }
-                            },
-                            paddingValues = innerPadding,
-                        )
-                    }
-                    composable(Screen.ToolList.route) {
-                        ToolListScreen(
-                            modifier = Modifier.padding(10.dp),
-                            onItemClick = { toolId, _ ->
-                            },
-                            paddingValues = innerPadding,
-                        )
-                    }
-
-                    navigation(
-                        startDestination = Screen.MaterialCategory.route,
-                        route = "material_graph"    // <-- group them under one graph
-                    ) {
-                        composable(Screen.MaterialCategory.route) { backStackEntry ->
-                            val parentEntry = remember(backStackEntry) {
-                                valheimVikiNavController.getBackStackEntry("material_graph")
-                            }
-                            val vm = hiltViewModel<MaterialListViewModel>(parentEntry)
-                            MaterialCategoryScreen(
-                                modifier = Modifier.padding(10.dp),
-                                paddingValues = innerPadding,
-                                onGridCategoryClick = {
-                                    valheimVikiNavController.navigate(Screen.MaterialList.route)
-                                },
-                                viewModel = vm
-                            )
-                        }
-
-                        composable(Screen.MaterialList.route) { backStackEntry ->
-
-                            val parentEntry = remember(backStackEntry) {
-                                valheimVikiNavController.getBackStackEntry("material_graph")
-                            }
-                            val vm = hiltViewModel<MaterialListViewModel>(parentEntry)
-                            MaterialListScreen(
-                                onItemClick = { materialId, _ ->
-                                    {}
-                                },
-                                onBackClick = {
-                                    valheimVikiNavController.popBackStack()
-                                },
-                                viewModel = vm
-                            )
-                        }
-                    }
-                    navigation(
-                        startDestination = Screen.BuildingMaterialCategory.route,
-                        route = "building_material_graph"
-                    ) {
-                        composable(Screen.BuildingMaterialCategory.route) { backStackEntry ->
-                            val parentEntry = remember(backStackEntry) {
-                                valheimVikiNavController.getBackStackEntry("building_material_graph")
-                            }
-                            val vm = hiltViewModel<BuildingMaterialListViewModel>(parentEntry)
-                            BuildingMaterialCategoryScreen(
-                                modifier = Modifier.padding(10.dp),
-                                paddingValues = innerPadding,
-                                onGridCategoryClick = {
-                                    valheimVikiNavController.navigate(Screen.BuildingMaterialList.route)
-                                },
-                                viewModel = vm
-                            )
-                        }
-
-                        composable(Screen.BuildingMaterialList.route) { backStackEntry ->
-
-                            val parentEntry = remember(backStackEntry) {
-                                valheimVikiNavController.getBackStackEntry("building_material_graph")
-                            }
-                            val vm = hiltViewModel<BuildingMaterialListViewModel>(parentEntry)
-                            BuildingMaterialListScreen(
-                                onItemClick = { buildingMaterialId, _ ->
-                                    {}
-                                },
-                                onBackClick = {
-                                    valheimVikiNavController.popBackStack()
-                                },
-                                viewModel = vm
-                            )
-                        }
-                    }
-
-                    composable(Screen.OreDeposit.route) {
-                        OreDepositScreen(
-                            modifier = Modifier.padding(10.dp),
-                            onItemClick = { itemId, _, _ ->
-//                                valheimVikiNavController.navigate(
-//                                    Screen.BiomeDetail.passBiomeIdAndText(itemId, text)
-//                                )
-                            },
-                            paddingValues = innerPadding,
-                            animatedVisibilityScope = this@composable
-                        )
-                    }
-                    composable(Screen.Tree.route) {
-                        TreeScreen(
-                            modifier = Modifier.padding(10.dp),
-                            onItemClick = { itemId, _, _ ->
-//                                valheimVikiNavController.navigate(
-//                                    Screen.BiomeDetail.passBiomeIdAndText(itemId, text)
-//                                )
-                            },
-                            paddingValues = innerPadding,
-                            animatedVisibilityScope = this@composable
-                        )
-                    }
-                    composable(Screen.PointOfInterest.route) {
-                        PoiListScreen(
-                            modifier = Modifier.padding(10.dp),
-                            onItemClick = { poiId, poiSubCategory: PointOfInterestSubCategory ->
-                                when (poiSubCategory) {
-                                    PointOfInterestSubCategory.FORSAKEN_ALTAR -> null
-                                    PointOfInterestSubCategory.STRUCTURE -> null
-                                }
-                            },
-                            paddingValues = innerPadding,
-                        )
-                    }
-                    //Detail Screens
-                    composable(
-                        Screen.BiomeDetail.route,
-                        arguments = listOf(
-                            navArgument(BIOME_ARGUMENT_KEY) { type = NavType.StringType },
-                            navArgument(BIOME_IMAGE_URL_KEY) {
-                                type = NavType.StringType
-                            },
-                            navArgument(BIOME_NAME_KEY) {
-                                type = NavType.StringType
-                            }
-                        )
-                    ) { backStackEntry ->
-
-                        val biomeId: String =
-                            checkNotNull(backStackEntry.arguments?.getString(BIOME_ARGUMENT_KEY)) {
-                                "BIOME_ARGUMENT_KEY cannot be null. Check NavGraph definition and navigation call."
-                            }
-                        val imageUrl: String =
-                            checkNotNull(backStackEntry.arguments?.getString(BIOME_IMAGE_URL_KEY)) {
-                                "BIOME_IMAGE_URL_KEY cannot be null. Check NavGraph definition and navigation call."
-                            }
-                        val name: String =
-                            checkNotNull(backStackEntry.arguments?.getString(BIOME_NAME_KEY)) {
-                                "BIOME_NAME_KEY cannot be null. Check NavGraph definition and navigation call."
-                            }
-
-
-                        BiomeDetailScreen(
-                            onBack = {
-                                valheimVikiNavController.popBackStack()
-                            },
-                            animatedVisibilityScope = this@composable,
-                            id = biomeId,
-                            imageUrl = imageUrl,
-                            name = name,
-                        )
-                    }
-                    composable(
-                        route = Screen.MainBossDetail.route,
-                        arguments = listOf(
-                            navArgument(MAIN_BOSS_ARGUMENT_KEY) { type = NavType.StringType },
-                        )
-                    ) {
-                        MainBossDetailScreen(
-                            onBack = {
-                                valheimVikiNavController.popBackStack()
-                            },
-                            animatedVisibilityScope = this@composable
-                        )
-                    }
-                    composable(
-                        route = Screen.MiniBossDetail.route,
-                        arguments = listOf(
-                            navArgument(MINI_BOSS_ARGUMENT_KEY) { type = NavType.StringType },
-                        )
-                    ) {
-                        MiniBossDetailScreen(
-                            onBack = {
-                                valheimVikiNavController.popBackStack()
-                            },
-                            animatedVisibilityScope = this@composable
-                        )
-                    }
-                    composable(
-                        route = Screen.AggressiveCreatureDetail.route,
-                        arguments = listOf(
-                            navArgument(AGGRESSIVE_CREATURE_KEY) { type = NavType.StringType },
-                        )
-                    ) {
-                        AggressiveCreatureDetailScreen(
-                            onBack = {
-                                valheimVikiNavController.popBackStack()
-                            },
-                        )
-                    }
-                    composable(
-                        route = Screen.PassiveCreatureDetail.route,
-                        arguments = listOf(
-                            navArgument(PASSIVE_CREATURE_KEY) { type = NavType.StringType },
-                        )
-                    ) {
-                        PassiveCreatureDetailScreen(
-                            onBack = {
-                                valheimVikiNavController.popBackStack()
-                            },
-                        )
-                    }
-                    composable(
-                        route = Screen.NpcDetail.route,
-                        arguments = listOf(
-                            navArgument(NPC_KEY) { type = NavType.StringType },
-                        )
-                    ) {
-                        NpcDetailScreen(
-                            onBack = {
-                                valheimVikiNavController.popBackStack()
-                            },
-                        )
-                    }
-                }
             }
-        )
+        }
+    }
+}
+
+@Composable
+fun ValheimNavGraph(
+    valheimVikiNavController: NavHostController,
+    innerPadding: PaddingValues,
+) {
+    NavHost(
+        navController = valheimVikiNavController,
+        startDestination = Screen.Splash.route,
+    ) {
+        composable(route = Screen.Splash.route) {
+            SplashScreen(valheimVikiNavController)
+        }
+        composable(route = Screen.Welcome.route) {
+            WelcomeScreen(valheimVikiNavController)
+        }
+
+        composable(Screen.Biome.route) {
+            BiomeScreen(
+                modifier = Modifier.padding(10.dp),
+                onItemClick = { id, imageUrl, name ->
+                    valheimVikiNavController.navigate(
+                        Screen.BiomeDetail.passArguments(id, imageUrl, name)
+                    )
+                },
+                paddingValues = innerPadding,
+                animatedVisibilityScope = this@composable
+            )
+        }
+
+        composable(Screen.Boss.route) {
+            BossScreen(
+                modifier = Modifier.padding(10.dp),
+                onItemClick = { mainBossId, _, _ ->
+                    valheimVikiNavController.navigate(
+                        Screen.MainBossDetail.passCreatureId(mainBossId)
+                    )
+                },
+                paddingValues = innerPadding,
+                animatedVisibilityScope = this@composable
+            )
+        }
+        composable(Screen.MiniBoss.route) {
+            MiniBossScreen(
+                modifier = Modifier.padding(10.dp),
+                onItemClick = { miniBossId, _, _ ->
+                    valheimVikiNavController.navigate(
+                        Screen.MiniBossDetail.passMiniBossId(miniBossId)
+                    )
+                },
+                paddingValues = innerPadding,
+                animatedVisibilityScope = this@composable
+            )
+        }
+        composable(Screen.MobList.route) {
+            MobListScreen(
+                modifier = Modifier.padding(10.dp),
+                onItemClick = { creatureId, creatureSubCategory: CreatureSubCategory ->
+                    when (creatureSubCategory) {
+                        CreatureSubCategory.PASSIVE_CREATURE -> valheimVikiNavController.navigate(
+                            Screen.PassiveCreatureDetail.passPassiveCreatureId(
+                                creatureId
+                            )
+                        )
+
+                        CreatureSubCategory.AGGRESSIVE_CREATURE -> valheimVikiNavController.navigate(
+                            Screen.AggressiveCreatureDetail.passAggressiveCreatureId(
+                                creatureId
+                            )
+                        )
+
+                        CreatureSubCategory.NPC -> valheimVikiNavController.navigate(
+                            Screen.NpcDetail.passNpcId(
+                                creatureId
+                            )
+                        )
+
+                        CreatureSubCategory.BOSS -> null
+                        CreatureSubCategory.MINI_BOSS -> null
+                    }
+                },
+                paddingValues = innerPadding,
+//                            animatedVisibilityScope = this@composable
+            )
+        }
+
+        composable(Screen.WeaponList.route) {
+            WeaponListScreen(
+                modifier = Modifier.padding(10.dp),
+                onItemClick = {},
+                paddingValues = innerPadding,
+            )
+        }
+
+        composable(Screen.ArmorList.route) {
+            ArmorListScreen(
+                modifier = Modifier.padding(10.dp),
+                onItemClick = {},
+                paddingValues = innerPadding,
+            )
+        }
+        composable(Screen.FoodList.route) {
+            FoodListScreen(
+                modifier = Modifier.padding(10.dp),
+                onItemClick = { foodId, foodSubCategory: FoodSubCategory ->
+                    when (foodSubCategory) {
+                        FoodSubCategory.UNCOOKED_FOOD -> null
+                        FoodSubCategory.COOKED_FOOD -> null
+                    }
+                },
+                paddingValues = innerPadding,
+            )
+        }
+
+        composable(Screen.MeadList.route) {
+            MeadListScreen(
+                modifier = Modifier.padding(10.dp),
+                onItemClick = { meadId, meadSubCategory: MeadSubCategory ->
+                    when (meadSubCategory) {
+                        MeadSubCategory.MEAD_BASE -> null
+                        MeadSubCategory.POTION -> null
+                    }
+                },
+                paddingValues = innerPadding,
+            )
+        }
+        composable(Screen.ToolList.route) {
+            ToolListScreen(
+                modifier = Modifier.padding(10.dp),
+                onItemClick = { toolId, _ ->
+                },
+                paddingValues = innerPadding,
+            )
+        }
+
+        navigation(
+            startDestination = Screen.MaterialCategory.route,
+            route = "material_graph"    // <-- group them under one graph
+        ) {
+            composable(Screen.MaterialCategory.route) { backStackEntry ->
+                val parentEntry = remember(backStackEntry) {
+                    valheimVikiNavController.getBackStackEntry("material_graph")
+                }
+                val vm = hiltViewModel<MaterialListViewModel>(parentEntry)
+                MaterialCategoryScreen(
+                    modifier = Modifier.padding(10.dp),
+                    paddingValues = innerPadding,
+                    onGridCategoryClick = {
+                        valheimVikiNavController.navigate(Screen.MaterialList.route)
+                    },
+                    viewModel = vm
+                )
+            }
+
+            composable(Screen.MaterialList.route) { backStackEntry ->
+
+                val parentEntry = remember(backStackEntry) {
+                    valheimVikiNavController.getBackStackEntry("material_graph")
+                }
+                val vm = hiltViewModel<MaterialListViewModel>(parentEntry)
+                MaterialListScreen(
+                    onItemClick = { materialId, _ ->
+                        {}
+                    },
+                    onBackClick = {
+                        valheimVikiNavController.popBackStack()
+                    },
+                    viewModel = vm
+                )
+            }
+        }
+        navigation(
+            startDestination = Screen.BuildingMaterialCategory.route,
+            route = "building_material_graph"
+        ) {
+            composable(Screen.BuildingMaterialCategory.route) { backStackEntry ->
+                val parentEntry = remember(backStackEntry) {
+                    valheimVikiNavController.getBackStackEntry("building_material_graph")
+                }
+                val vm = hiltViewModel<BuildingMaterialListViewModel>(parentEntry)
+                BuildingMaterialCategoryScreen(
+                    modifier = Modifier.padding(10.dp),
+                    paddingValues = innerPadding,
+                    onGridCategoryClick = {
+                        valheimVikiNavController.navigate(Screen.BuildingMaterialList.route)
+                    },
+                    viewModel = vm
+                )
+            }
+
+            composable(Screen.BuildingMaterialList.route) { backStackEntry ->
+
+                val parentEntry = remember(backStackEntry) {
+                    valheimVikiNavController.getBackStackEntry("building_material_graph")
+                }
+                val vm = hiltViewModel<BuildingMaterialListViewModel>(parentEntry)
+                BuildingMaterialListScreen(
+                    onItemClick = { buildingMaterialId, _ ->
+                        {}
+                    },
+                    onBackClick = {
+                        valheimVikiNavController.popBackStack()
+                    },
+                    viewModel = vm
+                )
+            }
+        }
+
+        composable(Screen.OreDeposit.route) {
+            OreDepositScreen(
+                modifier = Modifier.padding(10.dp),
+                onItemClick = { itemId, _, _ ->
+//                                valheimVikiNavController.navigate(
+//                                    Screen.BiomeDetail.passBiomeIdAndText(itemId, text)
+//                                )
+                },
+                paddingValues = innerPadding,
+                animatedVisibilityScope = this@composable
+            )
+        }
+        composable(Screen.Tree.route) {
+            TreeScreen(
+                modifier = Modifier.padding(10.dp),
+                onItemClick = { itemId, _, _ ->
+//                                valheimVikiNavController.navigate(
+//                                    Screen.BiomeDetail.passBiomeIdAndText(itemId, text)
+//                                )
+                },
+                paddingValues = innerPadding,
+                animatedVisibilityScope = this@composable
+            )
+        }
+        composable(Screen.PointOfInterest.route) {
+            PoiListScreen(
+                modifier = Modifier.padding(10.dp),
+                onItemClick = { poiId, poiSubCategory: PointOfInterestSubCategory ->
+                    when (poiSubCategory) {
+                        PointOfInterestSubCategory.FORSAKEN_ALTAR -> null
+                        PointOfInterestSubCategory.STRUCTURE -> null
+                    }
+                },
+                paddingValues = innerPadding,
+            )
+        }
+        //Detail Screens
+        composable(
+            Screen.BiomeDetail.route,
+            arguments = listOf(
+                navArgument(BIOME_ARGUMENT_KEY) { type = NavType.StringType },
+                navArgument(BIOME_IMAGE_URL_KEY) {
+                    type = NavType.StringType
+                },
+                navArgument(BIOME_NAME_KEY) {
+                    type = NavType.StringType
+                }
+            )
+        ) { backStackEntry ->
+
+            val biomeId: String =
+                checkNotNull(backStackEntry.arguments?.getString(BIOME_ARGUMENT_KEY)) {
+                    "BIOME_ARGUMENT_KEY cannot be null. Check NavGraph definition and navigation call."
+                }
+            val imageUrl: String =
+                checkNotNull(backStackEntry.arguments?.getString(BIOME_IMAGE_URL_KEY)) {
+                    "BIOME_IMAGE_URL_KEY cannot be null. Check NavGraph definition and navigation call."
+                }
+            val name: String =
+                checkNotNull(backStackEntry.arguments?.getString(BIOME_NAME_KEY)) {
+                    "BIOME_NAME_KEY cannot be null. Check NavGraph definition and navigation call."
+                }
+
+
+            BiomeDetailScreen(
+                onBack = {
+                    valheimVikiNavController.popBackStack()
+                },
+                animatedVisibilityScope = this@composable,
+                id = biomeId,
+                imageUrl = imageUrl,
+                name = name,
+            )
+        }
+        composable(
+            route = Screen.MainBossDetail.route,
+            arguments = listOf(
+                navArgument(MAIN_BOSS_ARGUMENT_KEY) { type = NavType.StringType },
+            )
+        ) {
+            MainBossDetailScreen(
+                onBack = {
+                    valheimVikiNavController.popBackStack()
+                },
+                animatedVisibilityScope = this@composable
+            )
+        }
+        composable(
+            route = Screen.MiniBossDetail.route,
+            arguments = listOf(
+                navArgument(MINI_BOSS_ARGUMENT_KEY) { type = NavType.StringType },
+            )
+        ) {
+            MiniBossDetailScreen(
+                onBack = {
+                    valheimVikiNavController.popBackStack()
+                },
+                animatedVisibilityScope = this@composable
+            )
+        }
+        composable(
+            route = Screen.AggressiveCreatureDetail.route,
+            arguments = listOf(
+                navArgument(AGGRESSIVE_CREATURE_KEY) { type = NavType.StringType },
+            )
+        ) {
+            AggressiveCreatureDetailScreen(
+                onBack = {
+                    valheimVikiNavController.popBackStack()
+                },
+            )
+        }
+        composable(
+            route = Screen.PassiveCreatureDetail.route,
+            arguments = listOf(
+                navArgument(PASSIVE_CREATURE_KEY) { type = NavType.StringType },
+            )
+        ) {
+            PassiveCreatureDetailScreen(
+                onBack = {
+                    valheimVikiNavController.popBackStack()
+                },
+            )
+        }
+        composable(
+            route = Screen.NpcDetail.route,
+            arguments = listOf(
+                navArgument(NPC_KEY) { type = NavType.StringType },
+            )
+        ) {
+            NpcDetailScreen(
+                onBack = {
+                    valheimVikiNavController.popBackStack()
+                },
+            )
+        }
     }
 }
 
 
 @Composable
-private fun getDrawerItems(): List<DrawerItem> {
-    return listOf(
-        DrawerItem(
-            icon = Lucide.MountainSnow,
-            label = stringResource(R.string.biomes),
-            contentDescription = stringResource(R.string.biomes_section),
-            route = Screen.Biome.route
-        ),
-        DrawerItem(
-            iconPainter = painterResource(R.drawable.skull),
-            label = stringResource(R.string.bosses),
-            contentDescription = stringResource(R.string.boss_section),
-            route = Screen.Boss.route
-        ),
-        DrawerItem(
-            iconPainter = painterResource(R.drawable.ogre),
-            label = stringResource(R.string.minibosses),
-            contentDescription = stringResource(R.string.minibosses_section),
-            route = Screen.MiniBoss.route
-        ),
-        DrawerItem(
-            icon = Lucide.Rabbit,
-            label = "Creatures",
-            contentDescription = "Creatures section",
-            route = Screen.MobList.route
-        ),
-        DrawerItem(
-            icon = Lucide.Swords,
-            label = "Weapons",
-            contentDescription = "Weapons section",
-            route = Screen.WeaponList.route
-        ),
-        DrawerItem(
-            icon = Lucide.Shield,
-            label = "Armors",
-            contentDescription = "Armor section",
-            route = Screen.ArmorList.route
-        ),
-        DrawerItem(
-            icon = Lucide.Utensils,
-            label = "Food",
-            contentDescription = "Food section",
-            route = Screen.FoodList.route
-        ),
-        DrawerItem(
-            icon = Lucide.FlaskRound,
-            label = "Meads",
-            contentDescription = "Mead section",
-            route = Screen.MeadList.route
-        ),
-        DrawerItem(
-            icon = Lucide.Gavel,
-            label = "Tools",
-            contentDescription = "Tools section",
-            route = Screen.ToolList.route
-        ),
-        DrawerItem(
-            icon = Lucide.Cuboid,
-            label = "Materials",
-            contentDescription = "Materials section",
-            route = Screen.MaterialCategory.route
-        ),
-        DrawerItem(
-            icon = Lucide.House,
-            label = "Building Materials",
-            contentDescription = "Building Materials section",
-            route = Screen.BuildingMaterialCategory.route
-        ),
-        DrawerItem(
-            icon = Lucide.Pickaxe,
-            label = "Ore Deposits",
-            contentDescription = "Ore Deposits section",
-            route = Screen.OreDeposit.route
-        ),
-        DrawerItem(
-            icon = Lucide.Trees,
-            label = "Trees",
-            contentDescription = "Trees section",
-            route = Screen.Tree.route
-        ),
-        DrawerItem(
-            icon = Lucide.MapPinned,
-            label = "Points Of Interest",
-            contentDescription = "Points Of Interest section",
-            route = Screen.PointOfInterest.route
+fun rememberDrawerItems(): List<DrawerItem> {
+
+    val biomesLabel = stringResource(R.string.biomes)
+    val biomesDesc = stringResource(R.string.biomes_section)
+
+    val bossesLabel = stringResource(R.string.bosses)
+    val bossesDesc = stringResource(R.string.boss_section)
+
+    val minibossesLabel = stringResource(R.string.minibosses)
+    val minibossesDesc = stringResource(R.string.minibosses_section)
+
+    val creaturesLabel = stringResource(R.string.creatures)
+    val creaturesDesc = stringResource(R.string.creatures_section)
+
+    val weaponsLabel = stringResource(R.string.weapons)
+    val weaponsDesc = stringResource(R.string.weapons_section)
+
+    val armorsLabel = stringResource(R.string.armors)
+    val armorsDesc = stringResource(R.string.armor_section)
+
+    val foodLabel = stringResource(R.string.food)
+    val foodDesc = stringResource(R.string.food_section)
+
+    val meadsLabel = stringResource(R.string.meads)
+    val meadsDesc = stringResource(R.string.mead_section)
+
+    val toolsLabel = stringResource(R.string.tools)
+    val toolsDesc = stringResource(R.string.tools_section)
+
+    val materialsLabel = stringResource(R.string.materials)
+    val materialsDesc = stringResource(R.string.materials_section)
+
+    val buildingMatsLabel = stringResource(R.string.building_materials)
+    val buildingMatsDesc = stringResource(R.string.building_materials_section)
+
+    val oreLabel = stringResource(R.string.ore_deposits)
+    val oreDesc = stringResource(R.string.ore_deposits_section)
+
+    val treesLabel = stringResource(R.string.trees)
+    val treesDesc = stringResource(R.string.trees_section)
+
+    val poiLabel = stringResource(R.string.points_of_interest)
+    val poiDesc = stringResource(R.string.points_of_interest_section)
+
+    // Painters & icons
+    val skullPainter = painterResource(R.drawable.skull)
+    val ogrePainter = painterResource(R.drawable.ogre)
+
+    val mountainSnowIcon = Lucide.MountainSnow
+    val rabbitIcon = Lucide.Rabbit
+    val swordsIcon = Lucide.Swords
+    val shieldIcon = Lucide.Shield
+    val utensilsIcon = Lucide.Utensils
+    val flaskIcon = Lucide.FlaskRound
+    val gavelIcon = Lucide.Gavel
+    val cuboidIcon = Lucide.Cuboid
+    val houseIcon = Lucide.House
+    val pickaxeIcon = Lucide.Pickaxe
+    val treesIcon = Lucide.Trees
+    val mapPinnedIcon = Lucide.MapPinned
+
+    val configuration = LocalConfiguration.current
+    return remember(configuration) {
+        listOf(
+            // Biomes
+            DrawerItem(
+                icon = mountainSnowIcon,
+                label = biomesLabel,
+                contentDescription = biomesDesc,
+                route = Screen.Biome.route
+            ),
+            // Bosses
+            DrawerItem(
+                iconPainter = skullPainter,
+                label = bossesLabel,
+                contentDescription = bossesDesc,
+                route = Screen.Boss.route
+            ),
+            // Mini-bosses
+            DrawerItem(
+                iconPainter = ogrePainter,
+                label = minibossesLabel,
+                contentDescription = minibossesDesc,
+                route = Screen.MiniBoss.route
+            ),
+            // Creatures
+            DrawerItem(
+                icon = rabbitIcon,
+                label = creaturesLabel,
+                contentDescription = creaturesDesc,
+                route = Screen.MobList.route
+            ),
+            // Weapons
+            DrawerItem(
+                icon = swordsIcon,
+                label = weaponsLabel,
+                contentDescription = weaponsDesc,
+                route = Screen.WeaponList.route
+            ),
+            // Armors
+            DrawerItem(
+                icon = shieldIcon,
+                label = armorsLabel,
+                contentDescription = armorsDesc,
+                route = Screen.ArmorList.route
+            ),
+            // Food
+            DrawerItem(
+                icon = utensilsIcon,
+                label = foodLabel,
+                contentDescription = foodDesc,
+                route = Screen.FoodList.route
+            ),
+            // Meads
+            DrawerItem(
+                icon = flaskIcon,
+                label = meadsLabel,
+                contentDescription = meadsDesc,
+                route = Screen.MeadList.route
+            ),
+            // Tools
+            DrawerItem(
+                icon = gavelIcon,
+                label = toolsLabel,
+                contentDescription = toolsDesc,
+                route = Screen.ToolList.route
+            ),
+            // Materials
+            DrawerItem(
+                icon = cuboidIcon,
+                label = materialsLabel,
+                contentDescription = materialsDesc,
+                route = Screen.MaterialCategory.route
+            ),
+            // Building Materials
+            DrawerItem(
+                icon = houseIcon,
+                label = buildingMatsLabel,
+                contentDescription = buildingMatsDesc,
+                route = Screen.BuildingMaterialCategory.route
+            ),
+            // Ore Deposits
+            DrawerItem(
+                icon = pickaxeIcon,
+                label = oreLabel,
+                contentDescription = oreDesc,
+                route = Screen.OreDeposit.route
+            ),
+            // Trees
+            DrawerItem(
+                icon = treesIcon,
+                label = treesLabel,
+                contentDescription = treesDesc,
+                route = Screen.Tree.route
+            ),
+            // Points of Interest
+            DrawerItem(
+                icon = mapPinnedIcon,
+                label = poiLabel,
+                contentDescription = poiDesc,
+                route = Screen.PointOfInterest.route
+            )
         )
-    )
+    }
 }
 
 

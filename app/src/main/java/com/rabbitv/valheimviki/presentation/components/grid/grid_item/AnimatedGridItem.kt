@@ -4,8 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope.PlaceHolderSize.Companion.animatedSize
-import androidx.compose.animation.core.ExperimentalAnimationSpecApi
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -33,7 +31,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.ContentAlpha
 import coil3.compose.AsyncImage
-import coil3.memory.MemoryCache
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.rabbitv.valheimviki.R
@@ -66,7 +63,7 @@ fun AnimatedGridItem(
             modifier = Modifier
                 .height(height)
                 .clickable {
-                    onItemClick(item.id,item.imageUrl,item.name)
+                    onItemClick(item.id, item.imageUrl, item.name)
                 },
             contentAlignment = Alignment.BottomStart
         ) {
@@ -81,6 +78,8 @@ fun AnimatedGridItem(
                     .clip(RoundedCornerShape(MEDIUM_PADDING)),
                 model = ImageRequest.Builder(context = LocalContext.current)
                     .data(item.imageUrl.toString())
+                    .placeholderMemoryCacheKey("image--$item.id")
+                    .memoryCacheKey("image--$item.id")
                     .crossfade(true)
                     .build(),
                 error = painterResource(R.drawable.ic_placeholder),
@@ -115,9 +114,7 @@ fun AnimatedGridItem(
                             sharedContentState = textState,
                             placeHolderSize = animatedSize,
                             animatedVisibilityScope = animatedVisibilityScope,
-
-                            )
-
+                        ).skipToLookaheadSize()
                         .wrapContentHeight(align = Alignment.CenterVertically),
                     text = item.name,
                     color = PrimaryWhite,
@@ -146,7 +143,7 @@ private fun PreviewGridItem() {
         AnimatedVisibility(true) {
             AnimatedGridItem(
                 item = item,
-                onItemClick = { _,_,_-> },
+                onItemClick = { _, _, _ -> },
                 height = ITEM_HEIGHT_TWO_COLUMNS,
                 animatedVisibilityScope = this,
             )

@@ -84,10 +84,11 @@ fun NavigationDrawer(
     items: List<DrawerItem>,
     selectedItem: MutableState<DrawerItem>,
     isDetailScreen: Boolean,
-    content: @Composable () -> Unit
+    currentRoute: String?,
+    content: @Composable () -> Unit,
+
 ) {
     ModalNavigationDrawer(
-
         modifier = modifier
             .fillMaxSize()
             .testTag("NavigationDrawer"),
@@ -168,12 +169,15 @@ fun NavigationDrawer(
                             },
                             selected = (item == selectedItem.value),
                             onClick = {
-                                childNavController.navigate(item.route) {
-                                    popUpTo(childNavController.graph.findStartDestination().id) {
-                                        saveState = true
+                                if (item.route != currentRoute) {
+                                    selectedItem.value = item
+                                    childNavController.navigate(item.route) {
+                                        popUpTo(childNavController.graph.findStartDestination().id) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
                                     }
-                                    launchSingleTop = true
-                                    restoreState = true
                                 }
                                 scope.launch { drawerState.close() }
                             },
@@ -313,7 +317,8 @@ private fun PreviewNavigationDrawer() {
             items = items,
             selectedItem = remember { mutableStateOf(items[0]) },
             content = {},
-            isDetailScreen = false
+            isDetailScreen = false,
+            currentRoute = ""
         )
     }
 }
