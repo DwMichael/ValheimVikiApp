@@ -7,7 +7,11 @@ import com.rabbitv.valheimviki.utils.Constants.BIOME_ARGUMENT_KEY
 import com.rabbitv.valheimviki.utils.Constants.BIOME_IMAGE_URL_KEY
 import com.rabbitv.valheimviki.utils.Constants.BIOME_NAME_KEY
 import com.rabbitv.valheimviki.utils.Constants.MAIN_BOSS_ARGUMENT_KEY
+import com.rabbitv.valheimviki.utils.Constants.MAIN_BOSS_IMAGE_URL_KEY
+import com.rabbitv.valheimviki.utils.Constants.MAIN_BOSS_NAME_KEY
 import com.rabbitv.valheimviki.utils.Constants.MINI_BOSS_ARGUMENT_KEY
+import com.rabbitv.valheimviki.utils.Constants.MINI_BOSS_IMAGE_URL_KEY
+import com.rabbitv.valheimviki.utils.Constants.MINI_BOSS_NAME_KEY
 import com.rabbitv.valheimviki.utils.Constants.NPC_KEY
 import com.rabbitv.valheimviki.utils.Constants.PASSIVE_CREATURE_KEY
 import kotlinx.serialization.Serializable
@@ -81,17 +85,18 @@ sealed class Screen(val route: String) {
 
     @Serializable
     object MainBossDetail :
-        Screen("mainBoss_screen/{$MAIN_BOSS_ARGUMENT_KEY}") {
-        fun passCreatureId(mainBossId: String): String {
-            return "mainBoss_screen/$mainBossId"
+        Screen("mainBoss_screen/{$MAIN_BOSS_ARGUMENT_KEY}/{$MAIN_BOSS_IMAGE_URL_KEY}/{$MAIN_BOSS_NAME_KEY}") {
+        fun passArguments(id: String, imageUrl: String, name: String): String {
+            return "mainBoss_screen/$id/${Uri.encode(imageUrl)}/${Uri.encode(name)}"
         }
     }
 
     @Serializable
     object MiniBossDetail :
-        Screen("miniBoss_screen/{$MINI_BOSS_ARGUMENT_KEY}") {
-        fun passMiniBossId(miniBossId: String): String {
-            return "miniBoss_screen/$miniBossId"
+        Screen("miniBoss_screen/{$MINI_BOSS_ARGUMENT_KEY}/{$MINI_BOSS_IMAGE_URL_KEY}/{$MINI_BOSS_NAME_KEY}") {
+        
+        fun passArguments(id: String, imageUrl: String, name: String): String {
+            return "miniBoss_screen/$id/${Uri.encode(imageUrl)}/${Uri.encode(name)}"
         }
     }
 

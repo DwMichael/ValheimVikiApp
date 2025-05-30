@@ -41,7 +41,6 @@ fun MiniBossScreen(
     paddingValues: PaddingValues,
     viewModel: MiniBossesViewModel = hiltViewModel(),
     animatedVisibilityScope: AnimatedVisibilityScope
-
 ) {
     val miniBossUiState: UiState<MiniBoss> by viewModel.miniBossUiState.collectAsStateWithLifecycle()
     val lazyGridState = rememberLazyGridState()

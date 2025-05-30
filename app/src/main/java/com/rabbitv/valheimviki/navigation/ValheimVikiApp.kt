@@ -96,7 +96,11 @@ import com.rabbitv.valheimviki.utils.Constants.BIOME_ARGUMENT_KEY
 import com.rabbitv.valheimviki.utils.Constants.BIOME_IMAGE_URL_KEY
 import com.rabbitv.valheimviki.utils.Constants.BIOME_NAME_KEY
 import com.rabbitv.valheimviki.utils.Constants.MAIN_BOSS_ARGUMENT_KEY
+import com.rabbitv.valheimviki.utils.Constants.MAIN_BOSS_IMAGE_URL_KEY
+import com.rabbitv.valheimviki.utils.Constants.MAIN_BOSS_NAME_KEY
 import com.rabbitv.valheimviki.utils.Constants.MINI_BOSS_ARGUMENT_KEY
+import com.rabbitv.valheimviki.utils.Constants.MINI_BOSS_IMAGE_URL_KEY
+import com.rabbitv.valheimviki.utils.Constants.MINI_BOSS_NAME_KEY
 import com.rabbitv.valheimviki.utils.Constants.NPC_KEY
 import com.rabbitv.valheimviki.utils.Constants.PASSIVE_CREATURE_KEY
 import kotlinx.coroutines.launch
@@ -237,9 +241,9 @@ fun ValheimNavGraph(
         composable(Screen.Boss.route) {
             BossScreen(
                 modifier = Modifier.padding(10.dp),
-                onItemClick = { mainBossId, _, _ ->
+                onItemClick = { mainBossId, imageUrl, name ->
                     valheimVikiNavController.navigate(
-                        Screen.MainBossDetail.passCreatureId(mainBossId)
+                        Screen.MainBossDetail.passArguments(mainBossId, imageUrl, name)
                     )
                 },
                 paddingValues = innerPadding,
@@ -249,9 +253,9 @@ fun ValheimNavGraph(
         composable(Screen.MiniBoss.route) {
             MiniBossScreen(
                 modifier = Modifier.padding(10.dp),
-                onItemClick = { miniBossId, _, _ ->
+                onItemClick = { miniBossId, imageUrl, name ->
                     valheimVikiNavController.navigate(
-                        Screen.MiniBossDetail.passMiniBossId(miniBossId)
+                        Screen.MiniBossDetail.passArguments(miniBossId, imageUrl, name)
                     )
                 },
                 paddingValues = innerPadding,
@@ -462,20 +466,13 @@ fun ValheimNavGraph(
             )
         ) { backStackEntry ->
 
-            val biomeId: String =
-                checkNotNull(backStackEntry.arguments?.getString(BIOME_ARGUMENT_KEY)) {
-                    "BIOME_ARGUMENT_KEY cannot be null. Check NavGraph definition and navigation call."
-                }
-            val imageUrl: String =
-                checkNotNull(backStackEntry.arguments?.getString(BIOME_IMAGE_URL_KEY)) {
-                    "BIOME_IMAGE_URL_KEY cannot be null. Check NavGraph definition and navigation call."
-                }
-            val name: String =
-                checkNotNull(backStackEntry.arguments?.getString(BIOME_NAME_KEY)) {
-                    "BIOME_NAME_KEY cannot be null. Check NavGraph definition and navigation call."
-                }
-
-
+            val (biomeId, imageUrl, name) = backStackEntry.arguments!!.run {
+                Triple(
+                    getString(BIOME_ARGUMENT_KEY)!!,
+                    getString(BIOME_IMAGE_URL_KEY)!!,
+                    getString(BIOME_NAME_KEY)!!
+                )
+            }
             BiomeDetailScreen(
                 onBack = {
                     valheimVikiNavController.popBackStack()
@@ -490,27 +487,56 @@ fun ValheimNavGraph(
             route = Screen.MainBossDetail.route,
             arguments = listOf(
                 navArgument(MAIN_BOSS_ARGUMENT_KEY) { type = NavType.StringType },
+                navArgument(MAIN_BOSS_IMAGE_URL_KEY) { type = NavType.StringType },
+                navArgument(MAIN_BOSS_NAME_KEY) { type = NavType.StringType }
             )
-        ) {
+        ) { backStackEntry ->
+            val (bossId, imageUrl, name) = backStackEntry.arguments!!.run {
+                Triple(
+                    getString(MAIN_BOSS_ARGUMENT_KEY)!!,
+                    getString(MAIN_BOSS_IMAGE_URL_KEY)!!,
+                    getString(MAIN_BOSS_NAME_KEY)!!
+                )
+            }
+
             MainBossDetailScreen(
                 onBack = {
                     valheimVikiNavController.popBackStack()
                 },
-                animatedVisibilityScope = this@composable
+                animatedVisibilityScope = this@composable,
+                id = bossId,
+                imageUrl = imageUrl,
+                name = name,
             )
         }
         composable(
             route = Screen.MiniBossDetail.route,
             arguments = listOf(
                 navArgument(MINI_BOSS_ARGUMENT_KEY) { type = NavType.StringType },
+                navArgument(MINI_BOSS_IMAGE_URL_KEY) { type = NavType.StringType },
+                navArgument(MINI_BOSS_NAME_KEY) {
+                    type = NavType.StringType
+                }
             )
-        ) {
+        ) { backStackEntry ->
+            val (miniBossId, imageUrl, name) = backStackEntry.arguments!!.run {
+                Triple(
+                    getString(MINI_BOSS_ARGUMENT_KEY)!!,
+                    getString(MINI_BOSS_IMAGE_URL_KEY)!!,
+                    getString(MINI_BOSS_NAME_KEY)!!
+                )
+            }
+
             MiniBossDetailScreen(
                 onBack = {
                     valheimVikiNavController.popBackStack()
                 },
-                animatedVisibilityScope = this@composable
-            )
+                animatedVisibilityScope = this@composable,
+                id = miniBossId,
+                imageUrl = imageUrl,
+                name = name,
+
+                )
         }
         composable(
             route = Screen.AggressiveCreatureDetail.route,
