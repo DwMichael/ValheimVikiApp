@@ -44,8 +44,7 @@ class BiomeDetailScreenViewModel @Inject constructor(
     private val treeUseCases: TreeUseCases,
     private val oreDepositUseCases: OreDepositUseCases
 ) : ViewModel() {
-    private val _biome = MutableStateFlow<Biome?
-            >(null)
+    private val _biome = MutableStateFlow<Biome?>(null)
     private val _mainBoss = MutableStateFlow<MainBoss?>(null)
     private val _relatedCreatures = MutableStateFlow<List<Creature>>(emptyList())
     private val _relatedOreDeposits = MutableStateFlow<List<OreDeposit>>(emptyList())

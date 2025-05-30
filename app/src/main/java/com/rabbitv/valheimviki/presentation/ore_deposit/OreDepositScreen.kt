@@ -22,7 +22,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rabbitv.valheimviki.R
-import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.grid.grid_category.DefaultGrid
 import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerGridEffect
@@ -37,7 +36,7 @@ import kotlinx.coroutines.flow.debounce
 @Composable
 fun OreDepositScreen(
     modifier: Modifier,
-    onItemClick: (String, String) -> Unit,
+    onItemClick: (String) -> Unit,
     paddingValues: PaddingValues,
     viewModel: OreDepositScreenViewModel = hiltViewModel(),
     animatedVisibilityScope: AnimatedVisibilityScope

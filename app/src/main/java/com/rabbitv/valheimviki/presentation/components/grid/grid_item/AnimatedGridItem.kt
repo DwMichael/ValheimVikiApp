@@ -50,7 +50,7 @@ import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 @Composable
 fun AnimatedGridItem(
     item: ItemData,
-    onItemClick: (String, String) -> Unit,
+    onItemClick: (String) -> Unit,
     height: Dp,
     animatedVisibilityScope: AnimatedVisibilityScope
 ) {
@@ -63,12 +63,13 @@ fun AnimatedGridItem(
             modifier = Modifier
                 .height(height)
                 .clickable {
-                    onItemClick(item.id, item.name)
+                    onItemClick(item.id)
                 },
             contentAlignment = Alignment.BottomStart
         ) {
             AsyncImage(
                 modifier = Modifier
+
                     .sharedElement(
                         sharedContentState = rememberSharedContentState(key = "image-${item.id}"),
                         animatedVisibilityScope = animatedVisibilityScope,
@@ -108,12 +109,14 @@ fun AnimatedGridItem(
                         .padding
                             (horizontal = 8.dp)
                         .sharedElement(
-                            sharedContentState = rememberSharedContentState(key = "text-${item.name}"),
+                            sharedContentState = rememberSharedContentState(key = "text-${item.id}"),
                             boundsTransform = { _, _ ->
                                 tween(durationMillis = 600)
                             },
                             animatedVisibilityScope = animatedVisibilityScope,
-                        )
+
+                            )
+
                         .wrapContentHeight(align = Alignment.CenterVertically),
                     text = item.name,
                     color = PrimaryWhite,
@@ -142,7 +145,7 @@ private fun PreviewGridItem() {
         AnimatedVisibility(true) {
             AnimatedGridItem(
                 item = item,
-                onItemClick = { _, _ -> },
+                onItemClick = { _-> },
                 height = ITEM_HEIGHT_TWO_COLUMNS,
                 animatedVisibilityScope = this,
             )

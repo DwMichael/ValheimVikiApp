@@ -96,7 +96,6 @@ import com.rabbitv.valheimviki.utils.Constants.MAIN_BOSS_ARGUMENT_KEY
 import com.rabbitv.valheimviki.utils.Constants.MINI_BOSS_ARGUMENT_KEY
 import com.rabbitv.valheimviki.utils.Constants.NPC_KEY
 import com.rabbitv.valheimviki.utils.Constants.PASSIVE_CREATURE_KEY
-import com.rabbitv.valheimviki.utils.Constants.TEXT_ARGUMENT_KEY
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -104,8 +103,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun ValheimVikiApp() {
     ValheimVikiAppTheme {
-        val valheimVikiNavController = rememberNavController()
         SharedTransitionLayout {
+            val valheimVikiNavController = rememberNavController()
             CompositionLocalProvider(LocalSharedTransitionScope provides this) {
                 MainContainer(
                     valheimVikiNavController,
@@ -212,9 +211,9 @@ fun MainContainer(
                     composable(Screen.Biome.route) {
                         BiomeScreen(
                             modifier = Modifier.padding(10.dp),
-                            onItemClick = { itemId, text ->
+                            onItemClick = { itemId ->
                                 valheimVikiNavController.navigate(
-                                    Screen.BiomeDetail.passBiomeIdAndText(itemId, text)
+                                    Screen.BiomeDetail.passBiomeIdAndText(itemId)
                                 )
                             },
                             paddingValues = innerPadding,
@@ -225,9 +224,9 @@ fun MainContainer(
                     composable(Screen.Boss.route) {
                         BossScreen(
                             modifier = Modifier.padding(10.dp),
-                            onItemClick = { mainBossId, text ->
+                            onItemClick = { mainBossId ->
                                 valheimVikiNavController.navigate(
-                                    Screen.MainBossDetail.passCreatureId(mainBossId, text)
+                                    Screen.MainBossDetail.passCreatureId(mainBossId)
                                 )
                             },
                             paddingValues = innerPadding,
@@ -237,9 +236,9 @@ fun MainContainer(
                     composable(Screen.MiniBoss.route) {
                         MiniBossScreen(
                             modifier = Modifier.padding(10.dp),
-                            onItemClick = { miniBossId, text ->
+                            onItemClick = { miniBossId ->
                                 valheimVikiNavController.navigate(
-                                    Screen.MiniBossDetail.passMiniBossId(miniBossId, text)
+                                    Screen.MiniBossDetail.passMiniBossId(miniBossId)
                                 )
                             },
                             paddingValues = innerPadding,
@@ -403,7 +402,7 @@ fun MainContainer(
                     composable(Screen.OreDeposit.route) {
                         OreDepositScreen(
                             modifier = Modifier.padding(10.dp),
-                            onItemClick = { itemId, text ->
+                            onItemClick = { itemId ->
 //                                valheimVikiNavController.navigate(
 //                                    Screen.BiomeDetail.passBiomeIdAndText(itemId, text)
 //                                )
@@ -415,7 +414,7 @@ fun MainContainer(
                     composable(Screen.Tree.route) {
                         TreeScreen(
                             modifier = Modifier.padding(10.dp),
-                            onItemClick = { itemId, text ->
+                            onItemClick = { itemId ->
 //                                valheimVikiNavController.navigate(
 //                                    Screen.BiomeDetail.passBiomeIdAndText(itemId, text)
 //                                )
@@ -440,9 +439,7 @@ fun MainContainer(
                     composable(
                         Screen.BiomeDetail.route,
                         arguments = listOf(
-                            navArgument(BIOME_ARGUMENT_KEY) { type = NavType.StringType },
-                            navArgument(TEXT_ARGUMENT_KEY) { type = NavType.StringType },
-
+                            navArgument(BIOME_ARGUMENT_KEY) { type = NavType.StringType }
                         )
                     ) { backStackEntry ->
                         BiomeDetailScreen(
@@ -456,7 +453,6 @@ fun MainContainer(
                         route = Screen.MainBossDetail.route,
                         arguments = listOf(
                             navArgument(MAIN_BOSS_ARGUMENT_KEY) { type = NavType.StringType },
-                            navArgument(TEXT_ARGUMENT_KEY) { type = NavType.StringType }
                         )
                     ) {
                         MainBossDetailScreen(
@@ -470,7 +466,6 @@ fun MainContainer(
                         route = Screen.MiniBossDetail.route,
                         arguments = listOf(
                             navArgument(MINI_BOSS_ARGUMENT_KEY) { type = NavType.StringType },
-                            navArgument(TEXT_ARGUMENT_KEY) { type = NavType.StringType }
                         )
                     ) {
                         MiniBossDetailScreen(

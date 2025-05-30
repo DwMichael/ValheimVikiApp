@@ -70,12 +70,12 @@ fun MainDetailImageAnimated(
         ) {
             Image(
                 modifier = Modifier
+                    .fillMaxSize()
                     .sharedElement(
                         sharedContentState = rememberSharedContentState(key = "image-${itemData.id}"),
                         animatedVisibilityScope = animatedVisibilityScope,
                         boundsTransform = { _, _ -> tween(durationMillis = 600) },
-                    )
-                    .fillMaxSize(),
+                    ),
                 painter = painter,
                 contentDescription = stringResource(R.string.item_grid_image),
                 contentScale = ContentScale.Crop,
@@ -83,13 +83,13 @@ fun MainDetailImageAnimated(
             Surface(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
+                    .fillMaxHeight(0.2f)
+                    .fillMaxWidth()
                     .sharedElement(
                         sharedContentState = rememberSharedContentState(key = "Surface-${itemData.id}"),
                         animatedVisibilityScope = animatedVisibilityScope,
                         boundsTransform = { _, _ -> tween(durationMillis = 600) },
-                    )
-                    .fillMaxHeight(0.2f)
-                    .fillMaxWidth(),
+                    ),
                 tonalElevation = 0.dp,
                 color = Color.Black.copy(alpha = ContentAlpha.medium),
             ) {
@@ -97,15 +97,15 @@ fun MainDetailImageAnimated(
                     modifier = Modifier
                         .padding
                             (horizontal = 8.dp)
+                        .skipToLookaheadSize()
+                        .wrapContentHeight(Alignment.CenterVertically)
                         .sharedElement(
-                            sharedContentState = rememberSharedContentState(key = "text-${itemData.name}"),
+                            sharedContentState = rememberSharedContentState(key = "text-${itemData.id}"),
                             animatedVisibilityScope = animatedVisibilityScope,
                             boundsTransform = { _, _ ->
                                 tween(durationMillis = 600)
                             },
-                        )
-                        .skipToLookaheadSize()
-                        .wrapContentHeight(Alignment.CenterVertically),
+                        ),
                     textAlign = textAlign,
                     text = itemData.name,
                     color = Color.White,
