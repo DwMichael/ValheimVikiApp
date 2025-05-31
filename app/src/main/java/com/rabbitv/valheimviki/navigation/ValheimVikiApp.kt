@@ -27,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -205,6 +206,8 @@ fun ValheimNavGraph(
     valheimVikiNavController: NavHostController,
     innerPadding: PaddingValues,
 ) {
+    val lastClickTime = remember { mutableLongStateOf(0L) }
+    val clickDebounceMillis = 500
     NavHost(
         navController = valheimVikiNavController,
         startDestination = Screen.Splash.route,
@@ -216,15 +219,19 @@ fun ValheimNavGraph(
             WelcomeScreen(valheimVikiNavController)
         }
 
-        composable(
-            Screen.Biome.route
-        ) {
+        composable(Screen.Biome.route) {
             BiomeScreen(
                 modifier = Modifier.padding(10.dp),
                 onItemClick = { id ->
-                    valheimVikiNavController.navigate(
-                        Screen.BiomeDetail.passArguments(id)
-                    )
+                    val currentTime = System.currentTimeMillis()
+                    if (currentTime - lastClickTime.longValue > clickDebounceMillis) {
+                        lastClickTime.longValue = currentTime
+                        valheimVikiNavController.navigate(
+                            Screen.BiomeDetail.passArguments(id)
+                        ) {
+                            launchSingleTop = true
+                        }
+                    }
                 },
                 paddingValues = innerPadding,
                 animatedVisibilityScope = this@composable
@@ -235,9 +242,15 @@ fun ValheimNavGraph(
             BossScreen(
                 modifier = Modifier.padding(10.dp),
                 onItemClick = { mainBossId ->
-                    valheimVikiNavController.navigate(
-                        Screen.MainBossDetail.passArguments(mainBossId)
-                    )
+                    val currentTime = System.currentTimeMillis()
+                    if (currentTime - lastClickTime.longValue > clickDebounceMillis) {
+                        lastClickTime.longValue = currentTime
+                        valheimVikiNavController.navigate(
+                            Screen.MainBossDetail.passArguments(mainBossId)
+                        ) {
+                            launchSingleTop = true
+                        }
+                    }
                 },
                 paddingValues = innerPadding,
                 animatedVisibilityScope = this@composable
@@ -247,9 +260,15 @@ fun ValheimNavGraph(
             MiniBossScreen(
                 modifier = Modifier.padding(10.dp),
                 onItemClick = { miniBossId ->
-                    valheimVikiNavController.navigate(
-                        Screen.MiniBossDetail.passArguments(miniBossId)
-                    )
+                    val currentTime = System.currentTimeMillis()
+                    if (currentTime - lastClickTime.longValue > clickDebounceMillis) {
+                        lastClickTime.longValue = currentTime
+                        valheimVikiNavController.navigate(
+                            Screen.MiniBossDetail.passArguments(miniBossId)
+                        ) {
+                            launchSingleTop = true
+                        }
+                    }
                 },
                 paddingValues = innerPadding,
                 animatedVisibilityScope = this@composable
@@ -477,6 +496,21 @@ fun ValheimNavGraph(
         }
         composable(
             route = Screen.MainBossDetail.route,
+            enterTransition = {
+                fadeIn(
+                    animationSpec = tween(
+                        durationMillis = 700,
+                        delayMillis = 50
+                    )
+                ) + slideInVertically(
+                    initialOffsetY = { fullHeight -> fullHeight / 2 },
+                    animationSpec = tween(
+                        durationMillis = 950,
+                        delayMillis = 0,
+                        easing = EaseOutCubic
+                    )
+                )
+            },
             arguments = listOf(
                 navArgument(MAIN_BOSS_ARGUMENT_KEY) { type = NavType.StringType },
             )
@@ -491,6 +525,21 @@ fun ValheimNavGraph(
         }
         composable(
             route = Screen.MiniBossDetail.route,
+            enterTransition = {
+                fadeIn(
+                    animationSpec = tween(
+                        durationMillis = 700,
+                        delayMillis = 50
+                    )
+                ) + slideInVertically(
+                    initialOffsetY = { fullHeight -> fullHeight / 2 },
+                    animationSpec = tween(
+                        durationMillis = 950,
+                        delayMillis = 0,
+                        easing = EaseOutCubic
+                    )
+                )
+            },
             arguments = listOf(
                 navArgument(MINI_BOSS_ARGUMENT_KEY) { type = NavType.StringType },
             )
