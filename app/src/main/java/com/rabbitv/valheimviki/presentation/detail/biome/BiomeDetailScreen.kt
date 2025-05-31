@@ -81,33 +81,30 @@ fun BiomeDetailScreen(
 @OptIn(
     ExperimentalSharedTransitionApi::class,
     ExperimentalAnimationApi::class
-) // Dodaj ExperimentalAnimationApi
+)
 @Composable
 fun BiomeDetailContent(
     onBack: () -> Unit,
     biomeUiState: BiomeDetailUiState,
     sharedTransitionScope: SharedTransitionScope,
-    animatedVisibilityScope: AnimatedVisibilityScope, // Z NavHost
+    animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
     Scaffold(
         content = { padding ->
             val scrollState = rememberScrollState()
 
-            // Użyj AnimatedContent do płynnego przejścia między stanem ładowania a treścią
             AnimatedContent(
                 targetState = biomeUiState.isLoading,
                 modifier = Modifier.fillMaxSize(),
                 transitionSpec = {
-                    // Jeśli przechodzimy z ładowania (true) do treści (false)
                     if (targetState == false && initialState == true) {
                         fadeIn(animationSpec = tween(durationMillis = 400, delayMillis = 100)) +
                                 slideInVertically(
                                     initialOffsetY = { height -> height / 10 },
                                     animationSpec = tween(durationMillis = 400, delayMillis = 100)
                                 ) togetherWith
-                                fadeOut(animationSpec = tween(durationMillis = 100)) // Szybkie znikanie placeholdera
+                                fadeOut(animationSpec = tween(durationMillis = 100))
                     } else {
-                        // Domyślne przejście dla innych zmian stanów (np. z treści do ładowania)
                         fadeIn(animationSpec = tween(durationMillis = 200)) togetherWith
                                 fadeOut(animationSpec = tween(durationMillis = 200))
                     }
@@ -115,19 +112,15 @@ fun BiomeDetailContent(
                 label = "LoadingStateTransition"
             ) { isLoading ->
                 if (isLoading) {
-                    // Ulepszony stan ładowania (np. szkielet UI lub przynajmniej wyśrodkowany wskaźnik)
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(padding),
                         contentAlignment = Alignment.Center
                     ) {
-                        // Tutaj możesz dać np. CircularProgressIndicator()
-                        // Lub bardziej rozbudowany szkielet UI pasujący do finalnego layoutu
-                        Box(modifier = Modifier.size(45.dp)) // Twój obecny placeholder
+                        Box(modifier = Modifier.size(45.dp))
                     }
                 } else if (biomeUiState.biome != null) {
-                    // Ten blok zostanie teraz animowany przez AnimatedContent
                     Image(
                         painter = painterResource(id = R.drawable.main_background),
                         contentDescription = "BackgroundImage",
@@ -143,17 +136,15 @@ fun BiomeDetailContent(
                         verticalArrangement = Arrangement.Top,
                         horizontalAlignment = Alignment.Start,
                     ) {
-                        // MainDetailImageAnimated jest teraz częścią tego animowanego bloku
                         MainDetailImageAnimated(
                             onBack = onBack,
                             sharedTransitionScope = sharedTransitionScope,
-                            animatedVisibilityScope = animatedVisibilityScope, // Przekazane z NavHost
+                            animatedVisibilityScope = animatedVisibilityScope,
                             id = biomeUiState.biome.id,
                             imageUrl = biomeUiState.biome.imageUrl,
                             title = biomeUiState.biome.name
                         )
 
-                        // Pozostałe elementy również pojawią się w ramach tej animacji
                         DetailExpandableText(text = biomeUiState.biome.description.toString())
                         biomeUiState.mainBoss?.let { mainBoss ->
                             ImageWithTopLabel(
@@ -231,21 +222,18 @@ fun BiomeDetailContent(
                                 iconModifier = Modifier
                             )
                         }
-                        Box(modifier = Modifier.size(45.dp)) // Odstęp na dole
+                        Box(modifier = Modifier.size(45.dp))
                     }
                 } else if (biomeUiState.error != null) {
-                    // Obsługa błędu
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(padding),
                         contentAlignment = Alignment.Center
                     ) {
-                        // Wyświetl komunikat o błędzie
                         Text("Wystąpił błąd: ${biomeUiState.error}")
                     }
                 } else {
-                    // Stan przejściowy lub nieoczekiwany - można zostawić puste lub dać mały placeholder
                     Box(
                         Modifier
                             .fillMaxSize()
