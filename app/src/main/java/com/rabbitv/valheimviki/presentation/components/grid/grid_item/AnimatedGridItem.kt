@@ -110,7 +110,7 @@ fun AnimatedGridItem(
                     modifier = Modifier
                         .padding
                             (horizontal = 8.dp)
-                        .sharedElement(
+                        .sharedBounds(
                             sharedContentState = textState,
                             placeHolderSize = animatedSize,
                             animatedVisibilityScope = animatedVisibilityScope,

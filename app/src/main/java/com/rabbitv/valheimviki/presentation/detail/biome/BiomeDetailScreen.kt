@@ -7,6 +7,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.EaseOutCubic
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -98,15 +99,27 @@ fun BiomeDetailContent(
                 modifier = Modifier.fillMaxSize(),
                 transitionSpec = {
                     if (targetState == false && initialState == true) {
-                        fadeIn(animationSpec = tween(durationMillis = 400, delayMillis = 100)) +
-                                slideInVertically(
-                                    initialOffsetY = { height -> height / 10 },
-                                    animationSpec = tween(durationMillis = 400, delayMillis = 100)
-                                ) togetherWith
-                                fadeOut(animationSpec = tween(durationMillis = 100))
+                        fadeIn(
+                            animationSpec = tween(
+                                durationMillis = 650,
+                                delayMillis = 0
+                            )
+                        ) + slideInVertically(
+                            initialOffsetY = { height -> height / 25 },
+                            animationSpec = tween(
+                                durationMillis = 650,
+                                delayMillis = 0,
+                                easing = EaseOutCubic
+                            )
+                        ) togetherWith
+                                fadeOut(
+                                    animationSpec = tween(
+                                        durationMillis = 200
+                                    )
+                                )
                     } else {
-                        fadeIn(animationSpec = tween(durationMillis = 200)) togetherWith
-                                fadeOut(animationSpec = tween(durationMillis = 200))
+                        fadeIn(animationSpec = tween(durationMillis = 300)) togetherWith
+                                fadeOut(animationSpec = tween(durationMillis = 300))
                     }
                 },
                 label = "LoadingStateTransition"

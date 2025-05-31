@@ -1,5 +1,6 @@
 package com.rabbitv.valheimviki.presentation.components.main_detail_image
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -59,7 +60,8 @@ fun MainDetailImageAnimated(
     textAlign: TextAlign = TextAlign.Center,
 ) {
     val isRunning by remember { derivedStateOf { animatedVisibilityScope.transition.isRunning } }
-
+    BackHandler(enabled = isRunning) {
+    }
     Box(modifier = Modifier.fillMaxSize()) {
         with(sharedTransitionScope) {
             val imageState = rememberSharedContentState("image-$id")
@@ -110,11 +112,11 @@ fun MainDetailImageAnimated(
                             textAlign = textAlign,
                             modifier = Modifier
                                 .padding(horizontal = 8.dp)
-                                .sharedElement(
+                                .sharedBounds(
                                     textState,
                                     animatedVisibilityScope, placeHolderSize = animatedSize,
                                 )
-                                
+
                                 .wrapContentHeight(Alignment.CenterVertically)
 
                         )

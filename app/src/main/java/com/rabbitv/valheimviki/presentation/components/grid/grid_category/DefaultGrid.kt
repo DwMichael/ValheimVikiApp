@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -13,7 +12,7 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -43,19 +42,15 @@ fun DefaultGrid(
         columns = GridCells.Fixed(numbersOfColumns),
         horizontalArrangement = Arrangement.spacedBy(BODY_CONTENT_PADDING.dp),
         verticalArrangement = Arrangement.spacedBy(BODY_CONTENT_PADDING.dp),
-
-        ) {
+        modifier = Modifier.clipToBounds(),
+    ) {
         items(items, key = { item -> "${item.id}-${item.name}" }) { item ->
-            Box(
-                modifier = modifier.testTag("GirdItem ${item.name}")
-            ) {
-                AnimatedGridItem(
-                    item = item,
-                    onItemClick = onItemClick,
-                    height = height,
-                    animatedVisibilityScope = animatedVisibilityScope
-                )
-            }
+            AnimatedGridItem(
+                item = item,
+                onItemClick = onItemClick,
+                height = height,
+                animatedVisibilityScope = animatedVisibilityScope
+            )
         }
     }
 }

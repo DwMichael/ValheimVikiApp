@@ -8,6 +8,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.EaseOutCubic
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -98,7 +99,6 @@ import com.rabbitv.valheimviki.utils.Constants.MAIN_BOSS_ARGUMENT_KEY
 import com.rabbitv.valheimviki.utils.Constants.MINI_BOSS_ARGUMENT_KEY
 import com.rabbitv.valheimviki.utils.Constants.NPC_KEY
 import com.rabbitv.valheimviki.utils.Constants.PASSIVE_CREATURE_KEY
-import kotlinx.coroutines.launch
 
 private val topBarScreens = setOf(
     Screen.Boss,
@@ -155,7 +155,6 @@ fun MainContainer(
     } == true
 
 
-
     NavigationDrawer(
         modifier = modifier,
         drawerState = drawerState,
@@ -174,11 +173,8 @@ fun MainContainer(
                     exit = slideOutVertically { -it } + fadeOut(),
                 ) {
                     MainAppBar(
-                        onSearchBarClick = {},
-                        onMenuClick = { scope.launch { drawerState.open() } },
-                        onBookMarkClick = {},
                         scope = scope,
-                        drawerState = drawerState,
+                        drawerState = drawerState
                     )
                 }
             },
@@ -186,7 +182,7 @@ fun MainContainer(
             val targetTopPadding = if (showTopAppBar) innerPadding.calculateTopPadding() else 0.dp
             val animatedTopPadding by animateDpAsState(
                 targetValue = targetTopPadding,
-                animationSpec = tween(durationMillis = 650, easing = LinearOutSlowInEasing)
+                animationSpec = tween(durationMillis = 450, easing = LinearOutSlowInEasing)
             )
 
             Box(
@@ -220,7 +216,9 @@ fun ValheimNavGraph(
             WelcomeScreen(valheimVikiNavController)
         }
 
-        composable(Screen.Biome.route) {
+        composable(
+            Screen.Biome.route
+        ) {
             BiomeScreen(
                 modifier = Modifier.padding(10.dp),
                 onItemClick = { id ->
@@ -451,26 +449,19 @@ fun ValheimNavGraph(
         composable(
             Screen.BiomeDetail.route,
             enterTransition = {
-                // Definiuje, jak zawartość BiomeDetailScreen (oprócz elementu współdzielonego)
-                // pojawi się na ekranie.
-                // Możesz połączyć różne efekty.
                 fadeIn(
                     animationSpec = tween(
-                        durationMillis = 600,
-                        delayMillis = 100
+                        durationMillis = 700,
+                        delayMillis = 50
                     )
-                ) + // Stopniowe pojawianie się
-                        slideInVertically( // Wsuwanie z dołu
-                            initialOffsetY = { fullHeight -> fullHeight / 8 },
-                            animationSpec = tween(durationMillis = 600, delayMillis = 100)
-                        )
-            },
-            exitTransition = { // Opcjonalnie, jak ma znikać przy powrocie
-                fadeOut(animationSpec = tween(durationMillis = 300)) +
-                        slideOutVertically(
-                            targetOffsetY = { fullHeight -> fullHeight / 8 },
-                            animationSpec = tween(durationMillis = 300)
-                        )
+                ) + slideInVertically(
+                    initialOffsetY = { fullHeight -> fullHeight / 2 },
+                    animationSpec = tween(
+                        durationMillis = 950,
+                        delayMillis = 0,
+                        easing = EaseOutCubic
+                    )
+                )
             },
             arguments = listOf(
                 navArgument(BIOME_ARGUMENT_KEY) { type = NavType.StringType },
