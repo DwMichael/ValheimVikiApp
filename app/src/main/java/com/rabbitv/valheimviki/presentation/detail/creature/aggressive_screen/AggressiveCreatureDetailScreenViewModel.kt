@@ -92,7 +92,7 @@ class AggressiveCreatureDetailScreenViewModel @Inject constructor(
                     },
                     async {
                         try {
-                            val materials = materialUseCases.getMaterialsByIds(relatedIds)
+                            val materials = materialUseCases.getMaterialsByIds(relatedIds).first()
                             val tempList = mutableListOf<DropItem>()
 
                             val relatedItemsMap = relatedObjects.associateBy { it.id }

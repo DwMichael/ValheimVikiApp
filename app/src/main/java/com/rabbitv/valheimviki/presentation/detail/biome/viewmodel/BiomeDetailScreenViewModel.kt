@@ -127,8 +127,8 @@ class BiomeDetailScreenViewModel @Inject constructor(
                     Log.e("Ore deposits fetch error BiomeDetailViewModel", e.message.toString())
                 }
                 try {
-                    val materials = materialUseCases.getMaterialsByIds(relatedIds)
-                    _relatedMaterials.value = materials
+                    _relatedMaterials.value = materialUseCases.getMaterialsByIds(relatedIds).first()
+
                 } catch (e: Exception) {
                     Log.e("Materials fetch error BiomeDetailViewModel", e.message.toString())
                 }

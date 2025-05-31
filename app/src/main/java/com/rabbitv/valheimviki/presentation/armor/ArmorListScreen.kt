@@ -32,6 +32,7 @@ import com.composables.icons.lucide.Blend
 import com.composables.icons.lucide.Lucide
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.armor.ArmorSubCategory
+import com.rabbitv.valheimviki.domain.model.ui_state.default_list_state.ErrorType
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.ListContent
 import com.rabbitv.valheimviki.presentation.components.chip.ChipData
@@ -102,7 +103,8 @@ fun ArmorListStateRenderer(
                     ) {
                         EmptyScreen(
                             errorMessage = armorListUiState.error
-                                ?: "Connect to internet to fetch data"
+                                ?: "Connect to internet to fetch data",
+                            errorType = ErrorType.INTERNET_CONNECTION
                         )
                     }
                 }
