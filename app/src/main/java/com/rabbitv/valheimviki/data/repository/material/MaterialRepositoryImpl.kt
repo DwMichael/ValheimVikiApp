@@ -9,38 +9,38 @@ import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 
 class MaterialRepositoryImpl @Inject constructor(
-    private val apiService : ApiMaterialsService,
+    private val apiService: ApiMaterialsService,
     private val materialDao: MaterialDao
 ) : MaterialRepository {
     override fun getLocalMaterials(): Flow<List<Material>> {
         return materialDao.getLocalMaterials()
     }
 
-    override fun getMaterialsByIds(ids: List<String>): List<Material> {
+    override fun getMaterialsByIds(ids: List<String>): Flow<List<Material>> {
         return materialDao.getMaterialsByIds(ids)
     }
 
-    override fun getMaterialById(id: String): Material? {
+    override fun getMaterialById(id: String): Flow<Material?> {
         return materialDao.getMaterialById(id)
     }
 
-    override fun getMaterialsBySubCategory(subCategory: String): List<Material> {
+    override fun getMaterialsBySubCategory(subCategory: String): Flow<List<Material>> {
         return materialDao.getMaterialsBySubCategory(subCategory)
     }
 
     override fun getMaterialsBySubCategoryAndSubType(
         subCategory: String,
         subType: String,
-    ): List<Material> {
+    ): Flow<List<Material>> {
         return materialDao.getMaterialsBySubCategoryAndSubType(subCategory, subType)
     }
 
     override suspend fun insertMaterials(materials: List<Material>) {
-        check(materials.isNotEmpty(),{"Materials cannot be empty"})
+        check(materials.isNotEmpty(), { "Materials cannot be empty" })
         return materialDao.insertMaterial(materials)
     }
 
-    override suspend fun fetchMaterials(lang:String): Response<List<Material>> {
+    override suspend fun fetchMaterials(lang: String): Response<List<Material>> {
         return apiService.fetchMaterials(lang)
     }
 
