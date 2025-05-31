@@ -127,7 +127,7 @@ fun ArmorListDisplay(
     armorListUiState: ArmorListUiState,
     onChipSelected: (ArmorSubCategory?) -> Unit,
 ) {
-    val showAll = remember { mutableStateOf(false) }
+
     val scrollPosition = remember { mutableIntStateOf(0) }
     val lazyListState = rememberLazyListState(
         initialFirstVisibleItemIndex = scrollPosition.intValue
