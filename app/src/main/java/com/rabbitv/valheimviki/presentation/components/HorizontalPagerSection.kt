@@ -82,6 +82,7 @@ fun HorizontalPagerSection(
                 end = BODY_CONTENT_PADDING.dp,
                 bottom = BODY_CONTENT_PADDING.dp,
             )
+
     )
     {
         Column(
@@ -258,10 +259,11 @@ fun PreviewRectangleSectionHeader() {
         HorizontalPagerSection(
             pagerState = pagerState,
             list = creatureList,
-            Lucide.PawPrint,
-            "Creatuers",
-            "Creatures you may encounter in this biome",
-            ContentScale.Crop,
+            icon =Lucide.PawPrint,
+            title = "Creatuers",
+            subTitle =        "Creatures you may encounter in this biome",
+            contentScale = ContentScale.Crop,
+
         )
     }
 }

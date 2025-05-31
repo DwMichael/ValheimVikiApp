@@ -101,6 +101,7 @@ fun MainBossContent(
     LaunchedEffect(animatedVisibilityScope.transition.isRunning) {
         transitionComplete.value = !animatedVisibilityScope.transition.isRunning
     }
+
     Scaffold(
         content = { padding ->
             val scrollModifier = if (scrollEnabled.value) {
@@ -291,7 +292,7 @@ private fun PreviewCreatureDetail() {
             MainBossDetailScreen(
                 onBack = { },
                 animatedVisibilityScope = this
-                )
+            )
         }
     }
 

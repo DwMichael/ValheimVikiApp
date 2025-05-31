@@ -46,6 +46,7 @@ import com.rabbitv.valheimviki.ui.theme.MEDIUM_PADDING
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData.generateFakeMaterials
 
+
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun MainDetailImageAnimated(
@@ -113,7 +114,7 @@ fun MainDetailImageAnimated(
                                     textState,
                                     animatedVisibilityScope, placeHolderSize = animatedSize,
                                 )
-                                .skipToLookaheadSize()
+                                
                                 .wrapContentHeight(Alignment.CenterVertically)
 
                         )

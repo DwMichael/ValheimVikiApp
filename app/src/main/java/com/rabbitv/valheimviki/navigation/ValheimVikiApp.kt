@@ -11,6 +11,7 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -449,15 +450,38 @@ fun ValheimNavGraph(
         //Detail Screens
         composable(
             Screen.BiomeDetail.route,
+            enterTransition = {
+                // Definiuje, jak zawartość BiomeDetailScreen (oprócz elementu współdzielonego)
+                // pojawi się na ekranie.
+                // Możesz połączyć różne efekty.
+                fadeIn(
+                    animationSpec = tween(
+                        durationMillis = 600,
+                        delayMillis = 100
+                    )
+                ) + // Stopniowe pojawianie się
+                        slideInVertically( // Wsuwanie z dołu
+                            initialOffsetY = { fullHeight -> fullHeight / 8 },
+                            animationSpec = tween(durationMillis = 600, delayMillis = 100)
+                        )
+            },
+            exitTransition = { // Opcjonalnie, jak ma znikać przy powrocie
+                fadeOut(animationSpec = tween(durationMillis = 300)) +
+                        slideOutVertically(
+                            targetOffsetY = { fullHeight -> fullHeight / 8 },
+                            animationSpec = tween(durationMillis = 300)
+                        )
+            },
             arguments = listOf(
                 navArgument(BIOME_ARGUMENT_KEY) { type = NavType.StringType },
             )
         ) { backStackEntry ->
+            val animatedContentScope = this
             BiomeDetailScreen(
                 onBack = {
                     valheimVikiNavController.popBackStack()
                 },
-                animatedVisibilityScope = this@composable
+                animatedVisibilityScope = animatedContentScope
             )
         }
         composable(
