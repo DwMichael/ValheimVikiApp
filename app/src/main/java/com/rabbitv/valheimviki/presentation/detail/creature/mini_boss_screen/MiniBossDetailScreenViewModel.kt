@@ -104,7 +104,7 @@ class MiniBossDetailScreenViewModel @Inject constructor(
                             val materials = materialUseCases.getMaterialsBySubCategory(
                                 MaterialSubCategory.MINI_BOSS_DROP
                             )
-                            _dropItems.value = materials.filter { material ->
+                            _dropItems.value = materials.first().filter { material ->
                                 material.id in relatedIds
                             }
                         } catch (e: MaterialsFetchLocalException) {

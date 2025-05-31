@@ -105,6 +105,7 @@ class NpcDetailScreenViewModel @Inject constructor(
                         try {
                             val materials =
                                 materialUseCases.getMaterialsBySubCategory(MaterialSubCategory.SHOP)
+                                    .first()
                                     .filter {
                                         it.id in relatedIds
                                     }
@@ -118,6 +119,7 @@ class NpcDetailScreenViewModel @Inject constructor(
                         try {
                             val materials =
                                 materialUseCases.getMaterialsBySubCategory(MaterialSubCategory.MINI_BOSS_DROP)
+                                    .first()
                                     .filter {
                                         it.id in relatedIds
                                     }
@@ -141,6 +143,7 @@ class NpcDetailScreenViewModel @Inject constructor(
                         try {
                             val materials =
                                 materialUseCases.getMaterialsBySubCategory(MaterialSubCategory.VALUABLE)
+                                    .first()
                                     .filter {
                                         it.id in relatedIds
                                     }
