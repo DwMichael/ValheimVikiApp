@@ -50,7 +50,11 @@ fun BiomeScreen(
         ) {
             when (val state = biomeUiListState) {
                 is UiListState.Loading -> ShimmerGridEffect()
-                is UiListState.Error -> EmptyScreen(errorMessage = state.message.toString())
+                is UiListState.Error -> EmptyScreen(
+                    errorMessage = state.message.toString(),
+                    errorType = state.errorType
+                )
+
                 is UiListState.Success -> DefaultGrid(
                     modifier = Modifier,
                     items = state.list,
