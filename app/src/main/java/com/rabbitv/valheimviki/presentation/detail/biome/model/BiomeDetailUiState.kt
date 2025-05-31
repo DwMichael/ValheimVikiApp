@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.detail.biome
+package com.rabbitv.valheimviki.presentation.detail.biome.model
 
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.Creature
@@ -14,8 +14,8 @@ data class BiomeDetailUiState(
     val relatedCreatures: List<Creature> = emptyList(),
     val relatedOreDeposits: List<OreDeposit> = emptyList(),
     val relatedMaterials: List<Material> = emptyList(),
-    val relatedPointOfInterest : List<PointOfInterest> = emptyList(),
-    val relatedTrees : List<Tree> = emptyList(),
-    val isLoading : Boolean = false,
-    val error : String? = null
+    val relatedPointOfInterest: List<PointOfInterest> = emptyList(),
+    val relatedTrees: List<Tree> = emptyList(),
+    val isLoading: Boolean = false,
+    val error: String? = null
 )

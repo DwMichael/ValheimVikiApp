@@ -10,7 +10,6 @@ import com.rabbitv.valheimviki.domain.model.creature.npc.NPC
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.material.MaterialSubCategory
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
-import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
@@ -89,10 +88,11 @@ class NpcDetailScreenViewModel @Inject constructor(
                 creatureUseCases.getCreatureById(_npcId).let {
                     _creature.value = CreatureFactory.createFromCreature(it)
                 }
-                val relatedObjects: List<RelatedItem> = async {
+                val relatedIds: List<String> = async {
                     relationUseCases.getRelatedIdsUseCase(_npcId)
+                        .first()
+                        .map { it.id }
                 }.await()
-                val relatedIds = relatedObjects.map { it.id }
 
                 val deferreds = listOf(
                     async {

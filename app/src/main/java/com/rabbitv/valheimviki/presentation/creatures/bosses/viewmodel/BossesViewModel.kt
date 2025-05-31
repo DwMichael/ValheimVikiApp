@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
-import com.rabbitv.valheimviki.domain.model.ui_state.UiState
+import com.rabbitv.valheimviki.domain.model.ui_state.default_list_state.UiListState
 import com.rabbitv.valheimviki.domain.repository.NetworkConnectivity
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,7 +23,7 @@ class BossesViewModel @Inject constructor(
 ) : ViewModel() {
 
 
-    val mainBossUiState: StateFlow<UiState<MainBoss>> = combine(
+    val mainBossUiListState: StateFlow<UiListState<MainBoss>> = combine(
         creatureUseCases.getMainBossesUseCase()
             .catch { e ->
                 Log.e("BossScreenVM", "getLocalCreaturesUseCase failed in combine", e)
@@ -33,26 +33,26 @@ class BossesViewModel @Inject constructor(
     ) { creatures, isConnected ->
         if (isConnected) {
             if (creatures.isNotEmpty()) {
-                UiState.Success(creatures)
+                UiListState.Success(creatures)
             } else {
-                UiState.Loading
+                UiListState.Loading
             }
         } else {
             if (creatures.isNotEmpty()) {
-                UiState.Success(creatures)
+                UiListState.Success(creatures)
             } else {
-                UiState.Error("No internet connection and no local data available.")
+                UiListState.Error("No internet connection and no local data available.")
             }
         }
     }.onStart {
-        emit(UiState.Loading)
+        emit(UiListState.Loading)
     }.catch { e ->
         Log.e("BossScreenVM", "Error in creatureUiState flow", e)
-        emit(UiState.Error(e.message ?: "An unknown error occurred"))
+        emit(UiListState.Error(e.message ?: "An unknown error occurred"))
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.Companion.WhileSubscribed(3000),
-        initialValue = UiState.Loading
+        initialValue = UiListState.Loading
     )
 
 

@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.domain.model.ui_state
+package com.rabbitv.valheimviki.domain.model.ui_state.category_state
 
 sealed class UiCategoryState<out C, out I>(
     open val selectedCategory: C
@@ -18,4 +18,3 @@ sealed class UiCategoryState<out C, out I>(
         val message: String
     ) : UiCategoryState<C, Nothing>(selectedCategory)
 }
-

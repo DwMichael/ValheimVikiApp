@@ -29,10 +29,10 @@ interface RelationDao {
         WHERE mainItemId = :queryId OR relatedItemId = :queryId
     """
     )
-    fun getRelatedIds(queryId: String): List<RelatedItem>
+    fun getRelatedIds(queryId: String): Flow<List<RelatedItem>>
 
     @Query("SELECT relatedItemId FROM relations WHERE mainItemId = :queryId ")
-    fun getRelatedId(queryId: String): String
+    fun getRelatedId(queryId: String): Flow<String?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRelations(relations: List<Relation>)

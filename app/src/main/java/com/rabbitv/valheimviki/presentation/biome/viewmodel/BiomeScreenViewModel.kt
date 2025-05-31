@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.model.biome.Biome
-import com.rabbitv.valheimviki.domain.model.ui_state.UiState
+import com.rabbitv.valheimviki.domain.model.ui_state.default_list_state.UiListState
 import com.rabbitv.valheimviki.domain.repository.NetworkConnectivity
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,7 +23,7 @@ class BiomeScreenViewModel @Inject constructor(
     private val connectivityObserver: NetworkConnectivity,
 ) : ViewModel() {
 
-    val biomeUiState: StateFlow<UiState<Biome>> = combine(
+    val biomeUiListState: StateFlow<UiListState<Biome>> = combine(
         biomeUseCases.getLocalBiomesUseCase()
             .catch { e ->
                 Log.e("BiomeScreenVM", "getLocalBiomesUseCase failed in combine", e)
@@ -33,26 +33,26 @@ class BiomeScreenViewModel @Inject constructor(
     ) { biomes, isConnected ->
         if (isConnected) {
             if (biomes.isNotEmpty()) {
-                UiState.Success(biomes)
+                UiListState.Success(biomes)
             } else {
-                UiState.Loading
+                UiListState.Loading
             }
         } else {
             if (biomes.isNotEmpty()) {
-                UiState.Success(biomes)
+                UiListState.Success(biomes)
             } else {
-                UiState.Error("No internet connection and no local data available.")
+                UiListState.Error("No internet connection and no local data available.")
             }
         }
     }.onStart {
-        emit(UiState.Loading)
+        emit(UiListState.Loading)
     }.catch { e ->
         Log.e("BiomeScreenVM", "Error in biomeUiState flow", e)
-        emit(UiState.Error(e.message ?: "An unknown error occurred"))
+        emit(UiListState.Error(e.message ?: "An unknown error occurred"))
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(3000),
-        initialValue = UiState.Loading
+        initialValue = UiListState.Loading
     )
 
 }

@@ -12,7 +12,6 @@ import com.rabbitv.valheimviki.domain.model.material.MaterialSubCategory
 import com.rabbitv.valheimviki.domain.model.material.MaterialSubType
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterestSubCategory
-import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
@@ -97,10 +96,12 @@ class MainBossScreenViewModel @Inject constructor(
                 creatureUseCases.getCreatureById(mainBossId).let {
                     _mainBoss.value = CreatureFactory.createFromCreature(it)
                 }
-                val relatedObjects: List<RelatedItem> = async {
+                val relatedIds: List<String> = async {
                     relationUseCases.getRelatedIdsUseCase(mainBossId)
+                        .first()
+                        .map { it.id }
                 }.await()
-                val relatedIds = relatedObjects.map { it.id }
+
                 val deferreds = listOf(
                     async {
                         val pointOfInterest =

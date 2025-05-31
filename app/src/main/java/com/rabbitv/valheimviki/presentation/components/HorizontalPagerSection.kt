@@ -213,7 +213,6 @@ fun HorizontalPagerItem(
                     tonalElevation = 0.dp,
                     color = Color.Black.copy(alpha = ContentAlpha.medium),
                 ) {
-
                     Text(
                         modifier = Modifier
                             .padding

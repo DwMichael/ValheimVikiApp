@@ -76,9 +76,11 @@ class AggressiveCreatureDetailScreenViewModel @Inject constructor(
                 creatureUseCases.getCreatureById(_aggressiveCreatureId).let {
                     _creature.value = CreatureFactory.createFromCreature(it)
                 }
+
                 val relatedObjects: List<RelatedItem> = async {
-                    relationUseCases.getRelatedIdsUseCase(_aggressiveCreatureId)
+                    relationUseCases.getRelatedIdsUseCase(_aggressiveCreatureId).first()
                 }.await()
+
                 val relatedIds = relatedObjects.map { it.id }
 
                 val deferreds = listOf(
