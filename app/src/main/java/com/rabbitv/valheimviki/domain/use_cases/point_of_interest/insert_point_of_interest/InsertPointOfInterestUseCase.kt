@@ -8,6 +8,6 @@ class InsertPointOfInterestUseCase @Inject constructor(
     private val repository: PointOfInterestRepository
 ) {
     suspend operator fun invoke(pointOfInterest: List<PointOfInterest>) {
-     repository.insertPointOfInterest(pointOfInterest)
+     return repository.insertPointOfInterest(pointOfInterest)
     }
 }

@@ -47,6 +47,7 @@ import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
 import com.rabbitv.valheimviki.navigation.LocalSharedTransitionScope
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
+import com.rabbitv.valheimviki.presentation.components.HorizontalPagerData
 import com.rabbitv.valheimviki.presentation.components.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.ImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
@@ -90,6 +91,43 @@ fun BiomeDetailContent(
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
+    val creatureData = HorizontalPagerData(
+        title = "Creatures",
+        subTitle = "Creatures you may encounter in this biome",
+        icon = Lucide.PawPrint,
+        iconRotationDegrees = -85f,
+        itemContentScale = ContentScale.Crop
+    )
+    val oreDepositData = HorizontalPagerData(
+        title = "Ore Deposits",
+        subTitle = "Ore Deposits you may encounter in this biome",
+        icon = Lucide.Pickaxe,
+        iconRotationDegrees = -85f,
+        itemContentScale = ContentScale.Crop,
+        )
+
+    val materialData = HorizontalPagerData(
+        title = "Materials",
+        subTitle = "Unique materials you may encounter in this biome",
+        icon = Lucide.Gem,
+        iconRotationDegrees = -85f,
+        itemContentScale = ContentScale.Crop,
+    )
+
+    val pointOfInterestData = HorizontalPagerData(
+        title = "Points Of Interest",
+        subTitle = "Points Of Interest you may encounter in this biome",
+        icon = Lucide.House,
+        iconRotationDegrees = -85f,
+        itemContentScale = ContentScale.Crop,
+    )
+    val  treeData = HorizontalPagerData(
+        title = "Trees",
+        subTitle =  "Trees you may encounter in this biome",
+        icon = Lucide.Trees,
+        iconRotationDegrees = -85f,
+        itemContentScale = ContentScale.Crop,
+    )
     Scaffold(
         content = { padding ->
             val scrollState = rememberScrollState()
@@ -168,71 +206,38 @@ fun BiomeDetailContent(
                         SlavicDivider()
                         if (biomeUiState.relatedCreatures.isNotEmpty()) {
                             HorizontalPagerSection(
-                                rememberPagerState(
-                                    initialPage = 1,
-                                    pageCount = { biomeUiState.relatedCreatures.size }),
-                                biomeUiState.relatedCreatures,
-                                Lucide.PawPrint,
-                                "Creatures",
-                                "Creatures you may encounter in this biome",
-                                ContentScale.Crop,
+                                list = biomeUiState.relatedCreatures,
+                                data = creatureData,
                             )
                         }
 
                         if (biomeUiState.relatedOreDeposits.isNotEmpty()) {
                             TridentsDividedRow()
                             HorizontalPagerSection(
-                                rememberPagerState(
-                                    initialPage = 1,
-                                    pageCount = { biomeUiState.relatedOreDeposits.size }),
-                                biomeUiState.relatedOreDeposits,
-                                Lucide.Pickaxe,
-                                "Ore Deposits",
-                                "Ore Deposits you may encounter in this biome",
-                                ContentScale.Crop,
+                                list = biomeUiState.relatedOreDeposits,
+                                data = oreDepositData
                             )
                         }
 
                         if (biomeUiState.relatedMaterials.isNotEmpty()) {
                             TridentsDividedRow()
                             HorizontalPagerSection(
-                                rememberPagerState(
-                                    initialPage = 1,
-                                    pageCount = { biomeUiState.relatedMaterials.size }),
-                                biomeUiState.relatedMaterials,
-                                Lucide.Gem,
-                                "Materials",
-                                "Unique materials you may encounter in this biome",
-                                ContentScale.Crop,
-                                iconModifier = Modifier
+                                list = biomeUiState.relatedMaterials,
+                              data = materialData
                             )
                         }
                         if (biomeUiState.relatedPointOfInterest.isNotEmpty()) {
                             TridentsDividedRow()
                             HorizontalPagerSection(
-                                rememberPagerState(
-                                    initialPage = 1,
-                                    pageCount = { biomeUiState.relatedPointOfInterest.size }),
-                                biomeUiState.relatedPointOfInterest,
-                                Lucide.House,
-                                "Points Of Interest",
-                                "Points Of Interest you may encounter in this biome",
-                                ContentScale.Crop,
-                                iconModifier = Modifier
+                                list = biomeUiState.relatedPointOfInterest,
+                                data = pointOfInterestData
                             )
                         }
-                        if (biomeUiState.relatedPointOfInterest.isNotEmpty()) {
+                        if (biomeUiState.relatedTrees.isNotEmpty()) {
                             TridentsDividedRow()
                             HorizontalPagerSection(
-                                rememberPagerState(
-                                    initialPage = 1,
-                                    pageCount = { biomeUiState.relatedTrees.size }),
-                                biomeUiState.relatedTrees,
-                                Lucide.Trees,
-                                "Trees",
-                                "Trees you may encounter in this biome",
-                                ContentScale.Crop,
-                                iconModifier = Modifier
+                                list = biomeUiState.relatedTrees,
+                                data = treeData
                             )
                         }
                         Box(modifier = Modifier.size(45.dp))
@@ -258,11 +263,10 @@ fun BiomeDetailContent(
     )
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class) // Dodaj tę adnotację na poziomie pliku lub funkcji
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Preview("BiomeDetailContent", showBackground = true)
 @Composable
 fun PreviewBiomeDetailContent() {
-    // Przykładowe dane do podglądu
     val fakeBiome = Biome(
         id = "1",
         imageUrl = "https://via.placeholder.com/600x320.png?text=Biome+Image",

@@ -46,6 +46,7 @@ fun BiomeScreen(
             modifier = Modifier
                 .testTag("BiomeSurface")
                 .fillMaxSize()
+
                 .padding(paddingValues)
         ) {
             when (val state = biomeUiListState) {

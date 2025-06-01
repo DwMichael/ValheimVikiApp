@@ -7,10 +7,10 @@ import retrofit2.Response
 interface PointOfInterestRepository {
 
     fun getLocalPointOfInterest():Flow<List<PointOfInterest>>
-    fun getPointOfInterestById(id: String): PointOfInterest?
-    fun getPointOfInterestsByIds(ids: List<String>): List<PointOfInterest>
-    fun getPointOfInterestBySubCategory(subCategory: String) : List<PointOfInterest>
-    fun getPointOfInterestBySubCategoryAndId(subCategory: String, id: String): PointOfInterest?
+    fun getPointOfInterestById(id: String): Flow<PointOfInterest?>
+    fun getPointOfInterestsByIds(ids: List<String>): Flow<List<PointOfInterest>>
+    fun getPointOfInterestBySubCategory(subCategory: String) : Flow<List<PointOfInterest>>
+    fun getPointOfInterestBySubCategoryAndId(subCategory: String, id: String): Flow<PointOfInterest?>
 
     suspend fun insertPointOfInterest(pointOfInterests: List<PointOfInterest>)
     suspend fun fetchPointOfInterests(lang: String): Response<List<PointOfInterest>>

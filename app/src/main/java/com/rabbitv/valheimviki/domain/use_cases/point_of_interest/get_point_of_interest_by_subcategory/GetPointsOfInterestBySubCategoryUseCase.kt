@@ -5,21 +5,12 @@ import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterestSubCategory
 import com.rabbitv.valheimviki.domain.repository.PointOfInterestRepository
 import jakarta.inject.Inject
+import kotlinx.coroutines.flow.Flow
 
 class GetPointsOfInterestBySubCategoryUseCase @Inject constructor(
     private val repository: PointOfInterestRepository
 ) {
-    operator fun invoke(subCategory: PointOfInterestSubCategory): List<PointOfInterest> {
-        return try {
-            val pointOfInterest = repository.getPointOfInterestBySubCategory(subCategory.toString())
-            if (pointOfInterest.isNotEmpty()) {
-                pointOfInterest
-            }else
-            {
-                throw PointOfInterestBySubCategoryFetchLocalException("No point of interests found with subCategory $subCategory")
-            }
-        } catch (e: Exception) {
-            throw PointOfInterestBySubCategoryFetchLocalException("Error fetching from Room point of interests by subCategory : ${e.message}")
-        }
+    operator fun invoke(subCategory: PointOfInterestSubCategory): Flow<List<PointOfInterest>> {
+        return repository.getPointOfInterestBySubCategory(subCategory.toString())
     }
 }

@@ -59,17 +59,21 @@ import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
 import kotlin.math.absoluteValue
+data class HorizontalPagerData (
+    val title: String,
+    val subTitle: String,
+    val icon: ImageVector,
+    val iconRotationDegrees: Float = -85f,
+    val itemContentScale: ContentScale
+)
+
 
 @Composable
 fun HorizontalPagerSection(
-    pagerState: PagerState,
     list: List<ItemData?>,
-    icon: ImageVector,
-    title: String,
-    subTitle: String,
-    contentScale: ContentScale,
-    iconModifier: Modifier = Modifier.rotate(-85f)
+    data: HorizontalPagerData
 ) {
+    val state =  rememberPagerState(pageCount = { list.size })
     val pageWidth = 160.dp
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     val horizontalPadding = (screenWidth - pageWidth) / 2
@@ -82,53 +86,32 @@ fun HorizontalPagerSection(
                 end = BODY_CONTENT_PADDING.dp,
                 bottom = BODY_CONTENT_PADDING.dp,
             )
-
     )
     {
         Column(
             horizontalAlignment = Alignment.Start
         )
         {
-            Column(horizontalAlignment = Alignment.Start) {
-                Row(
-                    horizontalArrangement = Arrangement.Start,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        icon,
-                        tint = Color.White,
-                        contentDescription = "Rectangle section Icon",
-                        modifier = iconModifier
-                    )
-                    Spacer(modifier = Modifier.width(11.dp))
-                    Text(
-                        title,
-                        style = MaterialTheme.typography.titleLarge,
-                    )
-                }
-                Spacer(modifier = Modifier.padding(6.dp))
-                Text(
-                    subTitle,
-                    style = MaterialTheme.typography.titleMedium,
-                )
-            }
+            HorizontalHeader(
+              data = data
+            )
             Spacer(modifier = Modifier.padding(6.dp))
             HorizontalPager(
-                state = pagerState,
+                state = state,
                 modifier = Modifier.fillMaxWidth(),
                 contentPadding = PaddingValues(horizontal = horizontalPadding),
                 pageSize = PageSize.Fixed(pageWidth),
                 beyondViewportPageCount = list.size,
                 flingBehavior = PagerDefaults.flingBehavior(
-                    state = pagerState,
+                    state = state,
                     pagerSnapDistance = PagerSnapDistance.atMost(list.size)
                 )
             ) { pageIndex ->
                 HorizontalPagerItem(
-                    pagerState = pagerState,
+                    pagerState = state,
                     list = list,
                     pageIndex = pageIndex,
-                    contentScale = contentScale,
+                    contentScale = data.itemContentScale,
                     size = list.size
                 )
             }
@@ -136,6 +119,35 @@ fun HorizontalPagerSection(
     }
 }
 
+@Composable
+fun HorizontalHeader(
+    modifier: Modifier = Modifier,
+    data :HorizontalPagerData,
+    ){
+    Column(horizontalAlignment = Alignment.Start) {
+        Row(
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                data.icon,
+                tint = Color.White,
+                contentDescription = "Rectangle section Icon",
+                modifier = modifier.rotate(data.iconRotationDegrees)
+            )
+            Spacer(modifier = Modifier.width(11.dp))
+            Text(
+                data.title,
+                style = MaterialTheme.typography.titleLarge,
+            )
+        }
+        Spacer(modifier = Modifier.padding(6.dp))
+        Text(
+            data.subTitle,
+            style = MaterialTheme.typography.titleMedium,
+        )
+    }
+}
 
 @Composable
 fun HorizontalPagerItem(
@@ -255,15 +267,18 @@ fun PreviewRectangleSectionHeader() {
         val pagerState = rememberPagerState(pageCount = {
             10
         })
-        val creatureList = FakeData.generateFakeCreatures()
-        HorizontalPagerSection(
-            pagerState = pagerState,
-            list = creatureList,
-            icon =Lucide.PawPrint,
-            title = "Creatuers",
-            subTitle =        "Creatures you may encounter in this biome",
-            contentScale = ContentScale.Crop,
 
+        val horizontalPagerData = HorizontalPagerData(
+            title =  "Creatuers",
+            subTitle =  "Creatures you may encounter in this biome",
+            icon = Lucide.PawPrint,
+            iconRotationDegrees = -85f,
+            itemContentScale = ContentScale.Crop,
+        )
+            val creatureList = FakeData.generateFakeCreatures()
+        HorizontalPagerSection(
+            list = creatureList,
+            data = horizontalPagerData
         )
     }
 }

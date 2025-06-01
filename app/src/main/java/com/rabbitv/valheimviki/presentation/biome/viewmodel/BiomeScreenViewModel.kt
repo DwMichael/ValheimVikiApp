@@ -24,7 +24,6 @@ import javax.inject.Inject
 class BiomeScreenViewModel @Inject constructor(
     private val biomeUseCases: BiomeUseCases,
     private val connectivityObserver: NetworkConnectivity,
-
     ) : ViewModel() {
 
     val biomeUiListState: StateFlow<UiListState<Biome>> = combine(

@@ -4,11 +4,12 @@ import com.rabbitv.valheimviki.domain.exceptions.CreaturesByIdFetchLocalExceptio
 import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.repository.CreatureRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class GetCreatureByIdUseCase@Inject constructor(private val creatureRepository: CreatureRepository) {
     @OptIn(ExperimentalCoroutinesApi::class)
-    operator fun invoke(creatureId: String): Creature {
+    operator fun invoke(creatureId: String): Flow<Creature> {
        try {
            return creatureRepository.getCreatureById(creatureId) ?:throw CreaturesByIdFetchLocalException("Creature with id $creatureId not found")
        }catch (e : Exception)

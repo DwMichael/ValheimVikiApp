@@ -100,52 +100,59 @@ class BiomeDetailScreenViewModel @Inject constructor(
                         .map { it.id }
                 }.await()
 
-                try {
-                    creaturesUseCase.getCreatureByRelationAndSubCategory(
-                        relatedIds,
-                        CreatureSubCategory.BOSS
-                    )?.toMainBoss().let { boss ->
-                        _mainBoss.value = boss
+                launch {
+                    try {
+                        creaturesUseCase.getCreatureByRelationAndSubCategory(
+                            relatedIds,
+                            CreatureSubCategory.BOSS
+                        ).first()?.toMainBoss().let { boss ->
+                            _mainBoss.value = boss
+                        }
+                    } catch (e: Exception) {
+                        Log.e("Boss fetch error BiomeDetailViewModel", e.message.toString())
+                        _mainBoss.value = null
                     }
-
-                } catch (e: Exception) {
-                    Log.e("Boss fetch error BiomeDetailViewModel", e.message.toString())
-                    _mainBoss.value = null
                 }
 
-                try {
-                    val creatures = creaturesUseCase.getCreaturesByIds(relatedIds)
-                    _relatedCreatures.value = creatures
-                } catch (e: Exception) {
-                    Log.e("Creatures fetch error BiomeDetailViewModel", e.message.toString())
+                launch {
+                    try {
+                        _relatedCreatures.value = creaturesUseCase.getCreaturesByIds(relatedIds).first()
+                    } catch (e: Exception) {
+                        Log.e("Creatures fetch error BiomeDetailViewModel", e.message.toString())
+                    }
                 }
 
-                try {
-                    val oreDeposits = oreDepositUseCases.getOreDepositsByIdsUseCase(relatedIds)
-                    _relatedOreDeposits.value = oreDeposits
-                } catch (e: Exception) {
-                    Log.e("Ore deposits fetch error BiomeDetailViewModel", e.message.toString())
-                }
-                try {
-                    _relatedMaterials.value = materialUseCases.getMaterialsByIds(relatedIds).first()
-
-                } catch (e: Exception) {
-                    Log.e("Materials fetch error BiomeDetailViewModel", e.message.toString())
+                launch {
+                    try {
+                        val oreDeposits = oreDepositUseCases.getOreDepositsByIdsUseCase(relatedIds)
+                        _relatedOreDeposits.value = oreDeposits
+                    } catch (e: Exception) {
+                        Log.e("Ore deposits fetch error BiomeDetailViewModel", e.message.toString())
+                    }
                 }
 
-                try {
-                    val pointOfInterest =
-                        pointOfInterestUseCases.getPointsOfInterestByIdsUseCase(relatedIds)
-                    _relatedPointOfInterest.value = pointOfInterest
-                } catch (e: Exception) {
-                    Log.e("PointOfInterest fetch error BiomeDetailViewModel", e.message.toString())
+                launch {
+                    try {
+                        _relatedMaterials.value = materialUseCases.getMaterialsByIds(relatedIds).first()
+                    } catch (e: Exception) {
+                        Log.e("Materials fetch error BiomeDetailViewModel", e.message.toString())
+                    }
                 }
 
-                try {
-                    val trees = treeUseCases.getTreesByIdsUseCase(relatedIds)
-                    _relatedTrees.value = trees
-                } catch (e: Exception) {
-                    Log.e("Trees fetch error BiomeDetailViewModel", e.message.toString())
+
+               launch {
+                   try {
+                       _relatedPointOfInterest.value = pointOfInterestUseCases.getPointsOfInterestByIdsUseCase(relatedIds).first()
+                   } catch (e: Exception) {
+                       Log.e("PointOfInterest fetch error BiomeDetailViewModel", e.message.toString())
+                   }
+               }
+                launch {
+                    try {
+                        _relatedTrees.value = treeUseCases.getTreesByIdsUseCase(relatedIds).first()
+                    } catch (e: Exception) {
+                        Log.e("Trees fetch error BiomeDetailViewModel", e.message.toString())
+                    }
                 }
                 _isLoading.value = false
             } catch (e: Exception) {

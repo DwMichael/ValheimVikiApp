@@ -16,22 +16,22 @@ class PointOfInterestRepositoryImpl @Inject constructor(
         return pointOfInterestDao.getAllPointsOfInterest()
     }
 
-    override fun getPointOfInterestById(id: String): PointOfInterest? {
+    override fun getPointOfInterestById(id: String): Flow<PointOfInterest?> {
         return pointOfInterestDao.getPointOfInterestById(id)
     }
 
-    override fun getPointOfInterestsByIds(ids: List<String>): List<PointOfInterest> {
+    override fun getPointOfInterestsByIds(ids: List<String>): Flow<List<PointOfInterest>> {
         return pointOfInterestDao.getPointsOfInterestByIds(ids)
     }
 
-    override fun getPointOfInterestBySubCategory(subCategory: String): List<PointOfInterest> {
+    override fun getPointOfInterestBySubCategory(subCategory: String): Flow<List<PointOfInterest>> {
        return pointOfInterestDao.getPointsOfInterestBySubCategory(subCategory)
     }
 
     override fun getPointOfInterestBySubCategoryAndId(
         subCategory: String,
         id: String
-    ): PointOfInterest? {
+    ): Flow<PointOfInterest?> {
         return pointOfInterestDao.getPointOfInterestBySubCategoryAndId(subCategory, id)
     }
 
