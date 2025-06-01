@@ -73,9 +73,11 @@ class PassiveCreatureDetailScreenViewModel @Inject constructor(
         try {
             _isLoading.value = true
             viewModelScope.launch(Dispatchers.IO) {
-                creatureUseCases.getCreatureById(_passiveCreatureId).let {
-                    _creature.value = CreatureFactory.createFromCreature(it)
-                }
+
+                _creature.value = CreatureFactory.createFromCreature(
+                    creatureUseCases.getCreatureById(_passiveCreatureId).first()
+                )
+
                 val relatedObjects: List<RelatedItem> = async {
                     relationUseCases.getRelatedIdsUseCase(_passiveCreatureId)
                         .first()

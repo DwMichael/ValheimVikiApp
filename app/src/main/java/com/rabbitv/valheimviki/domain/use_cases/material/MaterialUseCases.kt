@@ -5,7 +5,6 @@ import com.rabbitv.valheimviki.domain.use_cases.material.get_material_by_id.GetM
 import com.rabbitv.valheimviki.domain.use_cases.material.get_materials_by_ids.GetMaterialsByIdsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.material.get_materials_by_subcategory.GetMaterialsBySubCategoryUseCase
 import com.rabbitv.valheimviki.domain.use_cases.material.get_materials_by_subcategory_and_subtype.GetMaterialsBySubCategoryAndSubTypeUseCase
-import com.rabbitv.valheimviki.domain.use_cases.material.insert_materials.InsertMaterialsUseCase
 
 data class MaterialUseCases(
     val getLocalMaterials: GetLocalMaterialsUseCase,
@@ -13,5 +12,4 @@ data class MaterialUseCases(
     val getMaterialById: GetMaterialByIdUseCase,
     val getMaterialsBySubCategory: GetMaterialsBySubCategoryUseCase,
     val getMaterialsBySubCategoryAndSubType: GetMaterialsBySubCategoryAndSubTypeUseCase,
-    val insertMaterials: InsertMaterialsUseCase,
 )

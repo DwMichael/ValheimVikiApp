@@ -7,7 +7,6 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.SharedTransitionScope.PlaceHolderSize.Companion.animatedSize
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
@@ -44,10 +43,8 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.rabbitv.valheimviki.R
-import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
 import com.rabbitv.valheimviki.ui.theme.MEDIUM_PADDING
-import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData.generateFakeMaterials
 
@@ -120,7 +117,6 @@ fun MainDetailImageAnimated(
                                     textState,
                                     animatedVisibilityScope, placeHolderSize = animatedSize,
                                 )
-
                                 .wrapContentHeight(Alignment.CenterVertically)
 
                         )

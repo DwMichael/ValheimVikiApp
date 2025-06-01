@@ -93,7 +93,7 @@ fun NavigationDrawer(
             .fillMaxSize()
             .testTag("NavigationDrawer"),
         drawerState = drawerState,
-        gesturesEnabled = !isDetailScreen,
+        gesturesEnabled = isDetailScreen,
         drawerContent = {
             ModalDrawerSheet(
                 modifier = Modifier.fillMaxWidth(0.92f),

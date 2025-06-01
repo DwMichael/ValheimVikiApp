@@ -93,9 +93,11 @@ class MainBossScreenViewModel @Inject constructor(
         try {
             _isLoading.value = true
             viewModelScope.launch(Dispatchers.IO) {
-                creatureUseCases.getCreatureById(mainBossId).let {
-                    _mainBoss.value = CreatureFactory.createFromCreature(it)
-                }
+                _mainBoss.value = CreatureFactory.createFromCreature(
+                    creatureUseCases.getCreatureById(mainBossId).first()
+                )
+
+
                 val relatedIds: List<String> = async {
                     relationUseCases.getRelatedIdsUseCase(mainBossId)
                         .first()
@@ -104,18 +106,19 @@ class MainBossScreenViewModel @Inject constructor(
 
                 val deferreds = listOf(
                     async {
-                        val pointOfInterest =
-                            pointOfInterestUseCases.getPointsOfInterestBySubCategoryUseCase(
-                                PointOfInterestSubCategory.FORSAKEN_ALTAR
-                            )
-                        val poi = pointOfInterestUseCases.getPointsOfInterestBySubCategoryUseCase(
-                            PointOfInterestSubCategory.STRUCTURE
-                        )
-                        _sacrificialStones.value = poi.find {
+                        val pointOfInterestList = pointOfInterestUseCases
+                            .getPointsOfInterestBySubCategoryUseCase(PointOfInterestSubCategory.FORSAKEN_ALTAR)
+                            .first()
+
+                        val poiList = pointOfInterestUseCases
+                            .getPointsOfInterestBySubCategoryUseCase(PointOfInterestSubCategory.STRUCTURE)
+                            .first()
+
+                        _sacrificialStones.value = poiList.find {
                             it.imageUrl == "https://static.wikia.nocookie.net/valheim/images/2/29/Sarcrifial_Stones.jpg/revision/latest?cb=20230416093844"
                         }
 
-                        _relatedForsakenAltar.value = pointOfInterest.find {
+                        _relatedForsakenAltar.value = pointOfInterestList.find {
                             it.id in relatedIds
                         }
 

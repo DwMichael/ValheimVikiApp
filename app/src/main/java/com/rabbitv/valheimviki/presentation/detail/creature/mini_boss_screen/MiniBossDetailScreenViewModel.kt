@@ -74,9 +74,11 @@ class MiniBossDetailScreenViewModel @Inject constructor(
         try {
             _isLoading.value = true
             viewModelScope.launch(Dispatchers.IO) {
-                creatureUseCases.getCreatureById(miniBossId).let {
-                    _miniBoss.value = CreatureFactory.createFromCreature(it)
-                }
+
+                _miniBoss.value = CreatureFactory.createFromCreature(
+                    creatureUseCases.getCreatureById(miniBossId).first()
+                )
+
                 val relatedIds: List<String> = async {
                     relationUseCases.getRelatedIdsUseCase(miniBossId)
                         .first()
@@ -89,6 +91,7 @@ class MiniBossDetailScreenViewModel @Inject constructor(
                         try {
                             val pointOfInterest =
                                 pointOfInterestUseCases.getPointsOfInterestByIdsUseCase(relatedIds)
+                                    .first()
                             _primarySpawn.value = pointOfInterest.find {
                                 it.id in relatedIds
                             }
