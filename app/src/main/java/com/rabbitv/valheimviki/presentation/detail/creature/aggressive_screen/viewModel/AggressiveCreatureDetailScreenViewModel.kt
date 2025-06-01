@@ -76,9 +76,11 @@ class AggressiveCreatureDetailScreenViewModel @Inject constructor(
             try {
                 creatureUseCases.getCreatureById(_aggressiveCreatureId).collect {
                     _creature.value = CreatureFactory.createFromCreature(it)
+
                 }
 
-                val relatedObjects: List<RelatedItem> = relationUseCases.getRelatedIdsUseCase(_aggressiveCreatureId).first()
+                val relatedObjects: List<RelatedItem> =
+                    relationUseCases.getRelatedIdsUseCase(_aggressiveCreatureId).first()
                 val relatedIds = relatedObjects.map { it.id }
 
                 val deferredBiome = async {

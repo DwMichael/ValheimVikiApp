@@ -85,9 +85,11 @@ class NpcDetailScreenViewModel @Inject constructor(
         try {
             _isLoading.value = true
             viewModelScope.launch(Dispatchers.IO) {
-                creatureUseCases.getCreatureById(_npcId).let {
-                    _creature.value = CreatureFactory.createFromCreature(it)
-                }
+
+                _creature.value = CreatureFactory.createFromCreature(
+                    creatureUseCases.getCreatureById(_npcId).first()
+                )
+
                 val relatedIds: List<String> = async {
                     relationUseCases.getRelatedIdsUseCase(_npcId)
                         .first()
@@ -133,6 +135,7 @@ class NpcDetailScreenViewModel @Inject constructor(
                         try {
                             _chestsLocation.value =
                                 pointOfInterestUseCases.getPointsOfInterestByIdsUseCase(relatedIds)
+                                    .first()
                                     .sortedBy { it.order }
                         } catch (e: Exception) {
                             Log.e("chests locations NPC Detail ViewModel", "$e")

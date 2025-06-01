@@ -13,10 +13,10 @@ interface TreeDao {
     fun getLocalTrees(): Flow<List<Tree>>
 
     @Query("SELECT * FROM trees WHERE id = :id")
-    fun getTreeById(id: String): Tree?
+    fun getTreeById(id: String): Flow<Tree?>
 
     @Query("SELECT * FROM trees WHERE id IN (:ids)")
-    fun getTreesByIds(ids: List<String>): List<Tree>
+    fun getTreesByIds(ids: List<String>): Flow<List<Tree>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTrees(trees: List<Tree>)

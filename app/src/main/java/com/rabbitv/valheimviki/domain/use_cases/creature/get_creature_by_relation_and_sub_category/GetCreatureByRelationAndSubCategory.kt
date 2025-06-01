@@ -4,7 +4,9 @@ import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.model.creature.CreatureSubCategory
 import com.rabbitv.valheimviki.domain.repository.CreatureRepository
 import jakarta.inject.Inject
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
 
 class GetCreatureByRelationAndSubCategory @Inject constructor(
     private val creatureRepository: CreatureRepository
@@ -16,6 +18,6 @@ class GetCreatureByRelationAndSubCategory @Inject constructor(
         return creatureRepository.getCreatureByRelationAndSubCategory(
             creatureIds,
             creatureSubCategory.toString()
-        )
+        ).flowOn(Dispatchers.IO)
     }
 }

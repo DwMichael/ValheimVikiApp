@@ -11,16 +11,16 @@ import retrofit2.Response
 class OreDepositRepositoryImpl @Inject constructor(
     private val apiService: ApiOreDepositService,
     private val oreDepositDao: OreDepositDao
-):OreDepositRepository  {
+) : OreDepositRepository {
     override fun getLocalOreDeposits(): Flow<List<OreDeposit>> {
         return oreDepositDao.getLocalOreDeposits()
     }
 
-    override fun getOreDepositsByIds(ids: List<String>): List<OreDeposit> {
+    override fun getOreDepositsByIds(ids: List<String>): Flow<List<OreDeposit>> {
         return oreDepositDao.getOreDepositsByIds(ids)
     }
 
-    override fun getOreDepositById(id: String): OreDeposit? {
+    override fun getOreDepositById(id: String): Flow<OreDeposit?> {
         return oreDepositDao.getOreDepositById(id)
     }
 

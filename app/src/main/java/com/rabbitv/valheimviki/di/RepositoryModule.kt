@@ -105,7 +105,6 @@ import com.rabbitv.valheimviki.domain.use_cases.material.get_material_by_id.GetM
 import com.rabbitv.valheimviki.domain.use_cases.material.get_materials_by_ids.GetMaterialsByIdsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.material.get_materials_by_subcategory.GetMaterialsBySubCategoryUseCase
 import com.rabbitv.valheimviki.domain.use_cases.material.get_materials_by_subcategory_and_subtype.GetMaterialsBySubCategoryAndSubTypeUseCase
-import com.rabbitv.valheimviki.domain.use_cases.material.insert_materials.InsertMaterialsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.mead.MeadUseCases
 import com.rabbitv.valheimviki.domain.use_cases.mead.get_local_meads_use_case.GetLocalMeadsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.mead.get_meads_by_sub_category_use_case.GetMeadsBySubCategoryUseCase
@@ -113,19 +112,16 @@ import com.rabbitv.valheimviki.domain.use_cases.ore_deposit.OreDepositUseCases
 import com.rabbitv.valheimviki.domain.use_cases.ore_deposit.get_local_ore_deposit.GetLocalOreDepositUseCase
 import com.rabbitv.valheimviki.domain.use_cases.ore_deposit.get_ore_deposit_by_id.GetOreDepositByIdUseCase
 import com.rabbitv.valheimviki.domain.use_cases.ore_deposit.get_ore_deposits_by_ids.GetOreDepositsByIdsUseCase
-import com.rabbitv.valheimviki.domain.use_cases.ore_deposit.insert_ore_deposit.InsertOreDepositUseCase
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.PointOfInterestUseCases
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.get_local_point_of_interest.GetLocalPointOfInterestUseCase
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.get_point_of_interest_by_id.GetPointOfInterestByIdUseCase
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.get_point_of_interest_by_subcategory.GetPointsOfInterestBySubCategoryUseCase
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.get_point_of_interest_by_subcategory_and_id.GetPointOfInterestBySubCategoryAndIdUseCase
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.get_point_of_interests_by_ids.GetPointsOfInterestByIdsUseCase
-import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.insert_point_of_interest.InsertPointOfInterestUseCase
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.get_item_id_in_relation.GetRelatedIdsRelationUseCase
 import com.rabbitv.valheimviki.domain.use_cases.relation.get_item_related_by_id.GetItemRelatedById
 import com.rabbitv.valheimviki.domain.use_cases.relation.get_local_relations.GetLocalRelationsUseCase
-import com.rabbitv.valheimviki.domain.use_cases.relation.insert_relations.InsertRelationsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.tool.ToolUseCases
 import com.rabbitv.valheimviki.domain.use_cases.tool.get_local_tools_use_case.GetLocalToolsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.tool.get_tools_by_sub_category_use_case.GetToolsBySubCategoryUseCase
@@ -367,7 +363,6 @@ object RepositoryModule {
     @Singleton
     fun provideRelationUseCases(relationsRepository: RelationRepository): RelationUseCases {
         return RelationUseCases(
-            insertRelationsUseCase = InsertRelationsUseCase(relationsRepository),
             getRelatedIdUseCase = GetItemRelatedById(relationsRepository),
             getRelatedIdsUseCase = GetRelatedIdsRelationUseCase(relationsRepository),
             getLocalRelationsUseCase = GetLocalRelationsUseCase(relationsRepository),
@@ -392,7 +387,6 @@ object RepositoryModule {
             getLocalOreDepositsUseCase = GetLocalOreDepositUseCase(oreDepositRepository),
             getOreDepositsByIdsUseCase = GetOreDepositsByIdsUseCase(oreDepositRepository),
             getOreDepositByIdUseCase = GetOreDepositByIdUseCase(oreDepositRepository),
-            insertOreDepositUseCase = InsertOreDepositUseCase(oreDepositRepository),
         )
     }
 
@@ -406,8 +400,7 @@ object RepositoryModule {
             getMaterialsBySubCategory = GetMaterialsBySubCategoryUseCase(materialRepository),
             getMaterialsBySubCategoryAndSubType = GetMaterialsBySubCategoryAndSubTypeUseCase(
                 materialRepository
-            ),
-            insertMaterials = InsertMaterialsUseCase(materialRepository)
+            )
         )
     }
 
@@ -427,8 +420,7 @@ object RepositoryModule {
             ),
             getPointsOfInterestByIdsUseCase = GetPointsOfInterestByIdsUseCase(
                 pointOfInterestRepository
-            ),
-            insertPointOfInterestUseCase = InsertPointOfInterestUseCase(pointOfInterestRepository)
+            )
         )
     }
 

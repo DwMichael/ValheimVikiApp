@@ -15,13 +15,13 @@ import com.rabbitv.valheimviki.domain.model.creature.passive.PassiveCreature
 
 object CreatureFactory {
 
-    inline fun <reified T> createFromCreature(creature: Creature): T {
-        return when(T::class){
-            MainBoss::class -> creature.toMainBoss() as T
-            MiniBoss::class -> creature.toMiniBoss() as T
-            AggressiveCreature::class -> creature.toAggressiveCreature() as T
-            PassiveCreature::class -> creature.toPassiveCreature() as T
-            NPC::class -> creature.toNPC() as T
+    inline fun <reified T> createFromCreature(creature: Creature?): T {
+        return when (T::class) {
+            MainBoss::class -> creature?.toMainBoss() as T
+            MiniBoss::class -> creature?.toMiniBoss() as T
+            AggressiveCreature::class -> creature?.toAggressiveCreature() as T
+            PassiveCreature::class -> creature?.toPassiveCreature() as T
+            NPC::class -> creature?.toNPC() as T
             else -> throw IllegalArgumentException("Unsupported type: ${T::class.simpleName}")
         }
     }
