@@ -23,6 +23,5 @@ data class CreatureUseCases(
     val getAggressiveCreatures: GetAggressiveCreatures,
     val getPassiveCreature: GetPassiveCreature,
     val getNPCsUseCase: GetNPCsUseCase,
-
     val getLocalCreaturesUseCase: GetLocalCreaturesUseCase,
 )
