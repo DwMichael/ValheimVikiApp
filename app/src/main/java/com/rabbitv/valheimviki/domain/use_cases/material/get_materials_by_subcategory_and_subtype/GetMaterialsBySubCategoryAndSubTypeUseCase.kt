@@ -5,11 +5,18 @@ import com.rabbitv.valheimviki.domain.model.material.MaterialSubCategory
 import com.rabbitv.valheimviki.domain.model.material.MaterialSubType
 import com.rabbitv.valheimviki.domain.repository.MaterialRepository
 import jakarta.inject.Inject
+import kotlinx.coroutines.flow.Flow
 
-class GetMaterialsBySubCategoryAndSubTypeUseCase@Inject constructor(
+class GetMaterialsBySubCategoryAndSubTypeUseCase @Inject constructor(
     private val materialRepository: MaterialRepository
 ) {
-    operator fun invoke(subCategory: MaterialSubCategory, subType: MaterialSubType): List<Material> {
-        return materialRepository.getMaterialsBySubCategoryAndSubType(subType= subType.toString(), subCategory = subCategory.toString())
+    operator fun invoke(
+        subCategory: MaterialSubCategory,
+        subType: MaterialSubType
+    ): Flow<List<Material>> {
+        return materialRepository.getMaterialsBySubCategoryAndSubType(
+            subType = subType.toString(),
+            subCategory = subCategory.toString()
+        )
     }
 }

@@ -7,8 +7,8 @@ import retrofit2.Response
 
 interface RelationRepository {
     fun getLocalRelations(): Flow<List<Relation>>
-    fun getRelatedId(queryId: String): String
-    fun getRelatedIds(queryId: String): List<RelatedItem>
+    fun getRelatedId(queryId: String): Flow<String?>
+    fun getRelatedIds(queryId: String): Flow<List<RelatedItem>>
     suspend fun insertRelations(relations: List<Relation>)
     suspend fun fetchRelations(): Response<List<Relation>>
 }

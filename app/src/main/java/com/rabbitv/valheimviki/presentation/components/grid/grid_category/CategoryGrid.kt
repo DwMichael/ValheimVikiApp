@@ -3,6 +3,7 @@ package com.rabbitv.valheimviki.presentation.components.grid.grid_category
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -15,6 +16,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.rabbitv.valheimviki.presentation.components.grid.grid_item.MaterialGridItem
 import com.rabbitv.valheimviki.presentation.material.model.MaterialSegmentOption
 import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_TWO_COLUMNS
@@ -36,16 +38,14 @@ fun <T> CategoryGrid(
         columns = GridCells.Fixed(numbersOfColumns),
     ) {
         itemsIndexed(items) { index, item ->
-            Box(
-                modifier = modifier.testTag("GirdItem ${item.label}")
-            ) {
-
                 MaterialGridItem(
                     item = item,
                     onClick = { onItemClick(item.value) },
                     height = height,
                 )
-            }
+        }
+        item(1){
+            Box(modifier = Modifier.size(45.dp))
         }
     }
 }

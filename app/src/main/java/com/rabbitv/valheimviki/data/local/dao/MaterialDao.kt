@@ -10,22 +10,25 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface MaterialDao {
 
- @Query("SELECT * FROM materials")
- fun getLocalMaterials(): Flow<List<Material>>
+    @Query("SELECT * FROM materials")
+    fun getLocalMaterials(): Flow<List<Material>>
 
- @Query("SELECT * FROM materials WHERE id IN (:ids)")
- fun getMaterialsByIds(ids: List<String>): List<Material>
+    @Query("SELECT * FROM materials WHERE id IN (:ids)")
+    fun getMaterialsByIds(ids: List<String>): Flow<List<Material>>
 
- @Query("SELECT * FROM materials WHERE category = 'MATERIAL' AND id = :id")
- fun getMaterialById(id: String): Material?
+    @Query("SELECT * FROM materials WHERE category = 'MATERIAL' AND id = :id")
+    fun getMaterialById(id: String): Flow<Material?>
 
- @Query("SELECT * FROM materials WHERE category = 'MATERIAL' AND subCategory = :subCategory ")
- fun getMaterialsBySubCategory(subCategory: String): List<Material>
+    @Query("SELECT * FROM materials WHERE category = 'MATERIAL' AND subCategory = :subCategory ")
+    fun getMaterialsBySubCategory(subCategory: String): Flow<List<Material>>
 
- @Query("SELECT * FROM materials WHERE category = 'MATERIAL' AND subCategory = :subCategory AND subType = :subType")
- fun getMaterialsBySubCategoryAndSubType(subCategory: String, subType: String): List<Material>
+    @Query("SELECT * FROM materials WHERE category = 'MATERIAL' AND subCategory = :subCategory AND subType = :subType")
+    fun getMaterialsBySubCategoryAndSubType(
+        subCategory: String,
+        subType: String
+    ): Flow<List<Material>>
 
- @Insert(onConflict = OnConflictStrategy.REPLACE)
- suspend fun insertMaterial(materials: List<Material>)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertMaterial(materials: List<Material>)
 
 }

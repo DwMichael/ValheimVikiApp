@@ -23,22 +23,22 @@ class CreatureRepositoryImpl @Inject constructor(
         return creatureDao.getCreaturesBySubCategory(subCategory)
     }
 
-    override fun getCreatureByIdAndSubCategory(id: String, subCategory: String): Creature? {
+    override fun getCreatureByIdAndSubCategory(id: String, subCategory: String): Flow<Creature?> {
         return creatureDao.getCreatureByIdAndSubCategory(id, subCategory)
     }
 
     override fun getCreatureByRelationAndSubCategory(
         creaturesIds: List<String>,
         subCategory: String
-    ): Creature? {
+    ): Flow<Creature?> {
         return creatureDao.getCreatureByRelationAndSubCategory(creaturesIds, subCategory)
     }
 
-    override fun getCreaturesByIds(ids: List<String>): List<Creature> {
+    override fun getCreaturesByIds(ids: List<String>): Flow<List<Creature>> {
         return creatureDao.getCreaturesByIds(ids)
     }
 
-    override fun getCreatureById(id: String): Creature? {
+    override fun getCreatureById(id: String): Flow<Creature?> {
         return creatureDao.getCreatureById(id)
     }
 

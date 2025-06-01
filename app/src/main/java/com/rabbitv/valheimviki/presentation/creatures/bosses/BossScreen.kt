@@ -22,7 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
-import com.rabbitv.valheimviki.domain.model.ui_state.UiState
+import com.rabbitv.valheimviki.domain.model.ui_state.default_list_state.UiListState
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.grid.grid_category.DefaultGrid
 import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerGridEffect
@@ -42,7 +42,7 @@ fun BossScreen(
     animatedVisibilityScope: AnimatedVisibilityScope
 ) {
 
-    val mainBossUiState: UiState<MainBoss> by viewModel.mainBossUiState.collectAsStateWithLifecycle()
+    val mainBossUiListState: UiListState<MainBoss> by viewModel.mainBossUiListState.collectAsStateWithLifecycle()
     val lazyGridState = rememberLazyGridState()
 
 
@@ -57,10 +57,10 @@ fun BossScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            when (val state = mainBossUiState) {
-                is UiState.Loading -> ShimmerGridEffect()
-                is UiState.Error -> EmptyScreen(errorMessage = state.message.toString())
-                is UiState.Success -> DefaultGrid(
+            when (val state = mainBossUiListState) {
+                is UiListState.Loading -> ShimmerGridEffect()
+                is UiListState.Error -> EmptyScreen(errorMessage = state.message.toString())
+                is UiListState.Success -> DefaultGrid(
                     modifier = Modifier,
                     items = state.list,
                     onItemClick = onItemClick,

@@ -11,7 +11,6 @@ import com.rabbitv.valheimviki.domain.model.creature.mini_boss.MiniBoss
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.material.MaterialSubCategory
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
-import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.PointOfInterestUseCases
@@ -23,6 +22,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -77,11 +77,12 @@ class MiniBossDetailScreenViewModel @Inject constructor(
                 creatureUseCases.getCreatureById(miniBossId).let {
                     _miniBoss.value = CreatureFactory.createFromCreature(it)
                 }
-                val relatedObjects: List<RelatedItem> = async {
+                val relatedIds: List<String> = async {
                     relationUseCases.getRelatedIdsUseCase(miniBossId)
+                        .first()
+                        .map { it.id }
                 }.await()
 
-                val relatedIds = relatedObjects.map { it.id }
 
                 val deferreds = listOf(
                     async {
@@ -103,7 +104,7 @@ class MiniBossDetailScreenViewModel @Inject constructor(
                             val materials = materialUseCases.getMaterialsBySubCategory(
                                 MaterialSubCategory.MINI_BOSS_DROP
                             )
-                            _dropItems.value = materials.filter { material ->
+                            _dropItems.value = materials.first().filter { material ->
                                 material.id in relatedIds
                             }
                         } catch (e: MaterialsFetchLocalException) {

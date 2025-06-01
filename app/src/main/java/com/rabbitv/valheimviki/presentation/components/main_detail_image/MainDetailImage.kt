@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -96,27 +97,25 @@ fun MainDetailImage(
         }
         AnimatedVisibility(
             visible = backButtonVisibleState.value,
-            enter = fadeIn(animationSpec = tween(300))
+            enter = fadeIn(),
+            exit = fadeOut(),
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(16.dp)
         ) {
-            Box(
-                modifier = Modifier
-                    .size(64.dp)
-                    .padding(8.dp),
-                contentAlignment = Alignment.TopStart,
+            FilledIconButton(
+                onClick = onBack,
+                shape = RoundedCornerShape(12.dp),
+                colors = IconButtonDefaults.filledIconButtonColors(
+                    containerColor = ForestGreen10Dark,
+                ),
+                modifier = Modifier.size(56.dp)
             ) {
-                FilledIconButton(
-                    onClick = { onBack() },
-                    shape = RoundedCornerShape(BODY_CONTENT_PADDING.dp),
-                    colors = IconButtonDefaults.filledIconButtonColors(
-                        containerColor = ForestGreen10Dark,
-                    ),
-                ) {
-                    Icon(
-                        Icons.AutoMirrored.Rounded.ArrowBack,
-                        tint = PrimaryWhite,
-                        contentDescription = "Navigation Back Button"
-                    )
-                }
+                Icon(
+                    Icons.AutoMirrored.Rounded.ArrowBack,
+                    contentDescription = "Back",
+                    tint = Color.White
+                )
             }
         }
     }

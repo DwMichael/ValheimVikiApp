@@ -4,21 +4,13 @@ import com.rabbitv.valheimviki.domain.exceptions.PointOfInterestByIdsFetchLocalE
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
 import com.rabbitv.valheimviki.domain.repository.PointOfInterestRepository
 import jakarta.inject.Inject
+import kotlinx.coroutines.flow.Flow
 
 class GetPointsOfInterestByIdsUseCase @Inject constructor(
     private val repository: PointOfInterestRepository
 ) {
-    operator fun invoke(ids: List<String>): List<PointOfInterest> {
-        return try {
-            val pointOfInterest = repository.getPointOfInterestsByIds(ids)
-            if (pointOfInterest.isNotEmpty()) {
-                pointOfInterest
-            }else
-            {
-                throw PointOfInterestByIdsFetchLocalException("No point of interests found with ids $ids")
-            }
-        } catch (e: Exception) {
-            throw PointOfInterestByIdsFetchLocalException("Error fetching from Room point of interests by ids : ${e.message}")
-        }
+    operator fun invoke(ids: List<String>): Flow<List<PointOfInterest>> {
+        return repository.getPointOfInterestsByIds(ids)
+
     }
 }

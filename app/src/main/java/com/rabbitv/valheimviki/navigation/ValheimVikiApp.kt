@@ -8,9 +8,11 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.EaseOutCubic
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -25,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -97,7 +100,6 @@ import com.rabbitv.valheimviki.utils.Constants.MAIN_BOSS_ARGUMENT_KEY
 import com.rabbitv.valheimviki.utils.Constants.MINI_BOSS_ARGUMENT_KEY
 import com.rabbitv.valheimviki.utils.Constants.NPC_KEY
 import com.rabbitv.valheimviki.utils.Constants.PASSIVE_CREATURE_KEY
-import kotlinx.coroutines.launch
 
 private val topBarScreens = setOf(
     Screen.Boss,
@@ -154,7 +156,6 @@ fun MainContainer(
     } == true
 
 
-
     NavigationDrawer(
         modifier = modifier,
         drawerState = drawerState,
@@ -173,11 +174,8 @@ fun MainContainer(
                     exit = slideOutVertically { -it } + fadeOut(),
                 ) {
                     MainAppBar(
-                        onSearchBarClick = {},
-                        onMenuClick = { scope.launch { drawerState.open() } },
-                        onBookMarkClick = {},
                         scope = scope,
-                        drawerState = drawerState,
+                        drawerState = drawerState
                     )
                 }
             },
@@ -185,7 +183,7 @@ fun MainContainer(
             val targetTopPadding = if (showTopAppBar) innerPadding.calculateTopPadding() else 0.dp
             val animatedTopPadding by animateDpAsState(
                 targetValue = targetTopPadding,
-                animationSpec = tween(durationMillis = 650, easing = LinearOutSlowInEasing)
+                animationSpec = tween(durationMillis = 450, easing = LinearOutSlowInEasing)
             )
 
             Box(
@@ -208,6 +206,8 @@ fun ValheimNavGraph(
     valheimVikiNavController: NavHostController,
     innerPadding: PaddingValues,
 ) {
+    val lastClickTime = remember { mutableLongStateOf(0L) }
+    val clickDebounceMillis = 500
     NavHost(
         navController = valheimVikiNavController,
         startDestination = Screen.Splash.route,
@@ -223,9 +223,15 @@ fun ValheimNavGraph(
             BiomeScreen(
                 modifier = Modifier.padding(10.dp),
                 onItemClick = { id ->
-                    valheimVikiNavController.navigate(
-                        Screen.BiomeDetail.passArguments(id)
-                    )
+                    val currentTime = System.currentTimeMillis()
+                    if (currentTime - lastClickTime.longValue > clickDebounceMillis) {
+                        lastClickTime.longValue = currentTime
+                        valheimVikiNavController.navigate(
+                            Screen.BiomeDetail.passArguments(id)
+                        ) {
+                            launchSingleTop = true
+                        }
+                    }
                 },
                 paddingValues = innerPadding,
                 animatedVisibilityScope = this@composable
@@ -236,9 +242,15 @@ fun ValheimNavGraph(
             BossScreen(
                 modifier = Modifier.padding(10.dp),
                 onItemClick = { mainBossId ->
-                    valheimVikiNavController.navigate(
-                        Screen.MainBossDetail.passArguments(mainBossId)
-                    )
+                    val currentTime = System.currentTimeMillis()
+                    if (currentTime - lastClickTime.longValue > clickDebounceMillis) {
+                        lastClickTime.longValue = currentTime
+                        valheimVikiNavController.navigate(
+                            Screen.MainBossDetail.passArguments(mainBossId)
+                        ) {
+                            launchSingleTop = true
+                        }
+                    }
                 },
                 paddingValues = innerPadding,
                 animatedVisibilityScope = this@composable
@@ -248,9 +260,15 @@ fun ValheimNavGraph(
             MiniBossScreen(
                 modifier = Modifier.padding(10.dp),
                 onItemClick = { miniBossId ->
-                    valheimVikiNavController.navigate(
-                        Screen.MiniBossDetail.passArguments(miniBossId)
-                    )
+                    val currentTime = System.currentTimeMillis()
+                    if (currentTime - lastClickTime.longValue > clickDebounceMillis) {
+                        lastClickTime.longValue = currentTime
+                        valheimVikiNavController.navigate(
+                            Screen.MiniBossDetail.passArguments(miniBossId)
+                        ) {
+                            launchSingleTop = true
+                        }
+                    }
                 },
                 paddingValues = innerPadding,
                 animatedVisibilityScope = this@composable
@@ -449,19 +467,50 @@ fun ValheimNavGraph(
         //Detail Screens
         composable(
             Screen.BiomeDetail.route,
+            enterTransition = {
+                fadeIn(
+                    animationSpec = tween(
+                        durationMillis = 700,
+                        delayMillis = 50
+                    )
+                ) + slideInVertically(
+                    initialOffsetY = { fullHeight -> fullHeight / 2 },
+                    animationSpec = tween(
+                        durationMillis = 950,
+                        delayMillis = 0,
+                        easing = EaseOutCubic
+                    )
+                )
+            },
             arguments = listOf(
                 navArgument(BIOME_ARGUMENT_KEY) { type = NavType.StringType },
             )
         ) { backStackEntry ->
+            val animatedContentScope = this
             BiomeDetailScreen(
                 onBack = {
                     valheimVikiNavController.popBackStack()
                 },
-                animatedVisibilityScope = this@composable
+                animatedVisibilityScope = animatedContentScope
             )
         }
         composable(
             route = Screen.MainBossDetail.route,
+            enterTransition = {
+                fadeIn(
+                    animationSpec = tween(
+                        durationMillis = 700,
+                        delayMillis = 50
+                    )
+                ) + slideInVertically(
+                    initialOffsetY = { fullHeight -> fullHeight / 2 },
+                    animationSpec = tween(
+                        durationMillis = 950,
+                        delayMillis = 0,
+                        easing = EaseOutCubic
+                    )
+                )
+            },
             arguments = listOf(
                 navArgument(MAIN_BOSS_ARGUMENT_KEY) { type = NavType.StringType },
             )
@@ -476,6 +525,21 @@ fun ValheimNavGraph(
         }
         composable(
             route = Screen.MiniBossDetail.route,
+            enterTransition = {
+                fadeIn(
+                    animationSpec = tween(
+                        durationMillis = 700,
+                        delayMillis = 50
+                    )
+                ) + slideInVertically(
+                    initialOffsetY = { fullHeight -> fullHeight / 2 },
+                    animationSpec = tween(
+                        durationMillis = 950,
+                        delayMillis = 0,
+                        easing = EaseOutCubic
+                    )
+                )
+            },
             arguments = listOf(
                 navArgument(MINI_BOSS_ARGUMENT_KEY) { type = NavType.StringType },
             )

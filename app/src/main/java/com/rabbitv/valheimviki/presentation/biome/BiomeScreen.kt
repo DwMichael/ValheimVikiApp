@@ -16,7 +16,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rabbitv.valheimviki.domain.model.biome.Biome
-import com.rabbitv.valheimviki.domain.model.ui_state.UiState
+import com.rabbitv.valheimviki.domain.model.ui_state.default_list_state.UiListState
 import com.rabbitv.valheimviki.presentation.biome.viewmodel.BiomeScreenViewModel
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.grid.grid_category.DefaultGrid
@@ -35,7 +35,7 @@ fun BiomeScreen(
     viewModel: BiomeScreenViewModel = hiltViewModel(),
     animatedVisibilityScope: AnimatedVisibilityScope
 ) {
-    val biomeUiState: UiState<Biome> by viewModel.biomeUiState.collectAsStateWithLifecycle()
+    val biomeUiListState: UiListState<Biome> by viewModel.biomeUiListState.collectAsStateWithLifecycle()
     val lazyGridState = rememberLazyGridState()
 
     Box(
@@ -46,12 +46,17 @@ fun BiomeScreen(
             modifier = Modifier
                 .testTag("BiomeSurface")
                 .fillMaxSize()
+
                 .padding(paddingValues)
         ) {
-            when (val state = biomeUiState) {
-                is UiState.Loading -> ShimmerGridEffect()
-                is UiState.Error -> EmptyScreen(errorMessage = state.message.toString())
-                is UiState.Success -> DefaultGrid(
+            when (val state = biomeUiListState) {
+                is UiListState.Loading -> ShimmerGridEffect()
+                is UiListState.Error -> EmptyScreen(
+                    errorMessage = state.message.toString(),
+                    errorType = state.errorType
+                )
+
+                is UiListState.Success -> DefaultGrid(
                     modifier = Modifier,
                     items = state.list,
                     onItemClick = onItemClick,

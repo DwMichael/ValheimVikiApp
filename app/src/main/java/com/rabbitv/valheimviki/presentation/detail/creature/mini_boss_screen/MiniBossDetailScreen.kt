@@ -1,8 +1,15 @@
 package com.rabbitv.valheimviki.presentation.detail.creature.mini_boss_screen
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.EaseOutCubic
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,11 +30,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -84,26 +87,50 @@ fun MiniBossContent(
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope
 ) {
-    val transitionComplete = remember { mutableStateOf(false) }
-    val scrollEnabled = remember { derivedStateOf { transitionComplete.value } }
+    Scaffold(
+        content = { padding ->
+            val scrollState = rememberScrollState()
 
-    LaunchedEffect(animatedVisibilityScope.transition.isRunning) {
-        transitionComplete.value = !animatedVisibilityScope.transition.isRunning
-    }
-
-    when {
-        miniBossUiSate.isLoading -> {
-            Box(modifier = Modifier.size(45.dp))
-        }
-
-        miniBossUiSate.miniBoss != null -> {
-            val scrollModifier = if (scrollEnabled.value) {
-                Modifier.verticalScroll(rememberScrollState())
-            } else {
-                Modifier
-            }
-            Scaffold(
-                content = { padding ->
+            AnimatedContent(
+                targetState = miniBossUiSate.isLoading,
+                modifier = Modifier.fillMaxSize(),
+                transitionSpec = {
+                    if (targetState == false && initialState == true) {
+                        fadeIn(
+                            animationSpec = tween(
+                                durationMillis = 650,
+                                delayMillis = 0
+                            )
+                        ) + slideInVertically(
+                            initialOffsetY = { height -> height / 25 },
+                            animationSpec = tween(
+                                durationMillis = 650,
+                                delayMillis = 0,
+                                easing = EaseOutCubic
+                            )
+                        ) togetherWith
+                                fadeOut(
+                                    animationSpec = tween(
+                                        durationMillis = 200
+                                    )
+                                )
+                    } else {
+                        fadeIn(animationSpec = tween(durationMillis = 300)) togetherWith
+                                fadeOut(animationSpec = tween(durationMillis = 300))
+                    }
+                },
+                label = "LoadingStateTransition"
+            ) { isLoading ->
+                if (isLoading) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(padding),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Box(modifier = Modifier.size(45.dp))
+                    }
+                } else if (miniBossUiSate.miniBoss != null) {
                     Image(
                         painter = painterResource(id = R.drawable.main_background),
                         contentDescription = "BackgroundImage",
@@ -115,7 +142,7 @@ fun MiniBossContent(
                             .testTag("BiomeDetailScreen")
                             .fillMaxSize()
                             .padding(padding)
-                            .then(scrollModifier),
+                            .verticalScroll(scrollState),
                         verticalArrangement = Arrangement.Top,
                         horizontalAlignment = Alignment.Start,
                     ) {
@@ -213,11 +240,9 @@ fun MiniBossContent(
                         Box(modifier = Modifier.size(45.dp))
                     }
                 }
-            )
-        }
+            }
 
-        miniBossUiSate.error != null -> {
-            Box(modifier = Modifier.size(45.dp))
         }
-    }
+    )
 }
+

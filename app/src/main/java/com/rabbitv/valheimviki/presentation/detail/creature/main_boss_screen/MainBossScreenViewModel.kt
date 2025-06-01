@@ -12,7 +12,6 @@ import com.rabbitv.valheimviki.domain.model.material.MaterialSubCategory
 import com.rabbitv.valheimviki.domain.model.material.MaterialSubType
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterestSubCategory
-import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
@@ -97,10 +96,12 @@ class MainBossScreenViewModel @Inject constructor(
                 creatureUseCases.getCreatureById(mainBossId).let {
                     _mainBoss.value = CreatureFactory.createFromCreature(it)
                 }
-                val relatedObjects: List<RelatedItem> = async {
+                val relatedIds: List<String> = async {
                     relationUseCases.getRelatedIdsUseCase(mainBossId)
+                        .first()
+                        .map { it.id }
                 }.await()
-                val relatedIds = relatedObjects.map { it.id }
+
                 val deferreds = listOf(
                     async {
                         val pointOfInterest =
@@ -130,11 +131,12 @@ class MainBossScreenViewModel @Inject constructor(
 
                         val relatedAltarOfferings = materialUseCases.getMaterialsBySubCategory(
                             subCategory = MaterialSubCategory.FORSAKEN_ALTAR_OFFERING,
-                        ).filter { it.id in relatedIds }
+                        ).first().filter { it.id in relatedIds }
 
                         val relevantCreatureDrops = materialUseCases.getMaterialsBySubCategory(
                             MaterialSubCategory.CREATURE_DROP
-                        ).filter { it.id in relatedIds }
+                        ).first().filter { it.id in relatedIds }
+
                         val allRelevantDrops = relatedAltarOfferings + relevantCreatureDrops
                         _relatedSummoningItems.value = allRelevantDrops.distinctBy { it.id }
 
@@ -144,7 +146,7 @@ class MainBossScreenViewModel @Inject constructor(
 
                         val materials = materialUseCases.getMaterialsBySubCategory(
                             MaterialSubCategory.BOSS_DROP
-                        )
+                        ).first()
                         _dropItems.value = materials.filter { material ->
                             material.id in relatedIds
                         }

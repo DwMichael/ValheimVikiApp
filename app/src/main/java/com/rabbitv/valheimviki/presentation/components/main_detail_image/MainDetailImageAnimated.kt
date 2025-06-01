@@ -1,11 +1,13 @@
 package com.rabbitv.valheimviki.presentation.components.main_detail_image
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.SharedTransitionScope.PlaceHolderSize.Companion.animatedSize
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
@@ -42,9 +44,13 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.rabbitv.valheimviki.R
+import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
+import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
 import com.rabbitv.valheimviki.ui.theme.MEDIUM_PADDING
+import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData.generateFakeMaterials
+
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -58,7 +64,8 @@ fun MainDetailImageAnimated(
     textAlign: TextAlign = TextAlign.Center,
 ) {
     val isRunning by remember { derivedStateOf { animatedVisibilityScope.transition.isRunning } }
-
+    BackHandler(enabled = isRunning) {
+    }
     Box(modifier = Modifier.fillMaxSize()) {
         with(sharedTransitionScope) {
             val imageState = rememberSharedContentState("image-$id")
@@ -109,11 +116,11 @@ fun MainDetailImageAnimated(
                             textAlign = textAlign,
                             modifier = Modifier
                                 .padding(horizontal = 8.dp)
-                                .sharedElement(
+                                .sharedBounds(
                                     textState,
                                     animatedVisibilityScope, placeHolderSize = animatedSize,
                                 )
-                                .skipToLookaheadSize()
+
                                 .wrapContentHeight(Alignment.CenterVertically)
 
                         )
@@ -134,7 +141,7 @@ fun MainDetailImageAnimated(
                 onClick = onBack,
                 shape = RoundedCornerShape(12.dp),
                 colors = IconButtonDefaults.filledIconButtonColors(
-                    containerColor = Color.Black.copy(alpha = 0.7f)
+                    containerColor = ForestGreen10Dark,
                 ),
                 modifier = Modifier.size(56.dp)
             ) {

@@ -78,6 +78,8 @@ class PassiveCreatureDetailScreenViewModel @Inject constructor(
                 }
                 val relatedObjects: List<RelatedItem> = async {
                     relationUseCases.getRelatedIdsUseCase(_passiveCreatureId)
+                        .first()
+
                 }.await()
                 val relatedIds = relatedObjects.map { it.id }
 
@@ -90,7 +92,7 @@ class PassiveCreatureDetailScreenViewModel @Inject constructor(
                     },
                     async {
                         try {
-                            val materials = materialUseCases.getMaterialsByIds(relatedIds)
+                            val materials = materialUseCases.getMaterialsByIds(relatedIds).first()
                             val tempList = mutableListOf<DropItem>()
 
                             val relatedItemsMap = relatedObjects.associateBy { it.id }
@@ -120,10 +122,8 @@ class PassiveCreatureDetailScreenViewModel @Inject constructor(
                             Log.e("PassiveCreatureDetail ViewModel", "$e")
                             _dropItems.value = emptyList()
                         }
-
                     },
-
-                    )
+                )
                 deferreds.awaitAll()
             }
             _isLoading.value = false

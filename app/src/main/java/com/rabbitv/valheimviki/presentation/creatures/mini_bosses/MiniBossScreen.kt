@@ -23,7 +23,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.model.creature.mini_boss.MiniBoss
-import com.rabbitv.valheimviki.domain.model.ui_state.UiState
+import com.rabbitv.valheimviki.domain.model.ui_state.default_list_state.UiListState
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.grid.grid_category.DefaultGrid
 import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerGridEffect
@@ -42,7 +42,7 @@ fun MiniBossScreen(
     viewModel: MiniBossesViewModel = hiltViewModel(),
     animatedVisibilityScope: AnimatedVisibilityScope
 ) {
-    val miniBossUiState: UiState<MiniBoss> by viewModel.miniBossUiState.collectAsStateWithLifecycle()
+    val miniBossUiListState: UiListState<MiniBoss> by viewModel.miniBossUiListState.collectAsStateWithLifecycle()
     val lazyGridState = rememberLazyGridState()
 
     Box(
@@ -55,10 +55,10 @@ fun MiniBossScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            when (val state = miniBossUiState) {
-                is UiState.Loading -> ShimmerGridEffect()
-                is UiState.Error -> EmptyScreen(errorMessage = state.message.toString())
-                is UiState.Success -> DefaultGrid(
+            when (val state = miniBossUiListState) {
+                is UiListState.Loading -> ShimmerGridEffect()
+                is UiListState.Error -> EmptyScreen(errorMessage = state.message.toString())
+                is UiListState.Success -> DefaultGrid(
                     modifier = Modifier,
                     items = state.list,
                     onItemClick = onItemClick,

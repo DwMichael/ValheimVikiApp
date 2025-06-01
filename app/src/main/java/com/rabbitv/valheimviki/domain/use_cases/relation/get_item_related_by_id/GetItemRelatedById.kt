@@ -2,9 +2,10 @@ package com.rabbitv.valheimviki.domain.use_cases.relation.get_item_related_by_id
 
 import com.rabbitv.valheimviki.domain.repository.RelationRepository
 import jakarta.inject.Inject
+import kotlinx.coroutines.flow.Flow
 
-class GetItemRelatedById @Inject constructor( private val relationRepository: RelationRepository) {
-    operator fun invoke(id: String): String {
+class GetItemRelatedById @Inject constructor(private val relationRepository: RelationRepository) {
+    operator fun invoke(id: String): Flow<String?> {
         return relationRepository.getRelatedId(id)
     }
 }

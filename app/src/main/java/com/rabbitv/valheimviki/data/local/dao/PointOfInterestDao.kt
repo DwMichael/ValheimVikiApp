@@ -13,16 +13,16 @@ interface PointOfInterestDao {
     fun getAllPointsOfInterest(): Flow<List<PointOfInterest>>
 
     @Query("SELECT * FROM point_of_interest WHERE id = :id")
-    fun getPointOfInterestById(id: String): PointOfInterest?
+    fun getPointOfInterestById(id: String): Flow<PointOfInterest?>
 
     @Query("SELECT * FROM point_of_interest WHERE id IN (:ids)")
-    fun getPointsOfInterestByIds(ids:List<String>): List<PointOfInterest>
+    fun getPointsOfInterestByIds(ids:List<String>): Flow<List<PointOfInterest>>
 
     @Query("SELECT * FROM point_of_interest WHERE subCategory = :subCategory")
-    fun getPointsOfInterestBySubCategory(subCategory: String): List<PointOfInterest>
+    fun getPointsOfInterestBySubCategory(subCategory: String): Flow<List<PointOfInterest>>
 
     @Query("SELECT * FROM point_of_interest WHERE subCategory = :subCategory and id = :id")
-    fun getPointOfInterestBySubCategoryAndId(subCategory: String,id:String): PointOfInterest?
+    fun getPointOfInterestBySubCategoryAndId(subCategory: String,id:String): Flow<PointOfInterest?>
 
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

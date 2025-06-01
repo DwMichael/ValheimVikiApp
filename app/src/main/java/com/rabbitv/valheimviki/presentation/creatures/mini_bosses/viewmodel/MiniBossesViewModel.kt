@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.model.creature.mini_boss.MiniBoss
-import com.rabbitv.valheimviki.domain.model.ui_state.UiState
+import com.rabbitv.valheimviki.domain.model.ui_state.default_list_state.UiListState
 import com.rabbitv.valheimviki.domain.repository.NetworkConnectivity
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,7 +22,7 @@ class MiniBossesViewModel @Inject constructor(
     private val connectivityObserver: NetworkConnectivity,
 ) : ViewModel() {
 
-    val miniBossUiState: StateFlow<UiState<MiniBoss>> = combine(
+    val miniBossUiListState: StateFlow<UiListState<MiniBoss>> = combine(
         creatureUseCases.getMiniBossesUseCase()
             .catch { e ->
                 Log.e("MiniBossScreenVM", "getLocalCreaturesUseCase failed in combine", e)
@@ -32,26 +32,26 @@ class MiniBossesViewModel @Inject constructor(
     ) { creatures, isConnected ->
         if (isConnected) {
             if (creatures.isNotEmpty()) {
-                UiState.Success(creatures)
+                UiListState.Success(creatures)
             } else {
-                UiState.Loading
+                UiListState.Loading
             }
         } else {
             if (creatures.isNotEmpty()) {
-                UiState.Success(creatures)
+                UiListState.Success(creatures)
             } else {
-                UiState.Error("No internet connection and no local data available.")
+                UiListState.Error("No internet connection and no local data available.")
             }
         }
     }.onStart {
-        emit(UiState.Loading)
+        emit(UiListState.Loading)
     }.catch { e ->
         Log.e("MiniBossScreenVM", "Error in creatureUiState flow", e)
-        emit(UiState.Error(e.message ?: "An unknown error occurred"))
+        emit(UiListState.Error(e.message ?: "An unknown error occurred"))
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.Companion.WhileSubscribed(3000),
-        initialValue = UiState.Loading
+        initialValue = UiListState.Loading
     )
 
 

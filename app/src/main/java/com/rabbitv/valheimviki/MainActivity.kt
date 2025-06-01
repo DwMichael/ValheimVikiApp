@@ -25,10 +25,10 @@ class MainActivity() : ComponentActivity() {
         installSplashScreen()
         enableEdgeToEdge()
         val workRequest = OneTimeWorkRequestBuilder<FetchWorker>()
-            .setInitialDelay(3, TimeUnit.SECONDS)
+            .setInitialDelay(5, TimeUnit.SECONDS)
             .setBackoffCriteria(
                 backoffPolicy = BackoffPolicy.LINEAR,
-                duration = Duration.ofSeconds(3)
+                duration = Duration.ofSeconds(5)
             )
             .build()
         WorkManager.getInstance(applicationContext).enqueue(workRequest)
