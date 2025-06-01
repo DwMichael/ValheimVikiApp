@@ -5,7 +5,9 @@ import com.rabbitv.valheimviki.domain.model.material.MaterialSubCategory
 import com.rabbitv.valheimviki.domain.model.material.MaterialSubType
 import com.rabbitv.valheimviki.domain.repository.MaterialRepository
 import jakarta.inject.Inject
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
 
 class GetMaterialsBySubCategoryAndSubTypeUseCase @Inject constructor(
     private val materialRepository: MaterialRepository
@@ -17,6 +19,6 @@ class GetMaterialsBySubCategoryAndSubTypeUseCase @Inject constructor(
         return materialRepository.getMaterialsBySubCategoryAndSubType(
             subType = subType.toString(),
             subCategory = subCategory.toString()
-        )
+        ).flowOn(Dispatchers.IO)
     }
 }
