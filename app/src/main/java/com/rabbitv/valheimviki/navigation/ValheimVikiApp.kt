@@ -482,6 +482,9 @@ fun ValheimNavGraph(
                     )
                 )
             },
+            popExitTransition = {
+                fadeOut(animationSpec = tween(durationMillis = 50))
+            },
             arguments = listOf(
                 navArgument(BIOME_ARGUMENT_KEY) { type = NavType.StringType },
             )
@@ -511,6 +514,9 @@ fun ValheimNavGraph(
                     )
                 )
             },
+            popExitTransition = {
+                fadeOut(animationSpec = tween(durationMillis = 50))
+            },
             arguments = listOf(
                 navArgument(MAIN_BOSS_ARGUMENT_KEY) { type = NavType.StringType },
             )
@@ -539,6 +545,9 @@ fun ValheimNavGraph(
                         easing = EaseOutCubic
                     )
                 )
+            },
+            popExitTransition = {
+                fadeOut(animationSpec = tween(durationMillis = 50))
             },
             arguments = listOf(
                 navArgument(MINI_BOSS_ARGUMENT_KEY) { type = NavType.StringType },
