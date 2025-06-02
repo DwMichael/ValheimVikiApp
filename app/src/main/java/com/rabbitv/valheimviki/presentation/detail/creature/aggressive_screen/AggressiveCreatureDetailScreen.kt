@@ -56,6 +56,7 @@ import com.rabbitv.valheimviki.presentation.detail.creature.aggressive_screen.vi
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardStatDetails
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
 import com.rabbitv.valheimviki.presentation.detail.creature.components.horizontal_pager.CreatureHorizontalPager
+import com.rabbitv.valheimviki.presentation.detail.creature.components.horizontal_pager.CreatureHorizontalPagerData
 import com.rabbitv.valheimviki.presentation.detail.creature.components.rows.StarLevelRow
 import com.rabbitv.valheimviki.presentation.detail.creature.components.rows.StatsFlowRow
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
@@ -169,11 +170,14 @@ fun AggressiveCreatureDetailContent(
                                 initialPage = 0,
                                 pageCount = { uiState.dropItems.size }),
                             uiState.dropItems,
-                            Lucide.Trophy,
-                            "Drop Items",
-                            "Items that drop from creature after defeating him",
-                            ContentScale.Crop,
-                            parentPageIndex = pageIndex,
+                            CreatureHorizontalPagerData(
+                                title = "Drop Items",
+                                subTitle = "Items that drop from creature after defeating him",
+                                icon = Lucide.Trophy,
+                                iconRotationDegrees = -85f,
+                                contentScale = ContentScale.Crop,
+                                parentPageIndex = pageIndex,
+                            )
                         )
                     }
 
