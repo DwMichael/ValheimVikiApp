@@ -58,7 +58,11 @@ fun MaterialCategoryScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top
             ) {
-                Box(modifier = Modifier.fillMaxSize()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(BODY_CONTENT_PADDING.dp)
+                ) {
                     if (uiState.isLoading && (uiState.materialsList.isEmpty() && uiState.isConnection)) {
                         Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
                         ShimmerGridEffect()
@@ -74,9 +78,9 @@ fun MaterialCategoryScreen(
                             height = 200.dp,
                             lazyGridState = lazyGridState
                         )
-
                     }
                 }
+
             }
         }
     }

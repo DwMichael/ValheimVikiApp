@@ -35,7 +35,7 @@ fun CustomFloatingActionButton(
         visible = showBackButton,
         enter = fadeIn(animationSpec = tween(300)),
         exit = fadeOut(animationSpec = tween(300)),
-        modifier = modifier.padding(25.dp)//TODO Sprawdzić czy dobrze to wygląda w liście itd
+        modifier = modifier.padding(bottom = 45.dp,top = 45.dp, end = 10.dp, start = 10.dp)
     ) {
         FloatingActionButton(
             onClick = onClick,

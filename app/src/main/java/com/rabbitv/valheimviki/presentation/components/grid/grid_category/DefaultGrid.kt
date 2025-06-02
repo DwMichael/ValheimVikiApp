@@ -5,6 +5,7 @@ import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
@@ -45,6 +46,7 @@ fun DefaultGrid(
         horizontalArrangement = Arrangement.spacedBy(BODY_CONTENT_PADDING.dp),
         verticalArrangement = Arrangement.spacedBy(BODY_CONTENT_PADDING.dp),
         modifier = Modifier.clipToBounds(),
+        contentPadding = PaddingValues(bottom = 45.dp),
     ) {
         items(items, key = { item -> "${item.id}-${item.name}" }) { item ->
             AnimatedGridItem(
@@ -54,9 +56,7 @@ fun DefaultGrid(
                 animatedVisibilityScope = animatedVisibilityScope
             )
         }
-        item(1){
-            Box(modifier = Modifier.size(45.dp))
-        }
+
     }
 }
 

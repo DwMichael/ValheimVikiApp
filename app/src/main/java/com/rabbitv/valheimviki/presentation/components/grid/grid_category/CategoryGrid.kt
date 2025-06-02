@@ -1,27 +1,25 @@
 package com.rabbitv.valheimviki.presentation.components.grid.grid_category
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.rabbitv.valheimviki.presentation.components.grid.grid_item.MaterialGridItem
 import com.rabbitv.valheimviki.presentation.material.model.MaterialSegmentOption
+import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_TWO_COLUMNS
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
-
 
 
 @Composable
@@ -36,17 +34,18 @@ fun <T> CategoryGrid(
     LazyVerticalGrid(
         state = lazyGridState,
         columns = GridCells.Fixed(numbersOfColumns),
+        horizontalArrangement = Arrangement.spacedBy(BODY_CONTENT_PADDING.dp),
+        verticalArrangement = Arrangement.spacedBy(BODY_CONTENT_PADDING.dp),
+        contentPadding = PaddingValues(bottom = 45.dp),
     ) {
         itemsIndexed(items) { index, item ->
-                MaterialGridItem(
-                    item = item,
-                    onClick = { onItemClick(item.value) },
-                    height = height,
-                )
+            MaterialGridItem(
+                item = item,
+                onClick = { onItemClick(item.value) },
+                height = height,
+            )
         }
-        item(1){
-            Box(modifier = Modifier.size(45.dp))
-        }
+
     }
 }
 
