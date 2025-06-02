@@ -131,6 +131,5 @@ class AggressiveCreatureDetailScreenViewModel @Inject constructor(
                 _isLoading.value = false
             }
         }
-
     }
 }
