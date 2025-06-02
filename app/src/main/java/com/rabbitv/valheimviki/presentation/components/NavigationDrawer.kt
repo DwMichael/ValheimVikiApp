@@ -84,16 +84,17 @@ fun NavigationDrawer(
     items: List<DrawerItem>,
     selectedItem: MutableState<DrawerItem>,
     isDetailScreen: Boolean,
+    isTransitionActive: Boolean,
     currentRoute: String?,
     content: @Composable () -> Unit,
 
-) {
+    ) {
     ModalNavigationDrawer(
         modifier = modifier
             .fillMaxSize()
             .testTag("NavigationDrawer"),
         drawerState = drawerState,
-        gesturesEnabled = isDetailScreen,
+        gesturesEnabled = isDetailScreen && !isTransitionActive,
         drawerContent = {
             ModalDrawerSheet(
                 modifier = Modifier.fillMaxWidth(0.92f),
@@ -308,6 +309,7 @@ private fun PreviewNavigationDrawer() {
             route = Screen.PointOfInterest.route
         )
     )
+    val isAnimationRunning: MutableState<Boolean> = remember { mutableStateOf(false) }
     ValheimVikiAppTheme {
         NavigationDrawer(
             modifier = Modifier,
@@ -318,7 +320,8 @@ private fun PreviewNavigationDrawer() {
             selectedItem = remember { mutableStateOf(items[0]) },
             content = {},
             isDetailScreen = false,
-            currentRoute = ""
+            currentRoute = "",
+            isTransitionActive = true,
         )
     }
 }

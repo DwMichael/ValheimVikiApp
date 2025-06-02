@@ -4,6 +4,7 @@
 
 package com.rabbitv.valheimviki.navigation
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
@@ -25,7 +26,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -100,6 +104,7 @@ import com.rabbitv.valheimviki.utils.Constants.MAIN_BOSS_ARGUMENT_KEY
 import com.rabbitv.valheimviki.utils.Constants.MINI_BOSS_ARGUMENT_KEY
 import com.rabbitv.valheimviki.utils.Constants.NPC_KEY
 import com.rabbitv.valheimviki.utils.Constants.PASSIVE_CREATURE_KEY
+import kotlinx.coroutines.launch
 
 private val topBarScreens = setOf(
     Screen.Boss,
@@ -127,7 +132,7 @@ fun ValheimVikiApp() {
             val valheimVikiNavController = rememberNavController()
             CompositionLocalProvider(LocalSharedTransitionScope provides this) {
                 MainContainer(
-                    valheimVikiNavController,
+                    valheimVikiNavController
                 )
             }
         }
@@ -145,15 +150,39 @@ fun MainContainer(
     val drawerItems: List<DrawerItem> = rememberDrawerItems()
     val selectedItem = remember { mutableStateOf(drawerItems.first()) }
 
+
     val currentBackStackEntry by valheimVikiNavController.currentBackStackEntryAsState()
     val currentRoute = currentBackStackEntry?.destination?.route
+    val isAnimationRunning = remember { mutableStateOf(false) }
 
+
+    BackHandler {
+        if (drawerState.isOpen) {
+            scope.launch {
+                drawerState.close()
+            }
+        }
+    }
+
+    LaunchedEffect(currentRoute) {
+        val match = drawerItems.firstOrNull { item ->
+            currentRoute?.startsWith(item.route.substringBefore("{")) == true
+        }
+        selectedItem.value = match ?: drawerItems.first()
+    }
 
     val showTopAppBar = currentRoute?.let { route ->
         topBarScreens.any { screen ->
             route.startsWith(screen.route.substringBefore("{"))
         }
     } == true
+
+    val transitionScope = LocalSharedTransitionScope.current
+        ?: error("No SharedTransitionScope")
+
+    val running by remember {
+        derivedStateOf { transitionScope.isTransitionActive }
+    }
 
 
     NavigationDrawer(
@@ -165,6 +194,7 @@ fun MainContainer(
         selectedItem = selectedItem,
         isDetailScreen = showTopAppBar,
         currentRoute = currentRoute,
+        isTransitionActive = running,
     ) {
         Scaffold(
             topBar = {
@@ -175,7 +205,8 @@ fun MainContainer(
                 ) {
                     MainAppBar(
                         scope = scope,
-                        drawerState = drawerState
+                        drawerState = drawerState,
+                        enabled = running
                     )
                 }
             },
@@ -194,7 +225,8 @@ fun MainContainer(
             ) {
                 ValheimNavGraph(
                     valheimVikiNavController = valheimVikiNavController,
-                    innerPadding = PaddingValues(0.dp)
+                    innerPadding = PaddingValues(0.dp),
+                    isAnimationRunning = isAnimationRunning
                 )
             }
         }
@@ -205,9 +237,11 @@ fun MainContainer(
 fun ValheimNavGraph(
     valheimVikiNavController: NavHostController,
     innerPadding: PaddingValues,
+    isAnimationRunning: MutableState<Boolean>
 ) {
     val lastClickTime = remember { mutableLongStateOf(0L) }
     val clickDebounceMillis = 500
+
     NavHost(
         navController = valheimVikiNavController,
         startDestination = Screen.Splash.route,
@@ -356,6 +390,7 @@ fun ValheimNavGraph(
         }
 
         navigation(
+
             startDestination = Screen.MaterialCategory.route,
             route = "material_graph"    // <-- group them under one graph
         ) {

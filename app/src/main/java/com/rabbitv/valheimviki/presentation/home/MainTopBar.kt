@@ -33,6 +33,7 @@ fun MainAppBar(
     onBookMarkClick: () -> Unit = {},
     scope: CoroutineScope,
     drawerState: DrawerState,
+    enabled: Boolean = true
 ) {
     TopAppBar(
         scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
@@ -43,6 +44,7 @@ fun MainAppBar(
         modifier = Modifier.testTag("HomeTopAppBar"),
         navigationIcon = {
             IconButton(
+                enabled = !enabled,
                 onClick = { scope.launch { drawerState.open() } },
                 modifier = Modifier
                     .size(ICON_CLICK_DIM)
