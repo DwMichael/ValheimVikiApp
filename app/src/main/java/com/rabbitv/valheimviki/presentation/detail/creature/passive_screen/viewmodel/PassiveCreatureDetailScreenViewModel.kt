@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.detail.creature.passive_screen
+package com.rabbitv.valheimviki.presentation.detail.creature.passive_screen.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.SavedStateHandle
@@ -13,6 +13,7 @@ import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.presentation.detail.creature.components.DropItem
+import com.rabbitv.valheimviki.presentation.detail.creature.passive_screen.model.PassiveCreatureDetailUiState
 import com.rabbitv.valheimviki.utils.Constants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -51,16 +52,16 @@ class PassiveCreatureDetailScreenViewModel @Inject constructor(
         _error,
     ) { values ->
         @Suppress("UNCHECKED_CAST")
-        PassiveCreatureDetailUiState(
+        (PassiveCreatureDetailUiState(
             passiveCreature = values[0] as PassiveCreature?,
             biome = values[1] as Biome?,
             dropItems = values[2] as List<DropItem>,
             isLoading = values[3] as Boolean,
             error = values[4] as String?
-        )
+        ))
     }.stateIn(
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
+        started = SharingStarted.Companion.WhileSubscribed(5000),
         initialValue = PassiveCreatureDetailUiState()
     )
 
@@ -73,9 +74,11 @@ class PassiveCreatureDetailScreenViewModel @Inject constructor(
         try {
             _isLoading.value = true
             viewModelScope.launch(Dispatchers.IO) {
-                creatureUseCases.getCreatureById(_passiveCreatureId).let {
-                    _creature.value = CreatureFactory.createFromCreature(it)
-                }
+
+                _creature.value = CreatureFactory.createFromCreature(
+                    creatureUseCases.getCreatureById(_passiveCreatureId).first()
+                )
+
                 val relatedObjects: List<RelatedItem> = async {
                     relationUseCases.getRelatedIdsUseCase(_passiveCreatureId)
                         .first()

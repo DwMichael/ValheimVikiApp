@@ -13,10 +13,10 @@ interface OreDepositDao {
     fun getLocalOreDeposits(): Flow<List<OreDeposit>>
 
     @Query("SELECT * FROM ore_deposits WHERE id IN (:ids)")
-    fun getOreDepositsByIds(ids: List<String>): List<OreDeposit>
+    fun getOreDepositsByIds(ids: List<String>): Flow<List<OreDeposit>>
 
     @Query("SELECT * FROM ore_deposits WHERE id = :id")
-    fun getOreDepositById(id: String): OreDeposit?
+    fun getOreDepositById(id: String): Flow<OreDeposit?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOreDeposit(creatures: List<OreDeposit>)

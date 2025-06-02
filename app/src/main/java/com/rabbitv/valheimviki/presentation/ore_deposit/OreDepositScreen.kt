@@ -25,6 +25,8 @@ import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.grid.grid_category.DefaultGrid
 import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerGridEffect
+import com.rabbitv.valheimviki.presentation.ore_deposit.viewmodel.OreDepositScreenViewModel
+import com.rabbitv.valheimviki.presentation.ore_deposit.viewmodel.OreDepositUIState
 import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_TWO_COLUMNS
 import com.rabbitv.valheimviki.utils.Constants.BIOME_GRID_COLUMNS
 import kotlinx.coroutines.FlowPreview

@@ -25,7 +25,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -34,7 +33,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -56,9 +57,11 @@ import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.navigation.LocalSharedTransitionScope
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.GreenTorchesDivider
-import com.rabbitv.valheimviki.presentation.components.HorizontalPagerSection
+
 import com.rabbitv.valheimviki.presentation.components.ImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData
+import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDetailImageAnimated
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardStatDetails
@@ -68,6 +71,8 @@ import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.Car
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.OverlayLabel
 import com.rabbitv.valheimviki.presentation.detail.creature.components.rows.CustomRowLayout
 import com.rabbitv.valheimviki.presentation.detail.creature.components.rows.StatsFlowRow
+import com.rabbitv.valheimviki.presentation.detail.creature.main_boss_screen.model.MainBossDetailUiState
+import com.rabbitv.valheimviki.presentation.detail.creature.main_boss_screen.viewmodel.MainBossScreenViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -98,10 +103,18 @@ fun MainBossContent(
     animatedVisibilityScope: AnimatedVisibilityScope,
     mainBossUiState: MainBossDetailUiState,
 ) {
+    val isRunning by remember { derivedStateOf { animatedVisibilityScope.transition.isRunning } }
+    val scrollState = rememberScrollState()
+    val dropData = HorizontalPagerData(
+        title = "Drop Items",
+        subTitle = "Items that drop from boss after defeating him",
+        icon = Lucide.Trophy,
+        iconRotationDegrees = 0f,
+        itemContentScale = ContentScale.Crop
+    )
+
     Scaffold(
         content = { padding ->
-            val scrollState = rememberScrollState()
-
             AnimatedContent(
                 targetState = mainBossUiState.isLoading,
                 modifier = Modifier.fillMaxSize(),
@@ -153,7 +166,7 @@ fun MainBossContent(
                             .testTag("BiomeDetailScreen")
                             .fillMaxSize()
                             .padding(padding)
-                            .verticalScroll(scrollState),
+                            .verticalScroll(scrollState, enabled = !isRunning),
                         verticalArrangement = Arrangement.Top,
                         horizontalAlignment = Alignment.Start,
                     ) {
@@ -232,13 +245,8 @@ fun MainBossContent(
                         }
                         mainBossUiState.dropItems.isNotEmpty().let {
                             HorizontalPagerSection(
-                                rememberPagerState(pageCount = { mainBossUiState.dropItems.size }),
-                                mainBossUiState.dropItems,
-                                Lucide.Trophy,
-                                "Drop Items",
-                                "Items that drop from boss after defeating him",
-                                ContentScale.Crop,
-                                iconModifier = Modifier
+                                list = mainBossUiState.dropItems,
+                                data = dropData
                             )
                         }
                         GreenTorchesDivider(text = "FORSAKEN POWER")

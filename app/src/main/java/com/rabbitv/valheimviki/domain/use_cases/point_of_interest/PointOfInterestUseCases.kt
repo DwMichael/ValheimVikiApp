@@ -5,13 +5,11 @@ import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.get_point_of_i
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.get_point_of_interest_by_subcategory.GetPointsOfInterestBySubCategoryUseCase
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.get_point_of_interest_by_subcategory_and_id.GetPointOfInterestBySubCategoryAndIdUseCase
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.get_point_of_interests_by_ids.GetPointsOfInterestByIdsUseCase
-import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.insert_point_of_interest.InsertPointOfInterestUseCase
 
 data class PointOfInterestUseCases(
     val getLocalPointOfInterestUseCase: GetLocalPointOfInterestUseCase,
     val getPointOfInterestByIdUseCase: GetPointOfInterestByIdUseCase,
     val getPointsOfInterestBySubCategoryUseCase: GetPointsOfInterestBySubCategoryUseCase,
     val getPointOfInterestBySubCategoryAndIdUseCase: GetPointOfInterestBySubCategoryAndIdUseCase,
-    val getPointsOfInterestByIdsUseCase: GetPointsOfInterestByIdsUseCase,
-    val insertPointOfInterestUseCase: InsertPointOfInterestUseCase
+    val getPointsOfInterestByIdsUseCase: GetPointsOfInterestByIdsUseCase
 )

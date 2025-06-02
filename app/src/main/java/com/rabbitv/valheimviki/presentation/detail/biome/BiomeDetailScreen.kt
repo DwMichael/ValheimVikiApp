@@ -20,13 +20,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -47,10 +47,10 @@ import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
 import com.rabbitv.valheimviki.navigation.LocalSharedTransitionScope
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
-import com.rabbitv.valheimviki.presentation.components.HorizontalPagerData
-import com.rabbitv.valheimviki.presentation.components.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.ImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData
+import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDetailImageAnimated
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.biome.model.BiomeDetailUiState
@@ -66,7 +66,7 @@ fun BiomeDetailScreen(
     viewModel: BiomeDetailScreenViewModel = hiltViewModel(),
     animatedVisibilityScope: AnimatedVisibilityScope
 ) {
-    val biomeUiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val biomeUiState by viewModel.biomeUiState.collectAsStateWithLifecycle()
     val sharedTransitionScope = LocalSharedTransitionScope.current
         ?: throw IllegalStateException("No Scope found")
 
@@ -91,6 +91,8 @@ fun BiomeDetailContent(
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
+    val isRunning by remember { derivedStateOf { animatedVisibilityScope.transition.isRunning } }
+    val scrollState = rememberScrollState()
     val creatureData = HorizontalPagerData(
         title = "Creatures",
         subTitle = "Creatures you may encounter in this biome",
@@ -104,7 +106,7 @@ fun BiomeDetailContent(
         icon = Lucide.Pickaxe,
         iconRotationDegrees = -85f,
         itemContentScale = ContentScale.Crop,
-        )
+    )
 
     val materialData = HorizontalPagerData(
         title = "Materials",
@@ -121,17 +123,15 @@ fun BiomeDetailContent(
         iconRotationDegrees = -85f,
         itemContentScale = ContentScale.Crop,
     )
-    val  treeData = HorizontalPagerData(
+    val treeData = HorizontalPagerData(
         title = "Trees",
-        subTitle =  "Trees you may encounter in this biome",
+        subTitle = "Trees you may encounter in this biome",
         icon = Lucide.Trees,
         iconRotationDegrees = -85f,
         itemContentScale = ContentScale.Crop,
     )
     Scaffold(
         content = { padding ->
-            val scrollState = rememberScrollState()
-
             AnimatedContent(
                 targetState = biomeUiState.isLoading,
                 modifier = Modifier.fillMaxSize(),
@@ -183,7 +183,7 @@ fun BiomeDetailContent(
                             .testTag("BiomeDetailScreen")
                             .fillMaxSize()
                             .padding(padding)
-                            .verticalScroll(scrollState),
+                            .verticalScroll(scrollState, enabled = !isRunning),
                         verticalArrangement = Arrangement.Top,
                         horizontalAlignment = Alignment.Start,
                     ) {
@@ -223,7 +223,7 @@ fun BiomeDetailContent(
                             TridentsDividedRow()
                             HorizontalPagerSection(
                                 list = biomeUiState.relatedMaterials,
-                              data = materialData
+                                data = materialData
                             )
                         }
                         if (biomeUiState.relatedPointOfInterest.isNotEmpty()) {
@@ -241,15 +241,6 @@ fun BiomeDetailContent(
                             )
                         }
                         Box(modifier = Modifier.size(45.dp))
-                    }
-                } else if (biomeUiState.error != null) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(padding),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text("Wystąpił błąd: ${biomeUiState.error}")
                     }
                 } else {
                     Box(
@@ -299,10 +290,8 @@ fun PreviewBiomeDetailContent() {
         relatedCreatures = creatureList,
         relatedOreDeposits = oreDeposit,
         relatedMaterials = materials,
-        relatedPointOfInterest = listOf(),
-        relatedTrees = listOf(),
-        isLoading = false,
-        error = null
+        relatedPointOfInterest = emptyList(),
+        relatedTrees = emptyList()
     )
 
     ValheimVikiAppTheme {

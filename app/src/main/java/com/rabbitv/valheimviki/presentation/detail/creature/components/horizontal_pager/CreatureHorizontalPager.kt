@@ -53,15 +53,20 @@ import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
 import kotlin.math.absoluteValue
 
+data class CreatureHorizontalPagerData(
+    val title: String,
+    val subTitle: String,
+    val icon: ImageVector,
+    val iconRotationDegrees: Float = -85f,
+    val contentScale: ContentScale,
+    val parentPageIndex: Int,
+)
+
 @Composable
 fun CreatureHorizontalPager(
     pagerState: PagerState,
     list: List<DropItem>,
-    icon: ImageVector,
-    title: String,
-    subTitle: String,
-    contentScale: ContentScale,
-    parentPageIndex: Int,
+    data: CreatureHorizontalPagerData,
 ) {
     val pageWidth = 300.dp
 
@@ -86,19 +91,19 @@ fun CreatureHorizontalPager(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        icon,
+                        data.icon,
                         tint = Color.White,
                         contentDescription = "Rectangle section Icon",
                     )
                     Spacer(modifier = Modifier.width(11.dp))
                     Text(
-                        title.uppercase(),
+                        data.title.uppercase(),
                         style = MaterialTheme.typography.titleLarge,
                     )
                 }
                 Spacer(modifier = Modifier.padding(6.dp))
                 Text(
-                    subTitle,
+                    data.subTitle,
                     style = MaterialTheme.typography.titleMedium,
                 )
             }
@@ -115,11 +120,11 @@ fun CreatureHorizontalPager(
                 )
             ) { pageIndex ->
                 CreatureHorizontalPagerItem(
-                    parentPageIndex = parentPageIndex,
+                    parentPageIndex = data.parentPageIndex,
                     pagerState = pagerState,
                     list = list,
                     pageIndex = pageIndex,
-                    contentScale = contentScale,
+                    contentScale = data.contentScale,
                 )
             }
         }

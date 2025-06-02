@@ -470,17 +470,20 @@ fun ValheimNavGraph(
             enterTransition = {
                 fadeIn(
                     animationSpec = tween(
-                        durationMillis = 700,
+                        durationMillis = 300,
                         delayMillis = 50
                     )
                 ) + slideInVertically(
-                    initialOffsetY = { fullHeight -> fullHeight / 2 },
+                    initialOffsetY = { fullHeight -> fullHeight / 4 },
                     animationSpec = tween(
-                        durationMillis = 950,
+                        durationMillis = 400,
                         delayMillis = 0,
                         easing = EaseOutCubic
                     )
                 )
+            },
+            popExitTransition = {
+                fadeOut(animationSpec = tween(durationMillis = 50))
             },
             arguments = listOf(
                 navArgument(BIOME_ARGUMENT_KEY) { type = NavType.StringType },
@@ -499,17 +502,20 @@ fun ValheimNavGraph(
             enterTransition = {
                 fadeIn(
                     animationSpec = tween(
-                        durationMillis = 700,
+                        durationMillis = 300,
                         delayMillis = 50
                     )
                 ) + slideInVertically(
-                    initialOffsetY = { fullHeight -> fullHeight / 2 },
+                    initialOffsetY = { fullHeight -> fullHeight / 4 },
                     animationSpec = tween(
-                        durationMillis = 950,
+                        durationMillis = 400,
                         delayMillis = 0,
                         easing = EaseOutCubic
                     )
                 )
+            },
+            popExitTransition = {
+                fadeOut(animationSpec = tween(durationMillis = 50))
             },
             arguments = listOf(
                 navArgument(MAIN_BOSS_ARGUMENT_KEY) { type = NavType.StringType },
@@ -528,17 +534,20 @@ fun ValheimNavGraph(
             enterTransition = {
                 fadeIn(
                     animationSpec = tween(
-                        durationMillis = 700,
+                        durationMillis = 300,
                         delayMillis = 50
                     )
                 ) + slideInVertically(
-                    initialOffsetY = { fullHeight -> fullHeight / 2 },
+                    initialOffsetY = { fullHeight -> fullHeight / 4 },
                     animationSpec = tween(
-                        durationMillis = 950,
+                        durationMillis = 400,
                         delayMillis = 0,
                         easing = EaseOutCubic
                     )
                 )
+            },
+            popExitTransition = {
+                fadeOut(animationSpec = tween(durationMillis = 50))
             },
             arguments = listOf(
                 navArgument(MINI_BOSS_ARGUMENT_KEY) { type = NavType.StringType },

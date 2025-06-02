@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.detail.creature.mini_boss_screen
+package com.rabbitv.valheimviki.presentation.detail.creature.mini_boss_screen.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.SavedStateHandle
@@ -15,12 +15,14 @@ import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.PointOfInterestUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
+import com.rabbitv.valheimviki.presentation.detail.creature.mini_boss_screen.model.MiniBossDetailUiState
 import com.rabbitv.valheimviki.utils.Constants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
@@ -51,16 +53,16 @@ class MiniBossDetailScreenViewModel @Inject constructor(
         _error,
     ) { values ->
         @Suppress("UNCHECKED_CAST")
-        MiniBossDetailUiState(
+        (MiniBossDetailUiState(
             miniBoss = values[0] as MiniBoss?,
             primarySpawn = values[1] as PointOfInterest?,
             dropItems = values[2] as List<Material>,
             isLoading = values[3] as Boolean,
             error = values[4] as String?
-        )
+        ))
     }.stateIn(
         scope = viewModelScope,
-        started = kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000),
+        started = SharingStarted.WhileSubscribed(5000),
         initialValue = MiniBossDetailUiState()
     )
 
@@ -74,9 +76,11 @@ class MiniBossDetailScreenViewModel @Inject constructor(
         try {
             _isLoading.value = true
             viewModelScope.launch(Dispatchers.IO) {
-                creatureUseCases.getCreatureById(miniBossId).let {
-                    _miniBoss.value = CreatureFactory.createFromCreature(it)
-                }
+
+                _miniBoss.value = CreatureFactory.createFromCreature(
+                    creatureUseCases.getCreatureById(miniBossId).first()
+                )
+
                 val relatedIds: List<String> = async {
                     relationUseCases.getRelatedIdsUseCase(miniBossId)
                         .first()
@@ -89,6 +93,7 @@ class MiniBossDetailScreenViewModel @Inject constructor(
                         try {
                             val pointOfInterest =
                                 pointOfInterestUseCases.getPointsOfInterestByIdsUseCase(relatedIds)
+                                    .first()
                             _primarySpawn.value = pointOfInterest.find {
                                 it.id in relatedIds
                             }

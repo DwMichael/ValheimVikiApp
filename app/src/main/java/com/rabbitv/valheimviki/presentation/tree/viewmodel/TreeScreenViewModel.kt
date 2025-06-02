@@ -1,17 +1,12 @@
-package com.rabbitv.valheimviki.presentation.ore_deposit
+package com.rabbitv.valheimviki.presentation.tree.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rabbitv.valheimviki.domain.exceptions.BiomeFetchException
-import com.rabbitv.valheimviki.domain.exceptions.BiomesFetchLocalException
-import com.rabbitv.valheimviki.domain.exceptions.BiomesInsertException
-import com.rabbitv.valheimviki.domain.exceptions.OreDepositFetchLocalException
-import com.rabbitv.valheimviki.domain.model.biome.Biome
-import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
+import com.rabbitv.valheimviki.domain.exceptions.TreesFetchLocalException
+import com.rabbitv.valheimviki.domain.model.tree.Tree
 import com.rabbitv.valheimviki.domain.repository.NetworkConnectivity
-import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
-import com.rabbitv.valheimviki.domain.use_cases.ore_deposit.OreDepositUseCases
+import com.rabbitv.valheimviki.domain.use_cases.tree.TreeUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,15 +18,15 @@ import kotlinx.coroutines.launch
 import org.jetbrains.annotations.VisibleForTesting
 import javax.inject.Inject
 
-data class OreDepositUIState(
-    val oreDeposits: List<OreDeposit> = emptyList(),
+data class TreeUIState(
+    val trees: List<Tree> = emptyList(),
     val error: String? = null,
     val isLoading: Boolean = false
 )
 
 @HiltViewModel
-class OreDepositScreenViewModel @Inject constructor(
-    private val oreDepositUseCases: OreDepositUseCases,
+class TreeScreenViewModel @Inject constructor(
+    private val treesUseCases: TreeUseCases,
     private val connectivityObserver: NetworkConnectivity,
 ) : ViewModel() {
     val isConnection: StateFlow<Boolean> = connectivityObserver.isConnected.stateIn(
@@ -41,8 +36,8 @@ class OreDepositScreenViewModel @Inject constructor(
     )
 
 
-    private val _oreDepositUIState = MutableStateFlow(OreDepositUIState())
-    val oreDepositUIState: StateFlow<OreDepositUIState> = _oreDepositUIState
+    private val _treeUIState = MutableStateFlow(TreeUIState())
+    val treeUIState: StateFlow<TreeUIState> = _treeUIState
 
     init {
         load()
@@ -50,7 +45,7 @@ class OreDepositScreenViewModel @Inject constructor(
 
     @VisibleForTesting
     internal fun load() {
-        _oreDepositUIState.value = _oreDepositUIState.value.copy(
+        _treeUIState.value = _treeUIState.value.copy(
             isLoading = true,
             error = null,
         )
@@ -58,23 +53,23 @@ class OreDepositScreenViewModel @Inject constructor(
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                oreDepositUseCases.getLocalOreDepositsUseCase().collect { sortedOreDeposits ->
-                    _oreDepositUIState.update { current ->
+                treesUseCases.getLocalTreesUseCase().collect { sortedTrees ->
+                    _treeUIState.update { current ->
                         current.copy(
-                            oreDeposits = sortedOreDeposits,
+                            trees = sortedTrees,
                             isLoading = false,
                         )
                     }
                 }
             } catch (e: Exception) {
                 when (e) {
-                    is OreDepositFetchLocalException -> Log.e(
-                        "OreDepositFetchLocalException OreDepositScreenViewModel",
+                    is TreesFetchLocalException -> Log.e(
+                        "TreesFetchLocalException TreeScreenViewModel",
                         "${e.message}"
                     )
 
                     else -> Log.e(
-                        "Unexpected Exception occurred OreDepositScreenViewModel",
+                        "Unexpected Exception occurred TreeScreenViewModel",
                         "${e.message}"
                     )
                 }

@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -30,7 +29,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -49,13 +50,16 @@ import com.composables.icons.lucide.Trophy
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.navigation.LocalSharedTransitionScope
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
-import com.rabbitv.valheimviki.presentation.components.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData
+import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDetailImageAnimated
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardStatDetails
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
 import com.rabbitv.valheimviki.presentation.detail.creature.components.rows.StatsFlowRow
+import com.rabbitv.valheimviki.presentation.detail.creature.mini_boss_screen.model.MiniBossDetailUiState
+import com.rabbitv.valheimviki.presentation.detail.creature.mini_boss_screen.viewmodel.MiniBossDetailScreenViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 
 
@@ -87,10 +91,18 @@ fun MiniBossContent(
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope
 ) {
+    val isRunning by remember { derivedStateOf { animatedVisibilityScope.transition.isRunning } }
+    val scrollState = rememberScrollState()
+    val dropItemData = HorizontalPagerData(
+        title = "Drop Items",
+        subTitle = "Items that drop from boss after defeating him",
+        icon = Lucide.Trophy,
+        iconRotationDegrees = 0f,
+        itemContentScale = ContentScale.Crop,
+    )
+
     Scaffold(
         content = { padding ->
-            val scrollState = rememberScrollState()
-
             AnimatedContent(
                 targetState = miniBossUiSate.isLoading,
                 modifier = Modifier.fillMaxSize(),
@@ -142,7 +154,7 @@ fun MiniBossContent(
                             .testTag("BiomeDetailScreen")
                             .fillMaxSize()
                             .padding(padding)
-                            .verticalScroll(scrollState),
+                            .verticalScroll(scrollState, enabled = !isRunning),
                         verticalArrangement = Arrangement.Top,
                         horizontalAlignment = Alignment.Start,
                     ) {
@@ -189,15 +201,8 @@ fun MiniBossContent(
                         if (miniBossUiSate.dropItems.isNotEmpty()) {
                             SlavicDivider()
                             HorizontalPagerSection(
-                                rememberPagerState(
-                                    initialPage = 1,
-                                    pageCount = { miniBossUiSate.dropItems.size }),
-                                miniBossUiSate.dropItems,
-                                Lucide.Trophy,
-                                "Drop Items",
-                                "Items that drop from boss after defeating him",
-                                ContentScale.Crop,
-                                iconModifier = Modifier
+                                list = miniBossUiSate.dropItems,
+                                data = dropItemData
                             )
                         }
                         if (miniBossUiSate.dropItems.isEmpty() && miniBossUiSate.primarySpawn == null) {

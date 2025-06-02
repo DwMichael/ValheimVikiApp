@@ -27,7 +27,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,16 +52,20 @@ import com.rabbitv.valheimviki.domain.model.creature.aggresive.AggressiveCreatur
 import com.rabbitv.valheimviki.domain.model.creature.aggresive.LevelCreatureData
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData
 import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDetailImage
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardStatDetails
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
 import com.rabbitv.valheimviki.presentation.detail.creature.components.horizontal_pager.CreatureHorizontalPager
+import com.rabbitv.valheimviki.presentation.detail.creature.components.horizontal_pager.CreatureHorizontalPagerData
 import com.rabbitv.valheimviki.presentation.detail.creature.components.rows.StarLevelRow
+import com.rabbitv.valheimviki.presentation.detail.creature.passive_screen.model.PassiveCreatureDetailUiState
+import com.rabbitv.valheimviki.presentation.detail.creature.passive_screen.viewmodel.PassiveCreatureDetailScreenViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.toString
 
 
 @Composable
@@ -85,10 +88,13 @@ fun PassiveCreatureDetailContent(
     onBack: () -> Unit,
     uiState: PassiveCreatureDetailUiState,
 ) {
+
+
     val pagerState =
         rememberPagerState(
             pageCount = { uiState.passiveCreature?.levels?.size ?: 0 },
             )
+
     val sharedScrollState = rememberScrollState()
     val isExpandable = remember { mutableStateOf(false) }
     val isExpandableNote = remember { mutableStateOf(false) }
@@ -173,11 +179,14 @@ fun PassiveCreatureDetailContent(
                                 initialPage = 0,
                                 pageCount = { uiState.dropItems.size }),
                             uiState.dropItems,
-                            Lucide.Trophy,
-                            "Drop Items",
-                            "Items that drop from creature after defeating him",
-                            ContentScale.Crop,
-                            parentPageIndex = pageIndex,
+                           CreatureHorizontalPagerData(
+                                title = "Drop Items",
+                                subTitle = "Items that drop from creature after defeating him",
+                                icon =Lucide.Trophy,
+                                iconRotationDegrees = -85f,
+                                contentScale = ContentScale.Crop,
+                                parentPageIndex = pageIndex,
+                            )
                         )
                     }
 

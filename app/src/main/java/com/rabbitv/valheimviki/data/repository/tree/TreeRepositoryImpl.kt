@@ -11,21 +11,20 @@ import retrofit2.Response
 class TreeRepositoryImpl @Inject constructor(
     private val apiService: ApiTreeService,
     private val treeDao: TreeDao
-): TreeRepository
-{
+) : TreeRepository {
     override fun getLocalTrees(): Flow<List<Tree>> {
         return treeDao.getLocalTrees()
     }
 
-    override fun getTreeById(id: String): Tree? {
+    override fun getTreeById(id: String): Flow<Tree?> {
         return treeDao.getTreeById(id)
     }
 
-    override fun getTreesByIds(ids: List<String>): List<Tree> {
+    override fun getTreesByIds(ids: List<String>): Flow<List<Tree>> {
         return treeDao.getTreesByIds(ids)
     }
 
-    override suspend fun fetchTrees(lang:String): Response<List<Tree>> {
+    override suspend fun fetchTrees(lang: String): Response<List<Tree>> {
         return apiService.fetchTrees(lang)
     }
 

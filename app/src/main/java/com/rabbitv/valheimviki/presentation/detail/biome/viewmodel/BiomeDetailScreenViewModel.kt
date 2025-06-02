@@ -1,3 +1,5 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package com.rabbitv.valheimviki.presentation.detail.biome.viewmodel
 
 import android.util.Log
@@ -24,9 +26,11 @@ import com.rabbitv.valheimviki.presentation.detail.biome.model.BiomeDetailUiStat
 import com.rabbitv.valheimviki.utils.Constants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
@@ -34,6 +38,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class BiomeDetailScreenViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
@@ -45,7 +50,7 @@ class BiomeDetailScreenViewModel @Inject constructor(
     private val treeUseCases: TreeUseCases,
     private val oreDepositUseCases: OreDepositUseCases
 ) : ViewModel() {
-    val biomeId = savedStateHandle.get<String>(Constants.BIOME_ARGUMENT_KEY).toString()
+    private val biomeId = savedStateHandle.get<String>(Constants.BIOME_ARGUMENT_KEY).toString()
     private val _biome = MutableStateFlow<Biome?>(null)
     private val _mainBoss = MutableStateFlow<MainBoss?>(null)
     private val _relatedCreatures = MutableStateFlow<List<Creature>>(emptyList())
@@ -53,13 +58,10 @@ class BiomeDetailScreenViewModel @Inject constructor(
     private val _relatedMaterials = MutableStateFlow<List<Material>>(emptyList())
     private val _relatedPointOfInterest = MutableStateFlow<List<PointOfInterest>>(emptyList())
     private val _relatedTrees = MutableStateFlow<List<Tree>>(emptyList())
-
-
     private val _isLoading = MutableStateFlow(true)
     private val _error = MutableStateFlow<String?>(null)
 
-
-    val uiState = combine(
+    val biomeUiState: StateFlow<BiomeDetailUiState> = combine(
         _biome,
         _mainBoss,
         _relatedCreatures,
@@ -70,8 +72,7 @@ class BiomeDetailScreenViewModel @Inject constructor(
         _isLoading,
         _error
     ) { values ->
-        @Suppress("UNCHECKED_CAST")
-        (BiomeDetailUiState(
+        BiomeDetailUiState(
             biome = values[0] as Biome?,
             mainBoss = values[1] as MainBoss?,
             relatedCreatures = values[2] as List<Creature>,
@@ -81,17 +82,23 @@ class BiomeDetailScreenViewModel @Inject constructor(
             relatedTrees = values[6] as List<Tree>,
             isLoading = values[7] as Boolean,
             error = values[8] as String?
-        ))
+        )
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.Companion.WhileSubscribed(5000),
         initialValue = BiomeDetailUiState()
     )
 
+
     init {
+        initialBiomeData()
+    }
+
+    internal fun initialBiomeData() {
         viewModelScope.launch(Dispatchers.IO) {
+            _isLoading.value = true
             try {
-                _isLoading.value = true
+
                 val biomeData = biomeUseCases.getBiomeByIdUseCase(biomeId = biomeId).firstOrNull()
                 _biome.value = biomeData
                 val relatedIds: List<String> = async {
@@ -116,7 +123,8 @@ class BiomeDetailScreenViewModel @Inject constructor(
 
                 launch {
                     try {
-                        _relatedCreatures.value = creaturesUseCase.getCreaturesByIds(relatedIds).first()
+                        _relatedCreatures.value =
+                            creaturesUseCase.getCreaturesByIds(relatedIds).first()
                     } catch (e: Exception) {
                         Log.e("Creatures fetch error BiomeDetailViewModel", e.message.toString())
                     }
@@ -124,29 +132,35 @@ class BiomeDetailScreenViewModel @Inject constructor(
 
                 launch {
                     try {
-                        val oreDeposits = oreDepositUseCases.getOreDepositsByIdsUseCase(relatedIds)
-                        _relatedOreDeposits.value = oreDeposits
+                        _relatedOreDeposits.value =
+                            oreDepositUseCases.getOreDepositsByIdsUseCase(relatedIds).first()
+
                     } catch (e: Exception) {
                         Log.e("Ore deposits fetch error BiomeDetailViewModel", e.message.toString())
                     }
                 }
-
                 launch {
                     try {
-                        _relatedMaterials.value = materialUseCases.getMaterialsByIds(relatedIds).first()
+                        _relatedMaterials.value =
+                            materialUseCases.getMaterialsByIds(relatedIds).first()
                     } catch (e: Exception) {
                         Log.e("Materials fetch error BiomeDetailViewModel", e.message.toString())
                     }
                 }
 
 
-               launch {
-                   try {
-                       _relatedPointOfInterest.value = pointOfInterestUseCases.getPointsOfInterestByIdsUseCase(relatedIds).first()
-                   } catch (e: Exception) {
-                       Log.e("PointOfInterest fetch error BiomeDetailViewModel", e.message.toString())
-                   }
-               }
+                launch {
+                    try {
+                        _relatedPointOfInterest.value =
+                            pointOfInterestUseCases.getPointsOfInterestByIdsUseCase(relatedIds)
+                                .first()
+                    } catch (e: Exception) {
+                        Log.e(
+                            "PointOfInterest fetch error BiomeDetailViewModel",
+                            e.message.toString()
+                        )
+                    }
+                }
                 launch {
                     try {
                         _relatedTrees.value = treeUseCases.getTreesByIdsUseCase(relatedIds).first()

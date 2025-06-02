@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.detail.creature.aggressive_screen
+package com.rabbitv.valheimviki.presentation.detail.creature.aggressive_screen.viewModel
 
 import android.util.Log
 import androidx.lifecycle.SavedStateHandle
@@ -12,6 +12,7 @@ import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
+import com.rabbitv.valheimviki.presentation.detail.creature.aggressive_screen.model.AggressiveCreatureDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.creature.components.DropItem
 import com.rabbitv.valheimviki.utils.Constants
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -51,88 +52,84 @@ class AggressiveCreatureDetailScreenViewModel @Inject constructor(
         _error,
     ) { values ->
         @Suppress("UNCHECKED_CAST")
-        AggressiveCreatureDetailUiState(
+        (AggressiveCreatureDetailUiState(
             aggressiveCreature = values[0] as AggressiveCreature?,
             biome = values[1] as Biome?,
             dropItems = values[2] as List<DropItem>,
             isLoading = values[3] as Boolean,
             error = values[4] as String?
-        )
+        ))
     }.stateIn(
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
+        started = SharingStarted.Companion.WhileSubscribed(5000),
         initialValue = AggressiveCreatureDetailUiState()
     )
 
     init {
-        launch()
+        initializeCreatureData()
     }
 
 
-    internal fun launch() {
-        try {
-            _isLoading.value = true
-            viewModelScope.launch(Dispatchers.IO) {
-                creatureUseCases.getCreatureById(_aggressiveCreatureId).let {
+    internal fun initializeCreatureData() {
+        _isLoading.value = true
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                creatureUseCases.getCreatureById(_aggressiveCreatureId).collect {
                     _creature.value = CreatureFactory.createFromCreature(it)
+
                 }
 
-                val relatedObjects: List<RelatedItem> = async {
+                val relatedObjects: List<RelatedItem> =
                     relationUseCases.getRelatedIdsUseCase(_aggressiveCreatureId).first()
-                }.await()
-
                 val relatedIds = relatedObjects.map { it.id }
 
-                val deferreds = listOf(
-                    async {
-                        val biome = biomeUseCases.getLocalBiomesUseCase().first()
-                        _biome.value = biome.find {
-                            it.id in relatedIds
+                val deferredBiome = async {
+                    val biome = biomeUseCases.getLocalBiomesUseCase().first()
+                    _biome.value = biome.find {
+                        it.id in relatedIds
+                    }
+                }
+
+                val deferredMaterials = async {
+                    try {
+                        val materials = materialUseCases.getMaterialsByIds(relatedIds).first()
+                        val tempList = mutableListOf<DropItem>()
+                        val relatedItemsMap = relatedObjects.associateBy { it.id }
+                        for (material in materials) {
+                            val relatedItem = relatedItemsMap[material.id]
+                            val quantityList = listOf<Int?>(
+                                relatedItem?.quantity,
+                                relatedItem?.quantity2star,
+                                relatedItem?.quantity3star
+                            )
+                            val chanceStarList = listOf<Int?>(
+                                relatedItem?.chance1star,
+                                relatedItem?.chance2star,
+                                relatedItem?.chance3star
+                            )
+                            tempList.add(
+                                DropItem(
+                                    material = material,
+                                    quantityList = quantityList,
+                                    chanceStarList = chanceStarList,
+                                )
+                            )
                         }
-                    },
-                    async {
-                        try {
-                            val materials = materialUseCases.getMaterialsByIds(relatedIds).first()
-                            val tempList = mutableListOf<DropItem>()
+                        _dropItems.value = tempList
+                        Log.e("DROP ITEMS ", "$tempList")
+                    } catch (e: Exception) {
+                        Log.e("AggressiveCreatureDetail ViewModel", "$e")
+                        _dropItems.value = emptyList()
+                    }
+                }
+                awaitAll(deferredBiome, deferredMaterials)
 
-                            val relatedItemsMap = relatedObjects.associateBy { it.id }
-                            for (material in materials) {
-                                val relatedItem = relatedItemsMap[material.id]
-                                val quantityList = listOf<Int?>(
-                                    relatedItem?.quantity,
-                                    relatedItem?.quantity2star,
-                                    relatedItem?.quantity3star
-                                )
-                                val chanceStarList = listOf<Int?>(
-                                    relatedItem?.chance1star,
-                                    relatedItem?.chance2star,
-                                    relatedItem?.chance3star
-                                )
-                                tempList.add(
-                                    DropItem(
-                                        material = material,
-                                        quantityList = quantityList,
-                                        chanceStarList = chanceStarList,
-                                    )
-                                )
-                            }
-                            _dropItems.value = tempList
-                            Log.e("DROP ITEMS ", "$tempList")
-                        } catch (e: Exception) {
-                            Log.e("AggressiveCreatureDetail ViewModel", "$e")
-                            _dropItems.value = emptyList()
-                        }
-
-                    },
-
-                    )
-                deferreds.awaitAll()
+            } catch (e: Exception) {
+                Log.e("General fetch error AggressiveDetailViewModel", e.message.toString())
+                _error.value = e.message
+            } finally {
+                _isLoading.value = false
             }
-            _isLoading.value = false
-        } catch (e: Exception) {
-            Log.e("General fetch error AggressiveDetailViewModel", e.message.toString())
-            _isLoading.value = false
-            _error.value = e.message
         }
     }
 }

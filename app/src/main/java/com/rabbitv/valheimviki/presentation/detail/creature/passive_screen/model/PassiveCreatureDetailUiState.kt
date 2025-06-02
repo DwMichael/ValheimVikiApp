@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.detail.creature.passive_screen
+package com.rabbitv.valheimviki.presentation.detail.creature.passive_screen.model
 
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.passive.PassiveCreature
