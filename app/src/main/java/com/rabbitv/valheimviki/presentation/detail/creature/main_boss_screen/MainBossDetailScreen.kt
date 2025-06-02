@@ -25,7 +25,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -58,10 +57,11 @@ import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.navigation.LocalSharedTransitionScope
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.GreenTorchesDivider
-import com.rabbitv.valheimviki.presentation.components.HorizontalPagerData
-import com.rabbitv.valheimviki.presentation.components.HorizontalPagerSection
+
 import com.rabbitv.valheimviki.presentation.components.ImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData
+import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDetailImageAnimated
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardStatDetails
@@ -71,6 +71,8 @@ import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.Car
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.OverlayLabel
 import com.rabbitv.valheimviki.presentation.detail.creature.components.rows.CustomRowLayout
 import com.rabbitv.valheimviki.presentation.detail.creature.components.rows.StatsFlowRow
+import com.rabbitv.valheimviki.presentation.detail.creature.main_boss_screen.model.MainBossDetailUiState
+import com.rabbitv.valheimviki.presentation.detail.creature.main_boss_screen.viewmodel.MainBossScreenViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -243,8 +245,8 @@ fun MainBossContent(
                         }
                         mainBossUiState.dropItems.isNotEmpty().let {
                             HorizontalPagerSection(
-                              list =  mainBossUiState.dropItems,
-                              data =  dropData
+                                list = mainBossUiState.dropItems,
+                                data = dropData
                             )
                         }
                         GreenTorchesDivider(text = "FORSAKEN POWER")

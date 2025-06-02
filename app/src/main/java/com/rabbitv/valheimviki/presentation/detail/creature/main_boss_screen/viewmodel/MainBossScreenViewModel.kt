@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.detail.creature.main_boss_screen
+package com.rabbitv.valheimviki.presentation.detail.creature.main_boss_screen.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.SavedStateHandle
@@ -17,6 +17,7 @@ import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.PointOfInterestUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
+import com.rabbitv.valheimviki.presentation.detail.creature.main_boss_screen.model.MainBossDetailUiState
 import com.rabbitv.valheimviki.utils.Constants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -65,7 +66,7 @@ class MainBossScreenViewModel @Inject constructor(
         _error
     ) { values ->
         @Suppress("UNCHECKED_CAST")
-        MainBossDetailUiState(
+        (MainBossDetailUiState(
             mainBoss = values[0] as MainBoss?,
             relatedForsakenAltar = values[1] as PointOfInterest?,
             sacrificialStones = values[2] as PointOfInterest?,
@@ -75,10 +76,10 @@ class MainBossScreenViewModel @Inject constructor(
             trophy = values[6] as Material?,
             isLoading = values[7] as Boolean,
             error = values[8] as String?
-        )
+        ))
     }.stateIn(
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
+        started = SharingStarted.Companion.WhileSubscribed(5000),
         initialValue = MainBossDetailUiState()
     )
 
