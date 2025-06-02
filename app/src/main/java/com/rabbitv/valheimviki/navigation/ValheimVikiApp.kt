@@ -470,13 +470,13 @@ fun ValheimNavGraph(
             enterTransition = {
                 fadeIn(
                     animationSpec = tween(
-                        durationMillis = 700,
+                        durationMillis = 300,
                         delayMillis = 50
                     )
                 ) + slideInVertically(
-                    initialOffsetY = { fullHeight -> fullHeight / 2 },
+                    initialOffsetY = { fullHeight -> fullHeight / 4 },
                     animationSpec = tween(
-                        durationMillis = 950,
+                        durationMillis = 400,
                         delayMillis = 0,
                         easing = EaseOutCubic
                     )
@@ -502,13 +502,13 @@ fun ValheimNavGraph(
             enterTransition = {
                 fadeIn(
                     animationSpec = tween(
-                        durationMillis = 700,
+                        durationMillis = 300,
                         delayMillis = 50
                     )
                 ) + slideInVertically(
-                    initialOffsetY = { fullHeight -> fullHeight / 2 },
+                    initialOffsetY = { fullHeight -> fullHeight / 4 },
                     animationSpec = tween(
-                        durationMillis = 950,
+                        durationMillis = 400,
                         delayMillis = 0,
                         easing = EaseOutCubic
                     )
@@ -534,13 +534,13 @@ fun ValheimNavGraph(
             enterTransition = {
                 fadeIn(
                     animationSpec = tween(
-                        durationMillis = 700,
+                        durationMillis = 300,
                         delayMillis = 50
                     )
                 ) + slideInVertically(
-                    initialOffsetY = { fullHeight -> fullHeight / 2 },
+                    initialOffsetY = { fullHeight -> fullHeight / 4 },
                     animationSpec = tween(
-                        durationMillis = 950,
+                        durationMillis = 400,
                         delayMillis = 0,
                         easing = EaseOutCubic
                     )

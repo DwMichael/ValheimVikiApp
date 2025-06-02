@@ -23,7 +23,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -46,15 +45,15 @@ import com.composables.icons.lucide.Trees
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
-import com.rabbitv.valheimviki.domain.model.ui_state.detail.biome_detail_state.UiBiomeDetailState
 import com.rabbitv.valheimviki.navigation.LocalSharedTransitionScope
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
-import com.rabbitv.valheimviki.presentation.components.HorizontalPagerData
-import com.rabbitv.valheimviki.presentation.components.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.ImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData
+import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDetailImageAnimated
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
+import com.rabbitv.valheimviki.presentation.detail.biome.model.BiomeDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.biome.viewmodel.BiomeDetailScreenViewModel
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
@@ -88,7 +87,7 @@ fun BiomeDetailScreen(
 @Composable
 fun BiomeDetailContent(
     onBack: () -> Unit,
-    biomeUiState: UiBiomeDetailState,
+    biomeUiState: BiomeDetailUiState,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
@@ -134,10 +133,10 @@ fun BiomeDetailContent(
     Scaffold(
         content = { padding ->
             AnimatedContent(
-                targetState = biomeUiState,
+                targetState = biomeUiState.isLoading,
                 modifier = Modifier.fillMaxSize(),
                 transitionSpec = {
-                    if (targetState is UiBiomeDetailState.Success && initialState is UiBiomeDetailState.Loading) {
+                    if (targetState == false && initialState == true) {
                         fadeIn(
                             animationSpec = tween(
                                 durationMillis = 650,
@@ -162,105 +161,93 @@ fun BiomeDetailContent(
                     }
                 },
                 label = "LoadingStateTransition"
-            ) { currentState ->
-                when (currentState) {
-                    UiBiomeDetailState.Loading -> {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(padding),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Box(modifier = Modifier.size(45.dp))
-                        }
+            ) { isLoading ->
+                if (isLoading) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(padding),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Box(modifier = Modifier.size(45.dp))
                     }
+                } else if (biomeUiState.biome != null) {
+                    Image(
+                        painter = painterResource(id = R.drawable.main_background),
+                        contentDescription = "BackgroundImage",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                    Column(
+                        modifier = Modifier
+                            .testTag("BiomeDetailScreen")
+                            .fillMaxSize()
+                            .padding(padding)
+                            .verticalScroll(scrollState, enabled = !isRunning),
+                        verticalArrangement = Arrangement.Top,
+                        horizontalAlignment = Alignment.Start,
+                    ) {
+                        MainDetailImageAnimated(
+                            onBack = onBack,
+                            sharedTransitionScope = sharedTransitionScope,
+                            animatedVisibilityScope = animatedVisibilityScope,
+                            id = biomeUiState.biome.id,
+                            imageUrl = biomeUiState.biome.imageUrl,
+                            title = biomeUiState.biome.name
+                        )
 
-                    is UiBiomeDetailState.Success -> {
-                        val biome = currentState.biome
-                        if (biome != null) {
-                            Image(
-                                painter = painterResource(id = R.drawable.main_background),
-                                contentDescription = "BackgroundImage",
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier.fillMaxSize(),
+                        DetailExpandableText(text = biomeUiState.biome.description.toString())
+                        biomeUiState.mainBoss?.let { mainBoss ->
+                            ImageWithTopLabel(
+                                itemData = mainBoss,
+                                subTitle = "BOSS",
                             )
-                            Column(
-                                modifier = Modifier
-                                    .testTag("BiomeDetailScreen")
-                                    .fillMaxSize()
-                                    .padding(padding)
-                                    .verticalScroll(scrollState, enabled = !isRunning),
-                                verticalArrangement = Arrangement.Top,
-                                horizontalAlignment = Alignment.Start,
-                            ) {
-                                MainDetailImageAnimated(
-                                    onBack = onBack,
-                                    sharedTransitionScope = sharedTransitionScope,
-                                    animatedVisibilityScope = animatedVisibilityScope,
-                                    id = biome.id,
-                                    imageUrl = biome.imageUrl,
-                                    title = biome.name
-                                )
-
-                                DetailExpandableText(text = biome.description.toString())
-                                currentState.mainBoss?.let { mainBoss ->
-                                    ImageWithTopLabel(
-                                        itemData = mainBoss,
-                                        subTitle = "BOSS",
-                                    )
-                                }
-                                SlavicDivider()
-                                if (currentState.relatedCreatures.isNotEmpty()) {
-                                    HorizontalPagerSection(
-                                        list = currentState.relatedCreatures,
-                                        data = creatureData,
-                                    )
-                                }
-
-                                if (currentState.relatedOreDeposits.isNotEmpty()) {
-                                    TridentsDividedRow()
-                                    HorizontalPagerSection(
-                                        list = currentState.relatedOreDeposits,
-                                        data = oreDepositData
-                                    )
-                                }
-
-                                if (currentState.relatedMaterials.isNotEmpty()) {
-                                    TridentsDividedRow()
-                                    HorizontalPagerSection(
-                                        list = currentState.relatedMaterials,
-                                        data = materialData
-                                    )
-                                }
-                                if (currentState.relatedPointOfInterest.isNotEmpty()) {
-                                    TridentsDividedRow()
-                                    HorizontalPagerSection(
-                                        list = currentState.relatedPointOfInterest,
-                                        data = pointOfInterestData
-                                    )
-                                }
-                                if (currentState.relatedTrees.isNotEmpty()) {
-                                    TridentsDividedRow()
-                                    HorizontalPagerSection(
-                                        list = currentState.relatedTrees,
-                                        data = treeData
-                                    )
-                                }
-                                Box(modifier = Modifier.size(45.dp))
-                            }
                         }
-                    }
-
-                    is UiBiomeDetailState.Error -> {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(padding),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text("Error occurred: ${currentState.message}")
+                        SlavicDivider()
+                        if (biomeUiState.relatedCreatures.isNotEmpty()) {
+                            HorizontalPagerSection(
+                                list = biomeUiState.relatedCreatures,
+                                data = creatureData,
+                            )
                         }
+
+                        if (biomeUiState.relatedOreDeposits.isNotEmpty()) {
+                            TridentsDividedRow()
+                            HorizontalPagerSection(
+                                list = biomeUiState.relatedOreDeposits,
+                                data = oreDepositData
+                            )
+                        }
+
+                        if (biomeUiState.relatedMaterials.isNotEmpty()) {
+                            TridentsDividedRow()
+                            HorizontalPagerSection(
+                                list = biomeUiState.relatedMaterials,
+                                data = materialData
+                            )
+                        }
+                        if (biomeUiState.relatedPointOfInterest.isNotEmpty()) {
+                            TridentsDividedRow()
+                            HorizontalPagerSection(
+                                list = biomeUiState.relatedPointOfInterest,
+                                data = pointOfInterestData
+                            )
+                        }
+                        if (biomeUiState.relatedTrees.isNotEmpty()) {
+                            TridentsDividedRow()
+                            HorizontalPagerSection(
+                                list = biomeUiState.relatedTrees,
+                                data = treeData
+                            )
+                        }
+                        Box(modifier = Modifier.size(45.dp))
                     }
+                } else {
+                    Box(
+                        Modifier
+                            .fillMaxSize()
+                            .padding(padding)
+                    )
                 }
             }
         }
@@ -297,7 +284,7 @@ fun PreviewBiomeDetailContent() {
     val creatureList = FakeData.generateFakeCreatures()
     val oreDeposit = FakeData.generateFakeOreDeposits()
     val materials = FakeData.generateFakeMaterials()
-    val uiState = UiBiomeDetailState.Success(
+    val uiState = BiomeDetailUiState(
         biome = fakeBiome,
         mainBoss = fakeMainBoss,
         relatedCreatures = creatureList,

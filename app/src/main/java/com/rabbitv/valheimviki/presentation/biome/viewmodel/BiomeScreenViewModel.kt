@@ -35,11 +35,6 @@ class BiomeScreenViewModel @Inject constructor(
                 UiListState.Success(biomes)
             } else {
                 UiListState.Loading
-                delay(30_000L)
-                UiListState.Error(
-                    "A problem occurred while connecting to our server.\n We are working to resolve it as quickly as possible. Please try again in a moment.",
-                    ErrorType.SERVER_DOWN
-                )
             }
         } else {
             if (biomes.isNotEmpty()) {

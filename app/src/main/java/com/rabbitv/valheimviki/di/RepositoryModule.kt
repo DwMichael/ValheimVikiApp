@@ -338,7 +338,6 @@ object RepositoryModule {
     @Singleton
     fun provideCreatureUseCases(
         creatureRepository: CreatureRepository,
-        relationsRepository: RelationRepository
     ): CreatureUseCases {
         return CreatureUseCases(
             getCreaturesByIds = GetCreaturesByIdsUseCase(creatureRepository),

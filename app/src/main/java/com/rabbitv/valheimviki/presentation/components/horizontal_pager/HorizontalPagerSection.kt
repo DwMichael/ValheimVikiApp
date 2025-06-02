@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.components
+package com.rabbitv.valheimviki.presentation.components.horizontal_pager
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -59,7 +59,8 @@ import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
 import kotlin.math.absoluteValue
-data class HorizontalPagerData (
+
+data class HorizontalPagerData(
     val title: String,
     val subTitle: String,
     val icon: ImageVector,
@@ -73,7 +74,7 @@ fun HorizontalPagerSection(
     list: List<ItemData?>,
     data: HorizontalPagerData
 ) {
-    val state =  rememberPagerState(pageCount = { list.size })
+    val state = rememberPagerState(pageCount = { list.size })
     val pageWidth = 160.dp
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     val horizontalPadding = (screenWidth - pageWidth) / 2
@@ -93,7 +94,7 @@ fun HorizontalPagerSection(
         )
         {
             HorizontalHeader(
-              data = data
+                data = data
             )
             Spacer(modifier = Modifier.padding(6.dp))
             HorizontalPager(
@@ -122,8 +123,8 @@ fun HorizontalPagerSection(
 @Composable
 fun HorizontalHeader(
     modifier: Modifier = Modifier,
-    data :HorizontalPagerData,
-    ){
+    data: HorizontalPagerData,
+) {
     Column(horizontalAlignment = Alignment.Start) {
         Row(
             horizontalArrangement = Arrangement.Start,
@@ -269,13 +270,13 @@ fun PreviewRectangleSectionHeader() {
         })
 
         val horizontalPagerData = HorizontalPagerData(
-            title =  "Creatuers",
-            subTitle =  "Creatures you may encounter in this biome",
+            title = "Creatuers",
+            subTitle = "Creatures you may encounter in this biome",
             icon = Lucide.PawPrint,
             iconRotationDegrees = -85f,
             itemContentScale = ContentScale.Crop,
         )
-            val creatureList = FakeData.generateFakeCreatures()
+        val creatureList = FakeData.generateFakeCreatures()
         HorizontalPagerSection(
             list = creatureList,
             data = horizontalPagerData

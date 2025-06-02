@@ -10,7 +10,8 @@ import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
 import com.rabbitv.valheimviki.domain.model.weapon.UpgradeInfo
 import com.rabbitv.valheimviki.domain.model.weapon.Weapon
-import com.rabbitv.valheimviki.presentation.detail.creature.npc.NpcDetailUiState
+import com.rabbitv.valheimviki.presentation.detail.creature.npc.model.NpcDetailUiState
+
 
 object FakeData {
 
