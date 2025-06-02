@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.detail.creature.npc
+package com.rabbitv.valheimviki.presentation.detail.creature.npc.model
 
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.npc.NPC

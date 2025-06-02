@@ -70,6 +70,8 @@ import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDet
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.OverlayLabel
+import com.rabbitv.valheimviki.presentation.detail.creature.npc.model.NpcDetailUiState
+import com.rabbitv.valheimviki.presentation.detail.creature.npc.viewmodel.NpcDetailScreenViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.DarkGrey
 import com.rabbitv.valheimviki.ui.theme.DarkWood

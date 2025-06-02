@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.detail.creature.npc
+package com.rabbitv.valheimviki.presentation.detail.creature.npc.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.SavedStateHandle
@@ -15,6 +15,7 @@ import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.PointOfInterestUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
+import com.rabbitv.valheimviki.presentation.detail.creature.npc.model.NpcDetailUiState
 import com.rabbitv.valheimviki.utils.Constants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -60,7 +61,7 @@ class NpcDetailScreenViewModel @Inject constructor(
         _error,
     ) { values ->
         @Suppress("UNCHECKED_CAST")
-        NpcDetailUiState(
+        (NpcDetailUiState(
             npc = values[0] as NPC?,
             biome = values[1] as Biome?,
             shopItems = values[2] as List<Material>,
@@ -69,10 +70,10 @@ class NpcDetailScreenViewModel @Inject constructor(
             chestsLocation = values[5] as List<PointOfInterest>,
             isLoading = values[6] as Boolean,
             error = values[7] as String?
-        )
+        ))
     }.stateIn(
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
+        started = SharingStarted.Companion.WhileSubscribed(5000),
         initialValue = NpcDetailUiState()
     )
 
