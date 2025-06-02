@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.detail.creature.mini_boss_screen
+package com.rabbitv.valheimviki.presentation.detail.creature.mini_boss_screen.model
 
 import com.rabbitv.valheimviki.domain.model.creature.mini_boss.MiniBoss
 import com.rabbitv.valheimviki.domain.model.material.Material
