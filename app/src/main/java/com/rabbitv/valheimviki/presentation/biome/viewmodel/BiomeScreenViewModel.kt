@@ -9,7 +9,6 @@ import com.rabbitv.valheimviki.domain.model.ui_state.default_list_state.UiListSt
 import com.rabbitv.valheimviki.domain.repository.NetworkConnectivity
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -24,11 +23,15 @@ import javax.inject.Inject
 class BiomeScreenViewModel @Inject constructor(
     private val biomeUseCases: BiomeUseCases,
     private val connectivityObserver: NetworkConnectivity,
-    ) : ViewModel() {
+) : ViewModel() {
 
     val biomeUiListState: StateFlow<UiListState<Biome>> = combine(
         biomeUseCases.getLocalBiomesUseCase(),
-        connectivityObserver.isConnected,
+        connectivityObserver.isConnected.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Companion.WhileSubscribed(5000),
+            initialValue = true
+        ),
     ) { biomes, isConnected ->
         if (isConnected) {
             if (biomes.isNotEmpty()) {

@@ -22,14 +22,17 @@ class BossesViewModel @Inject constructor(
     private val connectivityObserver: NetworkConnectivity,
 ) : ViewModel() {
 
-
     val mainBossUiListState: StateFlow<UiListState<MainBoss>> = combine(
         creatureUseCases.getMainBossesUseCase()
             .catch { e ->
                 Log.e("BossScreenVM", "getLocalCreaturesUseCase failed in combine", e)
                 emit(emptyList())
             },
-        connectivityObserver.isConnected
+        connectivityObserver.isConnected.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Companion.WhileSubscribed(5000),
+            initialValue = true
+        )
     ) { creatures, isConnected ->
         if (isConnected) {
             if (creatures.isNotEmpty()) {

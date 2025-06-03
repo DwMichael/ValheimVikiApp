@@ -29,7 +29,6 @@ import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 fun EmptyScreen(
     errorMessage: String,
     errorType: ErrorType = ErrorType.INTERNET_CONNECTION
-
 ) {
     val selectedImageVector = when (errorType) {
         ErrorType.SERVER_DOWN -> Lucide.ServerOff
