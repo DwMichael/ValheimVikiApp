@@ -31,13 +31,20 @@ import com.composables.icons.lucide.Axe
 import com.composables.icons.lucide.Blend
 import com.composables.icons.lucide.Lucide
 import com.rabbitv.valheimviki.R
+import com.rabbitv.valheimviki.domain.model.armor.Armor
 import com.rabbitv.valheimviki.domain.model.armor.ArmorSubCategory
+import com.rabbitv.valheimviki.domain.model.creature.Creature
+import com.rabbitv.valheimviki.domain.model.creature.CreatureSubCategory
+import com.rabbitv.valheimviki.domain.model.ui_state.category_state.UiCategoryState
 import com.rabbitv.valheimviki.domain.model.ui_state.default_list_state.ErrorType
+import com.rabbitv.valheimviki.presentation.armor.model.ArmorListUiState
+import com.rabbitv.valheimviki.presentation.armor.viewmodel.ArmorListViewModel
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.ListContent
 import com.rabbitv.valheimviki.presentation.components.chip.ChipData
 import com.rabbitv.valheimviki.presentation.components.chip.CustomElevatedFilterChip
 import com.rabbitv.valheimviki.presentation.components.chip.SearchFilterBar
+import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerGridEffect
 import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerListEffect
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
@@ -73,7 +80,7 @@ fun ArmorListScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ArmorListStateRenderer(
-    armorListUiState: ArmorListUiState,
+    armorListUiState: UiCategoryState<ArmorSubCategory?, Armor>,
     onChipSelected: (ArmorSubCategory?) -> Unit,
     paddingValues: PaddingValues,
     modifier: Modifier,
@@ -87,36 +94,10 @@ fun ArmorListStateRenderer(
             .then(modifier)
     ) {
 
-        when {
-            armorListUiState.isLoading || (armorListUiState.armorList.isEmpty() && armorListUiState.isConnection) -> {
-                ShimmerListEffect()
-            }
-
-            (armorListUiState.error != null || !armorListUiState.isConnection) && armorListUiState.armorList.isEmpty() -> {
-                Box(
-                    modifier = Modifier.testTag("EmptyScreenWeaponList"),
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .testTag("EmptyScreenWeaponList")
-                    ) {
-                        EmptyScreen(
-                            errorMessage = armorListUiState.error
-                                ?: "Connect to internet to fetch data",
-                            errorType = ErrorType.INTERNET_CONNECTION
-                        )
-                    }
-                }
-            }
-
-            else -> {
-                ArmorListDisplay(
+       ArmorListDisplay(
                     armorListUiState = armorListUiState,
                     onChipSelected = onChipSelected,
                 )
-            }
-        }
     }
 }
 
@@ -124,36 +105,24 @@ fun ArmorListStateRenderer(
 @OptIn(FlowPreview::class)
 @Composable
 fun ArmorListDisplay(
-    armorListUiState: ArmorListUiState,
+    armorListUiState: UiCategoryState<ArmorSubCategory?, Armor>,
     onChipSelected: (ArmorSubCategory?) -> Unit,
 ) {
 
-    val scrollPosition = remember { mutableIntStateOf(0) }
-    val lazyListState = rememberLazyListState(
-        initialFirstVisibleItemIndex = scrollPosition.intValue
-    )
-    val selectedDifferentCategory = remember { mutableStateOf(false) }
-    val coroutineScope = rememberCoroutineScope()
+
+    val lazyListState = rememberLazyListState()
 
 
-    LaunchedEffect(armorListUiState.selectedChip) {
-        if (selectedDifferentCategory.value) {
-            coroutineScope.launch {
-                lazyListState.scrollToItem(0)
-                scrollPosition.intValue = 0
-            }
-            selectedDifferentCategory.value = false
-        }
-    }
+
 
     Column(
         horizontalAlignment = Alignment.Start
     ) {
         SearchFilterBar(
             chips = getChipsForCategory(),
-            selectedOption = armorListUiState.selectedChip,
+            selectedOption = armorListUiState.selectedCategory,
             onSelectedChange = { _, subCategory ->
-                if (armorListUiState.selectedChip == subCategory) {
+                if (armorListUiState.selectedCategory == subCategory) {
                     onChipSelected(null)
                 } else {
                     onChipSelected(subCategory)
@@ -162,14 +131,18 @@ fun ArmorListDisplay(
             modifier = Modifier,
         )
         Spacer(Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp, vertical = 5.dp))
-        ListContent(
-            items = armorListUiState.armorList,
-            clickToNavigate = { s, i -> {} },
-            lazyListState = lazyListState,
-            subCategoryNumber = 0,
-            imageScale = ContentScale.Fit,
-            horizontalPadding = 0.dp
-        )
+        when(val state = armorListUiState) {
+            is UiCategoryState.Error<ArmorSubCategory?> -> EmptyScreen(errorMessage = state.message.toString())
+            is UiCategoryState.Loading<ArmorSubCategory?> -> ShimmerGridEffect()
+            is UiCategoryState.Success<ArmorSubCategory?, Armor> -> ListContent(
+                items = state.list,
+                clickToNavigate = { s, i -> {} },
+                lazyListState = lazyListState,
+                subCategoryNumber = 0,
+                imageScale = ContentScale.Fit,
+                horizontalPadding = 0.dp
+            )
+        }
     }
 }
 
@@ -259,11 +232,9 @@ fun PreviewCustomElevatedFilterChipNotSelected() {
 fun PreviewWeaponListStateRenderer() {
     ValheimVikiAppTheme {
         ArmorListStateRenderer(
-            armorListUiState = ArmorListUiState(
-                armorList = FakeData.fakeArmorList(),
-                isConnection = true,
-                isLoading = false,
-                error = null,
+            armorListUiState = UiCategoryState.Success(
+                selectedCategory = ArmorSubCategory.CAPE,
+                list = FakeData.fakeArmorList()
             ),
             paddingValues = PaddingValues(),
             modifier = Modifier,
