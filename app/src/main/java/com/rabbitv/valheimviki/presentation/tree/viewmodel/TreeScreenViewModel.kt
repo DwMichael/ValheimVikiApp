@@ -3,19 +3,18 @@ package com.rabbitv.valheimviki.presentation.tree.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rabbitv.valheimviki.domain.exceptions.TreesFetchLocalException
 import com.rabbitv.valheimviki.domain.model.tree.Tree
+import com.rabbitv.valheimviki.domain.model.ui_state.default_list_state.ErrorType
+import com.rabbitv.valheimviki.domain.model.ui_state.default_list_state.UiListState
 import com.rabbitv.valheimviki.domain.repository.NetworkConnectivity
 import com.rabbitv.valheimviki.domain.use_cases.tree.TreeUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
-import org.jetbrains.annotations.VisibleForTesting
 import javax.inject.Inject
 
 data class TreeUIState(
@@ -29,53 +28,40 @@ class TreeScreenViewModel @Inject constructor(
     private val treesUseCases: TreeUseCases,
     private val connectivityObserver: NetworkConnectivity,
 ) : ViewModel() {
-    val isConnection: StateFlow<Boolean> = connectivityObserver.isConnected.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = false
-    )
 
 
-    private val _treeUIState = MutableStateFlow(TreeUIState())
-    val treeUIState: StateFlow<TreeUIState> = _treeUIState
-
-    init {
-        load()
-    }
-
-    @VisibleForTesting
-    internal fun load() {
-        _treeUIState.value = _treeUIState.value.copy(
-            isLoading = true,
-            error = null,
+    val uiState: StateFlow<UiListState<Tree>> = combine(
+        treesUseCases.getLocalTreesUseCase(),
+        connectivityObserver.isConnected.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = false
         )
-
-
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                treesUseCases.getLocalTreesUseCase().collect { sortedTrees ->
-                    _treeUIState.update { current ->
-                        current.copy(
-                            trees = sortedTrees,
-                            isLoading = false,
-                        )
-                    }
-                }
-            } catch (e: Exception) {
-                when (e) {
-                    is TreesFetchLocalException -> Log.e(
-                        "TreesFetchLocalException TreeScreenViewModel",
-                        "${e.message}"
-                    )
-
-                    else -> Log.e(
-                        "Unexpected Exception occurred TreeScreenViewModel",
-                        "${e.message}"
-                    )
-                }
+    ) { oreDeposits, isConnected ->
+        if (isConnected) {
+            if (oreDeposits.isNotEmpty()) {
+                UiListState.Success(oreDeposits)
+            } else {
+                UiListState.Loading
+            }
+        } else {
+            if (oreDeposits.isNotEmpty()) {
+                UiListState.Success(oreDeposits)
+            } else {
+                UiListState.Error(
+                    "No internet connection and no local data available. Try to connect to the internet again.",
+                    ErrorType.INTERNET_CONNECTION
+                )
             }
         }
-
-    }
-
+    }.onStart {
+        emit(UiListState.Loading)
+    }.catch { e ->
+        Log.e("TreesListVM", "Error in uiState flow", e)
+        emit(UiListState.Error(e.message ?: "An unknown error occurred"))
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.Companion.WhileSubscribed(5000),
+        UiListState.Loading
+    )
 }
