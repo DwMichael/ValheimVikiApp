@@ -1,14 +1,16 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package com.rabbitv.valheimviki.presentation.weapons.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rabbitv.valheimviki.domain.model.ui_state.category_chip_state.UiCategoryChipState
 import com.rabbitv.valheimviki.domain.model.weapon.Weapon
 import com.rabbitv.valheimviki.domain.model.weapon.WeaponSubCategory
 import com.rabbitv.valheimviki.domain.model.weapon.WeaponSubType
 import com.rabbitv.valheimviki.domain.repository.NetworkConnectivity
 import com.rabbitv.valheimviki.domain.use_cases.weapon.WeaponUseCases
-import com.rabbitv.valheimviki.presentation.weapons.model.WeaponListUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +19,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
@@ -27,16 +28,8 @@ class WeaponListViewModel @Inject constructor(
     private val weaponRepository: WeaponUseCases,
     private val connectivityObserver: NetworkConnectivity,
 ) : ViewModel() {
-    private val _isConnection: StateFlow<Boolean> = connectivityObserver.isConnected.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.Companion.WhileSubscribed(5000),
-        initialValue = false
-    )
     private val _selectedCategory = MutableStateFlow(WeaponSubCategory.MELEE_WEAPON)
     private val _selectedChip = MutableStateFlow<WeaponSubType?>(null)
-
-    private val _isLoading: MutableStateFlow<Boolean> = MutableStateFlow<Boolean>(false)
-    private val _error: MutableStateFlow<String?> = MutableStateFlow<String?>(null)
 
     private val _weapons: StateFlow<List<Weapon>> =
         combine(
@@ -48,46 +41,49 @@ class WeaponListViewModel @Inject constructor(
                 .filter { it.subCategory == category.toString() }
                 .filter { chip == null || it.subType == chip.toString() }
                 .sortedBy { it.order }
-        }
-            .flowOn(Dispatchers.Default)
-            .onStart {
-                _isLoading.value = true
-                _error.value = null
-            }
-            .catch { e ->
-                Log.e("WeaponListVM", "getLocalWeapons failed", e)
-                _isLoading.value = false
-                _error.value = e.message
-                emit(emptyList())
-            }
-            .onEach {
-                _isLoading.value = false
-                _error.value = null
-            }
-            .stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5000), emptyList())
+        }.flowOn(Dispatchers.Default)
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    val uiState = combine(
-        _weapons,
-        _selectedCategory,
-        _selectedChip,
-        _isConnection,
-        _isLoading,
-        _error
-    ) { values ->
-        @Suppress("UNCHECKED_CAST")
-        (WeaponListUiState(
-            weaponList = values[0] as List<Weapon>,
-            selectedCategory = values[1] as WeaponSubCategory,
-            selectedChip = values[2] as WeaponSubType?,
-            isConnection = values[3] as Boolean,
-            isLoading = values[4] as Boolean,
-            error = values[5] as String?
-        ))
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.Companion.WhileSubscribed(5000),
-        initialValue = WeaponListUiState()
-    )
+    val uiState: StateFlow<UiCategoryChipState<WeaponSubCategory, WeaponSubType?, Weapon>> =
+        combine(
+            _weapons,
+            _selectedCategory,
+            _selectedChip,
+            connectivityObserver.isConnected.stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = true
+            )
+        ) { weaponList, category, chip, isConnected ->
+            if (isConnected) {
+                UiCategoryChipState.Success(category, chip, weaponList)
+            } else {
+                if (weaponList.isNotEmpty()) {
+                    UiCategoryChipState.Success(category, chip, weaponList)
+                } else {
+                    UiCategoryChipState.Error(
+                        category,
+                        chip,
+                        "No internet connection and no local data available for the selected filters."
+                    )
+                }
+            }
+        }.onStart {
+            emit(UiCategoryChipState.Loading(_selectedCategory.value, _selectedChip.value))
+        }.catch { e ->
+            Log.e("WeaponListVM", "Error in uiState flow", e)
+            emit(
+                UiCategoryChipState.Error(
+                    _selectedCategory.value,
+                    _selectedChip.value,
+                    e.message ?: "An unknown error occurred"
+                )
+            )
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Companion.WhileSubscribed(5000),
+            initialValue = UiCategoryChipState.Loading(_selectedCategory.value, _selectedChip.value)
+        )
 
 
     fun onCategorySelected(cat: WeaponSubCategory) {

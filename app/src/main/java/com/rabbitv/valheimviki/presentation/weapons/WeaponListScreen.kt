@@ -1,5 +1,6 @@
 package com.rabbitv.valheimviki.presentation.weapons
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -10,12 +11,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,14 +31,18 @@ import com.composables.icons.lucide.Shield
 import com.composables.icons.lucide.Wand
 import com.composables.icons.lucide.WandSparkles
 import com.rabbitv.valheimviki.R
+import com.rabbitv.valheimviki.domain.model.creature.CreatureSubCategory
+import com.rabbitv.valheimviki.domain.model.ui_state.category_chip_state.UiCategoryChipState
+import com.rabbitv.valheimviki.domain.model.ui_state.category_state.UiCategoryState
+import com.rabbitv.valheimviki.domain.model.weapon.Weapon
 import com.rabbitv.valheimviki.domain.model.weapon.WeaponSubCategory
 import com.rabbitv.valheimviki.domain.model.weapon.WeaponSubType
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.ListContent
-import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerGridEffect
 import com.rabbitv.valheimviki.presentation.components.chip.ChipData
 import com.rabbitv.valheimviki.presentation.components.chip.SearchFilterBar
 import com.rabbitv.valheimviki.presentation.components.segmented.SegmentedButtonSingleSelect
+import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerGridEffect
 import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerListEffect
 import com.rabbitv.valheimviki.presentation.weapons.model.WeaponListUiState
 import com.rabbitv.valheimviki.presentation.weapons.model.WeaponSegmentOption
@@ -51,7 +51,6 @@ import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.launch
 
 
 data class WeaponChip(
@@ -83,7 +82,7 @@ fun WeaponListScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WeaponListStateRenderer(
-    weaponListUiState: WeaponListUiState,
+    weaponListUiState: UiCategoryChipState<WeaponSubCategory, WeaponSubType?, Weapon>,
     onCategorySelected: (WeaponSubCategory) -> Unit,
     onChipSelected: (WeaponSubType?) -> Unit,
     paddingValues: PaddingValues,
@@ -97,37 +96,11 @@ fun WeaponListStateRenderer(
             .padding(paddingValues)
             .then(modifier)
     ) {
-
-        when {
-            weaponListUiState.isLoading || (weaponListUiState.weaponList.isEmpty() && weaponListUiState.isConnection) -> {
-                ShimmerListEffect()
-            }
-
-            (weaponListUiState.error != null || !weaponListUiState.isConnection) && weaponListUiState.weaponList.isEmpty() -> {
-                Box(
-                    modifier = Modifier.testTag("EmptyScreenWeaponList"),
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .testTag("EmptyScreenWeaponList")
-                    ) {
-                        EmptyScreen(
-                            errorMessage = weaponListUiState.error
-                                ?: "Connect to internet to fetch data"
-                        )
-                    }
-                }
-            }
-
-            else -> {
-                WeaponListDisplay(
-                    weaponListUiState = weaponListUiState,
-                    onCategorySelected = onCategorySelected,
-                    onChipSelected = onChipSelected,
-                )
-            }
-        }
+        WeaponListDisplay(
+            weaponListUiState = weaponListUiState,
+            onCategorySelected = onCategorySelected,
+            onChipSelected = onChipSelected,
+        )
     }
 }
 
@@ -135,28 +108,13 @@ fun WeaponListStateRenderer(
 @OptIn(FlowPreview::class)
 @Composable
 fun WeaponListDisplay(
-    weaponListUiState: WeaponListUiState,
+    weaponListUiState:  UiCategoryChipState<WeaponSubCategory, WeaponSubType?, Weapon>,
     onCategorySelected: (WeaponSubCategory) -> Unit,
     onChipSelected: (WeaponSubType?) -> Unit,
 ) {
-    val scrollPosition = remember { mutableIntStateOf(0) }
-    val lazyListState = rememberLazyListState(
-        initialFirstVisibleItemIndex = scrollPosition.intValue
-    )
-    val showAll = remember { mutableStateOf(false) }
-    val selectedDifferentCategory = remember { mutableStateOf(false) }
-    val coroutineScope = rememberCoroutineScope()
-    val selectedChipIndex = getWeaponCategoryIndex(category = weaponListUiState.selectedCategory)
+    val lazyListState = rememberLazyListState()
 
-    LaunchedEffect(weaponListUiState.selectedCategory) {
-        if (selectedDifferentCategory.value) {
-            coroutineScope.launch {
-                lazyListState.scrollToItem(0)
-                scrollPosition.intValue = 0
-            }
-            selectedDifferentCategory.value = false
-        }
-    }
+    val selectedChipIndex = getWeaponCategoryIndex(category = weaponListUiState.selectedCategory)
 
     Column(
         horizontalAlignment = Alignment.Start
@@ -165,7 +123,6 @@ fun WeaponListDisplay(
             options = WeaponSegmentOption.entries,
             selectedOption = weaponListUiState.selectedCategory,
             onOptionSelected = { index ->
-                selectedDifferentCategory.value = true
                 onCategorySelected(index)
                 onChipSelected(null)
             }
@@ -187,14 +144,36 @@ fun WeaponListDisplay(
 
 
         Spacer(Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp, vertical = 5.dp))
-        ListContent(
-            items = weaponListUiState.weaponList,
-            clickToNavigate = { s, i -> {} },
-            lazyListState = lazyListState,
-            subCategoryNumber = selectedChipIndex,
-            imageScale = ContentScale.Fit,
-            horizontalPadding = 0.dp
-        )
+        when(val state = weaponListUiState) {
+            is UiCategoryChipState.Loading<WeaponSubCategory, WeaponSubType?> -> ShimmerGridEffect()
+
+            is UiCategoryChipState.Error<WeaponSubCategory, WeaponSubType?> -> {
+                Log.e("WeaponListScreen", "Error: ${state.message}")
+                Box(
+                    modifier = Modifier.testTag("EmptyScreenWeaponList"),
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .testTag("EmptyScreenWeaponList")
+                    ) {
+                        EmptyScreen(
+                            errorMessage = state.message
+                        )
+                    }
+                }
+            }
+            is UiCategoryChipState.Success<WeaponSubCategory, WeaponSubType?, Weapon>  -> {
+                ListContent(
+                    items = state.list,
+                    clickToNavigate = { s, i -> {} },
+                    lazyListState = lazyListState,
+                    subCategoryNumber = selectedChipIndex,
+                    imageScale = ContentScale.Fit,
+                    horizontalPadding = 0.dp
+                )
+            }
+        }
     }
 }
 
@@ -333,13 +312,13 @@ fun PreviewSingleChoiceChipAmmo() {
 @Preview(name = "WeaponListStateRendererPreview")
 @Composable
 fun PreviewWeaponListStateRenderer() {
+
     ValheimVikiAppTheme {
         WeaponListStateRenderer(
-            weaponListUiState = WeaponListUiState(
-                weaponList = FakeData.fakeWeaponList,
-                isConnection = true,
-                isLoading = false,
-                error = null,
+            weaponListUiState = UiCategoryChipState.Success(
+                selectedCategory = WeaponSubCategory.MELEE_WEAPON,
+                selectedChip = WeaponSubType.SWORD,
+                list =FakeData.fakeWeaponList,
             ),
             paddingValues = PaddingValues(),
             modifier = Modifier,
