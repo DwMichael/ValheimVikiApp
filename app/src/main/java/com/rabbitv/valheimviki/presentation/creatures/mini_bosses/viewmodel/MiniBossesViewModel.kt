@@ -28,7 +28,11 @@ class MiniBossesViewModel @Inject constructor(
                 Log.e("MiniBossScreenVM", "getLocalCreaturesUseCase failed in combine", e)
                 emit(emptyList())
             },
-        connectivityObserver.isConnected
+        connectivityObserver.isConnected.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Companion.WhileSubscribed(5000),
+            initialValue = true
+        )
     ) { creatures, isConnected ->
         if (isConnected) {
             if (creatures.isNotEmpty()) {

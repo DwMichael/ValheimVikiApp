@@ -44,7 +44,11 @@ class MobListViewModel @Inject constructor(
 
     val mobUiState: StateFlow<UiCategoryState<CreatureSubCategory, Creature>> = combine(
         _creaturesBySelectedSubcat,
-        connectivityObserver.isConnected,
+        connectivityObserver.isConnected.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Companion.WhileSubscribed(5000),
+            initialValue = true
+        ),
         _selectedSubCategory
     ) { creatures, isConnected, selectedSubCategory ->
         if (isConnected) {
