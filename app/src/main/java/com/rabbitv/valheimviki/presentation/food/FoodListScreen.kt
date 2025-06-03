@@ -28,7 +28,6 @@ import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Rat
 import com.composables.icons.lucide.Skull
 import com.composables.icons.lucide.User
-import com.rabbitv.valheimviki.domain.model.food.Food
 import com.rabbitv.valheimviki.domain.model.food.FoodSubCategory
 import com.rabbitv.valheimviki.domain.model.ui_state.category_state.UiCategoryState
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
@@ -93,7 +92,7 @@ fun FoodListScreen(
                         }
 
                         is UiCategoryState.Error -> EmptyScreen(errorMessage = state.message.toString())
-                        is UiCategoryState.Success<FoodSubCategory, Food> -> ListContent(
+                        is UiCategoryState.Success -> ListContent(
                             items = state.list,
                             clickToNavigate = onItemClick,
                             lazyListState = lazyListState,

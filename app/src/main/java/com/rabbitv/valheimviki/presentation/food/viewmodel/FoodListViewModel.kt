@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -30,7 +31,7 @@ class FoodListViewModel @Inject constructor(
 
     private val _selectedSubCategory =
         MutableStateFlow<FoodSubCategory>(FoodSubCategory.COOKED_FOOD)
-    
+
     private val _foods: StateFlow<List<Food>> = _selectedSubCategory.flatMapLatest { subCategory ->
         foodUseCases.getFoodBySubCategoryUseCase(subCategory).catch { e ->
             Log.e("FoodListVM", "Error fetching data for subCategory: $subCategory", e)
@@ -64,6 +65,16 @@ class FoodListViewModel @Inject constructor(
                 )
             }
         }
+    }.onStart {
+        emit(UiCategoryState.Loading(_selectedSubCategory.value))
+    }.catch { e ->
+        Log.e("FoodListVM", "Error in uiState flow", e)
+        emit(
+            UiCategoryState.Error(
+                _selectedSubCategory.value,
+                e.message ?: "An unknown error occurred"
+            )
+        )
     }.stateIn(
         viewModelScope,
         SharingStarted.Companion.WhileSubscribed(5000),
