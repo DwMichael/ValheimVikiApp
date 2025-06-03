@@ -3,19 +3,18 @@ package com.rabbitv.valheimviki.presentation.ore_deposit.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rabbitv.valheimviki.domain.exceptions.OreDepositFetchLocalException
 import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
+import com.rabbitv.valheimviki.domain.model.ui_state.default_list_state.ErrorType
+import com.rabbitv.valheimviki.domain.model.ui_state.default_list_state.UiListState
 import com.rabbitv.valheimviki.domain.repository.NetworkConnectivity
 import com.rabbitv.valheimviki.domain.use_cases.ore_deposit.OreDepositUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
-import org.jetbrains.annotations.VisibleForTesting
 import javax.inject.Inject
 
 data class OreDepositUIState(
@@ -29,53 +28,41 @@ class OreDepositScreenViewModel @Inject constructor(
     private val oreDepositUseCases: OreDepositUseCases,
     private val connectivityObserver: NetworkConnectivity,
 ) : ViewModel() {
-    val isConnection: StateFlow<Boolean> = connectivityObserver.isConnected.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = false
-    )
 
-
-    private val _oreDepositUIState = MutableStateFlow(OreDepositUIState())
-    val oreDepositUIState: StateFlow<OreDepositUIState> = _oreDepositUIState
-
-    init {
-        load()
-    }
-
-    @VisibleForTesting
-    internal fun load() {
-        _oreDepositUIState.value = _oreDepositUIState.value.copy(
-            isLoading = true,
-            error = null,
+    val uiState: StateFlow<UiListState<OreDeposit>> = combine(
+        oreDepositUseCases.getLocalOreDepositsUseCase(),
+        connectivityObserver.isConnected.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = false
         )
-
-
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                oreDepositUseCases.getLocalOreDepositsUseCase().collect { sortedOreDeposits ->
-                    _oreDepositUIState.update { current ->
-                        current.copy(
-                            oreDeposits = sortedOreDeposits,
-                            isLoading = false,
-                        )
-                    }
-                }
-            } catch (e: Exception) {
-                when (e) {
-                    is OreDepositFetchLocalException -> Log.e(
-                        "OreDepositFetchLocalException OreDepositScreenViewModel",
-                        "${e.message}"
-                    )
-
-                    else -> Log.e(
-                        "Unexpected Exception occurred OreDepositScreenViewModel",
-                        "${e.message}"
-                    )
-                }
+    ) { oreDeposits, isConnected ->
+        if (isConnected) {
+            if (oreDeposits.isNotEmpty()) {
+                UiListState.Success(oreDeposits)
+            } else {
+                UiListState.Loading
+            }
+        } else {
+            if (oreDeposits.isNotEmpty()) {
+                UiListState.Success(oreDeposits)
+            } else {
+                UiListState.Error(
+                    "No internet connection and no local data available. Try to connect to the internet again.",
+                    ErrorType.INTERNET_CONNECTION
+                )
             }
         }
+    }.onStart {
+        emit(UiListState.Loading)
+    }.catch { e ->
+        Log.e("OreDepositListVM", "Error in uiState flow", e)
+        emit(UiListState.Error(e.message ?: "An unknown error occurred"))
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.Companion.WhileSubscribed(5000),
+        UiListState.Loading
+    )
 
-    }
 
 }
