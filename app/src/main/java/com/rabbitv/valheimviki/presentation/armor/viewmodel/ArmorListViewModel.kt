@@ -66,7 +66,7 @@ class ArmorListViewModel @Inject constructor(
     }.onStart {
         emit(UiCategoryState.Loading(_selectedChip.value))
     }.catch { e ->
-        Log.e("WeaponListVM", "Error in uiState flow", e)
+        Log.e("ArmorListVM", "Error in uiState flow", e)
         emit(
             UiCategoryState.Error(
                 _selectedChip.value,
