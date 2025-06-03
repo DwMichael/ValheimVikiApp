@@ -11,10 +11,8 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -30,6 +28,7 @@ import com.composables.icons.lucide.FlaskConical
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Soup
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterestSubCategory
+import com.rabbitv.valheimviki.domain.model.ui_state.category_state.UiCategoryState
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.ListContent
 import com.rabbitv.valheimviki.presentation.components.floating_action_button.CustomFloatingActionButton
@@ -49,12 +48,8 @@ fun PoiListScreen(
     viewModel: PoiListViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-    val scrollPosition = remember { mutableIntStateOf(0) }
-    val lazyListState = rememberLazyListState(
-        initialFirstVisibleItemIndex = scrollPosition.intValue
-    )
     val scope = rememberCoroutineScope()
+    val lazyListState = rememberLazyListState()
     val backButtonVisibleState by remember {
         derivedStateOf { lazyListState.firstVisibleItemIndex >= 2 }
     }
@@ -66,15 +61,6 @@ fun PoiListScreen(
 
 
 
-    LaunchedEffect(lazyListState) {
-        scope.launch {
-            if (lazyListState.firstVisibleItemIndex >= 0) {
-                scrollPosition.intValue = lazyListState.firstVisibleItemIndex
-            }
-        }
-    }
-
-
     Surface(
         color = Color.Transparent,
         modifier = Modifier
@@ -83,56 +69,52 @@ fun PoiListScreen(
             .padding(paddingValues)
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            if ((uiState.error != null || !uiState.isConnection) && uiState.poiList.isEmpty()) {
-                EmptyScreen(
-                    errorMessage = uiState.error ?: "Please connect to the internet to fetch data."
-                )
-            } else {
-                Column(
-                    modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    SegmentedButtonSingleSelect(
-                        options = PoiSegmentOption.entries,
-                        selectedOption = uiState.selectedSubCategory,
-                        onOptionSelected = {
-                            scope.launch {
-                                lazyListState.animateScrollToItem(0)
-                            }
-                            viewModel.onCategorySelected(it)
-                        },
-                        icons = icons
-                    )
-                    Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
-
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        if (uiState.isLoading && (uiState.poiList.isEmpty() && uiState.isConnection)) {
-                            Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
-                            ShimmerListEffect()
-                        } else {
-                            ListContent(
-                                items = uiState.poiList,
-                                clickToNavigate = onItemClick,
-                                lazyListState = lazyListState,
-                                subCategoryNumber = uiState.selectedSubCategory,
-                                horizontalPadding = 0.dp,
-                                imageScale = ContentScale.Fit
-                            )
-                        }
-                    }
-                }
-
-                CustomFloatingActionButton(
-                    showBackButton = backButtonVisibleState,
-                    onClick = {
+            Column(
+                modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                SegmentedButtonSingleSelect(
+                    options = PoiSegmentOption.entries,
+                    selectedOption = uiState.selectedCategory,
+                    onOptionSelected = {
+                        viewModel.onCategorySelected(it)
                         scope.launch {
                             lazyListState.animateScrollToItem(0)
                         }
                     },
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(BODY_CONTENT_PADDING.dp)
+                    icons = icons
                 )
+                Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
+                Box(modifier = Modifier.fillMaxSize()) {
+                    when (val state = uiState) {
+                        is UiCategoryState.Loading -> {
+                            Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
+                            ShimmerListEffect()
+                        }
+
+                        is UiCategoryState.Error -> EmptyScreen(errorMessage = state.message.toString())
+                        is UiCategoryState.Success -> ListContent(
+                            items = state.list,
+                            clickToNavigate = onItemClick,
+                            lazyListState = lazyListState,
+                            subCategoryNumber = state.selectedCategory,
+                            horizontalPadding = 0.dp,
+                            imageScale = ContentScale.Crop
+                        )
+                    }
+
+                    CustomFloatingActionButton(
+                        showBackButton = backButtonVisibleState,
+                        onClick = {
+                            scope.launch {
+                                lazyListState.animateScrollToItem(0)
+                            }
+                        },
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(BODY_CONTENT_PADDING.dp)
+                    )
+                }
             }
         }
     }
