@@ -11,10 +11,8 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -35,6 +33,7 @@ import com.composables.icons.lucide.Wheat
 import com.composables.icons.lucide.Wrench
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.tool.ToolSubCategory
+import com.rabbitv.valheimviki.domain.model.ui_state.category_state.UiCategoryState
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.ListContent
 import com.rabbitv.valheimviki.presentation.components.chip.SearchFilterBar
@@ -55,24 +54,10 @@ fun ToolListScreen(
     viewModel: ToolListViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val scrollPosition = remember { mutableIntStateOf(0) }
-    val lazyListState = rememberLazyListState(
-        initialFirstVisibleItemIndex = scrollPosition.intValue
-    )
+    val lazyListState = rememberLazyListState()
     val scope = rememberCoroutineScope()
     val backButtonVisibleState by remember {
         derivedStateOf { lazyListState.firstVisibleItemIndex >= 2 }
-    }
-
-
-
-
-    LaunchedEffect(lazyListState) {
-        scope.launch {
-            if (lazyListState.firstVisibleItemIndex >= 0) {
-                scrollPosition.intValue = lazyListState.firstVisibleItemIndex
-            }
-        }
     }
 
 
@@ -84,58 +69,55 @@ fun ToolListScreen(
             .padding(paddingValues)
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            if ((uiState.error != null || !uiState.isConnection) && uiState.toolList.isEmpty()) {
-                EmptyScreen(
-                    errorMessage = uiState.error ?: "Please connect to the internet to fetch data."
-                )
-            } else {
-                Column(
-                    modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    SearchFilterBar(
-                        chips = getChipsForCategory(),
-                        selectedOption = uiState.selectedChip,
-                        onSelectedChange = { _, subCategory ->
-                            if (uiState.selectedChip == subCategory) {
-                                viewModel.onChipSelected(null)
-                            } else {
-                                viewModel.onChipSelected(subCategory)
-                            }
-                        },
-                        modifier = Modifier,
-                    )
-                    Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
-
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        if (uiState.isLoading && (uiState.toolList.isEmpty() && uiState.isConnection)) {
-                            Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
-                            ShimmerListEffect()
+            Column(
+                modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                SearchFilterBar(
+                    chips = getChipsForCategory(),
+                    selectedOption = uiState.selectedCategory,
+                    onSelectedChange = { _, subCategory ->
+                        if (uiState.selectedCategory == subCategory) {
+                            viewModel.onChipSelected(null)
                         } else {
-                            ListContent(
-                                items = uiState.toolList,
-                                clickToNavigate = onItemClick,
-                                lazyListState = lazyListState,
-                                subCategoryNumber = ToolSubCategory.BUILDING,
-                                horizontalPadding = 0.dp,
-                                imageScale = ContentScale.Fit
-                            )
-                        }
-                    }
-                }
-
-                CustomFloatingActionButton(
-                    showBackButton = backButtonVisibleState,
-                    onClick = {
-                        scope.launch {
-                            lazyListState.animateScrollToItem(0)
+                            viewModel.onChipSelected(subCategory)
                         }
                     },
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(BODY_CONTENT_PADDING.dp)
+                    modifier = Modifier,
                 )
+                Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
+
+                Box(modifier = Modifier.fillMaxSize()) {
+                    when (val state = uiState) {
+                        is UiCategoryState.Error -> EmptyScreen(errorMessage = state.message.toString())
+                        is UiCategoryState.Loading -> {
+                            Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
+                            ShimmerListEffect()
+                        }
+
+                        is UiCategoryState.Success -> ListContent(
+                            items = state.list,
+                            clickToNavigate = { s, i -> {} },
+                            lazyListState = lazyListState,
+                            subCategoryNumber = 0,
+                            imageScale = ContentScale.Fit,
+                            horizontalPadding = 0.dp
+                        )
+                    }
+                }
             }
+
+            CustomFloatingActionButton(
+                showBackButton = backButtonVisibleState,
+                onClick = {
+                    scope.launch {
+                        lazyListState.animateScrollToItem(0)
+                    }
+                },
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(BODY_CONTENT_PADDING.dp)
+            )
         }
     }
 }
