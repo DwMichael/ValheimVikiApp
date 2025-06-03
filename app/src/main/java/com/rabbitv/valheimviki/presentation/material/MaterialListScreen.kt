@@ -23,7 +23,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -41,6 +40,7 @@ import com.composables.icons.lucide.Mountain
 import com.composables.icons.lucide.Trophy
 import com.rabbitv.valheimviki.domain.model.material.MaterialSubCategory
 import com.rabbitv.valheimviki.domain.model.material.MaterialSubType
+import com.rabbitv.valheimviki.domain.model.ui_state.category_chip_state.UiCategoryChipState
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.ListContent
 import com.rabbitv.valheimviki.presentation.components.chip.ChipData
@@ -68,12 +68,9 @@ fun MaterialListScreen(
 ) {
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val scrollPosition = remember { mutableIntStateOf(0) }
-    val lazyListState = rememberLazyListState(
-        initialFirstVisibleItemIndex = scrollPosition.intValue
-    )
+    val lazyListState = rememberLazyListState()
     val scope = rememberCoroutineScope()
-    val title = uiState.selectedSubCategory?.let { viewModel.getLabelFor(it) }
+    val title = uiState.selectedCategory?.let { viewModel.getLabelFor(it) }
     val backButtonVisibleState by remember {
         derivedStateOf { lazyListState.firstVisibleItemIndex >= 2 }
     }
@@ -140,41 +137,52 @@ fun MaterialListScreen(
         },
         floatingActionButtonPosition = FabPosition.End,
         content = { innerScaffoldPadding ->
-            if ((uiState.error != null || !uiState.isConnection) && uiState.materialsList.isEmpty()) {
-                EmptyScreen(
-                    errorMessage = uiState.error
-                        ?: "Please connect to the internet to fetch data."
-                )
-            } else {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerScaffoldPadding),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Top
-                ) {
-                    Box(
+            when (val currentState = uiState) {
+                is UiCategoryChipState.Loading -> {
+                    Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(BODY_CONTENT_PADDING.dp)
+                            .padding(innerScaffoldPadding),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Top
                     ) {
-                        if (uiState.isLoading && (uiState.materialsList.isEmpty() && uiState.isConnection)) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(BODY_CONTENT_PADDING.dp)
+                        ) {
+
                             Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
                             ShimmerListEffect()
-                        } else {
-                            Column(
+                        }
+                    }
+                }
 
+                is UiCategoryChipState.Success -> {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(innerScaffoldPadding),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Top
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(BODY_CONTENT_PADDING.dp)
+                        ) {
+                            Column(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                if (uiState.selectedSubCategory != null) {
+                                if (currentState.selectedCategory != null) {
                                     SearchFilterBar(
-                                        chips = getChipsForCategory(uiState.selectedSubCategory),
-                                        selectedOption = uiState.selectedSubType,
-                                        onSelectedChange = { _, subCategory ->
-                                            if (uiState.selectedSubType == subCategory) {
+                                        chips = getChipsForCategory(currentState.selectedCategory),
+                                        selectedOption = currentState.selectedChip,
+                                        onSelectedChange = { _, subCategoryType ->
+                                            if (currentState.selectedChip == subCategoryType) {
                                                 viewModel.onTypeSelected(null)
                                             } else {
-                                                viewModel.onTypeSelected(subCategory)
+                                                viewModel.onTypeSelected(subCategoryType)
                                             }
                                         },
                                         modifier = Modifier,
@@ -186,9 +194,8 @@ fun MaterialListScreen(
                                         )
                                     )
                                 }
-
                                 ListContent(
-                                    items = uiState.materialsList,
+                                    items = currentState.list,
                                     clickToNavigate = onItemClick,
                                     lazyListState = lazyListState,
                                     subCategoryNumber = 0,
@@ -198,6 +205,12 @@ fun MaterialListScreen(
                             }
                         }
                     }
+                }
+
+                is UiCategoryChipState.Error -> {
+                    EmptyScreen(
+                        errorMessage = currentState.message
+                    )
                 }
             }
         }

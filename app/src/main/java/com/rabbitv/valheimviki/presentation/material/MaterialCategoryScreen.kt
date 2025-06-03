@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rabbitv.valheimviki.domain.model.material.MaterialSubCategory
+import com.rabbitv.valheimviki.domain.model.ui_state.category_chip_state.UiCategoryChipState
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.grid.grid_category.CategoryGrid
 import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerGridEffect
@@ -49,24 +50,23 @@ fun MaterialCategoryScreen(
             .fillMaxSize()
             .padding(paddingValues)
     ) {
-        if ((uiState.error != null || !uiState.isConnection) && uiState.materialsList.isEmpty()) {
-            EmptyScreen(
-                errorMessage = uiState.error ?: "Please connect to the internet to fetch data."
-            )
-        } else {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(BODY_CONTENT_PADDING.dp)
+        ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(BODY_CONTENT_PADDING.dp)
-                ) {
-                    if (uiState.isLoading && (uiState.materialsList.isEmpty() && uiState.isConnection)) {
+                when (val state = uiState) {
+                    is UiCategoryChipState.Loading -> {
                         Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
                         ShimmerGridEffect()
-                    } else {
+                    }
+
+                    is UiCategoryChipState.Error -> EmptyScreen(errorMessage = state.message)
+                    is UiCategoryChipState.Success ->
                         CategoryGrid<MaterialSubCategory>(
                             modifier = modifier,
                             items = materialCategories,
@@ -78,9 +78,7 @@ fun MaterialCategoryScreen(
                             height = 200.dp,
                             lazyGridState = lazyGridState
                         )
-                    }
                 }
-
             }
         }
     }

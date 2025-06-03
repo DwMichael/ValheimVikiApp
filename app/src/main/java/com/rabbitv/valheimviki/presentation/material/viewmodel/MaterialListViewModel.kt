@@ -6,9 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.material.MaterialSubCategory
 import com.rabbitv.valheimviki.domain.model.material.MaterialSubType
+import com.rabbitv.valheimviki.domain.model.ui_state.category_chip_state.UiCategoryChipState
 import com.rabbitv.valheimviki.domain.repository.NetworkConnectivity
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
-import com.rabbitv.valheimviki.presentation.material.model.MaterialListUiState
 import com.rabbitv.valheimviki.presentation.material.model.MaterialSegmentOption
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 
@@ -28,11 +27,7 @@ class MaterialListViewModel @Inject constructor(
     private val materialUseCases: MaterialUseCases,
     private val connectivityObserver: NetworkConnectivity,
 ) : ViewModel() {
-    private val _isConnection: StateFlow<Boolean> = connectivityObserver.isConnected.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = false
-    )
+
 
     private val _selectedSubCategory =
         MutableStateFlow<MaterialSubCategory?>(null)
@@ -54,48 +49,55 @@ class MaterialListViewModel @Inject constructor(
                 .filter { category == null || it.subCategory == category.toString() }
                 .filter { type == null || it.subType == type.toString() }
                 .sortedBy { it.order }
-        }
-            .flowOn(Dispatchers.Default)
-            .onStart {
-                _isLoading.value = true
-                _error.value = null
-            }.catch { e ->
-                Log.e("MaterialListVM", "getLocalMaterial failed", e)
-                _isLoading.value = false
-                _error.value = e.message
-                emit(emptyList())
-            }.onEach {
-                _isLoading.value = false
-                _error.value = null
-            }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5000), emptyList())
+        }.flowOn(Dispatchers.Default)
+            .stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5000), emptyList())
 
 
-    val uiState = combine(
-        _materialList,
-        _selectedSubCategory,
-        _selectedSubType,
-        _isConnection,
-        _isLoading,
-        _error
-    ) { values ->
-        @Suppress("UNCHECKED_CAST")
-        MaterialListUiState(
-            materialsList = values[0] as List<Material>,
-            selectedSubCategory = values[1] as MaterialSubCategory?,
-            selectedSubType = values[2] as MaterialSubType?,
-            isConnection = values[3] as Boolean,
-            isLoading = values[4] as Boolean,
-            error = values[5] as String?,
+    val uiState: StateFlow<UiCategoryChipState<MaterialSubCategory?, MaterialSubType?, Material>> =
+        combine(
+            _materialList,
+            _selectedSubCategory,
+            _selectedSubType,
+            connectivityObserver.isConnected.stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = false
+            )
+        ) { materials, selectedSubCategory, selectedSubType, isConnected ->
+            if (isConnected) {
+                if (materials.isNotEmpty()) {
+                    UiCategoryChipState.Success(selectedSubCategory, selectedSubType, materials)
+                } else {
+                    UiCategoryChipState.Loading(selectedSubCategory, selectedSubType)
+                }
+            } else {
+                if (materials.isNotEmpty()) {
+                    UiCategoryChipState.Success(selectedSubCategory, selectedSubType, materials)
+                } else {
+                    UiCategoryChipState.Error(
+                        selectedSubCategory, selectedSubType,
+                        "No internet connection and no local data available. Try to connect to the internet again.",
+                    )
+                }
+            }
+        }.onStart {
+            emit(UiCategoryChipState.Loading(_selectedSubCategory.value, _selectedSubType.value))
+        }.catch { e ->
+            Log.e("MaterialListVM", "Error in uiState flow", e)
+            emit(
+                UiCategoryChipState.Error(
+                    _selectedSubCategory.value,
+                    _selectedSubType.value,
+                    e.message ?: "An unknown error occurred"
+                )
+            )
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.Companion.WhileSubscribed(5000),
+            UiCategoryChipState.Loading(_selectedSubCategory.value, _selectedSubType.value)
         )
 
-    }.stateIn(
-        viewModelScope,
-        SharingStarted.Companion.WhileSubscribed(5000),
-        MaterialListUiState()
-    )
-
     fun onCategorySelected(cat: MaterialSubCategory?) {
-        Log.e("MATERIALSUBCATEGOYR ", "onCategorySelected: $cat")
         _selectedSubCategory.value = cat
     }
 
