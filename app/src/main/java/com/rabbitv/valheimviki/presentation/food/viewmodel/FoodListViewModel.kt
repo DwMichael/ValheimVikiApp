@@ -54,14 +54,18 @@ class FoodListViewModel @Inject constructor(
         ),
     ) { food, subCategory, isConnected ->
         if (isConnected) {
-            UiCategoryState.Success(subCategory, food)
+            if (food.isNotEmpty()) {
+                UiCategoryState.Success(subCategory, food)
+            } else {
+                UiCategoryState.Loading(subCategory)
+            }
         } else {
             if (food.isNotEmpty()) {
                 UiCategoryState.Success(subCategory, food)
             } else {
                 UiCategoryState.Error(
                     subCategory,
-                    "No internet connection and no local data available for the selected filters."
+                    "No internet connection and no local data available. Try to connect to the internet again.",
                 )
             }
         }
@@ -76,9 +80,9 @@ class FoodListViewModel @Inject constructor(
             )
         )
     }.stateIn(
-        viewModelScope,
-        SharingStarted.Companion.WhileSubscribed(5000),
-        UiCategoryState.Loading(_selectedSubCategory.value)
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = UiCategoryState.Loading(_selectedSubCategory.value)
     )
 
     fun onCategorySelected(cat: FoodSubCategory) {
