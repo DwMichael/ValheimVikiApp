@@ -52,14 +52,18 @@ class ArmorListViewModel @Inject constructor(
         )
     ) { armors, selectedChip, isConnected ->
         if (isConnected) {
-            UiCategoryState.Success(selectedChip, armors)
+            if (armors.isNotEmpty()) {
+                UiCategoryState.Success(selectedChip, armors)
+            } else {
+                UiCategoryState.Loading(selectedChip)
+            }
         } else {
             if (armors.isNotEmpty()) {
                 UiCategoryState.Success(selectedChip, armors)
             } else {
                 UiCategoryState.Error(
                     selectedChip,
-                    "No internet connection and no local data available for the selected filters."
+                    "No internet connection and no local data available. Try to connect to the internet again.",
                 )
             }
         }

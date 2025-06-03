@@ -1,6 +1,5 @@
 package com.rabbitv.valheimviki.presentation.armor
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -10,12 +9,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,11 +27,7 @@ import com.composables.icons.lucide.Lucide
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.armor.Armor
 import com.rabbitv.valheimviki.domain.model.armor.ArmorSubCategory
-import com.rabbitv.valheimviki.domain.model.creature.Creature
-import com.rabbitv.valheimviki.domain.model.creature.CreatureSubCategory
 import com.rabbitv.valheimviki.domain.model.ui_state.category_state.UiCategoryState
-import com.rabbitv.valheimviki.domain.model.ui_state.default_list_state.ErrorType
-import com.rabbitv.valheimviki.presentation.armor.model.ArmorListUiState
 import com.rabbitv.valheimviki.presentation.armor.viewmodel.ArmorListViewModel
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.ListContent
@@ -50,7 +40,6 @@ import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.launch
 
 
 class ArmorChip(
@@ -94,10 +83,10 @@ fun ArmorListStateRenderer(
             .then(modifier)
     ) {
 
-       ArmorListDisplay(
-                    armorListUiState = armorListUiState,
-                    onChipSelected = onChipSelected,
-                )
+        ArmorListDisplay(
+            armorListUiState = armorListUiState,
+            onChipSelected = onChipSelected,
+        )
     }
 }
 
@@ -131,9 +120,9 @@ fun ArmorListDisplay(
             modifier = Modifier,
         )
         Spacer(Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp, vertical = 5.dp))
-        when(val state = armorListUiState) {
+        when (val state = armorListUiState) {
             is UiCategoryState.Error<ArmorSubCategory?> -> EmptyScreen(errorMessage = state.message.toString())
-            is UiCategoryState.Loading<ArmorSubCategory?> -> ShimmerGridEffect()
+            is UiCategoryState.Loading<ArmorSubCategory?> -> ShimmerListEffect()
             is UiCategoryState.Success<ArmorSubCategory?, Armor> -> ListContent(
                 items = state.list,
                 clickToNavigate = { s, i -> {} },
