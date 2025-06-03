@@ -6,9 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.model.building_material.BuildingMaterial
 import com.rabbitv.valheimviki.domain.model.building_material.BuildingMaterialSubCategory
 import com.rabbitv.valheimviki.domain.model.building_material.BuildingMaterialSubType
+import com.rabbitv.valheimviki.domain.model.ui_state.category_chip_state.UiCategoryChipState
 import com.rabbitv.valheimviki.domain.repository.NetworkConnectivity
 import com.rabbitv.valheimviki.domain.use_cases.building_material.BuildMaterialUseCases
-import com.rabbitv.valheimviki.presentation.building_material.model.BuildingMaterialListUiState
 import com.rabbitv.valheimviki.presentation.building_material.model.BuildingMaterialSegmentOption
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 
@@ -28,21 +27,12 @@ class BuildingMaterialListViewModel @Inject constructor(
     private val buildingMaterialUseCases: BuildMaterialUseCases,
     private val connectivityObserver: NetworkConnectivity,
 ) : ViewModel() {
-    private val _isConnection: StateFlow<Boolean> = connectivityObserver.isConnected.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = false
-    )
-
     private val _selectedSubCategory =
         MutableStateFlow<BuildingMaterialSubCategory?>(null)
 
 
     private val _selectedSubType =
         MutableStateFlow<BuildingMaterialSubType?>(null)
-
-    private val _isLoading = MutableStateFlow(false)
-    private val _error = MutableStateFlow<String?>(null)
 
     private val _materialList: StateFlow<List<BuildingMaterial>> =
         combine(
@@ -56,43 +46,52 @@ class BuildingMaterialListViewModel @Inject constructor(
                 .sortedBy { it.order }
         }
             .flowOn(Dispatchers.Default)
-            .onStart {
-                _isLoading.value = true
-                _error.value = null
-            }.catch { e ->
-                Log.e("BuildingMaterialListVM", "getLocalBuildingMaterial failed", e)
-                _isLoading.value = false
-                _error.value = e.message
-                emit(emptyList())
-            }.onEach {
-                _isLoading.value = false
-                _error.value = null
-            }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5000), emptyList())
+            .stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5000), emptyList())
 
 
-    val uiState = combine(
-        _materialList,
-        _selectedSubCategory,
-        _selectedSubType,
-        _isConnection,
-        _isLoading,
-        _error
-    ) { values ->
-        @Suppress("UNCHECKED_CAST")
-        BuildingMaterialListUiState(
-            buildingMaterialList = values[0] as List<BuildingMaterial>,
-            selectedSubCategory = values[1] as BuildingMaterialSubCategory?,
-            selectedSubType = values[2] as BuildingMaterialSubType?,
-            isConnection = values[3] as Boolean,
-            isLoading = values[4] as Boolean,
-            error = values[5] as String?,
+    val uiState: StateFlow<UiCategoryChipState<BuildingMaterialSubCategory?, BuildingMaterialSubType?, BuildingMaterial>> =
+        combine(
+            _materialList,
+            _selectedSubCategory,
+            _selectedSubType,
+            connectivityObserver.isConnected.stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = false
+            )
+        ) { materials, selectedSubCategory, selectedSubType, isConnected ->
+            if (isConnected) {
+                if (materials.isNotEmpty()) {
+                    UiCategoryChipState.Success(selectedSubCategory, selectedSubType, materials)
+                } else {
+                    UiCategoryChipState.Loading(selectedSubCategory, selectedSubType)
+                }
+            } else {
+                if (materials.isNotEmpty()) {
+                    UiCategoryChipState.Success(selectedSubCategory, selectedSubType, materials)
+                } else {
+                    UiCategoryChipState.Error(
+                        selectedSubCategory, selectedSubType,
+                        "No internet connection and no local data available. Try to connect to the internet again.",
+                    )
+                }
+            }
+        }.onStart {
+            emit(UiCategoryChipState.Loading(_selectedSubCategory.value, _selectedSubType.value))
+        }.catch { e ->
+            Log.e("BuildingMaterialListVM", "Error in uiState flow", e)
+            emit(
+                UiCategoryChipState.Error(
+                    _selectedSubCategory.value,
+                    _selectedSubType.value,
+                    e.message ?: "An unknown error occurred"
+                )
+            )
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.Companion.WhileSubscribed(5000),
+            UiCategoryChipState.Loading(_selectedSubCategory.value, _selectedSubType.value)
         )
-
-    }.stateIn(
-        viewModelScope,
-        SharingStarted.Companion.WhileSubscribed(5000),
-        BuildingMaterialListUiState()
-    )
 
     fun onCategorySelected(cat: BuildingMaterialSubCategory?) {
         _selectedSubCategory.value = cat

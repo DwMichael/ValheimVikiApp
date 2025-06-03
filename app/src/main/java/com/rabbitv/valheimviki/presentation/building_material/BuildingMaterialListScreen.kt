@@ -44,6 +44,7 @@ import com.composables.icons.lucide.Star
 import com.composables.icons.lucide.Table
 import com.rabbitv.valheimviki.domain.model.building_material.BuildingMaterialSubCategory
 import com.rabbitv.valheimviki.domain.model.building_material.BuildingMaterialSubType
+import com.rabbitv.valheimviki.domain.model.ui_state.category_chip_state.UiCategoryChipState
 import com.rabbitv.valheimviki.presentation.building_material.viewmodel.BuildingMaterialListViewModel
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.ListContent
@@ -73,7 +74,7 @@ fun BuildingMaterialListScreen(
     val lazyListState = rememberLazyListState(
         initialFirstVisibleItemIndex = scrollPosition.intValue
     )
-    val title = uiState.selectedSubCategory?.let { viewModel.getLabelFor(it) }
+    val title = uiState.selectedCategory?.let { viewModel.getLabelFor(it) }
 
     val backToTopState = remember { mutableStateOf(false) }
     if (backToTopState.value) {
@@ -132,41 +133,52 @@ fun BuildingMaterialListScreen(
             }
         },
         content = { innerScaffoldPadding ->
-            if ((uiState.error != null || !uiState.isConnection) && uiState.buildingMaterialList.isEmpty()) {
-                EmptyScreen(
-                    errorMessage = uiState.error
-                        ?: "Please connect to the internet to fetch data."
-                )
-            } else {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerScaffoldPadding),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Top
-                ) {
-                    Box(
+            when (val currentState = uiState) {
+                is UiCategoryChipState.Loading -> {
+                    Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(BODY_CONTENT_PADDING.dp)
+                            .padding(innerScaffoldPadding),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Top
                     ) {
-                        if (uiState.isLoading && (uiState.buildingMaterialList.isEmpty() && uiState.isConnection)) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(BODY_CONTENT_PADDING.dp)
+                        ) {
+
                             Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
                             ShimmerListEffect()
-                        } else {
-                            Column(
+                        }
+                    }
+                }
 
+                is UiCategoryChipState.Success -> {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(innerScaffoldPadding),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Top
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(BODY_CONTENT_PADDING.dp)
+                        ) {
+                            Column(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                if (uiState.selectedSubCategory != null) {
+                                if (currentState.selectedCategory != null) {
                                     SearchFilterBar(
-                                        chips = getChipsForCategory(uiState.selectedSubCategory),
-                                        selectedOption = uiState.selectedSubType,
-                                        onSelectedChange = { _, subCategory ->
-                                            if (uiState.selectedSubType == subCategory) {
+                                        chips = getChipsForCategory(currentState.selectedCategory),
+                                        selectedOption = currentState.selectedChip,
+                                        onSelectedChange = { _, subCategoryType ->
+                                            if (currentState.selectedChip == subCategoryType) {
                                                 viewModel.onTypeSelected(null)
                                             } else {
-                                                viewModel.onTypeSelected(subCategory)
+                                                viewModel.onTypeSelected(subCategoryType)
                                             }
                                         },
                                         modifier = Modifier,
@@ -178,9 +190,8 @@ fun BuildingMaterialListScreen(
                                         )
                                     )
                                 }
-
                                 ListContent(
-                                    items = uiState.buildingMaterialList,
+                                    items = currentState.list,
                                     clickToNavigate = onItemClick,
                                     lazyListState = lazyListState,
                                     subCategoryNumber = 0,
@@ -190,6 +201,12 @@ fun BuildingMaterialListScreen(
                             }
                         }
                     }
+                }
+
+                is UiCategoryChipState.Error -> {
+                    EmptyScreen(
+                        errorMessage = currentState.message
+                    )
                 }
             }
         }

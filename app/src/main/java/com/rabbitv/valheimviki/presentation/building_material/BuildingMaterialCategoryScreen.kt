@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rabbitv.valheimviki.domain.model.building_material.BuildingMaterialSubCategory
+import com.rabbitv.valheimviki.domain.model.ui_state.category_chip_state.UiCategoryChipState
 import com.rabbitv.valheimviki.presentation.building_material.model.BuildingMaterialSegmentOption
 import com.rabbitv.valheimviki.presentation.building_material.viewmodel.BuildingMaterialListViewModel
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
@@ -49,22 +50,23 @@ fun BuildingMaterialCategoryScreen(
             .fillMaxSize()
             .padding(paddingValues)
     ) {
-        if ((uiState.error != null || !uiState.isConnection) && uiState.buildingMaterialList.isEmpty()) {
-            EmptyScreen(
-                errorMessage = uiState.error ?: "Please connect to the internet to fetch data."
-            )
-        } else {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(BODY_CONTENT_PADDING.dp)
+        ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top
             ) {
-                Box(modifier = Modifier
-                    .fillMaxSize()
-                    .padding(BODY_CONTENT_PADDING.dp)) {
-                    if (uiState.isLoading && (uiState.buildingMaterialList.isEmpty() && uiState.isConnection)) {
+                when (val state = uiState) {
+                    is UiCategoryChipState.Error -> EmptyScreen(errorMessage = state.message)
+                    is UiCategoryChipState.Loading -> {
                         Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
                         ShimmerGridEffect()
-                    } else {
+                    }
+
+                    is UiCategoryChipState.Success ->
                         CategoryGrid<BuildingMaterialSubCategory>(
                             modifier = modifier,
                             items = buildingMaterialCategories,
@@ -76,8 +78,6 @@ fun BuildingMaterialCategoryScreen(
                             height = 200.dp,
                             lazyGridState = lazyGridState
                         )
-
-                    }
                 }
             }
         }
