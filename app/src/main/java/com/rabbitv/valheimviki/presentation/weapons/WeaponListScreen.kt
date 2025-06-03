@@ -31,9 +31,7 @@ import com.composables.icons.lucide.Shield
 import com.composables.icons.lucide.Wand
 import com.composables.icons.lucide.WandSparkles
 import com.rabbitv.valheimviki.R
-import com.rabbitv.valheimviki.domain.model.creature.CreatureSubCategory
 import com.rabbitv.valheimviki.domain.model.ui_state.category_chip_state.UiCategoryChipState
-import com.rabbitv.valheimviki.domain.model.ui_state.category_state.UiCategoryState
 import com.rabbitv.valheimviki.domain.model.weapon.Weapon
 import com.rabbitv.valheimviki.domain.model.weapon.WeaponSubCategory
 import com.rabbitv.valheimviki.domain.model.weapon.WeaponSubType
@@ -44,7 +42,6 @@ import com.rabbitv.valheimviki.presentation.components.chip.SearchFilterBar
 import com.rabbitv.valheimviki.presentation.components.segmented.SegmentedButtonSingleSelect
 import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerGridEffect
 import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerListEffect
-import com.rabbitv.valheimviki.presentation.weapons.model.WeaponListUiState
 import com.rabbitv.valheimviki.presentation.weapons.model.WeaponSegmentOption
 import com.rabbitv.valheimviki.presentation.weapons.viewmodel.WeaponListViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
@@ -108,7 +105,7 @@ fun WeaponListStateRenderer(
 @OptIn(FlowPreview::class)
 @Composable
 fun WeaponListDisplay(
-    weaponListUiState:  UiCategoryChipState<WeaponSubCategory, WeaponSubType?, Weapon>,
+    weaponListUiState: UiCategoryChipState<WeaponSubCategory, WeaponSubType?, Weapon>,
     onCategorySelected: (WeaponSubCategory) -> Unit,
     onChipSelected: (WeaponSubType?) -> Unit,
 ) {
@@ -144,8 +141,8 @@ fun WeaponListDisplay(
 
 
         Spacer(Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp, vertical = 5.dp))
-        when(val state = weaponListUiState) {
-            is UiCategoryChipState.Loading<WeaponSubCategory, WeaponSubType?> -> ShimmerGridEffect()
+        when (val state = weaponListUiState) {
+            is UiCategoryChipState.Loading<WeaponSubCategory, WeaponSubType?> -> ShimmerListEffect()
 
             is UiCategoryChipState.Error<WeaponSubCategory, WeaponSubType?> -> {
                 Log.e("WeaponListScreen", "Error: ${state.message}")
@@ -163,7 +160,8 @@ fun WeaponListDisplay(
                     }
                 }
             }
-            is UiCategoryChipState.Success<WeaponSubCategory, WeaponSubType?, Weapon>  -> {
+
+            is UiCategoryChipState.Success<WeaponSubCategory, WeaponSubType?, Weapon> -> {
                 ListContent(
                     items = state.list,
                     clickToNavigate = { s, i -> {} },
@@ -318,7 +316,7 @@ fun PreviewWeaponListStateRenderer() {
             weaponListUiState = UiCategoryChipState.Success(
                 selectedCategory = WeaponSubCategory.MELEE_WEAPON,
                 selectedChip = WeaponSubType.SWORD,
-                list =FakeData.fakeWeaponList,
+                list = FakeData.fakeWeaponList,
             ),
             paddingValues = PaddingValues(),
             modifier = Modifier,

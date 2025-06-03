@@ -56,15 +56,18 @@ class WeaponListViewModel @Inject constructor(
             )
         ) { weaponList, category, chip, isConnected ->
             if (isConnected) {
-                UiCategoryChipState.Success(category, chip, weaponList)
+                if (weaponList.isNotEmpty()) {
+                    UiCategoryChipState.Success(category, chip, weaponList)
+                } else {
+                    UiCategoryChipState.Loading(category, chip)
+                }
             } else {
                 if (weaponList.isNotEmpty()) {
                     UiCategoryChipState.Success(category, chip, weaponList)
                 } else {
                     UiCategoryChipState.Error(
-                        category,
-                        chip,
-                        "No internet connection and no local data available for the selected filters."
+                        category, chip,
+                        "No internet connection and no local data available. Try to connect to the internet again.",
                     )
                 }
             }
