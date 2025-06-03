@@ -49,18 +49,21 @@ class MeadListViewModel @Inject constructor(
         )
     ) { meadList, selectedSubCategory, isConnected ->
         if (isConnected) {
-            UiCategoryState.Success(selectedSubCategory, meadList)
+            if (meadList.isNotEmpty()) {
+                UiCategoryState.Success(selectedSubCategory, meadList)
+            } else {
+                UiCategoryState.Loading(selectedSubCategory)
+            }
         } else {
             if (meadList.isNotEmpty()) {
                 UiCategoryState.Success(selectedSubCategory, meadList)
             } else {
                 UiCategoryState.Error(
                     selectedSubCategory,
-                    "No internet connection and no local data available for the selected filters."
+                    "No internet connection and no local data available. Try to connect to the internet again.",
                 )
             }
         }
-
     }.onStart {
         emit(UiCategoryState.Loading(_selectedSubCategory.value))
     }.catch { e ->
@@ -72,9 +75,9 @@ class MeadListViewModel @Inject constructor(
             )
         )
     }.stateIn(
-        viewModelScope,
-        SharingStarted.Companion.WhileSubscribed(5000),
-        UiCategoryState.Loading(_selectedSubCategory.value)
+        scope = viewModelScope,
+        started = SharingStarted.Companion.WhileSubscribed(5000),
+        initialValue = UiCategoryState.Loading(_selectedSubCategory.value)
     )
 
     fun onCategorySelected(cat: MeadSubCategory) {
