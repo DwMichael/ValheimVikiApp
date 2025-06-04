@@ -31,21 +31,21 @@ import com.rabbitv.valheimviki.domain.model.weapon.UpgradeInfo
 
 object WeaponUpgradeInfoFactory {
 
-    inline fun <reified T> createFromWeaponUpgradeInfo(upgradeInfo: UpgradeInfo): T {
+    inline fun <reified T> createFromWeaponUpgradeInfo(upgradeInfo: UpgradeInfo?): T {
         return when (T::class) {
-            AmmoUpgradeInfoItem::class -> upgradeInfo.toAmmoUpgradeInfo() as T
-            AxeUpgradeInfoItem::class -> upgradeInfo.toAxeUpgradeInfoItem() as T
-            BloodMagicUpgradeInfoItem::class -> upgradeInfo.toBloodMagicUpgradeInfoItem() as T
-            BowUpgradeInfoItem::class -> upgradeInfo.toBowUpgradeInfoItem() as T
-            ClubUpgradeInfoItem::class -> upgradeInfo.toClubUpgradeInfoItem() as T
-            CrossbowUpgradeInfoItem::class -> upgradeInfo.toCrossbowUpgradeInfoItem() as T
-            ElementalMagicUpgradeInfoItem::class -> upgradeInfo.toElementalMagicUpgradeInfoItem() as T
-            FistUpgradeInfoItem::class -> upgradeInfo.toFistUpgradeInfoItem() as T
-            KnifeUpgradeInfoItem::class -> upgradeInfo.toKnifeUpgradeInfoItem() as T
-            PolearmUpgradeInfoItem::class -> upgradeInfo.toPolearmUpgradeInfoItem() as T
-            ShieldUpgradeInfoItem::class -> upgradeInfo.toShieldUpgradeInfoItem() as T
-            SpearUpgradeInfoItem::class -> upgradeInfo.toSpearUpgradeInfoItem() as T
-            SwordUpgradeInfoItem::class -> upgradeInfo.toSwordUpgradeInfoItem() as T
+            AmmoUpgradeInfoItem::class -> upgradeInfo?.toAmmoUpgradeInfo() as T
+            AxeUpgradeInfoItem::class -> upgradeInfo?.toAxeUpgradeInfoItem() as T
+            BloodMagicUpgradeInfoItem::class -> upgradeInfo?.toBloodMagicUpgradeInfoItem() as T
+            BowUpgradeInfoItem::class -> upgradeInfo?.toBowUpgradeInfoItem() as T
+            ClubUpgradeInfoItem::class -> upgradeInfo?.toClubUpgradeInfoItem() as T
+            CrossbowUpgradeInfoItem::class -> upgradeInfo?.toCrossbowUpgradeInfoItem() as T
+            ElementalMagicUpgradeInfoItem::class -> upgradeInfo?.toElementalMagicUpgradeInfoItem() as T
+            FistUpgradeInfoItem::class -> upgradeInfo?.toFistUpgradeInfoItem() as T
+            KnifeUpgradeInfoItem::class -> upgradeInfo?.toKnifeUpgradeInfoItem() as T
+            PolearmUpgradeInfoItem::class -> upgradeInfo?.toPolearmUpgradeInfoItem() as T
+            ShieldUpgradeInfoItem::class -> upgradeInfo?.toShieldUpgradeInfoItem() as T
+            SpearUpgradeInfoItem::class -> upgradeInfo?.toSpearUpgradeInfoItem() as T
+            SwordUpgradeInfoItem::class -> upgradeInfo?.toSwordUpgradeInfoItem() as T
             else -> throw IllegalArgumentException("Unsupported type: ${T::class.simpleName}")
         }
     }
