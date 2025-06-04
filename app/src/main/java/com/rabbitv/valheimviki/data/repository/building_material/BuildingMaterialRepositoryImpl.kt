@@ -16,22 +16,22 @@ class BuildingMaterialRepositoryImpl @Inject constructor(
         return buildingMaterialDao.getLocalBuildMaterial()
     }
 
-    override fun getBuildingMaterialsByIds(ids: List<String>): List<BuildingMaterial> {
+    override fun getBuildingMaterialsByIds(ids: List<String>): Flow<List<BuildingMaterial>> {
         return buildingMaterialDao.getBuildMaterialByIds(ids)
     }
 
-    override fun getBuildingMaterialById(id: String): BuildingMaterial? {
+    override fun getBuildingMaterialById(id: String): Flow<BuildingMaterial?> {
         return buildingMaterialDao.getBuildMaterialById(id)
     }
 
-    override fun getBuildingMaterialsBySubCategory(subCategory: String): List<BuildingMaterial> {
+    override fun getBuildingMaterialsBySubCategory(subCategory: String): Flow<List<BuildingMaterial>> {
         return buildingMaterialDao.getBuildMaterialsBySubCategory(subCategory)
     }
 
     override fun getBuildingMaterialsBySubCategoryAndSubType(
         subCategory: String,
         subType: String
-    ): List<BuildingMaterial> {
+    ): Flow<List<BuildingMaterial>> {
         return buildingMaterialDao.getBuildMaterialsBySubCategoryAndSubType(subCategory, subType)
     }
 

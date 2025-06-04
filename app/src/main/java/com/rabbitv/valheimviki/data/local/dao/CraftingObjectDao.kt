@@ -13,7 +13,7 @@ interface CraftingObjectDao {
     fun getLocalCraftingObjects(): Flow<List<CraftingObject>>
 
     @Query("SELECT * FROM crafting_objects where subCategory = :subCategory")
-    fun getCraftingObjectsBySubCategory(subCategory: String): List<CraftingObject>
+    fun getCraftingObjectsBySubCategory(subCategory: String): Flow<List<CraftingObject>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCraftingObjects(craftingObjects: List<CraftingObject>)

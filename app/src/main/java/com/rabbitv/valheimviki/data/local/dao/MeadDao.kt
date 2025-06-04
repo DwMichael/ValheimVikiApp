@@ -15,7 +15,7 @@ interface MeadDao {
     fun getLocalMeads(): Flow<List<Mead>>
 
     @Query("SELECT * FROM meads where subCategory = :subCategory")
-    fun getMeadsBySubCategory(subCategory: String): List<Mead>
+    fun getMeadsBySubCategory(subCategory: String): Flow<List<Mead>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertMeads(meads: List<Mead>)

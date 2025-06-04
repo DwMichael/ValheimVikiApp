@@ -5,6 +5,7 @@ import com.rabbitv.valheimviki.domain.model.building_material.BuildingMaterialSu
 import com.rabbitv.valheimviki.domain.model.building_material.BuildingMaterialSubType
 import com.rabbitv.valheimviki.domain.repository.BuildingMaterialRepository
 import jakarta.inject.Inject
+import kotlinx.coroutines.flow.Flow
 
 class GetBuildMaterialsBySubCategoryAndSubTypeUseCase @Inject constructor(
     private val buildingMaterialRepository: BuildingMaterialRepository
@@ -12,10 +13,10 @@ class GetBuildMaterialsBySubCategoryAndSubTypeUseCase @Inject constructor(
     operator fun invoke(
         subCategory: BuildingMaterialSubCategory,
         subType: BuildingMaterialSubType
-    ): List<BuildingMaterial> {
-        return buildingMaterialRepository.getBuildingMaterialsBySubCategoryAndSubType(
+    ): Flow<List<BuildingMaterial>> =
+        buildingMaterialRepository.getBuildingMaterialsBySubCategoryAndSubType(
             subType = subType.toString(),
             subCategory = subCategory.toString()
         )
-    }
+
 }

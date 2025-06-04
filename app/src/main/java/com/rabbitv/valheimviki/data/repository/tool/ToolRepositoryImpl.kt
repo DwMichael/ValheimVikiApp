@@ -20,7 +20,7 @@ class ToolRepositoryImpl @Inject constructor(
         return toolDao.getLocalTools()
     }
 
-    override fun getToolsBySubCategory(subCategory: String): List<Tool> {
+    override fun getToolsBySubCategory(subCategory: String): Flow<List<Tool>> {
         return toolDao.getToolsBySubCategory(subCategory)
     }
 

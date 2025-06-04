@@ -14,7 +14,7 @@ interface ToolDao {
     fun getLocalTools(): Flow<List<Tool>>
 
     @Query("SELECT * FROM Tools where subCategory = :subCategory")
-    fun getToolsBySubCategory(subCategory: String): List<Tool>
+    fun getToolsBySubCategory(subCategory: String): Flow<List<Tool>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertTools(Tools: List<Tool>)

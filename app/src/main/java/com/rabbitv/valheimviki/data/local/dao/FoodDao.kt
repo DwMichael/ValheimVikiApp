@@ -17,7 +17,7 @@ interface FoodDao {
     fun getFoodListBySubCategory(subCategory: String): Flow<List<Food>>
 
     @Query("SELECT * FROM food where id IN (:ids)")
-    fun getFoodListByIds(ids: List<String>): List<Food>
+    fun getFoodListByIds(ids: List<String>): Flow<List<Food>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFood(foodList: List<Food>)

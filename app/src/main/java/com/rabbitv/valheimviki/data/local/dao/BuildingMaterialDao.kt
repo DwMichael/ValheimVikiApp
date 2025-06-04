@@ -13,19 +13,19 @@ interface BuildingMaterialDao {
     fun getLocalBuildMaterial(): Flow<List<BuildingMaterial>>
 
     @Query("SELECT * FROM building_materials WHERE id IN (:ids)")
-    fun getBuildMaterialByIds(ids: List<String>): List<BuildingMaterial>
+    fun getBuildMaterialByIds(ids: List<String>): Flow<List<BuildingMaterial>>
 
     @Query("SELECT * FROM building_materials WHERE id = :id")
-    fun getBuildMaterialById(id: String): BuildingMaterial?
+    fun getBuildMaterialById(id: String): Flow<BuildingMaterial?>
 
     @Query("SELECT * FROM building_materials WHERE subCategory = :subCategory ")
-    fun getBuildMaterialsBySubCategory(subCategory: String): List<BuildingMaterial>
+    fun getBuildMaterialsBySubCategory(subCategory: String): Flow<List<BuildingMaterial>>
 
     @Query("SELECT * FROM building_materials WHERE subCategory = :subCategory AND subType = :subType")
     fun getBuildMaterialsBySubCategoryAndSubType(
         subCategory: String,
         subType: String
-    ): List<BuildingMaterial>
+    ): Flow<List<BuildingMaterial>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertBuildMaterials(materials: List<BuildingMaterial>)

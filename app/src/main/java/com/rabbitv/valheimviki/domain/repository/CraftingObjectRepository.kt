@@ -7,6 +7,6 @@ import retrofit2.Response
 interface CraftingObjectRepository {
     suspend fun fetchCraftingObject(lang: String): Response<List<CraftingObject>>
     fun getLocalCraftingObjects(): Flow<List<CraftingObject>>
-    fun getCraftingObjectsBySubCategory(subCategory: String): List<CraftingObject>
+    fun getCraftingObjectsBySubCategory(subCategory: String): Flow<List<CraftingObject>>
     suspend fun insertCraftingObjects(craftingObjects: List<CraftingObject>)
 }

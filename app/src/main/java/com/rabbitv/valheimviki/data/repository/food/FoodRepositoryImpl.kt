@@ -24,7 +24,7 @@ class FoodRepositoryImpl @Inject constructor(
         return foodDao.getFoodListBySubCategory(subCategory)
     }
 
-    override fun getFoodListByIds(ids: List<String>): List<Food> {
+    override fun getFoodListByIds(ids: List<String>): Flow<List<Food>> {
         return foodDao.getFoodListByIds(ids)
     }
 

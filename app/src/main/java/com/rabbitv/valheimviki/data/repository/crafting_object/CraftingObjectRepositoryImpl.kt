@@ -20,7 +20,7 @@ class CraftingObjectRepositoryImpl @Inject constructor(
         return craftingObjectDao.getLocalCraftingObjects()
     }
 
-    override fun getCraftingObjectsBySubCategory(subCategory: String): List<CraftingObject> {
+    override fun getCraftingObjectsBySubCategory(subCategory: String): Flow<List<CraftingObject>> {
         return craftingObjectDao.getCraftingObjectsBySubCategory(subCategory)
     }
 

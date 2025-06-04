@@ -7,6 +7,6 @@ import retrofit2.Response
 interface ArmorRepository {
     suspend fun fetchArmor(lang: String): Response<List<Armor>>
     fun getLocalArmors(): Flow<List<Armor>>
-    fun getArmorsBySubCategory(subCategory: String): List<Armor>
+    fun getArmorsBySubCategory(subCategory: String): Flow<List<Armor>>
     suspend fun insertArmors(armors: List<Armor>)
 }
