@@ -7,5 +7,6 @@ import retrofit2.Response
 interface WeaponRepository {
     suspend fun fetchWeapons(lang: String): Response<List<Weapon>>
     fun getLocalWeapons(): Flow<List<Weapon>>
+    fun getWeaponById(id: String): Flow<Weapon?>
     suspend fun insertWeapons(weapons: List<Weapon>)
 }

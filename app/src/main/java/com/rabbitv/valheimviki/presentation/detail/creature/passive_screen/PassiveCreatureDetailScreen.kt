@@ -52,7 +52,6 @@ import com.rabbitv.valheimviki.domain.model.creature.aggresive.AggressiveCreatur
 import com.rabbitv.valheimviki.domain.model.creature.aggresive.LevelCreatureData
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
-import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData
 import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDetailImage
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardStatDetails
@@ -65,7 +64,6 @@ import com.rabbitv.valheimviki.presentation.detail.creature.passive_screen.viewm
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import kotlinx.coroutines.launch
-import kotlin.toString
 
 
 @Composable
@@ -93,7 +91,7 @@ fun PassiveCreatureDetailContent(
     val pagerState =
         rememberPagerState(
             pageCount = { uiState.passiveCreature?.levels?.size ?: 0 },
-            )
+        )
 
     val sharedScrollState = rememberScrollState()
     val isExpandable = remember { mutableStateOf(false) }
@@ -172,17 +170,17 @@ fun PassiveCreatureDetailContent(
                             }
                         )
                     }
-                    if (uiState.dropItems.isNotEmpty()) {
+                    if (uiState.materialDrops.isNotEmpty()) {
                         SlavicDivider()
                         CreatureHorizontalPager(
                             rememberPagerState(
                                 initialPage = 0,
-                                pageCount = { uiState.dropItems.size }),
-                            uiState.dropItems,
-                           CreatureHorizontalPagerData(
+                                pageCount = { uiState.materialDrops.size }),
+                            uiState.materialDrops,
+                            CreatureHorizontalPagerData(
                                 title = "Drop Items",
                                 subTitle = "Items that drop from creature after defeating him",
-                                icon =Lucide.Trophy,
+                                icon = Lucide.Trophy,
                                 iconRotationDegrees = -85f,
                                 contentScale = ContentScale.Crop,
                                 parentPageIndex = pageIndex,

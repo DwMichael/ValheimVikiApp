@@ -163,13 +163,13 @@ fun AggressiveCreatureDetailContent(
                             }
                         )
                     }
-                    if (uiState.dropItems.isNotEmpty()) {
+                    if (uiState.materialDrops.isNotEmpty()) {
                         SlavicDivider()
                         CreatureHorizontalPager(
                             rememberPagerState(
                                 initialPage = 0,
-                                pageCount = { uiState.dropItems.size }),
-                            uiState.dropItems,
+                                pageCount = { uiState.materialDrops.size }),
+                            uiState.materialDrops,
                             CreatureHorizontalPagerData(
                                 title = "Drop Items",
                                 subTitle = "Items that drop from creature after defeating him",

@@ -13,6 +13,9 @@ interface WeaponDao {
     @Query("SELECT * FROM weapons")
     fun getLocalWeapons(): Flow<List<Weapon>>
 
+    @Query("SELECT * FROM weapons WHERE id = :id")
+    fun getWeaponById(id: String): Flow<Weapon?>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertWeapons(weapons: List<Weapon>)
 }

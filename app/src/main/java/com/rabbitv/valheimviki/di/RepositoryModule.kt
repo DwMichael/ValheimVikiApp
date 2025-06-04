@@ -131,6 +131,7 @@ import com.rabbitv.valheimviki.domain.use_cases.tree.get_tree_by_id.GetTreeByIdU
 import com.rabbitv.valheimviki.domain.use_cases.tree.get_trees_by_ids.GetTreesByIdsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.weapon.WeaponUseCases
 import com.rabbitv.valheimviki.domain.use_cases.weapon.get_local_weapons_use_case.GetLocalWeaponsUseCase
+import com.rabbitv.valheimviki.domain.use_cases.weapon.get_weapon_by_id_use_case.GetWeaponByIdUseCase
 import com.rabbitv.valheimviki.domain.use_cases.weapon.get_weapons_by_sub_category_use_case.GetWeaponsBySubCategoryUseCase
 import com.rabbitv.valheimviki.domain.use_cases.weapon.get_weapons_by_sub_type_use_case.GetWeaponsBySubTypeUseCase
 import dagger.Module
@@ -449,7 +450,8 @@ object RepositoryModule {
         return WeaponUseCases(
             getLocalWeaponsUseCase = GetLocalWeaponsUseCase(weaponRepository),
             getWeaponsBySubCategoryUseCase = GetWeaponsBySubCategoryUseCase(),
-            getWeaponsBySubTypeUseCase = GetWeaponsBySubTypeUseCase()
+            getWeaponsBySubTypeUseCase = GetWeaponsBySubTypeUseCase(),
+            getWeaponByIdUseCase = GetWeaponByIdUseCase(weaponRepository)
         )
     }
 

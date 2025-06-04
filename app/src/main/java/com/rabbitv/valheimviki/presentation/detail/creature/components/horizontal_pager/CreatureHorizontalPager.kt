@@ -44,7 +44,7 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.rabbitv.valheimviki.R
-import com.rabbitv.valheimviki.presentation.detail.creature.components.DropItem
+import com.rabbitv.valheimviki.presentation.detail.creature.components.MaterialDrop
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.DarkWood
 import com.rabbitv.valheimviki.ui.theme.LightDark
@@ -65,7 +65,7 @@ data class CreatureHorizontalPagerData(
 @Composable
 fun CreatureHorizontalPager(
     pagerState: PagerState,
-    list: List<DropItem>,
+    list: List<MaterialDrop>,
     data: CreatureHorizontalPagerData,
 ) {
     val pageWidth = 300.dp
@@ -135,7 +135,7 @@ fun CreatureHorizontalPager(
 @Composable
 fun CreatureHorizontalPagerItem(
     pagerState: PagerState,
-    list: List<DropItem>,
+    list: List<MaterialDrop>,
     pageIndex: Int,
     parentPageIndex: Int,
     contentScale: ContentScale,
@@ -235,7 +235,7 @@ fun PreviewCreatureHorizontalPagerItem() {
         val list1 = listOf(1, 1, 1)
         val list2 = listOf(2, 2, 2)
         listOf(
-            DropItem(
+            MaterialDrop(
                 material = materials[0],
                 quantityList = list1,
                 chanceStarList = list2

@@ -20,6 +20,10 @@ class WeaponRepositoryImplementation @Inject constructor(
         return weaponDao.getLocalWeapons()
     }
 
+    override fun getWeaponById(id: String): Flow<Weapon?> {
+        return weaponDao.getWeaponById(id)
+    }
+
     override suspend fun insertWeapons(weapons: List<Weapon>) {
         check(weapons.isNotEmpty()) { "Weapons list cannot be empty , cannot insert ${weapons.size} weapons" }
         weaponDao.insertWeapons(weapons)

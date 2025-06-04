@@ -13,7 +13,7 @@ import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.presentation.detail.creature.aggressive_screen.model.AggressiveCreatureDetailUiState
-import com.rabbitv.valheimviki.presentation.detail.creature.components.DropItem
+import com.rabbitv.valheimviki.presentation.detail.creature.components.MaterialDrop
 import com.rabbitv.valheimviki.utils.Constants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -39,7 +39,7 @@ class AggressiveCreatureDetailScreenViewModel @Inject constructor(
         checkNotNull(savedStateHandle[Constants.AGGRESSIVE_CREATURE_KEY])
     private val _creature = MutableStateFlow<AggressiveCreature?>(null)
     private val _biome = MutableStateFlow<Biome?>(null)
-    private val _dropItems = MutableStateFlow<List<DropItem>>(emptyList())
+    private val _Material_dropItems = MutableStateFlow<List<MaterialDrop>>(emptyList())
     private val _isLoading = MutableStateFlow<Boolean>(false)
     private val _error = MutableStateFlow<String?>(null)
 
@@ -47,7 +47,7 @@ class AggressiveCreatureDetailScreenViewModel @Inject constructor(
     val uiState = combine(
         _creature,
         _biome,
-        _dropItems,
+        _Material_dropItems,
         _isLoading,
         _error,
     ) { values ->
@@ -55,7 +55,7 @@ class AggressiveCreatureDetailScreenViewModel @Inject constructor(
         (AggressiveCreatureDetailUiState(
             aggressiveCreature = values[0] as AggressiveCreature?,
             biome = values[1] as Biome?,
-            dropItems = values[2] as List<DropItem>,
+            materialDrops = values[2] as List<MaterialDrop>,
             isLoading = values[3] as Boolean,
             error = values[4] as String?
         ))
@@ -93,7 +93,7 @@ class AggressiveCreatureDetailScreenViewModel @Inject constructor(
                     try {
                         if (relatedIds.isNotEmpty()) {
                             val materials = materialUseCases.getMaterialsByIds(relatedIds).first()
-                            val tempList = mutableListOf<DropItem>()
+                            val tempList = mutableListOf<MaterialDrop>()
                             val relatedItemsMap = relatedObjects.associateBy { it.id }
                             materials.forEach { material ->
                                 val relatedItem = relatedItemsMap[material.id]
@@ -108,17 +108,17 @@ class AggressiveCreatureDetailScreenViewModel @Inject constructor(
                                     relatedItem?.chance3star
                                 )
                                 tempList.add(
-                                    DropItem(
+                                    MaterialDrop(
                                         material = material,
                                         quantityList = quantityList,
                                         chanceStarList = chanceStarList,
                                     )
                                 )
                             }
-                            _dropItems.value = tempList
+                            _Material_dropItems.value = tempList
                             Log.d("DROP ITEMS ", "$tempList")
                         } else {
-                            _dropItems.value = emptyList()
+                            _Material_dropItems.value = emptyList()
                         }
                     } catch (e: Exception) {
                         Log.e(
@@ -126,7 +126,7 @@ class AggressiveCreatureDetailScreenViewModel @Inject constructor(
                             "Error fetching materials: $e",
                             e
                         )
-                        _dropItems.value = emptyList()
+                        _Material_dropItems.value = emptyList()
                     }
                 }
 
