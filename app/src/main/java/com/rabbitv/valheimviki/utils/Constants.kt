@@ -32,6 +32,7 @@ object Constants {
     const val AGGRESSIVE_CREATURE_KEY = "aggressiveCId"
     const val PASSIVE_CREATURE_KEY = "passiveCId"
     const val NPC_KEY = "npcId"
+    const val WEAPON_KEY = "weaponId"
     const val CATEGORY_ARGUMENT_KEY = "category"
     const val MATERIAL_ARGUMENT_KEY = "materialId"
 
