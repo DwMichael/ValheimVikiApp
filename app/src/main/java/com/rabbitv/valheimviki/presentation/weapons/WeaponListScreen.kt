@@ -40,7 +40,6 @@ import com.rabbitv.valheimviki.presentation.components.ListContent
 import com.rabbitv.valheimviki.presentation.components.chip.ChipData
 import com.rabbitv.valheimviki.presentation.components.chip.SearchFilterBar
 import com.rabbitv.valheimviki.presentation.components.segmented.SegmentedButtonSingleSelect
-import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerGridEffect
 import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerListEffect
 import com.rabbitv.valheimviki.presentation.weapons.model.WeaponSegmentOption
 import com.rabbitv.valheimviki.presentation.weapons.viewmodel.WeaponListViewModel
