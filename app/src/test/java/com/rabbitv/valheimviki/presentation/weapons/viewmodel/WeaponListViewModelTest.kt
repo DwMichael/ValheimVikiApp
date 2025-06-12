@@ -2,6 +2,9 @@ package com.rabbitv.valheimviki.presentation.weapons.viewmodel
 
 import app.cash.turbine.test
 import com.rabbitv.valheimviki.domain.model.ui_state.category_chip_state.UiCategoryChipState
+import com.rabbitv.valheimviki.domain.model.weapon.Weapon
+import com.rabbitv.valheimviki.domain.model.weapon.WeaponSubCategory
+import com.rabbitv.valheimviki.domain.model.weapon.WeaponSubType
 import com.rabbitv.valheimviki.domain.repository.NetworkConnectivity
 import com.rabbitv.valheimviki.domain.use_cases.weapon.WeaponUseCases
 import com.rabbitv.valheimviki.domain.use_cases.weapon.get_local_weapons_use_case.GetLocalWeaponsUseCase
@@ -22,6 +25,7 @@ import org.mockito.kotlin.whenever
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @ExtendWith(MockitoExtension::class)
@@ -84,6 +88,93 @@ class WeaponListViewModelTest {
 
         viewModel.uiState.test {
             assert(awaitItem() is UiCategoryChipState.Loading)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+
+    @Test
+    fun weaponListViewModel_LoadData_ShouldEmitSuccessState() = runTest {
+        val sword = Weapon(
+            id = 1.toString(),
+            name = "Test Sword",
+            subCategory = WeaponSubCategory.MELEE_WEAPON.toString(),
+            subType = WeaponSubType.SWORD.toString(),
+            order = 0,
+            imageUrl = "",
+            category = "WEAPON",
+            description = "NO DESCRIPTION",
+            upgradeInfoList = emptyList(),
+        )
+        val weapons = listOf(sword)
+        whenever(weaponUseCases.getLocalWeaponsUseCase())
+            .thenReturn(flowOf(weapons))
+        whenever(connectivityObserver.isConnected).thenReturn(flowOf(true))
+
+        viewModel = WeaponListViewModel(weaponUseCases, connectivityObserver)
+
+        viewModel.uiState.test {
+            assert(awaitItem() is UiCategoryChipState.Loading)
+            val success = awaitItem() as UiCategoryChipState.Success
+            assertEquals(weapons, success.list)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun weaponListViewModel_NoConnectionAndNoCache_ShouldEmitErrorState() = runTest {
+        whenever(weaponUseCases.getLocalWeaponsUseCase())
+            .thenReturn(flowOf(emptyList()))
+        whenever(connectivityObserver.isConnected)
+            .thenReturn(flowOf(false))
+
+        viewModel = WeaponListViewModel(weaponUseCases, connectivityObserver)
+
+        viewModel.uiState.test {
+            awaitItem()
+            val error = awaitItem() as UiCategoryChipState.Error
+            assertEquals(
+                "No internet connection and no local data available. Try to connect to the internet again.",
+                error.message
+            )
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun weaponListViewModel_NoConnectionAndStoredCache_ShouldEmitSuccessState() = runTest {
+        val sword = Weapon(
+            id = 1.toString(),
+            name = "Test Sword",
+            subCategory = WeaponSubCategory.MELEE_WEAPON.toString(),
+            subType = WeaponSubType.SWORD.toString(),
+            order = 0,
+            imageUrl = "",
+            category = "WEAPON",
+            description = "NO DESCRIPTION",
+            upgradeInfoList = emptyList(),
+        )
+        val weapons = listOf(sword)
+        whenever(weaponUseCases.getLocalWeaponsUseCase())
+            .thenReturn(flowOf(weapons))
+        whenever(connectivityObserver.isConnected)
+            .thenReturn(flowOf(false))
+
+        viewModel = WeaponListViewModel(weaponUseCases, connectivityObserver)
+
+        viewModel.uiState.test {
+            assert(awaitItem() is UiCategoryChipState.Loading)
+
+            val potentialError = awaitItem()
+            assert(potentialError is UiCategoryChipState.Error || potentialError is UiCategoryChipState.Success)
+
+            val successState = if (potentialError is UiCategoryChipState.Success) {
+                potentialError
+            } else {
+                awaitItem() as UiCategoryChipState.Success
+            }
+
+            assertEquals(weapons, successState.list)
             cancelAndIgnoreRemainingEvents()
         }
     }
