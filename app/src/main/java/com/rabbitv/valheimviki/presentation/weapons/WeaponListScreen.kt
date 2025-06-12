@@ -58,7 +58,7 @@ data class WeaponChip(
 @Composable
 fun WeaponListScreen(
     modifier: Modifier = Modifier,
-    onItemClick: () -> Unit,
+    onItemClick: (weaponId :String, _:Int) -> Unit,
     paddingValues: PaddingValues,
     viewModel: WeaponListViewModel = hiltViewModel()
 ) {
@@ -71,11 +71,12 @@ fun WeaponListScreen(
         onChipSelected = onChipSelected,
         paddingValues = paddingValues,
         modifier = modifier,
+        onItemClick = onItemClick
     )
 
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun WeaponListStateRenderer(
     weaponListUiState: UiCategoryChipState<WeaponSubCategory, WeaponSubType?, Weapon>,
@@ -83,6 +84,7 @@ fun WeaponListStateRenderer(
     onChipSelected: (WeaponSubType?) -> Unit,
     paddingValues: PaddingValues,
     modifier: Modifier,
+    onItemClick :(weaponId :String , _:Int) -> Unit,
 ) {
     Surface(
         color = Color.Transparent,
@@ -90,23 +92,25 @@ fun WeaponListStateRenderer(
             .testTag("WeaponListSurface")
             .fillMaxSize()
             .padding(paddingValues)
-            .then(modifier)
+            .then(modifier),
+
     ) {
         WeaponListDisplay(
             weaponListUiState = weaponListUiState,
             onCategorySelected = onCategorySelected,
             onChipSelected = onChipSelected,
+            onItemClick = onItemClick
         )
     }
 }
 
 
-@OptIn(FlowPreview::class)
 @Composable
 fun WeaponListDisplay(
     weaponListUiState: UiCategoryChipState<WeaponSubCategory, WeaponSubType?, Weapon>,
     onCategorySelected: (WeaponSubCategory) -> Unit,
     onChipSelected: (WeaponSubType?) -> Unit,
+    onItemClick :(weaponId :String,_:Int) -> Unit,
 ) {
     val lazyListState = rememberLazyListState()
 
@@ -163,7 +167,7 @@ fun WeaponListDisplay(
             is UiCategoryChipState.Success<WeaponSubCategory, WeaponSubType?, Weapon> -> {
                 ListContent(
                     items = state.list,
-                    clickToNavigate = { s, i -> {} },
+                    clickToNavigate = onItemClick,
                     lazyListState = lazyListState,
                     subCategoryNumber = selectedChipIndex,
                     imageScale = ContentScale.Fit,
@@ -321,6 +325,7 @@ fun PreviewWeaponListStateRenderer() {
             modifier = Modifier,
             onCategorySelected = {},
             onChipSelected = {},
+            onItemClick = {_,_ -> {}},
         )
     }
 }

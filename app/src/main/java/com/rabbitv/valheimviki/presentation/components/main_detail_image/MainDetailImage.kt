@@ -53,6 +53,7 @@ fun MainDetailImage(
     imageUrl: String,
     name: String,
     textAlign: TextAlign = TextAlign.Start,
+    contentScale :ContentScale = ContentScale.Crop
 ) {
     val backButtonVisibleState = remember { mutableStateOf(false) }
 
@@ -73,7 +74,7 @@ fun MainDetailImage(
                 .crossfade(true)
                 .build(),
             contentDescription = stringResource(R.string.item_grid_image),
-            contentScale = ContentScale.Crop,
+            contentScale = contentScale,
         )
         Surface(
             modifier = Modifier

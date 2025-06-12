@@ -135,7 +135,7 @@ dependencies {
     }
     // Kotlin Test with JUnit 5 (includes JUnit 5 engine)
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5:2.1.21")
-// Turbine for Flow testing
+        // Turbine for Flow testing
     testImplementation("app.cash.turbine:turbine:1.2.0")
 
     testImplementation("org.mockito:mockito-junit-jupiter:5.18.0")
