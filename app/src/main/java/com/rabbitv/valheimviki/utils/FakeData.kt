@@ -1,5 +1,14 @@
 package com.rabbitv.valheimviki.utils
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Star
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import com.composables.icons.lucide.Flame
+import com.composables.icons.lucide.Hammer
+import com.composables.icons.lucide.HandMetal
+import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.Shield
 import com.rabbitv.valheimviki.domain.model.armor.Armor
 import com.rabbitv.valheimviki.domain.model.armor.UpgradeArmorInfo
 import com.rabbitv.valheimviki.domain.model.biome.Biome
@@ -8,10 +17,18 @@ import com.rabbitv.valheimviki.domain.model.creature.npc.NPC
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
+import com.rabbitv.valheimviki.domain.model.weapon.MaterialUpgrade
 import com.rabbitv.valheimviki.domain.model.weapon.UpgradeInfo
 import com.rabbitv.valheimviki.domain.model.weapon.Weapon
+import com.rabbitv.valheimviki.presentation.components.card.GridLevelInfo
 import com.rabbitv.valheimviki.presentation.detail.creature.npc.model.NpcDetailUiState
-
+data class LevelStat(
+    override val id: Int,
+    override val icon: ImageVector,
+    override val iconColor: Color,
+    override val title: String,
+    override val power: Int?
+) : GridLevelInfo
 
 object FakeData {
 
@@ -45,10 +62,83 @@ object FakeData {
         }
     }
 
+
+    val level1RequiredMaterials: List<MaterialUpgrade> = listOf(
+        MaterialUpgrade(
+            material =   Material(
+                id = "mat_iron_ingot",
+                imageUrl = "https://example.com/images/materials/iron_ingot.png",
+                category = "Ore",
+                subCategory = "Metal",
+                name = "Iron Ingot",
+                description = "A bar of smelted iron, still warm from the forge.",
+                usage = "Crafting weapons and heavy armor.",
+                growthTime = null,
+                needCultivatorGround = null,
+                price = 15,
+                effect = null,
+                sellPrice = null,
+                order = 0,
+                subType = null
+            ),
+            quantityList = listOf(5)
+        ),
+        MaterialUpgrade(
+            material = Material(
+                id = "mat_steel_sword",
+                imageUrl = "https://example.com/images/items/steel_sword.png",
+                category = "Weapon",
+                subCategory = "Sword",
+                name = "Steel Longsword",
+                description = "Reliable blade forged from high-quality steel.",
+                usage = "Primary weapon-slot item.",
+                growthTime = null,
+                needCultivatorGround = null,
+                price = 120,
+                effect = "+20 Slash Damage",
+                sellPrice = null,
+                order = 1,
+                subType = "Melee"
+            ),
+            quantityList = listOf(3)
+        )
+    )
+
+    val level1Stats: List<GridLevelInfo> = listOf(
+        LevelStat(
+            id = 1,
+            icon = Icons.Rounded.Star,
+            iconColor = Color(0xFFFFC107),
+            title = "Quality Level",
+            power = 1
+        ),
+        LevelStat(
+            id = 2,
+            icon = Lucide.Flame,
+            iconColor = Color(0xFFE53935),
+            title = "Attack",
+            power = 150
+        ),
+        LevelStat(
+            id = 3,
+            icon = Lucide.Shield,
+            iconColor = Color(0xFF1E88E5),
+            title = "Defense",
+            power = 50
+        ),
+        LevelStat(
+            id = 4,
+            icon = Lucide.Hammer,
+            iconColor = Color(0xFF8E44AD),
+            title = "Station Level",
+            power = 2
+        )
+    )
+
     val fakeWeaponList: List<Weapon> = listOf(
         Weapon(
             id = "wpn_001",
-            imageUrl = "https://example.com/images/shadowblade.png",
+            imageUrl = "https://www.unrealengine.com/marketplace/en-US/product/dark-fantasy-weapons-skeletal-mesh-ready",
             category = "Melee",
             subCategory = "Sword",
             name = "Shadowblade of the Silent Night",
