@@ -44,10 +44,19 @@ android {
     buildFeatures {
         compose = true
     }
-
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+            isReturnDefaultValues = true
+        }
+    }
 
 }
-val mockitoAgent = configurations.create("mockitoAgent")
+val mockitoAgent: Configuration by configurations.creating {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+}
+
 dependencies {
 
     implementation(libs.androidx.core.ktx)
@@ -60,7 +69,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.compose.material)
     implementation(libs.androidx.junit.ktx)
-    testImplementation(libs.junit)
+    testImplementation(libs.junit.jupiter)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -72,8 +81,8 @@ dependencies {
     ///IF SOMETHING AGAIN WILL TURN OFF BC OF LIBRARIES THEN USE DOES UNDER WITH NEWER VERSION
     implementation("androidx.compose.material3:material3:1.3.2")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
-    implementation("com.squareup.retrofit2:retrofit:2.11.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+    implementation("com.squareup.retrofit2:retrofit:3.0.0")
+    implementation("com.squareup.retrofit2:converter-gson:3.0.0")
     implementation("androidx.core:core-splashscreen:1.0.1")
     implementation("androidx.navigation:navigation-compose:2.9.0")
     androidTestImplementation("androidx.navigation:navigation-testing:2.9.0")
@@ -82,7 +91,7 @@ dependencies {
 //    ksp("com.google.dagger:hilt-compiler:2.56.1")
     ksp("com.google.dagger:hilt-android-compiler:2.56.2")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
-    implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation("androidx.appcompat:appcompat:1.7.1")
     implementation("com.google.android.material:material:1.12.0")
     implementation("androidx.constraintlayout:constraintlayout:2.2.1")
     implementation("com.composables:icons-lucide:1.1.0")
@@ -94,13 +103,12 @@ dependencies {
     implementation("io.coil-kt.coil3:coil-compose:3.2.0")
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.2.0")
 
-    implementation("androidx.compose.ui:ui-text-google-fonts:1.8.1")
-    implementation("androidx.datastore:datastore-preferences:1.1.6")
+    implementation("androidx.compose.ui:ui-text-google-fonts:1.8.2")
+    implementation("androidx.datastore:datastore-preferences:1.1.7")
     implementation("androidx.room:room-runtime:2.7.1")
     implementation("androidx.room:room-ktx:2.7.1")
 
 
-    implementation(platform("androidx.compose:compose-bom:2025.05.00"))
     implementation("androidx.activity:activity-compose:1.10.1")
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.material:material")
@@ -117,12 +125,29 @@ dependencies {
 
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
-    testImplementation("org.mockito:mockito-core:5.17.0")
+
+    testImplementation("org.mockito:mockito-core:5.18.0")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
-    testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:2.1.21")
+
+
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0") {
+        exclude(group = "org.mockito", module = "mockito-android")
+    }
+    // Kotlin Test with JUnit 5 (includes JUnit 5 engine)
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5:2.1.21")
+        // Turbine for Flow testing
+    testImplementation("app.cash.turbine:turbine:1.2.0")
+
+    testImplementation("org.mockito:mockito-junit-jupiter:5.18.0")
+    mockitoAgent("org.mockito:mockito-core:5.18.0") { isTransitive = false }
 }
 
-tasks.withType<Test> {
-    jvmArgs("-javaagent:${mockitoAgent.asPath}")
+tasks.withType<Test>().configureEach {
+    useJUnitPlatform()   // if you are on JUnit 5
+    jvmArgs(
+        // needed since JDK 16 to let agents transform java.lang.*
+        "--add-opens", "java.base/java.lang=ALL-UNNAMED",
+        // pass the absolute path of the single JAR in our configuration
+        "-javaagent:${mockitoAgent.singleFile.absolutePath}"
+    )
 }

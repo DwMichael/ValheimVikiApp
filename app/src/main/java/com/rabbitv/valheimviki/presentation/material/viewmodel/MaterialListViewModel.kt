@@ -36,9 +36,6 @@ class MaterialListViewModel @Inject constructor(
     private val _selectedSubType =
         MutableStateFlow<MaterialSubType?>(null)
 
-    private val _isLoading = MutableStateFlow(false)
-    private val _error = MutableStateFlow<String?>(null)
-
     private val _materialList: StateFlow<List<Material>> =
         combine(
             materialUseCases.getLocalMaterials(),

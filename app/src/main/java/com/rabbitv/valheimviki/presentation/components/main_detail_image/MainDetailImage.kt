@@ -5,6 +5,7 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -53,6 +54,9 @@ fun MainDetailImage(
     imageUrl: String,
     name: String,
     textAlign: TextAlign = TextAlign.Start,
+    imageScale: Float = 1.0f,
+    contentScale :ContentScale = ContentScale.Crop,
+    backgroundImageColor: Color = Color.Transparent
 ) {
     val backButtonVisibleState = remember { mutableStateOf(false) }
 
@@ -61,24 +65,24 @@ fun MainDetailImage(
         backButtonVisibleState.value = true
     }
     Box(
-        modifier = Modifier
+        modifier = Modifier.background(backgroundImageColor)
             .height(320.dp),
-
         ) {
         AsyncImage(
             modifier = Modifier
-                .fillMaxSize(),
+                .align(Alignment.Center)
+                .fillMaxSize(fraction = imageScale),
             model = ImageRequest.Builder(LocalContext.current)
                 .data(imageUrl)
                 .crossfade(true)
                 .build(),
             contentDescription = stringResource(R.string.item_grid_image),
-            contentScale = ContentScale.Crop,
+            contentScale = contentScale,
         )
         Surface(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .fillMaxHeight(0.2f)
+                .fillMaxHeight(0.25f)
                 .fillMaxWidth(),
             tonalElevation = 0.dp,
             color = Color.Black.copy(alpha = ContentAlpha.medium),

@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.model.material.Material
+import com.rabbitv.valheimviki.domain.model.weapon.MaterialUpgrade
 import com.rabbitv.valheimviki.domain.model.weapon.Weapon
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
@@ -35,7 +36,7 @@ class WeaponDetailViewModel @Inject constructor(
     private val _weapon: MutableStateFlow<Weapon?> = MutableStateFlow(null)
     private val _materials: MutableStateFlow<List<Material>> = MutableStateFlow(emptyList())
 
-    private val _relatedMaterials: MutableStateFlow<List<MaterialDrop>> =
+    private val _relatedMaterials: MutableStateFlow<List<MaterialUpgrade>> =
         MutableStateFlow(emptyList())
 
     private val _isLoading: MutableStateFlow<Boolean> = MutableStateFlow(true)
@@ -82,7 +83,7 @@ class WeaponDetailViewModel @Inject constructor(
                 launch {
                     try {
                         val materials = materialUseCases.getMaterialsByIds(relatedIds).first()
-                        val tempList = mutableListOf<MaterialDrop>()
+                        val tempList = mutableListOf<MaterialUpgrade>()
 
                         val relatedItemsMap = relatedObjects.associateBy { it.id }
                         for (material in materials) {
@@ -94,10 +95,9 @@ class WeaponDetailViewModel @Inject constructor(
                                 relatedItem?.quantity4star
                             )
                             tempList.add(
-                                MaterialDrop(
+                                MaterialUpgrade(
                                     material = material,
                                     quantityList = quantityList,
-                                    chanceStarList = emptyList(),
                                 )
                             )
                         }

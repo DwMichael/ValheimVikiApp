@@ -46,7 +46,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun MobListScreen(
     onItemClick: (String, CreatureSubCategory) -> Unit,
-    modifier: Modifier, paddingValues: PaddingValues,
+    modifier: Modifier,
+    paddingValues: PaddingValues,
     viewModel: MobListViewModel = hiltViewModel()
 ) {
     val icons: List<ImageVector> = listOf(
@@ -114,5 +115,3 @@ fun MobListScreen(
         }
     }
 }
-
-

@@ -84,6 +84,7 @@ import com.rabbitv.valheimviki.presentation.detail.creature.main_boss_screen.Mai
 import com.rabbitv.valheimviki.presentation.detail.creature.mini_boss_screen.MiniBossDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.creature.npc.NpcDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.creature.passive_screen.PassiveCreatureDetailScreen
+import com.rabbitv.valheimviki.presentation.detail.weapon.WeaponDetailScreen
 import com.rabbitv.valheimviki.presentation.food.FoodListScreen
 import com.rabbitv.valheimviki.presentation.home.MainAppBar
 import com.rabbitv.valheimviki.presentation.intro.WelcomeScreen
@@ -104,6 +105,7 @@ import com.rabbitv.valheimviki.utils.Constants.MAIN_BOSS_ARGUMENT_KEY
 import com.rabbitv.valheimviki.utils.Constants.MINI_BOSS_ARGUMENT_KEY
 import com.rabbitv.valheimviki.utils.Constants.NPC_KEY
 import com.rabbitv.valheimviki.utils.Constants.PASSIVE_CREATURE_KEY
+import com.rabbitv.valheimviki.utils.Constants.WEAPON_KEY
 import kotlinx.coroutines.launch
 
 private val topBarScreens = setOf(
@@ -139,6 +141,7 @@ fun ValheimVikiApp() {
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun MainContainer(
     valheimVikiNavController: NavHostController,
@@ -343,7 +346,13 @@ fun ValheimNavGraph(
         composable(Screen.WeaponList.route) {
             WeaponListScreen(
                 modifier = Modifier.padding(10.dp),
-                onItemClick = {},
+                onItemClick = { weaponId ,_->
+                    valheimVikiNavController.navigate(
+                        Screen.WeaponDetail.passWeaponId(
+                            weaponId
+                        )
+                    )
+                },
                 paddingValues = innerPadding,
             )
         }
@@ -627,6 +636,19 @@ fun ValheimNavGraph(
             )
         ) {
             NpcDetailScreen(
+                onBack = {
+                    valheimVikiNavController.popBackStack()
+                },
+            )
+        }
+
+        composable(
+            route =Screen.WeaponDetail.route,
+            arguments = listOf(
+                    navArgument(WEAPON_KEY) { type = NavType.StringType },
+        )
+        ) {
+            WeaponDetailScreen(
                 onBack = {
                     valheimVikiNavController.popBackStack()
                 },

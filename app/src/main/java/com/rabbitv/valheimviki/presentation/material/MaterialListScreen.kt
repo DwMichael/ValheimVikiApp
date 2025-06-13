@@ -9,14 +9,19 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -47,6 +52,7 @@ import com.rabbitv.valheimviki.presentation.components.chip.ChipData
 import com.rabbitv.valheimviki.presentation.components.chip.SearchFilterBar
 import com.rabbitv.valheimviki.presentation.components.floating_action_button.CustomFloatingActionButton
 import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerListEffect
+import com.rabbitv.valheimviki.presentation.components.topbar.SimpleTopBar
 import com.rabbitv.valheimviki.presentation.material.viewmodel.MaterialListViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
@@ -82,46 +88,15 @@ fun MaterialListScreen(
     })
     Scaffold(
         topBar = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 40.dp)
-            ) {
-                IconButton(
-                    onClick = {
-                        viewModel.onCategorySelected(null)
-                        viewModel.onTypeSelected(null)
-                        onBackClick()
-                    },
-                    modifier = Modifier
-                        .align(Alignment.BottomStart)
-                        .padding(
-                            start = BODY_CONTENT_PADDING.dp,
-                            end = BODY_CONTENT_PADDING.dp
-                        ),
-                    colors = IconButtonColors(
-                        containerColor = ForestGreen10Dark,
-                        contentColor = PrimaryWhite,
-                        disabledContainerColor = Color.Black,
-                        disabledContentColor = Color.Black,
-                    ),
-                ) {
-                    Icon(
-                        Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back"
-                    )
+            SimpleTopBar(
+                modifier = Modifier,
+                title = title,
+                onClick = {
+                    viewModel.onCategorySelected(null)
+                    viewModel.onTypeSelected(null)
+                    onBackClick()
                 }
-
-                if (title != null) {
-                    Text(
-                        text = title,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
-                        style = MaterialTheme.typography.headlineSmall,
-                        modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                    )
-                }
-            }
+            )
         },
         modifier = Modifier
             .testTag("MaterialListScaffold"),
