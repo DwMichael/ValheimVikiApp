@@ -27,9 +27,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
+import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.card.LevelInfoCard
 import com.rabbitv.valheimviki.presentation.components.main_detail_image.AsyncImageAnimated
 import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDetailImage
+import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.weapon.model.WeaponUiState
 import com.rabbitv.valheimviki.presentation.detail.weapon.viewmodel.WeaponDetailViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
@@ -79,16 +81,17 @@ fun WeaponDetailContent(
                     onBack = onBack,
                     imageUrl = weapon.imageUrl,
                     contentScale = ContentScale.FillBounds,
-                    imageScale = 0.6f,
-                    backgroundImageColor = Color(0xFF74694a),
-                    height = 240.dp
+                    imageScale = 0.5f,
+                    backgroundImageColor = Color(0xFF191e24),
+                    height = 250.dp
                 )
                 Text(
                     weapon.name,
-                    modifier = Modifier.padding(top= BODY_CONTENT_PADDING.dp, start = BODY_CONTENT_PADDING.dp, end = BODY_CONTENT_PADDING.dp),
+                    modifier = Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp).padding(top =5.dp),
                     color = PrimaryWhite,
                     style = MaterialTheme.typography.displayMedium
                 )
+                SlavicDivider()
                 weapon.description?.let {
                     DetailExpandableText(
                         text = it,
@@ -96,13 +99,14 @@ fun WeaponDetailContent(
                         isExpanded = isExpandable,
                     )
                 }
-                Spacer(modifier = Modifier.padding(top = BODY_CONTENT_PADDING.dp))
+                TridentsDividedRow()
                 Text(
                     "Upgrade Information",
-                    modifier = Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp),
+                    modifier = Modifier.padding(start = BODY_CONTENT_PADDING.dp, end =  BODY_CONTENT_PADDING.dp, bottom =  BODY_CONTENT_PADDING.dp),
                     color = PrimaryWhite,
                     style = MaterialTheme.typography.headlineMedium
                 )
+
                 weapon.upgradeInfoList?.forEachIndexed { levelIndex, upgradeInfoForLevel ->
                     val gridInfoList = mapUpgradeInfoToGridList(upgradeInfoForLevel)
                     LevelInfoCard(

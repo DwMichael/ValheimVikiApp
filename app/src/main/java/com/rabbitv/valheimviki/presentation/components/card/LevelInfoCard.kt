@@ -223,7 +223,7 @@ fun LevelInfoGridItem(
 @Composable
 fun TopExpandableItem(modifier :Modifier  = Modifier,level:Int , onToggleExpansion:()->Unit ={}){
     Row(
-        modifier = Modifier.fillMaxWidth().background(color = Color(0xFF0b1819)).clickable { onToggleExpansion() }
+        modifier = Modifier.fillMaxWidth().background(color = Color(0xFF193e43)).clickable { onToggleExpansion() }
             .drawBehind {
                 val borderStrokeWidth = 1.dp.toPx()
                 drawLine(

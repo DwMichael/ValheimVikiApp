@@ -8,8 +8,10 @@ import androidx.compose.animation.SharedTransitionLayout
 
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxHeight
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -70,24 +72,26 @@ fun AsyncImageAnimated(
         backButtonVisibleState.value = true
     }
     Box(
-        modifier = Modifier
-            .background(backgroundImageColor)
-            .height(height)
-            .fillMaxWidth(),
-        contentAlignment = Alignment.Center
+        modifier = Modifier.height(height).fillMaxWidth(),
+        contentAlignment = Alignment.TopCenter
     ) {
-        Box(modifier = Modifier.fillMaxSize(fraction = imageScale)) {
-            AsyncImage(
-                modifier = Modifier.fillMaxSize(),
+        Image(
+            modifier = Modifier.fillMaxSize(),
+            painter = painterResource(id = R.drawable.bg_info),
+            contentDescription = "Bg_image",
+            contentScale = ContentScale.Crop
+        )
+
+        AsyncImage(
+                modifier = Modifier.fillMaxSize(imageScale).align(Alignment.Center),
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(imageUrl)
                     .crossfade(true)
                     .build(),
                 contentDescription = stringResource(R.string.item_grid_image),
                 error = if (LocalInspectionMode.current) painterResource(R.drawable.testweapon) else null,
-                contentScale = contentScale,
-            )
-        }
+                contentScale = contentScale)
+
         AnimatedVisibility(
             visible = backButtonVisibleState.value,
             enter = fadeIn(),
