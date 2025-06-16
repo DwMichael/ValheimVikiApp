@@ -3,10 +3,8 @@ package com.rabbitv.valheimviki.utils
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import com.composables.icons.lucide.Flame
 import com.composables.icons.lucide.Hammer
-import com.composables.icons.lucide.HandMetal
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Shield
 import com.rabbitv.valheimviki.domain.model.armor.Armor
@@ -17,18 +15,12 @@ import com.rabbitv.valheimviki.domain.model.creature.npc.NPC
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
-import com.rabbitv.valheimviki.domain.model.weapon.MaterialUpgrade
+import com.rabbitv.valheimviki.domain.model.material.MaterialUpgrade
 import com.rabbitv.valheimviki.domain.model.weapon.UpgradeInfo
 import com.rabbitv.valheimviki.domain.model.weapon.Weapon
 import com.rabbitv.valheimviki.presentation.components.card.GridLevelInfo
 import com.rabbitv.valheimviki.presentation.detail.creature.npc.model.NpcDetailUiState
-data class LevelStat(
-    override val id: Int,
-    override val icon: ImageVector,
-    override val iconColor: Color,
-    override val title: String,
-    override val power: Int?
-) : GridLevelInfo
+
 
 object FakeData {
 
@@ -105,28 +97,28 @@ object FakeData {
     )
 
     val level1Stats: List<GridLevelInfo> = listOf(
-        LevelStat(
+        GridLevelInfo(
             id = 1,
             icon = Icons.Rounded.Star,
             iconColor = Color(0xFFFFC107),
             title = "Quality Level",
             power = 1
         ),
-        LevelStat(
+        GridLevelInfo(
             id = 2,
             icon = Lucide.Flame,
             iconColor = Color(0xFFE53935),
             title = "Attack",
             power = 150
         ),
-        LevelStat(
+        GridLevelInfo(
             id = 3,
             icon = Lucide.Shield,
             iconColor = Color(0xFF1E88E5),
             title = "Defense",
             power = 50
         ),
-        LevelStat(
+        GridLevelInfo(
             id = 4,
             icon = Lucide.Hammer,
             iconColor = Color(0xFF8E44AD),

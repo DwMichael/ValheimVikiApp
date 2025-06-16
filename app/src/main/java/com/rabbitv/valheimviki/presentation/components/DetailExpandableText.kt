@@ -25,6 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.DEFAULT_MINIMUM_TEXT_LINE
+import com.rabbitv.valheimviki.ui.theme.PrimaryText
 
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
@@ -39,7 +40,7 @@ fun DetailExpandableText(
     showLessText: String = " show less",
     showLessStyle: SpanStyle = showMoreStyle,
     textAlign: TextAlign? = null,
-    isExpanded: MutableState<Boolean> = remember { mutableStateOf(false) }
+    isExpanded: MutableState<Boolean> = remember { mutableStateOf(false) },
 ) {
 
     var clickable by remember { mutableStateOf(false) }

@@ -27,13 +27,18 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
+import com.rabbitv.valheimviki.presentation.components.card.LevelInfoCard
+import com.rabbitv.valheimviki.presentation.components.main_detail_image.AsyncImageAnimated
 import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDetailImage
 import com.rabbitv.valheimviki.presentation.detail.weapon.model.WeaponUiState
 import com.rabbitv.valheimviki.presentation.detail.weapon.viewmodel.WeaponDetailViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
+import com.rabbitv.valheimviki.ui.theme.DarkWood
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
+import com.rabbitv.valheimviki.ui.theme.YellowDT
 import com.rabbitv.valheimviki.utils.FakeData.fakeWeaponList
+import com.rabbitv.valheimviki.utils.mapUpgradeInfoToGridList
 
 
 @Composable
@@ -57,8 +62,11 @@ fun WeaponDetailContent(
 
     val sharedScrollState = rememberScrollState()
     val isExpandable = remember { mutableStateOf(false) }
-    val isExpandableNote = remember { mutableStateOf(false) }
-    Scaffold { innerPadding ->
+
+
+    Scaffold(
+        containerColor = Color(0xFF0d1c1d)
+    ) { innerPadding ->
         uiState.weapon?.let { weapon ->
             Column(
                 modifier = Modifier
@@ -67,20 +75,25 @@ fun WeaponDetailContent(
                     .padding(innerPadding),
                 verticalArrangement = Arrangement.Top,
             ) {
-                MainDetailImage(
+                AsyncImageAnimated(
                     onBack = onBack,
                     imageUrl = weapon.imageUrl,
-                    name = weapon.name,
-                    textAlign = TextAlign.Center,
-                    imageScale = 0.6f,
                     contentScale = ContentScale.FillBounds,
-                    backgroundImageColor = Color(0xFF162021)
+                    imageScale = 0.6f,
+                    backgroundImageColor = Color(0xFF74694a),
+                    height = 240.dp
+                )
+                Text(
+                    weapon.name,
+                    modifier = Modifier.padding(top= BODY_CONTENT_PADDING.dp, start = BODY_CONTENT_PADDING.dp, end = BODY_CONTENT_PADDING.dp),
+                    color = PrimaryWhite,
+                    style = MaterialTheme.typography.displayMedium
                 )
                 weapon.description?.let {
                     DetailExpandableText(
                         text = it,
                         collapsedMaxLine = 3,
-                        isExpanded = isExpandable
+                        isExpanded = isExpandable,
                     )
                 }
                 Spacer(modifier = Modifier.padding(top = BODY_CONTENT_PADDING.dp))
@@ -90,7 +103,21 @@ fun WeaponDetailContent(
                     color = PrimaryWhite,
                     style = MaterialTheme.typography.headlineMedium
                 )
-                Spacer(modifier = Modifier.padding(top = BODY_CONTENT_PADDING.dp))
+                weapon.upgradeInfoList?.forEachIndexed { levelIndex, upgradeInfoForLevel ->
+                    val gridInfoList = mapUpgradeInfoToGridList(upgradeInfoForLevel)
+                    LevelInfoCard(
+                        modifier = Modifier.padding(
+                            horizontal = BODY_CONTENT_PADDING.dp,
+                            vertical = 8.dp
+                        ),
+                        level = levelIndex,
+                        upgradeInfoList = gridInfoList,
+                        materialsForUpgrade = uiState.materials,
+                        foodForUpgrade = uiState.foodAsMaterials
+                    )
+                }
+
+                Spacer(modifier = Modifier.padding(45.dp))
             }
         }
     }
