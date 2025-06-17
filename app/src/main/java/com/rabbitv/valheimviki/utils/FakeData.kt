@@ -94,6 +94,106 @@ object FakeData {
             ),
             quantityList = listOf(3)
         )
+        ,
+        MaterialUpgrade(
+            material = Material(
+                id = "mat_steel_sword",
+                imageUrl = "https://example.com/images/items/steel_sword.png",
+                category = "Weapon",
+                subCategory = "Sword",
+                name = "Steel Longsword",
+                description = "Reliable blade forged from high-quality steel.",
+                usage = "Primary weapon-slot item.",
+                growthTime = null,
+                needCultivatorGround = null,
+                price = 120,
+                effect = "+20 Slash Damage",
+                sellPrice = null,
+                order = 1,
+                subType = "Melee"
+            ),
+            quantityList = listOf(3)
+        )
+        ,
+        MaterialUpgrade(
+            material = Material(
+                id = "mat_steel_sword",
+                imageUrl = "https://example.com/images/items/steel_sword.png",
+                category = "Weapon",
+                subCategory = "Sword",
+                name = "Steel Longsword",
+                description = "Reliable blade forged from high-quality steel.",
+                usage = "Primary weapon-slot item.",
+                growthTime = null,
+                needCultivatorGround = null,
+                price = 120,
+                effect = "+20 Slash Damage",
+                sellPrice = null,
+                order = 1,
+                subType = "Melee"
+            ),
+            quantityList = listOf(3)
+        )
+        ,
+        MaterialUpgrade(
+            material = Material(
+                id = "mat_steel_sword",
+                imageUrl = "https://example.com/images/items/steel_sword.png",
+                category = "Weapon",
+                subCategory = "Sword",
+                name = "Steel Longsword",
+                description = "Reliable blade forged from high-quality steel.",
+                usage = "Primary weapon-slot item.",
+                growthTime = null,
+                needCultivatorGround = null,
+                price = 120,
+                effect = "+20 Slash Damage",
+                sellPrice = null,
+                order = 1,
+                subType = "Melee"
+            ),
+            quantityList = listOf(3)
+        )
+        ,
+        MaterialUpgrade(
+            material = Material(
+                id = "mat_steel_sword",
+                imageUrl = "https://example.com/images/items/steel_sword.png",
+                category = "Weapon",
+                subCategory = "Sword",
+                name = "Steel Longsword",
+                description = "Reliable blade forged from high-quality steel.",
+                usage = "Primary weapon-slot item.",
+                growthTime = null,
+                needCultivatorGround = null,
+                price = 120,
+                effect = "+20 Slash Damage",
+                sellPrice = null,
+                order = 1,
+                subType = "Melee"
+            ),
+            quantityList = listOf(3)
+        )
+        ,
+        MaterialUpgrade(
+            material = Material(
+                id = "mat_steel_sword",
+                imageUrl = "https://example.com/images/items/steel_sword.png",
+                category = "Weapon",
+                subCategory = "Sword",
+                name = "Steel Longsword",
+                description = "Reliable blade forged from high-quality steel.",
+                usage = "Primary weapon-slot item.",
+                growthTime = null,
+                needCultivatorGround = null,
+                price = 120,
+                effect = "+20 Slash Damage",
+                sellPrice = null,
+                order = 1,
+                subType = "Melee"
+            ),
+            quantityList = listOf(3)
+        )
     )
 
     val level1Stats: List<GridLevelInfo> = listOf(

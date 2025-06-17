@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -62,7 +63,6 @@ fun WeaponDetailContent(
     uiState: WeaponUiState
 ) {
 
-    val sharedScrollState = rememberScrollState()
     val isExpandable = remember { mutableStateOf(false) }
 
 
@@ -73,7 +73,7 @@ fun WeaponDetailContent(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .verticalScroll(sharedScrollState)
+                    .verticalScroll(rememberScrollState())
                     .padding(innerPadding),
                 verticalArrangement = Arrangement.Top,
             ) {
@@ -117,11 +117,11 @@ fun WeaponDetailContent(
                         level = levelIndex,
                         upgradeInfoList = gridInfoList,
                         materialsForUpgrade = uiState.materials,
-                        foodForUpgrade = uiState.foodAsMaterials
+                        foodForUpgrade = uiState.foodAsMaterials,
                     )
                 }
 
-                Spacer(modifier = Modifier.padding(45.dp))
+                Spacer(modifier = Modifier.height(45.dp))
             }
         }
     }
