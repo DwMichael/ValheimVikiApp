@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.domain.use_cases.crafting_object.get_crafting_object_by_ids
+package com.rabbitv.valheimviki.domain.use_cases.crafting_object.get_crafting_objects_by_ids
 
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 import com.rabbitv.valheimviki.domain.repository.CraftingObjectRepository

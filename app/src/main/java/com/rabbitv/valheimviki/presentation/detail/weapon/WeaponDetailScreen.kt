@@ -26,8 +26,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
+import com.rabbitv.valheimviki.presentation.components.ImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.card.LevelInfoCard
 import com.rabbitv.valheimviki.presentation.components.main_detail_image.AsyncImageAnimated
@@ -99,6 +101,14 @@ fun WeaponDetailContent(
                         isExpanded = isExpandable,
                     )
                 }
+
+                uiState.craftingObjects?.let { craftingStation ->
+                    TridentsDividedRow()
+                    ImageWithTopLabel(
+                        itemData = craftingStation,
+                        subTitle = "Crafting Station Needed to Make This Item",
+                    )
+                }
                 TridentsDividedRow()
                 Text(
                     "Upgrade Information",
@@ -137,6 +147,16 @@ private fun PreviewWeaponDetailScreen() {
             uiState = WeaponUiState(
                 weapon = fakeWeaponList[0],
                 materials = emptyList(),
+                foodAsMaterials = emptyList(),
+                craftingObjects = CraftingObject(
+                    id = "1",
+                    imageUrl = "",
+                    category = "",
+                    subCategory = "TODO()",
+                    name = "Workbench",
+                    description = "",
+                    order = 1
+                ),
                 isLoading = false,
                 error = null
             )

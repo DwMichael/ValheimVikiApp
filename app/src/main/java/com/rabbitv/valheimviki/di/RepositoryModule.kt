@@ -75,7 +75,8 @@ import com.rabbitv.valheimviki.domain.use_cases.building_material.get_building_m
 import com.rabbitv.valheimviki.domain.use_cases.building_material.get_local_building_materials.GetLocalBuildMaterialsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.connection.NetworkConnectivityObserver
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.CraftingObjectUseCases
-import com.rabbitv.valheimviki.domain.use_cases.crafting_object.get_crafting_object_by_ids.GetCraftingObjectsByIdsUseCase
+import com.rabbitv.valheimviki.domain.use_cases.crafting_object.get_crafting_object_by_ids.GetCraftingObjectByIdsUseCase
+import com.rabbitv.valheimviki.domain.use_cases.crafting_object.get_crafting_objects_by_ids.GetCraftingObjectsByIdsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.get_crafting_object_by_sub_category_use_case.GetCraftingObjectsBySubCategoryUseCase
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.get_local_crafting_object_use_case.GetLocalCraftingObjectsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
@@ -504,6 +505,7 @@ object RepositoryModule {
     @Singleton
     fun provideCraftingObjectUseCases(craftingObjectRepository: CraftingObjectRepository): CraftingObjectUseCases {
         return CraftingObjectUseCases(
+            getCraftingObjectByIds = GetCraftingObjectByIdsUseCase(craftingObjectRepository) ,
             getCraftingObjectsByIds = GetCraftingObjectsByIdsUseCase(craftingObjectRepository) ,
             getLocalCraftingObjectsUseCase = GetLocalCraftingObjectsUseCase(craftingObjectRepository),
             getCraftingObjectsBySubCategoryUseCase = GetCraftingObjectsBySubCategoryUseCase()

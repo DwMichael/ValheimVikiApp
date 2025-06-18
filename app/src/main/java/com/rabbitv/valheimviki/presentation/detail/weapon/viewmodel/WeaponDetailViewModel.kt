@@ -46,7 +46,7 @@ class WeaponDetailViewModel @Inject constructor(
         MutableStateFlow(emptyList())
     private val _relatedFoodAsMaterials: MutableStateFlow<List<FoodAsMaterialUpgrade>> =
         MutableStateFlow(emptyList())
-    private val _relatedCraftingObjects: MutableStateFlow<List<CraftingObject>> =  MutableStateFlow(emptyList())
+    private val _relatedCraftingObjects: MutableStateFlow<CraftingObject?> =  MutableStateFlow(null)
 
     private val _isLoading: MutableStateFlow<Boolean> = MutableStateFlow(true)
     private val _error: MutableStateFlow<String?> = MutableStateFlow(null)
@@ -60,10 +60,10 @@ class WeaponDetailViewModel @Inject constructor(
         _error
     ) { value ->
         WeaponUiState(
-            weapon = value[0] as Weapon,
+            weapon = value[0] as Weapon?,
             materials = value[1] as List<MaterialUpgrade>,
             foodAsMaterials = value[2] as List<FoodAsMaterialUpgrade>,
-            craftingObjects = value[3] as List<CraftingObject>,
+            craftingObjects = value[3] as CraftingObject?,
             isLoading = value[4] as Boolean,
             error = value[5] as String?
         )
@@ -143,7 +143,7 @@ class WeaponDetailViewModel @Inject constructor(
 
                 }
                     val craftingObjects = async {
-                      _relatedCraftingObjects.value =  craftingObjectUseCases.getCraftingObjectsByIds(relatedIds).first()
+                      _relatedCraftingObjects.value =  craftingObjectUseCases.getCraftingObjectByIds(relatedIds).first()
 
                     }
                 awaitAll(materialsDeferred,craftingObjects, foodDeferred)

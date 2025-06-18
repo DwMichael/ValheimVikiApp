@@ -9,7 +9,7 @@ data class WeaponUiState(
     val weapon: Weapon? = null,
     val materials: List<MaterialUpgrade> = emptyList(),
     val foodAsMaterials :List<FoodAsMaterialUpgrade> = emptyList(),
-    val craftingObjects: List<CraftingObject> = emptyList(),
+    val craftingObjects: CraftingObject? = null,
     val isLoading: Boolean = false,
     val error: String? = null
 )
