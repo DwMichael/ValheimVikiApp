@@ -5,9 +5,9 @@ import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingSubCategory
 
 class GetCraftingObjectsBySubCategoryUseCase {
     operator fun invoke(
-        armors: List<CraftingObject>,
+        craftingObjects: List<CraftingObject>,
         subCategory: CraftingSubCategory
     ): List<CraftingObject> {
-        return armors.filter { it.subCategory == subCategory.toString() }
+        return craftingObjects.filter { it.subCategory == subCategory.toString() }
     }
 }

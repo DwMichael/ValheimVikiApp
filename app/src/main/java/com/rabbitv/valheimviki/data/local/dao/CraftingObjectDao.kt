@@ -15,6 +15,9 @@ interface CraftingObjectDao {
     @Query("SELECT * FROM crafting_objects where subCategory = :subCategory")
     fun getCraftingObjectsBySubCategory(subCategory: String): Flow<List<CraftingObject>>
 
+    @Query("SELECT * FROM crafting_objects WHERE id IN (:ids)")
+    fun getCraftingObjectsByIds(ids: List<String>): Flow<List<CraftingObject>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCraftingObjects(craftingObjects: List<CraftingObject>)
 

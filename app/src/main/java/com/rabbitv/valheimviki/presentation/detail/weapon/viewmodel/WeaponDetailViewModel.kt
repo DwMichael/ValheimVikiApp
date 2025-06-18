@@ -4,9 +4,11 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 import com.rabbitv.valheimviki.domain.model.food.FoodAsMaterialUpgrade
 import com.rabbitv.valheimviki.domain.model.material.MaterialUpgrade
 import com.rabbitv.valheimviki.domain.model.weapon.Weapon
+import com.rabbitv.valheimviki.domain.use_cases.crafting_object.CraftingObjectUseCases
 import com.rabbitv.valheimviki.domain.use_cases.food.FoodUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
@@ -26,13 +28,15 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
+@Suppress("UNCHECKED_CAST")
 @HiltViewModel
 class WeaponDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val weaponUseCases: WeaponUseCases,
     private val relationUseCase: RelationUseCases,
     private val materialUseCases: MaterialUseCases,
-    private val foodUseCases: FoodUseCases
+    private val foodUseCases: FoodUseCases,
+    private val craftingObjectUseCases: CraftingObjectUseCases
 ) : ViewModel() {
     private val _weaponId: String = checkNotNull(savedStateHandle[Constants.WEAPON_KEY])
     private val _weapon: MutableStateFlow<Weapon?> = MutableStateFlow(null)
@@ -42,6 +46,7 @@ class WeaponDetailViewModel @Inject constructor(
         MutableStateFlow(emptyList())
     private val _relatedFoodAsMaterials: MutableStateFlow<List<FoodAsMaterialUpgrade>> =
         MutableStateFlow(emptyList())
+    private val _relatedCraftingObjects: MutableStateFlow<List<CraftingObject>> =  MutableStateFlow(emptyList())
 
     private val _isLoading: MutableStateFlow<Boolean> = MutableStateFlow(true)
     private val _error: MutableStateFlow<String?> = MutableStateFlow(null)
@@ -50,15 +55,17 @@ class WeaponDetailViewModel @Inject constructor(
         _weapon,
         _relatedMaterials,
         _relatedFoodAsMaterials,
+        _relatedCraftingObjects,
         _isLoading,
         _error
-    ) { weapon, materials, foodAsMaterials, isLoading, error ->
+    ) { value ->
         WeaponUiState(
-            weapon = weapon,
-            materials = materials,
-            foodAsMaterials = foodAsMaterials,
-            isLoading = isLoading,
-            error = error
+            weapon = value[0] as Weapon,
+            materials = value[1] as List<MaterialUpgrade>,
+            foodAsMaterials = value[2] as List<FoodAsMaterialUpgrade>,
+            craftingObjects = value[3] as List<CraftingObject>,
+            isLoading = value[4] as Boolean,
+            error = value[5] as String?
         )
     }.stateIn(
         scope = viewModelScope,
@@ -135,7 +142,11 @@ class WeaponDetailViewModel @Inject constructor(
                         _relatedFoodAsMaterials.value = tempList
 
                 }
-                awaitAll(materialsDeferred, foodDeferred)
+                    val craftingObjects = async {
+                      _relatedCraftingObjects.value =  craftingObjectUseCases.getCraftingObjectsByIds(relatedIds).first()
+
+                    }
+                awaitAll(materialsDeferred,craftingObjects, foodDeferred)
             }catch (e: Exception) {
                     Log.e("General fetch error WeaponDetailViewModel", e.message.toString())
                     _isLoading.value = false
