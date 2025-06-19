@@ -100,6 +100,7 @@ import com.rabbitv.valheimviki.presentation.tree.TreeScreen
 import com.rabbitv.valheimviki.presentation.weapons.WeaponListScreen
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.Constants.AGGRESSIVE_CREATURE_KEY
+import com.rabbitv.valheimviki.utils.Constants.ARMOR_KEY
 import com.rabbitv.valheimviki.utils.Constants.BIOME_ARGUMENT_KEY
 import com.rabbitv.valheimviki.utils.Constants.MAIN_BOSS_ARGUMENT_KEY
 import com.rabbitv.valheimviki.utils.Constants.MINI_BOSS_ARGUMENT_KEY
@@ -360,7 +361,13 @@ fun ValheimNavGraph(
         composable(Screen.ArmorList.route) {
             ArmorListScreen(
                 modifier = Modifier.padding(10.dp),
-                onItemClick = {},
+                onItemClick = { armorId ,_->
+                    valheimVikiNavController.navigate(
+                        Screen.ArmorDetail.passArmorId(
+                            armorId
+                        )
+                    )
+                },
                 paddingValues = innerPadding,
             )
         }
@@ -647,6 +654,19 @@ fun ValheimNavGraph(
             arguments = listOf(
                     navArgument(WEAPON_KEY) { type = NavType.StringType },
         )
+        ) {
+            WeaponDetailScreen(
+                onBack = {
+                    valheimVikiNavController.popBackStack()
+                },
+            )
+        }
+
+        composable(
+            route =Screen.ArmorDetail.route,
+            arguments = listOf(
+                navArgument(ARMOR_KEY) { type = NavType.StringType },
+            )
         ) {
             WeaponDetailScreen(
                 onBack = {

@@ -51,7 +51,7 @@ class ArmorChip(
 @Composable
 fun ArmorListScreen(
     modifier: Modifier = Modifier,
-    onItemClick: () -> Unit,
+    onItemClick: (armorId :String, _:Int) -> Unit,
     paddingValues: PaddingValues,
     viewModel: ArmorListViewModel = hiltViewModel()
 ) {
@@ -62,6 +62,7 @@ fun ArmorListScreen(
         onChipSelected = onChipSelected,
         paddingValues = paddingValues,
         modifier = modifier,
+        onItemClick = onItemClick
     )
 
 }
@@ -73,6 +74,7 @@ fun ArmorListStateRenderer(
     onChipSelected: (ArmorSubCategory?) -> Unit,
     paddingValues: PaddingValues,
     modifier: Modifier,
+    onItemClick:(armorId :String, _:Int) -> Unit,
 ) {
     Surface(
         color = Color.Transparent,
@@ -86,16 +88,18 @@ fun ArmorListStateRenderer(
         ArmorListDisplay(
             armorListUiState = armorListUiState,
             onChipSelected = onChipSelected,
+            onItemClick = onItemClick
         )
     }
 }
 
 
-@OptIn(FlowPreview::class)
+
 @Composable
 fun ArmorListDisplay(
     armorListUiState: UiCategoryState<ArmorSubCategory?, Armor>,
     onChipSelected: (ArmorSubCategory?) -> Unit,
+    onItemClick: (armorId: String, _: Int) -> Unit
 ) {
 
 
@@ -125,7 +129,7 @@ fun ArmorListDisplay(
             is UiCategoryState.Loading<ArmorSubCategory?> -> ShimmerListEffect()
             is UiCategoryState.Success<ArmorSubCategory?, Armor> -> ListContent(
                 items = state.list,
-                clickToNavigate = { s, i -> {} },
+                clickToNavigate = onItemClick,
                 lazyListState = lazyListState,
                 subCategoryNumber = 0,
                 imageScale = ContentScale.Fit,
@@ -228,6 +232,7 @@ fun PreviewWeaponListStateRenderer() {
             paddingValues = PaddingValues(),
             modifier = Modifier,
             onChipSelected = {},
+            onItemClick = {_,_ -> {}}
         )
     }
 }

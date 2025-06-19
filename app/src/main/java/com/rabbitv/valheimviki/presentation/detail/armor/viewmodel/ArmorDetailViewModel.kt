@@ -1,20 +1,19 @@
-package com.rabbitv.valheimviki.presentation.detail.weapon.viewmodel
+package com.rabbitv.valheimviki.presentation.detail.armor.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rabbitv.valheimviki.domain.model.armor.Armor
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 import com.rabbitv.valheimviki.domain.model.food.FoodAsMaterialUpgrade
 import com.rabbitv.valheimviki.domain.model.material.MaterialUpgrade
-import com.rabbitv.valheimviki.domain.model.weapon.Weapon
+import com.rabbitv.valheimviki.domain.use_cases.armor.ArmorUseCases
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.CraftingObjectUseCases
 import com.rabbitv.valheimviki.domain.use_cases.food.FoodUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
-import com.rabbitv.valheimviki.domain.use_cases.weapon.WeaponUseCases
 import com.rabbitv.valheimviki.presentation.detail.weapon.model.ArmorUiState
-import com.rabbitv.valheimviki.presentation.detail.weapon.model.WeaponUiState
 import com.rabbitv.valheimviki.utils.Constants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -31,16 +30,16 @@ import kotlinx.coroutines.launch
 
 @Suppress("UNCHECKED_CAST")
 @HiltViewModel
-class WeaponDetailViewModel @Inject constructor(
+class ArmorDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val weaponUseCases: WeaponUseCases,
+    private val armorUseCases: ArmorUseCases,
     private val relationUseCase: RelationUseCases,
     private val materialUseCases: MaterialUseCases,
     private val foodUseCases: FoodUseCases,
     private val craftingObjectUseCases: CraftingObjectUseCases
 ) : ViewModel() {
-    private val _weaponId: String = checkNotNull(savedStateHandle[Constants.WEAPON_KEY])
-    private val _weapon: MutableStateFlow<Weapon?> = MutableStateFlow(null)
+    private val _armorId: String = checkNotNull(savedStateHandle[Constants.ARMOR_KEY])
+    private val _armor: MutableStateFlow<Armor?> = MutableStateFlow(null)
 
 
     private val _relatedMaterials: MutableStateFlow<List<MaterialUpgrade>> =
@@ -52,16 +51,16 @@ class WeaponDetailViewModel @Inject constructor(
     private val _isLoading: MutableStateFlow<Boolean> = MutableStateFlow(true)
     private val _error: MutableStateFlow<String?> = MutableStateFlow(null)
 
-    val uiState: StateFlow<WeaponUiState> = combine(
-        _weapon,
+    val uiState: StateFlow<ArmorUiState> = combine(
+        _armor,
         _relatedMaterials,
         _relatedFoodAsMaterials,
         _relatedCraftingObjects,
         _isLoading,
         _error
     ) { value ->
-        WeaponUiState(
-            weapon = value[0] as Weapon?,
+        ArmorUiState(
+            armor = value[0] as Armor?,
             materials = value[1] as List<MaterialUpgrade>,
             foodAsMaterials = value[2] as List<FoodAsMaterialUpgrade>,
             craftingObjects = value[3] as CraftingObject?,
@@ -71,25 +70,25 @@ class WeaponDetailViewModel @Inject constructor(
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
-        initialValue = WeaponUiState()
+        initialValue = ArmorUiState()
     )
 
     init {
-        loadWeaponData()
+        loadArmorData()
     }
 
 
-    internal fun loadWeaponData() {
+    internal fun loadArmorData() {
 
         viewModelScope.launch(Dispatchers.IO) {
                 try {
                     _isLoading.value = true
-                    val weaponDeferred = async { weaponUseCases.getWeaponByIdUseCase(_weaponId).first() }
-                    val relatedObjectsDeferred = async { relationUseCase.getRelatedIdsUseCase(_weaponId).first() }
+                    val armorDeferred = async { armorUseCases.getArmorByIdUseCase(_armorId).first() }
+                    val relatedObjectsDeferred = async { relationUseCase.getRelatedIdsUseCase(_armorId).first() }
 
-                    val weapon = weaponDeferred.await()
+                    val armor = armorDeferred.await()
                     val relatedObjects = relatedObjectsDeferred.await()
-                    _weapon.value = weapon
+                    _armor.value = armor
                     val relatedIds = relatedObjects.map { it.id }
                 val materialsDeferred = async {
                     try {
@@ -115,7 +114,7 @@ class WeaponDetailViewModel @Inject constructor(
                         _relatedMaterials.value = tempList
                         Log.e("Upgdare Items ", "$tempList")
                     } catch (e: Exception) {
-                        Log.e("WeaponDetail ViewModel", "$e")
+                        Log.e("ArmorDetail ViewModel", "$e")
                         _relatedMaterials.value = emptyList()
                     }
                 }
@@ -149,7 +148,7 @@ class WeaponDetailViewModel @Inject constructor(
                     }
                 awaitAll(materialsDeferred,craftingObjects, foodDeferred)
             }catch (e: Exception) {
-                    Log.e("General fetch error WeaponDetailViewModel", e.message.toString())
+                    Log.e("General fetch error ArmorDetailViewModel", e.message.toString())
                     _isLoading.value = false
                     _error.value = e.message
                 }finally {

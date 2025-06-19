@@ -2,6 +2,7 @@ package com.rabbitv.valheimviki.navigation
 
 
 import com.rabbitv.valheimviki.utils.Constants.AGGRESSIVE_CREATURE_KEY
+import com.rabbitv.valheimviki.utils.Constants.ARMOR_KEY
 import com.rabbitv.valheimviki.utils.Constants.BIOME_ARGUMENT_KEY
 import com.rabbitv.valheimviki.utils.Constants.MAIN_BOSS_ARGUMENT_KEY
 import com.rabbitv.valheimviki.utils.Constants.MINI_BOSS_ARGUMENT_KEY
@@ -125,6 +126,14 @@ sealed class Screen(val route: String) {
         Screen("weapon_screen/{$WEAPON_KEY}") {
         fun passWeaponId(weaponId: String): String {
             return "weapon_screen/$weaponId"
+        }
+    }
+
+    @Serializable
+    object ArmorDetail :
+        Screen("armor_screen/{$ARMOR_KEY}") {
+        fun passArmorId(armorId: String): String {
+            return "armor_screen/$armorId"
         }
     }
 

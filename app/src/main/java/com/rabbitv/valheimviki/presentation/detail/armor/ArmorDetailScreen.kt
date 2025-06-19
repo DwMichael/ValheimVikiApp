@@ -1,10 +1,8 @@
-package com.rabbitv.valheimviki.presentation.detail.weapon
+package com.rabbitv.valheimviki.presentation.detail.armor
 
 
 import androidx.compose.foundation.layout.Arrangement
-
 import androidx.compose.foundation.layout.Column
-
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -26,40 +24,38 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
-
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.card.LevelInfoCard
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.main_detail_image.AsyncImageAnimated
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
+import com.rabbitv.valheimviki.presentation.detail.armor.viewmodel.ArmorDetailViewModel
 import com.rabbitv.valheimviki.presentation.detail.weapon.model.ArmorUiState
-import com.rabbitv.valheimviki.presentation.detail.weapon.model.WeaponUiState
-import com.rabbitv.valheimviki.presentation.detail.weapon.viewmodel.WeaponDetailViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
-import com.rabbitv.valheimviki.utils.FakeData.fakeWeaponList
-import com.rabbitv.valheimviki.utils.mapUpgradeInfoToGridList
+import com.rabbitv.valheimviki.utils.FakeData.fakeArmorList
+import com.rabbitv.valheimviki.utils.mapUpgradeArmorInfoToGridList
 
 
 @Composable
-fun WeaponDetailScreen(
+fun ArmorDetailScreen(
     onBack: () -> Unit,
-    viewModel: WeaponDetailViewModel = hiltViewModel()
+    viewModel: ArmorDetailViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    WeaponDetailContent(
+    ArmorDetailContent(
         onBack  = onBack,
         uiState = uiState
     )
 }
 
 @Composable
-fun WeaponDetailContent(
+fun ArmorDetailContent(
     onBack: () -> Unit,
-    uiState: WeaponUiState
+    uiState: ArmorUiState
 ) {
 
     val isExpandable = remember { mutableStateOf(false) }
@@ -68,7 +64,7 @@ fun WeaponDetailContent(
     Scaffold(
         containerColor = Color(0xFF0d1c1d)
     ) { innerPadding ->
-        uiState.weapon?.let { weapon ->
+        uiState.armor?.let { armor ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -78,20 +74,20 @@ fun WeaponDetailContent(
             ) {
                 AsyncImageAnimated(
                     onBack = onBack,
-                    imageUrl = weapon.imageUrl,
+                    imageUrl = armor.imageUrl,
                     contentScale = ContentScale.FillBounds,
                     imageScale = 0.5f,
                     backgroundImageColor = Color(0xFF191e24),
                     height = 250.dp
                 )
                 Text(
-                    weapon.name,
+                    armor.name,
                     modifier = Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp).padding(top =5.dp),
                     color = PrimaryWhite,
                     style = MaterialTheme.typography.displayMedium
                 )
                 SlavicDivider()
-                weapon.description?.let {
+                armor.description?.let {
                     DetailExpandableText(
                         text = it,
                         collapsedMaxLine = 3,
@@ -115,8 +111,8 @@ fun WeaponDetailContent(
                     style = MaterialTheme.typography.headlineMedium
                 )
 
-                weapon.upgradeInfoList?.forEachIndexed { levelIndex, upgradeInfoForLevel ->
-                    val upgradeStats = mapUpgradeInfoToGridList(upgradeInfoForLevel)
+                armor.upgradeInfoList?.forEachIndexed { levelIndex, upgradeInfoForLevel ->
+                    val upgradeStats = mapUpgradeArmorInfoToGridList(upgradeInfoForLevel)
                     LevelInfoCard(
                         modifier = Modifier.padding(
                             horizontal = BODY_CONTENT_PADDING.dp,
@@ -140,10 +136,10 @@ fun WeaponDetailContent(
 @Composable
 private fun PreviewWeaponDetailScreen() {
     ValheimVikiAppTheme {
-        WeaponDetailContent(
+        ArmorDetailContent(
             onBack = {},
-            uiState = WeaponUiState(
-                weapon = fakeWeaponList[0],
+            uiState = ArmorUiState(
+                armor = fakeArmorList()[0],
                 materials = emptyList(),
                 foodAsMaterials = emptyList(),
                 craftingObjects = CraftingObject(

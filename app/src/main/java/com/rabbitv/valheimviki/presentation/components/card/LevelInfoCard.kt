@@ -80,7 +80,9 @@ data class GridLevelInfo(
     val icon:ImageVector,
     val iconColor:Color,
     val title:String,
-    val power:Int?
+    val power:Int?,
+    val effectText:String? = null,
+    val usageText:String? = null
 )
 
 

@@ -62,6 +62,7 @@ import com.rabbitv.valheimviki.domain.repository.ToolRepository
 import com.rabbitv.valheimviki.domain.repository.TreeRepository
 import com.rabbitv.valheimviki.domain.repository.WeaponRepository
 import com.rabbitv.valheimviki.domain.use_cases.armor.ArmorUseCases
+import com.rabbitv.valheimviki.domain.use_cases.armor.get_armor_by_id.GetArmorByIdUseCase
 import com.rabbitv.valheimviki.domain.use_cases.armor.get_armors_by_sub_category_use_case.GetArmorsBySubCategoryUseCase
 import com.rabbitv.valheimviki.domain.use_cases.armor.get_local_armors_use_case.GetLocalArmorsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
@@ -462,6 +463,7 @@ object RepositoryModule {
     fun provideArmorUseCases(armorRepository: ArmorRepository): ArmorUseCases {
         return ArmorUseCases(
             getLocalArmorsUseCase = GetLocalArmorsUseCase(armorRepository),
+            getArmorByIdUseCase = GetArmorByIdUseCase(armorRepository),
             getArmorsBySubCategoryUseCase = GetArmorsBySubCategoryUseCase()
         )
     }

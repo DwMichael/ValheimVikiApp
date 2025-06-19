@@ -1,6 +1,6 @@
 package com.rabbitv.valheimviki.presentation.detail.weapon.model
 import androidx.compose.ui.graphics.Color
-enum class StatVisuals(
+enum class StatWeaponVisuals(
     val displayName: String,
     val colorHex: Color
 ) {
