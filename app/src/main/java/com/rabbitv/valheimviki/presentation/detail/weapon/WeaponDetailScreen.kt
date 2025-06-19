@@ -21,7 +21,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -29,19 +28,17 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
-import com.rabbitv.valheimviki.presentation.components.ImageWithTopLabel
+import com.rabbitv.valheimviki.presentation.components.card.card_image.ImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.card.LevelInfoCard
+import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.main_detail_image.AsyncImageAnimated
-import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDetailImage
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.weapon.model.WeaponUiState
 import com.rabbitv.valheimviki.presentation.detail.weapon.viewmodel.WeaponDetailViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
-import com.rabbitv.valheimviki.ui.theme.DarkWood
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
-import com.rabbitv.valheimviki.ui.theme.YellowDT
 import com.rabbitv.valheimviki.utils.FakeData.fakeWeaponList
 import com.rabbitv.valheimviki.utils.mapUpgradeInfoToGridList
 
@@ -104,9 +101,10 @@ fun WeaponDetailContent(
 
                 uiState.craftingObjects?.let { craftingStation ->
                     TridentsDividedRow()
-                    ImageWithTopLabel(
+                    CardImageWithTopLabel(
                         itemData = craftingStation,
                         subTitle = "Crafting Station Needed to Make This Item",
+                        contentScale = ContentScale.FillBounds,
                     )
                 }
                 TridentsDividedRow()
@@ -118,14 +116,14 @@ fun WeaponDetailContent(
                 )
 
                 weapon.upgradeInfoList?.forEachIndexed { levelIndex, upgradeInfoForLevel ->
-                    val gridInfoList = mapUpgradeInfoToGridList(upgradeInfoForLevel)
+                    val upgradeStats = mapUpgradeInfoToGridList(upgradeInfoForLevel)
                     LevelInfoCard(
                         modifier = Modifier.padding(
                             horizontal = BODY_CONTENT_PADDING.dp,
                             vertical = 8.dp
                         ),
                         level = levelIndex,
-                        upgradeInfoList = gridInfoList,
+                        upgradeStats = upgradeStats,
                         materialsForUpgrade = uiState.materials,
                         foodForUpgrade = uiState.foodAsMaterials,
                     )

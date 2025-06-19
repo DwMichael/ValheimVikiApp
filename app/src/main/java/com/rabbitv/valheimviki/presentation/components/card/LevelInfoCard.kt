@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -27,6 +28,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -82,18 +84,26 @@ data class GridLevelInfo(
 )
 
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun LevelInfoCard(
     modifier: Modifier = Modifier,
     level:Int = 0,
-    upgradeInfoList:List<GridLevelInfo> = emptyList(),
+    upgradeStats:List<GridLevelInfo> = emptyList(),
     materialsForUpgrade:List<MaterialUpgrade> = emptyList(),
     foodForUpgrade:List<FoodAsMaterialUpgrade> = emptyList(),
     visibleContent : MutableState<Boolean> = remember{ mutableStateOf(false)}
 ) {
-    val filteredList = upgradeInfoList
+    val filteredList = upgradeStats
         .filter { (it.power ?: 0) > 0 }
+
+    val hasMaterialsForLevel = materialsForUpgrade.any { material ->
+        material.quantityList.getOrNull(level)?.let { it > 0 } ?: false
+    }
+    val hasFoodForLevel = foodForUpgrade.any { food ->
+        food.quantityList.getOrNull(level)?.let { it > 0 } ?: false
+    }
+    val canUpgradeToLevel = hasMaterialsForLevel || hasFoodForLevel
+
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -140,44 +150,70 @@ fun LevelInfoCard(
                     }
                 }
 
-                HorizontalDivider(
-                    modifier = Modifier
-                        .fillMaxWidth().padding(horizontal = 10.dp),
-                    thickness = 0.1.dp,
-                    color = PrimaryWhite
-                )
+                if (canUpgradeToLevel) {
+                    Text(
+                        text = "Required Materials:",
+                        modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+                        color = PrimaryWhite,
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = BODY_CONTENT_PADDING.dp)
+                            .padding(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        materialsForUpgrade.forEach { material ->
+                            material.quantityList.getOrNull(level)?.let { quantity ->
+                                if (quantity > 0) {
+                                    MaterialForUpgrade(
+                                        name = material.material.name,
+                                        imageUrl = material.material.imageUrl,
+                                        quantity = quantity
+                                    )
+                                }
+                            }
+                        }
 
-                Text(
-                    text = "Required Materials:",
-                    modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-                    color = PrimaryWhite,
-                    style = MaterialTheme.typography.titleLarge
-                )
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = BODY_CONTENT_PADDING.dp)
-                        .padding(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    materialsForUpgrade.forEach { material ->
-                        material.quantityList.getOrNull(level)?.let { quantity ->
-                            MaterialForUpgrade(
-                                name = material.material.name,
-                                imageUrl = material.material.imageUrl,
-                                quantity = quantity
-                            )
+                        foodForUpgrade.forEach { material ->
+                            material.quantityList.getOrNull(level)?.let { quantity ->
+                                if (quantity > 0) {
+                                    MaterialForUpgrade(
+                                        name = material.materialFood.name,
+                                        imageUrl = material.materialFood.imageUrl,
+                                        quantity = quantity
+                                    )
+                                }
+                            }
                         }
                     }
-
-                    foodForUpgrade.forEach { material ->
-                        material.quantityList.getOrNull(level)?.let { quantity ->
-                            MaterialForUpgrade(
-                                name = material.materialFood.name,
-                                imageUrl = material.materialFood.imageUrl,
-                                quantity = quantity
+                } else {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(BODY_CONTENT_PADDING.dp)
+                            .background(
+                                color = Color(0xFF1a2a2b),
+                                shape = RoundedCornerShape(8.dp)
                             )
-                        }
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Info,
+                            contentDescription = "Info",
+                            tint = Color(0xFFFFB800),
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Upgrade to this level not yet available",
+                            color = Color(0xFFFFB800),
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.Medium
+                        )
                     }
                 }
                 Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
@@ -300,7 +336,7 @@ private fun PreviewTopExpandableItem() {
 private fun PreviewLevelInfoCard() {
     ValheimVikiAppTheme {
         LevelInfoCard(
-            upgradeInfoList = level1Stats,
+            upgradeStats = level1Stats,
             materialsForUpgrade = level1RequiredMaterials
         )
     }
@@ -342,7 +378,7 @@ private fun PreviewLevelInfoCard_AllStats() {
         ) {
             LevelInfoCard(
                 level = 0,
-                upgradeInfoList = statsForPreview,
+                upgradeStats = statsForPreview,
                 materialsForUpgrade = level1RequiredMaterials,
                 visibleContent = remember { mutableStateOf(true) }
             )

@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.components
+package com.rabbitv.valheimviki.presentation.components.card.card_image
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Arrangement
@@ -50,6 +50,7 @@ fun ImageWithTopLabel(
     horizontalDividerWidth: Dp = 100.dp ,
     subTitle: String? = null,
     textStyle: TextStyle = MaterialTheme.typography.titleMedium,
+    contentScale: ContentScale =  ContentScale.Crop
 ) {
     Box(
         modifier = modifier
@@ -72,7 +73,7 @@ fun ImageWithTopLabel(
             placeholder = painterResource(R.drawable.ic_placeholder),
             error = errorPainter,
             contentDescription = stringResource(R.string.mainbosssection),
-            contentScale = ContentScale.Crop,
+            contentScale = contentScale,
         )
         Surface(
             modifier = Modifier
@@ -112,7 +113,6 @@ fun ImageWithTopLabel(
                     )
                 }
             }
-
         }
     }
 }
