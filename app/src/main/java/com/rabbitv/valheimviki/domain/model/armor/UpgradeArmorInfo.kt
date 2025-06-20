@@ -8,10 +8,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class UpgradeArmorInfo(
     @SerializedName("Armor") val armor: Int? = null,
-    @SerializedName("Effects") val effect: String? = null,
     @SerializedName("Quality") val upgradeLevel: Int? = null,
     @SerializedName("Durability") val durability: Int? = null,
     @SerializedName("Station_level") val stationLevel: Int? = null,
-    @SerializedName("Price") val price: Int? = null,
-    @SerializedName("usage") val usage: String? = null
 )

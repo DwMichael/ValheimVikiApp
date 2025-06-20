@@ -43,6 +43,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -66,6 +67,7 @@ import com.rabbitv.valheimviki.domain.model.food.FoodAsMaterialUpgrade
 import com.rabbitv.valheimviki.domain.model.material.MaterialUpgrade
 import com.rabbitv.valheimviki.domain.model.weapon.UpgradeInfo
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
+import com.rabbitv.valheimviki.ui.theme.ForestGreen20Dark
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.Shapes
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
@@ -128,7 +130,7 @@ fun LevelInfoCard(
                 FlowRow(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = BODY_CONTENT_PADDING.dp),
+                        .padding(end = BODY_CONTENT_PADDING.dp, start = BODY_CONTENT_PADDING.dp , top = BODY_CONTENT_PADDING.dp),
                     horizontalArrangement = Arrangement.Start,
                     verticalArrangement = Arrangement.Top
                 ) {
@@ -141,9 +143,9 @@ fun LevelInfoCard(
 
                         LevelInfoGridItem(
                             modifier = if (isLongText) {
-                                Modifier.fillMaxWidth()
+                                Modifier.fillMaxWidth().padding(start = 8.dp)
                             } else {
-                                Modifier.fillMaxWidth(0.5f)
+                                Modifier.fillMaxWidth(0.5f).padding(start = 8.dp)
                             },
                             upgradeInfo = info
                         )
@@ -161,7 +163,7 @@ fun LevelInfoCard(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = BODY_CONTENT_PADDING.dp)
-                            .padding(8.dp),
+                            .padding(start = 8.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         materialsForUpgrade.forEach { material ->
@@ -207,7 +209,7 @@ fun LevelInfoCard(
                             tint = Color(0xFFFFB800),
                             modifier = Modifier.size(20.dp)
                         )
-                        Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(5.dp))
                         Text(
                             text = "Upgrade to this level not yet available",
                             color = Color(0xFFFFB800),
@@ -223,33 +225,38 @@ fun LevelInfoCard(
 }
 
 @Composable
-fun MaterialForUpgrade( name:String,imageUrl:String,quantity:Int){
+fun MaterialForUpgrade(name: String, imageUrl: String, quantity: Int) {
     Row(
-        modifier = Modifier.padding(vertical = 5.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
                 .data(imageUrl)
-                .size(100)
+                .size(150)
                 .crossfade(true)
                 .build(),
-            error = if(LocalInspectionMode.current)  painterResource(R.drawable.testweapon) else null,
-            contentDescription = "Item image",
-            contentScale = ContentScale.FillBounds,
+            error = if (LocalInspectionMode.current) painterResource(R.drawable.testweapon) else null,
+            contentDescription = name,
+            contentScale = ContentScale.Fit,
+
+            modifier = Modifier
+                .size(56.dp)
+                .clip(RoundedCornerShape(8.dp))
 
         )
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(
+        Spacer(modifier = Modifier.width(12.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
                 text = name,
-        style = MaterialTheme.typography.bodyLarge
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(
-            text = quantity.toString(),
-            style = MaterialTheme.typography.bodyLarge
-        )
-
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = "Required: $quantity",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Gray
+            )
+        }
     }
 }
 
@@ -273,11 +280,13 @@ fun LevelInfoGridItem(
         Text(
             text = "${upgradeInfo.title}:",
             style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.padding(end = 4.dp)
+            modifier = Modifier.padding(end = 4.dp),
+            fontWeight = FontWeight.Bold
         )
         Text(
             text = upgradeInfo.power?.toString() ?: "",
-            style = MaterialTheme.typography.bodyLarge
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Bold
         )
         Spacer(Modifier.width(10.dp))
     }
@@ -287,7 +296,7 @@ fun LevelInfoGridItem(
 @Composable
 fun TopExpandableItem(modifier :Modifier  = Modifier,level:Int , onToggleExpansion:()->Unit ={}){
     Row(
-        modifier = Modifier.fillMaxWidth().height(50.dp).background(color = Color(0xFF193e43)).clickable { onToggleExpansion() }
+        modifier = Modifier.fillMaxWidth().height(50.dp).background(color = ForestGreen20Dark).clickable { onToggleExpansion() }
             .drawBehind {
                 val borderStrokeWidth = 1.dp.toPx()
                 drawLine(

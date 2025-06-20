@@ -113,7 +113,6 @@ class WeaponDetailViewModel @Inject constructor(
                             )
                         }
                         _relatedMaterials.value = tempList
-                        Log.e("Upgdare Items ", "$tempList")
                     } catch (e: Exception) {
                         Log.e("WeaponDetail ViewModel", "$e")
                         _relatedMaterials.value = emptyList()

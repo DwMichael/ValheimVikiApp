@@ -35,14 +35,14 @@ object FakeData {
             upgradeInfoList = listOf(
                 UpgradeArmorInfo(
                     armor = 35,
-                    effect = "+2 Defense",
-                    upgradeLevel = 1,
                     durability = 120,
-                    stationLevel = 2,
-                    price = 50,
-                    usage = "Protects the wearer’s head."
+                    stationLevel = 2
                 )
             ),
+
+            effects = "Zwiększa odporność na obrażenia o 5%.",
+            usage = "Chroni głowę przed uderzeniami i zapewnia podstawową ochronę.",
+            fullSetEffects = "Bonus za cały zestaw: +10 do pancerza.",
             order = 1
         )
 

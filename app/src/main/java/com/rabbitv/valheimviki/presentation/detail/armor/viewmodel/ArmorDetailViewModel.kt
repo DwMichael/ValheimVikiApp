@@ -28,7 +28,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-@Suppress("UNCHECKED_CAST")
+
 @HiltViewModel
 class ArmorDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
@@ -48,19 +48,20 @@ class ArmorDetailViewModel @Inject constructor(
     private val _isLoading: MutableStateFlow<Boolean> = MutableStateFlow(true)
     private val _error: MutableStateFlow<String?> = MutableStateFlow(null)
 
+
     val uiState: StateFlow<ArmorUiState> = combine(
         _armor,
         _relatedMaterials,
         _relatedCraftingObjects,
         _isLoading,
         _error
-    ) { value ->
+    ) { armor, materials, craftingObjects, isLoading, error ->
         ArmorUiState(
-            armor = value[0] as Armor?,
-            materials = value[1] as List<MaterialUpgrade>,
-            craftingObjects = value[2] as CraftingObject?,
-            isLoading = value[3] as Boolean,
-            error = value[4] as String?
+            armor = armor,
+            materials = materials,
+            craftingObjects = craftingObjects ,
+            isLoading = isLoading,
+            error = error
         )
     }.stateIn(
         scope = viewModelScope,
@@ -82,50 +83,41 @@ class ArmorDetailViewModel @Inject constructor(
                     val relatedObjectsDeferred = async { relationUseCase.getRelatedIdsUseCase(_armorId).first() }
 
                     val armor = armorDeferred.await()
+                    Log.e("USAGE INFO ", "${armor?.usage}")
                     val relatedObjects = relatedObjectsDeferred.await()
+
                     _armor.value = armor
+
                     val relatedIds = relatedObjects.map { it.id }
+
                     val materialsDeferred = async {
-                        try {
-                            val materials = materialUseCases.getMaterialsByIds(relatedIds).first()
-                            val tempList = mutableListOf<MaterialUpgrade>()
+                        val materials = materialUseCases.getMaterialsByIds(relatedIds).first()
+                        val tempList = mutableListOf<MaterialUpgrade>()
+                        val relatedItemsMap = relatedObjects.associateBy { it.id }
 
-                            val relatedItemsMap = relatedObjects.associateBy { it.id }
-                            for (material in materials) {
-                                val relatedItem = relatedItemsMap[material.id]
-                                val quantityList = listOf<Int?>(
-                                    relatedItem?.quantity,
-                                    relatedItem?.quantity2star,
-                                    relatedItem?.quantity3star,
-                                    relatedItem?.quantity4star
+                        for (material in materials) {
+                            val relatedItem = relatedItemsMap[material.id]
+                            val quantityList = listOf<Int?>(
+                                relatedItem?.quantity,
+                                relatedItem?.quantity2star,
+                                relatedItem?.quantity3star,
+                                relatedItem?.quantity4star
+                            )
+                            tempList.add(
+                                MaterialUpgrade(
+                                    material = material,
+                                    quantityList = quantityList,
                                 )
-                                tempList.add(
-                                    MaterialUpgrade(
-                                        material = material,
-                                        quantityList = quantityList,
-                                    )
-                                )
-                            }
-                            _relatedMaterials.value = tempList
-                            Log.e("Upgdare Items ", "$tempList")
-                        } catch (e: Exception) {
-                            Log.e("ArmorDetail ViewModel", "$e")
-                            _relatedMaterials.value = emptyList()
+                            )
                         }
+                        _relatedMaterials.value = tempList
                     }
-                    val craftingObjects = async {
-                        try {
-                            val tempList =  craftingObjectUseCases.getCraftingObjectByIds(relatedIds).first()
-
-                            _relatedCraftingObjects.value = tempList
-
-                            Log.e("CraftingObjects Items ", "$tempList")
-                        } catch (e: Exception) {
-                            Log.e("ArmorDetail ViewModel", "$e")
-                            _relatedCraftingObjects.value = null
-                        }
+                    val craftingObjectsDeferred = async {
+                        val craftingObject = craftingObjectUseCases.getCraftingObjectByIds(relatedIds).first()
+                        _relatedCraftingObjects.value = craftingObject
                     }
-                    awaitAll(materialsDeferred,craftingObjects)
+
+                    awaitAll(materialsDeferred, craftingObjectsDeferred)
                 }catch (e: Exception) {
                     Log.e("General fetch error ArmorDetailViewModel", e.message.toString())
                     _isLoading.value = false

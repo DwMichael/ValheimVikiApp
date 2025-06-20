@@ -11,7 +11,9 @@ val ThirdGrey = Color(0xFF333333)
 val PrimaryOrange = Color(0xFFDD6119)
 val DarkGrey = Color(0xFF1C1F26)
 
+
 val ForestGreen10Dark = Color(0xFF006666)
+val ForestGreen20Dark =  Color(0xFF193e43)
 val ForestGreen30Dark = Color(0xFF040F10)
 val ForestGreen40Dark = Color(0xFF040F10)
 

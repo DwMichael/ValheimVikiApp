@@ -143,10 +143,6 @@ fun mapUpgradeArmorInfoToGridList(upgradeArmorInfo: UpgradeArmorInfo): List<Grid
         gridList.add(GridLevelInfo(currentId++, Lucide.Hammer, visual.colorHex, visual.displayName, power))
     }
 
-    upgradeArmorInfo.price?.let { power ->
-        val visual = StatArmorVisuals.PRICE
-        gridList.add(GridLevelInfo(currentId++, Lucide.Coins, visual.colorHex, visual.displayName, power))
-    }
 
     return gridList
 }
