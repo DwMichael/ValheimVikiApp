@@ -1,6 +1,7 @@
 package com.rabbitv.valheimviki.presentation.detail.armor
 
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -76,7 +77,7 @@ fun ArmorDetailContent(
                     onBack = onBack,
                     imageUrl = armor.imageUrl,
                     contentScale = ContentScale.FillBounds,
-                    imageScale = 0.5f,
+                    imageScale = 0.6f,
                     backgroundImageColor = Color(0xFF191e24),
                     height = 250.dp
                 )
@@ -113,6 +114,7 @@ fun ArmorDetailContent(
 
                 armor.upgradeInfoList?.forEachIndexed { levelIndex, upgradeInfoForLevel ->
                     val upgradeStats = mapUpgradeArmorInfoToGridList(upgradeInfoForLevel)
+                    Log.d("upgradeStats", upgradeStats.toString())
                     LevelInfoCard(
                         modifier = Modifier.padding(
                             horizontal = BODY_CONTENT_PADDING.dp,
@@ -121,8 +123,38 @@ fun ArmorDetailContent(
                         level = levelIndex,
                         upgradeStats = upgradeStats,
                         materialsForUpgrade = uiState.materials,
-                        foodForUpgrade = uiState.foodAsMaterials,
                     )
+                }
+                SlavicDivider()
+                Text(
+                    "Additional effect per level",
+                    modifier = Modifier.padding(start = BODY_CONTENT_PADDING.dp, end =  BODY_CONTENT_PADDING.dp, bottom =  BODY_CONTENT_PADDING.dp),
+                    color = PrimaryWhite,
+                    style = MaterialTheme.typography.headlineMedium
+                )
+                armor.upgradeInfoList?.forEach { upgradeInfoForLevel ->
+                    upgradeInfoForLevel.effect?.let {
+                        Text(
+                            it,
+                            modifier = Modifier.padding(start = BODY_CONTENT_PADDING.dp, end =  BODY_CONTENT_PADDING.dp, bottom =  BODY_CONTENT_PADDING.dp),
+                            color = PrimaryWhite,
+                            style = MaterialTheme.typography.headlineSmall
+                        )
+                    }
+                    Text(
+                        "Usage",
+                        modifier = Modifier.padding(start = BODY_CONTENT_PADDING.dp, end =  BODY_CONTENT_PADDING.dp, bottom =  BODY_CONTENT_PADDING.dp),
+                        color = PrimaryWhite,
+                        style = MaterialTheme.typography.headlineMedium
+                    )
+                    upgradeInfoForLevel.usage?.let {
+                        Text(
+                            it,
+                            modifier = Modifier.padding(start = BODY_CONTENT_PADDING.dp, end =  BODY_CONTENT_PADDING.dp, bottom =  BODY_CONTENT_PADDING.dp),
+                            color = PrimaryWhite,
+                            style = MaterialTheme.typography.headlineSmall
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(45.dp))
@@ -141,7 +173,6 @@ private fun PreviewWeaponDetailScreen() {
             uiState = ArmorUiState(
                 armor = fakeArmorList()[0],
                 materials = emptyList(),
-                foodAsMaterials = emptyList(),
                 craftingObjects = CraftingObject(
                     id = "1",
                     imageUrl = "",

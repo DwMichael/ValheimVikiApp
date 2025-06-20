@@ -78,6 +78,7 @@ import com.rabbitv.valheimviki.presentation.components.NavigationDrawer
 import com.rabbitv.valheimviki.presentation.creatures.bosses.BossScreen
 import com.rabbitv.valheimviki.presentation.creatures.mini_bosses.MiniBossScreen
 import com.rabbitv.valheimviki.presentation.creatures.mob_list.MobListScreen
+import com.rabbitv.valheimviki.presentation.detail.armor.ArmorDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.biome.BiomeDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.creature.aggressive_screen.AggressiveCreatureDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.creature.main_boss_screen.MainBossDetailScreen
@@ -668,7 +669,7 @@ fun ValheimNavGraph(
                 navArgument(ARMOR_KEY) { type = NavType.StringType },
             )
         ) {
-            WeaponDetailScreen(
+            ArmorDetailScreen(
                 onBack = {
                     valheimVikiNavController.popBackStack()
                 },

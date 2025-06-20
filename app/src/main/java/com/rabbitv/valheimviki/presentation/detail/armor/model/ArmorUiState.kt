@@ -9,7 +9,6 @@ import com.rabbitv.valheimviki.domain.model.weapon.Weapon
 data class ArmorUiState(
     val armor: Armor? = null,
     val materials: List<MaterialUpgrade> = emptyList(),
-    val foodAsMaterials :List<FoodAsMaterialUpgrade> = emptyList(),
     val craftingObjects: CraftingObject? = null,
     val isLoading: Boolean = false,
     val error: String? = null
