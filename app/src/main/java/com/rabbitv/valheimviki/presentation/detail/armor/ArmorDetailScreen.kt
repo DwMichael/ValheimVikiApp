@@ -37,6 +37,8 @@ import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.card.LevelInfoCard
+import com.rabbitv.valheimviki.presentation.components.card.MaterialForUpgrade
+import com.rabbitv.valheimviki.presentation.components.card.RequiredMaterialColumn
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.main_detail_image.AsyncImageAnimated
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
@@ -80,7 +82,7 @@ fun ArmorDetailContent(
         containerColor = Color(0xFF0d1c1d)
     ) { innerPadding ->
         uiState.armor?.let { armor ->
-            Log.e("UpgradeInfoList", "${armor.upgradeInfoList}")
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -98,7 +100,8 @@ fun ArmorDetailContent(
                 )
                 Text(
                     armor.name,
-                    modifier = Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp).padding(top =5.dp),
+                    modifier = Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp)
+                        .padding(top = 5.dp),
                     color = PrimaryWhite,
                     style = MaterialTheme.typography.displayMedium
                 )
@@ -123,7 +126,11 @@ fun ArmorDetailContent(
                 if (!armor.upgradeInfoList.isNullOrEmpty()) {
                     Text(
                         "Upgrade Information",
-                        modifier = Modifier.padding(start = BODY_CONTENT_PADDING.dp, end =  BODY_CONTENT_PADDING.dp, bottom =  BODY_CONTENT_PADDING.dp),
+                        modifier = Modifier.padding(
+                            start = BODY_CONTENT_PADDING.dp,
+                            end = BODY_CONTENT_PADDING.dp,
+                            bottom = BODY_CONTENT_PADDING.dp
+                        ),
                         color = PrimaryWhite,
                         style = MaterialTheme.typography.headlineMedium
                     )
@@ -141,8 +148,15 @@ fun ArmorDetailContent(
                         )
                     }
                     SlavicDivider()
-                }
+                } else if (uiState.materials.isNotEmpty()) {
 
+                    RequiredMaterialColumn(
+                        level = 0,
+                        foodForUpgrade = emptyList(),
+                        materialsForUpgrade = uiState.materials
+                    )
+
+                }
                 armor.effects?.let { effectContent ->
                     if (effectContent.isNotBlank()) {
                         InfoSection(
@@ -160,8 +174,6 @@ fun ArmorDetailContent(
                         )
                     }
                 }
-
-
                 Spacer(modifier = Modifier.height(45.dp))
             }
         }

@@ -104,8 +104,9 @@ fun LevelInfoCard(
     val hasFoodForLevel = foodForUpgrade.any { food ->
         food.quantityList.getOrNull(level)?.let { it > 0 } ?: false
     }
+    Log.e("LevelInfoCard", "hasMaterialsForLevel: $hasMaterialsForLevel")
     val canUpgradeToLevel = hasMaterialsForLevel || hasFoodForLevel
-
+    Log.e("canUpgradeToLevel", "canUpgradeToLevel: $canUpgradeToLevel")
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -153,43 +154,11 @@ fun LevelInfoCard(
                 }
 
                 if (canUpgradeToLevel) {
-                    Text(
-                        text = "Required Materials:",
-                        modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-                        color = PrimaryWhite,
-                        style = MaterialTheme.typography.titleLarge
+                    RequiredMaterialColumn(
+                        level = level,
+                        foodForUpgrade = foodForUpgrade,
+                        materialsForUpgrade = materialsForUpgrade
                     )
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = BODY_CONTENT_PADDING.dp)
-                            .padding(start = 8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        materialsForUpgrade.forEach { material ->
-                            material.quantityList.getOrNull(level)?.let { quantity ->
-                                if (quantity > 0) {
-                                    MaterialForUpgrade(
-                                        name = material.material.name,
-                                        imageUrl = material.material.imageUrl,
-                                        quantity = quantity
-                                    )
-                                }
-                            }
-                        }
-
-                        foodForUpgrade.forEach { material ->
-                            material.quantityList.getOrNull(level)?.let { quantity ->
-                                if (quantity > 0) {
-                                    MaterialForUpgrade(
-                                        name = material.materialFood.name,
-                                        imageUrl = material.materialFood.imageUrl,
-                                        quantity = quantity
-                                    )
-                                }
-                            }
-                        }
-                    }
                 } else {
                     Row(
                         modifier = Modifier
@@ -219,6 +188,49 @@ fun LevelInfoCard(
                     }
                 }
                 Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
+            }
+        }
+    }
+}
+
+@Composable
+fun RequiredMaterialColumn(level:Int = 0,
+                           foodForUpgrade:List<FoodAsMaterialUpgrade> = emptyList(),
+                           materialsForUpgrade:List<MaterialUpgrade> = emptyList(),){
+    Text(
+        text = "Required Materials:",
+        modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+        color = PrimaryWhite,
+        style = MaterialTheme.typography.titleLarge
+    )
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = BODY_CONTENT_PADDING.dp)
+            .padding(start = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        materialsForUpgrade.forEach { material ->
+            material.quantityList.getOrNull(level)?.let { quantity ->
+                if (quantity > 0) {
+                    MaterialForUpgrade(
+                        name = material.material.name,
+                        imageUrl = material.material.imageUrl,
+                        quantity = quantity
+                    )
+                }
+            }
+        }
+
+        foodForUpgrade.forEach { material ->
+            material.quantityList.getOrNull(level)?.let { quantity ->
+                if (quantity > 0) {
+                    MaterialForUpgrade(
+                        name = material.materialFood.name,
+                        imageUrl = material.materialFood.imageUrl,
+                        quantity = quantity
+                    )
+                }
             }
         }
     }
@@ -274,7 +286,8 @@ fun LevelInfoGridItem(
         Icon(
             imageVector = upgradeInfo.icon,
             contentDescription = upgradeInfo.title,
-            tint = upgradeInfo.iconColor
+            tint = upgradeInfo.iconColor,
+            modifier = Modifier.size(34.dp)
         )
         Spacer(Modifier.width(8.dp))
         Text(

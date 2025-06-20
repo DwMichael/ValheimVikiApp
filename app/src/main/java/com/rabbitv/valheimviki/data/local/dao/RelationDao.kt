@@ -22,6 +22,7 @@ interface RelationDao {
         quantity,
         quantity2star,
         quantity3star,
+        quantity4star,
         chance1star,
         chance2star,
         chance3star
