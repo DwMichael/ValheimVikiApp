@@ -81,7 +81,7 @@ class ArmorDetailViewModel @Inject constructor(
                     _isLoading.value = true
                     val armorDeferred = async { armorUseCases.getArmorByIdUseCase(_armorId).first() }
                     val relatedObjectsDeferred = async { relationUseCase.getRelatedIdsUseCase(_armorId).first() }
-                    Log.e("ID ", "${_armorId}")
+
                     val armor = armorDeferred.await()
                     val relatedObjects = relatedObjectsDeferred.await()
 

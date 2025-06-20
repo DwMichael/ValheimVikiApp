@@ -99,6 +99,7 @@ import com.rabbitv.valheimviki.domain.use_cases.datastore.language_state_provide
 import com.rabbitv.valheimviki.domain.use_cases.datastore.save_onboarding_state.SaveOnBoardingState
 import com.rabbitv.valheimviki.domain.use_cases.datastore.saved_language_state.SaveLanguageState
 import com.rabbitv.valheimviki.domain.use_cases.food.FoodUseCases
+import com.rabbitv.valheimviki.domain.use_cases.food.get_food_by_id.GetFoodByIdUseCase
 import com.rabbitv.valheimviki.domain.use_cases.food.get_food_list_by_ids.GetFoodListByIdsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.food.get_food_list_by_subCategory.GetFoodListBySubCategoryUseCase
 import com.rabbitv.valheimviki.domain.use_cases.food.get_local_food_list.GetLocalFoodListUseCase
@@ -443,7 +444,8 @@ object RepositoryModule {
         return FoodUseCases(
             getLocalFoodListUseCase = GetLocalFoodListUseCase(foodRepository),
             getFoodBySubCategoryUseCase = GetFoodListBySubCategoryUseCase(foodRepository),
-            getFoodListByIdsUseCase = GetFoodListByIdsUseCase(foodRepository)
+            getFoodListByIdsUseCase = GetFoodListByIdsUseCase(foodRepository),
+            getFoodByIdUseCase = GetFoodByIdUseCase(foodRepository)
         )
     }
 

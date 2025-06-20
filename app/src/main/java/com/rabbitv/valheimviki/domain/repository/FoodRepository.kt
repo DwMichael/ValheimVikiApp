@@ -10,5 +10,6 @@ interface FoodRepository {
     fun getLocalFoodList(): Flow<List<Food>>
     fun getFoodListBySubCategory(subCategory: String): Flow<List<Food>>
     fun getFoodListByIds(ids: List<String>): Flow<List<Food>>
+    fun getFoodById(id: String): Flow<Food?>
     suspend fun insertFoodList(foodList: List<Food>)
 }

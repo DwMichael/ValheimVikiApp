@@ -28,6 +28,10 @@ class FoodRepositoryImpl @Inject constructor(
         return foodDao.getFoodListByIds(ids)
     }
 
+    override fun getFoodById(id: String): Flow<Food?> {
+        return foodDao.getFoodById(id)
+    }
+
     override suspend fun insertFoodList(foodList: List<Food>) {
         check(foodList.isNotEmpty()) { "Food list cannot be empty , cannot insert ${foodList.size} food" }
         foodDao.insertFood(foodList)
