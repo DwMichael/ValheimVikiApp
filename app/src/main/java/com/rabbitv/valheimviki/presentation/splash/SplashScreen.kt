@@ -22,34 +22,34 @@ import com.rabbitv.valheimviki.navigation.Screen
 
 @Composable
 fun SplashScreen(
-    navController: NavHostController,
-    splashViewModel: SplashViewModel = hiltViewModel()
+	navController: NavHostController,
+	splashViewModel: SplashViewModel = hiltViewModel()
 ) {
-    val degrees = remember { Animatable(0f) }
-    val hasOnboarded by splashViewModel.onBoardingCompleted.collectAsState(initial = false)
-    LaunchedEffect(hasOnboarded) {
-        degrees.animateTo(
-            targetValue = 10f,
-            animationSpec = tween(
-                delayMillis = 1
-            )
-        )
-        val destination =
-            if (hasOnboarded) Screen.Biome.route else Screen.Welcome.route
-        navController.navigate(destination) {
-            popUpTo(0) { inclusive = true }
-        }
-    }
-    Image(
-        painter = painterResource(id = R.drawable.main_background),
-        contentDescription = "BackgroundImage",
-        contentScale = ContentScale.Crop,
-        modifier = Modifier.fillMaxSize(),
-    )
+	val degrees = remember { Animatable(0f) }
+	val hasOnboarded by splashViewModel.onBoardingCompleted.collectAsState(initial = false)
+	LaunchedEffect(hasOnboarded) {
+		degrees.animateTo(
+			targetValue = 10f,
+			animationSpec = tween(
+				delayMillis = 1
+			)
+		)
+		val destination =
+			if (hasOnboarded) Screen.BiomeList else Screen.Welcome
+		navController.navigate(destination) {
+			popUpTo(0) { inclusive = true }
+		}
+	}
+	Image(
+		painter = painterResource(id = R.drawable.main_background),
+		contentDescription = "BackgroundImage",
+		contentScale = ContentScale.Crop,
+		modifier = Modifier.fillMaxSize(),
+	)
 }
 
 @Preview(name = "SplashScreen")
 @Composable
 private fun PreviewSettingsScreen() {
-    SplashScreen(navController = NavHostController(LocalContext.current))
+	SplashScreen(navController = NavHostController(LocalContext.current))
 }

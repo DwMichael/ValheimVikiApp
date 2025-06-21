@@ -14,6 +14,7 @@ import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.presentation.detail.creature.components.MaterialDrop
 import com.rabbitv.valheimviki.presentation.detail.creature.passive_screen.model.PassiveCreatureDetailUiState
+import com.rabbitv.valheimviki.utils.Constants.PASSIVE_CREATURE_KEY
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
@@ -35,7 +36,7 @@ class PassiveCreatureDetailScreenViewModel @Inject constructor(
 	private val materialUseCases: MaterialUseCases,
 ) : ViewModel() {
 	private val _passiveCreatureId: String =
-		checkNotNull(savedStateHandle["passiveCreatureId"])
+		checkNotNull(savedStateHandle[PASSIVE_CREATURE_KEY])
 	private val _creature = MutableStateFlow<PassiveCreature?>(null)
 	private val _biome = MutableStateFlow<Biome?>(null)
 	private val _Material_dropItems = MutableStateFlow<List<MaterialDrop>>(emptyList())

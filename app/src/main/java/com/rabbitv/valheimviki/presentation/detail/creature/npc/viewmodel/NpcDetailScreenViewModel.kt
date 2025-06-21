@@ -16,6 +16,7 @@ import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.PointOfInterestUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.presentation.detail.creature.npc.model.NpcDetailUiState
+import com.rabbitv.valheimviki.utils.Constants.NPC_KEY
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
@@ -38,7 +39,7 @@ class NpcDetailScreenViewModel @Inject constructor(
 	private val pointOfInterestUseCases: PointOfInterestUseCases,
 ) : ViewModel() {
 	private val _npcId: String =
-		checkNotNull(savedStateHandle["npcId"])
+		checkNotNull(savedStateHandle[NPC_KEY])
 	private val _creature = MutableStateFlow<NPC?>(null)
 	private val _biome = MutableStateFlow<Biome?>(null)
 	private val _shopItems = MutableStateFlow<List<Material>>(emptyList())

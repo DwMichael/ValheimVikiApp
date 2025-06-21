@@ -3,8 +3,8 @@ package com.rabbitv.valheimviki.presentation.tool.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.domain.entities.tool.Tool
-import com.rabbitv.valheimviki.domain.model.tool.ToolSubCategory
+import com.rabbitv.valheimviki.domain.model.item_tool.GameTool
+import com.rabbitv.valheimviki.domain.model.item_tool.ToolSubCategory
 import com.rabbitv.valheimviki.domain.model.ui_state.category_state.UiCategoryState
 import com.rabbitv.valheimviki.domain.repository.NetworkConnectivity
 import com.rabbitv.valheimviki.domain.use_cases.tool.ToolUseCases
@@ -22,67 +22,67 @@ import kotlinx.coroutines.flow.stateIn
 
 @HiltViewModel
 class ToolListViewModel @Inject constructor(
-    private val toolUseCases: ToolUseCases,
-    private val connectivityObserver: NetworkConnectivity,
+	private val toolUseCases: ToolUseCases,
+	private val connectivityObserver: NetworkConnectivity,
 ) : ViewModel() {
 
-    private val _selectedChip =
-        MutableStateFlow<ToolSubCategory?>(null)
+	private val _selectedChip =
+		MutableStateFlow<ToolSubCategory?>(null)
 
-    private val _toolList: StateFlow<List<Tool>> =
-        combine(
-            toolUseCases.getLocalToolsUseCase(),
-            _selectedChip,
-        ) { allTools, category ->
-            if (category == null) allTools
-            else allTools.filter { it.subCategory == category.name }
-        }
-            .flowOn(Dispatchers.Default)
-            .stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5000), emptyList())
+	private val _gameTool: StateFlow<List<GameTool>> =
+		combine(
+			toolUseCases.getLocalToolsUseCase(),
+			_selectedChip,
+		) { allTools, category ->
+			if (category == null) allTools
+			else allTools.filter { it.subCategory == category.name }
+		}
+			.flowOn(Dispatchers.Default)
+			.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5000), emptyList())
 
 
-    val uiState: StateFlow<UiCategoryState<ToolSubCategory?, Tool>> = combine(
-        _toolList,
-        _selectedChip,
-        connectivityObserver.isConnected.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.Companion.WhileSubscribed(5000),
-            initialValue = false
-        )
-    ) { armors, selectedChip, isConnected ->
-        if (isConnected) {
-            if (armors.isNotEmpty()) {
-                UiCategoryState.Success(selectedChip, armors)
-            } else {
-                UiCategoryState.Loading(selectedChip)
-            }
-        } else {
-            if (armors.isNotEmpty()) {
-                UiCategoryState.Success(selectedChip, armors)
-            } else {
-                UiCategoryState.Error(
-                    selectedChip,
-                    "No internet connection and no local data available. Try to connect to the internet again.",
-                )
-            }
-        }
-    }.onStart {
-        emit(UiCategoryState.Loading(_selectedChip.value))
-    }.catch { e ->
-        Log.e("ToolListVM", "Error in uiState flow", e)
-        emit(
-            UiCategoryState.Error(
-                _selectedChip.value,
-                e.message ?: "An unknown error occurred"
-            )
-        )
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.Companion.WhileSubscribed(5000),
-        initialValue = UiCategoryState.Loading(_selectedChip.value)
-    )
+	val uiState: StateFlow<UiCategoryState<ToolSubCategory?, GameTool>> = combine(
+		_gameTool,
+		_selectedChip,
+		connectivityObserver.isConnected.stateIn(
+			scope = viewModelScope,
+			started = SharingStarted.Companion.WhileSubscribed(5000),
+			initialValue = false
+		)
+	) { armors, selectedChip, isConnected ->
+		if (isConnected) {
+			if (armors.isNotEmpty()) {
+				UiCategoryState.Success(selectedChip, armors)
+			} else {
+				UiCategoryState.Loading(selectedChip)
+			}
+		} else {
+			if (armors.isNotEmpty()) {
+				UiCategoryState.Success(selectedChip, armors)
+			} else {
+				UiCategoryState.Error(
+					selectedChip,
+					"No internet connection and no local data available. Try to connect to the internet again.",
+				)
+			}
+		}
+	}.onStart {
+		emit(UiCategoryState.Loading(_selectedChip.value))
+	}.catch { e ->
+		Log.e("ToolListVM", "Error in uiState flow", e)
+		emit(
+			UiCategoryState.Error(
+				_selectedChip.value,
+				e.message ?: "An unknown error occurred"
+			)
+		)
+	}.stateIn(
+		scope = viewModelScope,
+		started = SharingStarted.Companion.WhileSubscribed(5000),
+		initialValue = UiCategoryState.Loading(_selectedChip.value)
+	)
 
-    fun onChipSelected(cat: ToolSubCategory?) {
-        _selectedChip.value = cat
-    }
+	fun onChipSelected(cat: ToolSubCategory?) {
+		_selectedChip.value = cat
+	}
 }

@@ -18,6 +18,7 @@ import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.PointOfInterestUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.presentation.detail.creature.main_boss_screen.model.MainBossDetailUiState
+import com.rabbitv.valheimviki.utils.Constants.MAIN_BOSS_ARGUMENT_KEY
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -40,7 +41,7 @@ class MainBossScreenViewModel @Inject constructor(
 	private val relationUseCases: RelationUseCases
 ) : ViewModel() {
 	private val mainBossId: String =
-		checkNotNull(savedStateHandle["mainBossId"])
+		checkNotNull(savedStateHandle[MAIN_BOSS_ARGUMENT_KEY])
 	private val _mainBoss = MutableStateFlow<MainBoss?>(null)
 	private val _relatedForsakenAltar = MutableStateFlow<PointOfInterest?>(null)
 	private val _sacrificialStones = MutableStateFlow<PointOfInterest?>(null)

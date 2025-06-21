@@ -16,6 +16,7 @@ import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.PointOfInterestUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.presentation.detail.creature.mini_boss_screen.model.MiniBossDetailUiState
+import com.rabbitv.valheimviki.utils.Constants.MINI_BOSS_ARGUMENT_KEY
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -37,7 +38,7 @@ class MiniBossDetailScreenViewModel @Inject constructor(
 	private val relationUseCases: RelationUseCases,
 ) : ViewModel() {
 	private val miniBossId: String =
-		checkNotNull(savedStateHandle["miniBossId"])
+		checkNotNull(savedStateHandle[MINI_BOSS_ARGUMENT_KEY])
 	private val _miniBoss = MutableStateFlow<MiniBoss?>(null)
 	private val _primarySpawn = MutableStateFlow<PointOfInterest?>(null)
 	private val _dropItems = MutableStateFlow<List<Material>>(emptyList())

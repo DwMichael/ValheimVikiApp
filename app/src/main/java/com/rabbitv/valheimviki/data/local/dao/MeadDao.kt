@@ -11,13 +11,13 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface MeadDao {
 
-    @Query("SELECT * FROM meads")
-    fun getLocalMeads(): Flow<List<Mead>>
+	@Query("SELECT * FROM meads")
+	fun getLocalMeads(): Flow<List<Mead>>
 
-    @Query("SELECT * FROM meads where subCategory = :subCategory")
-    fun getMeadsBySubCategory(subCategory: String): Flow<List<Mead>>
+	@Query("SELECT * FROM meads where subCategory = :subCategory")
+	fun getMeadsBySubCategory(subCategory: String): Flow<List<Mead>>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertMeads(meads: List<Mead>)
+	@Insert(onConflict = OnConflictStrategy.REPLACE)
+	suspend fun insertMeads(meads: List<Mead>)
 
 }
