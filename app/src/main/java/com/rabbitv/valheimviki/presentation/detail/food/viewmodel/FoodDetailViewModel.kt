@@ -10,6 +10,7 @@ import com.rabbitv.valheimviki.domain.use_cases.crafting_object.CraftingObjectUs
 import com.rabbitv.valheimviki.domain.use_cases.food.FoodUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.presentation.detail.food.model.FoodDetailUiState
+import com.rabbitv.valheimviki.utils.Constants.FOOD_KEY
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -29,7 +30,7 @@ class FoodDetailViewModel @Inject constructor(
 	private val relationUseCases: RelationUseCases,
 	private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-	private val _foodId: String = checkNotNull(savedStateHandle["foodId"])
+	private val _foodId: String = checkNotNull(savedStateHandle[FOOD_KEY])
 	private val _food = MutableStateFlow<Food?>(null)
 	private val _craftingCookingStation = MutableStateFlow<CraftingObject?>(null)
 	private val _isLoading: MutableStateFlow<Boolean> = MutableStateFlow(true)

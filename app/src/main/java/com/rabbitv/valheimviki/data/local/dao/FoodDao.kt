@@ -10,21 +10,21 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface FoodDao {
 
-    @Query("SELECT * FROM food")
-    fun getLocalFoodList(): Flow<List<Food>>
+	@Query("SELECT * FROM food")
+	fun getLocalFoodList(): Flow<List<Food>>
 
-    @Query("SELECT * FROM food where subCategory = :subCategory")
-    fun getFoodListBySubCategory(subCategory: String): Flow<List<Food>>
+	@Query("SELECT * FROM food where subCategory = :subCategory")
+	fun getFoodListBySubCategory(subCategory: String): Flow<List<Food>>
 
-    @Query("SELECT * FROM food where id IN (:ids)")
-    fun getFoodListByIds(ids: List<String>): Flow<List<Food>>
+	@Query("SELECT * FROM food where id IN (:ids)")
+	fun getFoodListByIds(ids: List<String>): Flow<List<Food>>
 
 
-    @Query("SELECT * FROM food where id = id")
-    fun getFoodById(id: String): Flow<Food?>
+	@Query("SELECT * FROM food where id = :id")
+	fun getFoodById(id: String): Flow<Food?>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertFood(foodList: List<Food>)
+	@Insert(onConflict = OnConflictStrategy.REPLACE)
+	suspend fun insertFood(foodList: List<Food>)
 
 
 }
