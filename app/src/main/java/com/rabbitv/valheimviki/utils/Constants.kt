@@ -22,26 +22,15 @@ object Constants {
 
 	//DATA NAVIGATION ARGUMENT KEYS
 	const val BIOME_ARGUMENT_KEY = "biomeId"
-
-
 	const val MAIN_BOSS_ARGUMENT_KEY = "mainBossId"
-
 	const val MINI_BOSS_ARGUMENT_KEY = "miniBossId"
-
-
-	const val AGGRESSIVE_CREATURE_KEY = "aggressiveCId"
-	const val PASSIVE_CREATURE_KEY = "passiveCId"
+	const val AGGRESSIVE_CREATURE_KEY = "aggressiveCreatureId"
+	const val PASSIVE_CREATURE_KEY = "passiveCreatureId"
 	const val NPC_KEY = "npcId"
 	const val WEAPON_KEY = "weaponId"
 	const val ARMOR_KEY = "armorId"
 	const val FOOD_KEY = "foodId"
 	const val FOOD_CATEGORY_KEY = "foodCategory"
-	const val CATEGORY_ARGUMENT_KEY = "category"
-	const val MATERIAL_ARGUMENT_KEY = "materialId"
-
-	//GROUP ROUTE NAMES
-	const val MAIN_ROUTE_GRAPH = "mainGraph"
-	const val DETAIL_ROUTE_GRAPH = "detailGraph"
 
 	//Creature Order map
 	val CreatureSubCategory_ORDER_MAP = mapOf(
