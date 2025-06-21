@@ -23,6 +23,7 @@ import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.PointOfInteres
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.domain.use_cases.tree.TreeUseCases
 import com.rabbitv.valheimviki.presentation.detail.biome.model.BiomeDetailUiState
+import com.rabbitv.valheimviki.utils.Constants.BIOME_ARGUMENT_KEY
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -49,7 +50,7 @@ class BiomeDetailScreenViewModel @Inject constructor(
 	private val treeUseCases: TreeUseCases,
 	private val oreDepositUseCases: OreDepositUseCases
 ) : ViewModel() {
-	private val _biomeId: String = checkNotNull(savedStateHandle["biomeId"])
+	private val _biomeId: String = checkNotNull(savedStateHandle[BIOME_ARGUMENT_KEY])
 	private val _biome = MutableStateFlow<Biome?>(null)
 	private val _mainBoss = MutableStateFlow<MainBoss?>(null)
 	private val _relatedCreatures = MutableStateFlow<List<Creature>>(emptyList())

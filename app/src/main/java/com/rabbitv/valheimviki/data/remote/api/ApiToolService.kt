@@ -1,13 +1,13 @@
 package com.rabbitv.valheimviki.data.remote.api
 
 
-import com.example.domain.entities.tool.Tool
+import com.rabbitv.valheimviki.domain.model.item_tool.GameTool
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface ApiToolService {
 
-    @GET("/Tools")
-    suspend fun fetchTools(@Query("lang") lang: String): Response<List<Tool>>
+	@GET("/Tools")
+	suspend fun fetchTools(@Query("lang") lang: String): Response<List<GameTool>>
 }

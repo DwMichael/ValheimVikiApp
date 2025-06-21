@@ -35,6 +35,7 @@ import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -97,6 +98,7 @@ fun CardImageWithTopLabel(
                             .wrapContentSize(align = Alignment.Center)
                             .padding
                                 (horizontal = 8.dp),
+                        textAlign = TextAlign.Center
                     )
                     HorizontalDivider(
                         modifier = Modifier.width(horizontalDividerWidth).padding(5.dp),
@@ -112,6 +114,7 @@ fun CardImageWithTopLabel(
                                 .wrapContentSize(align = Alignment.Center)
                                 .padding
                                     (horizontal = 8.dp),
+                            textAlign = TextAlign.Center
                         )
                     }
                 }

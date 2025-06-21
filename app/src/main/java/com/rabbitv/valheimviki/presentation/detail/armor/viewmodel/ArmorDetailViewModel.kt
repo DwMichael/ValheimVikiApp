@@ -12,6 +12,7 @@ import com.rabbitv.valheimviki.domain.use_cases.crafting_object.CraftingObjectUs
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.presentation.detail.weapon.model.ArmorUiState
+import com.rabbitv.valheimviki.utils.Constants.ARMOR_KEY
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
@@ -34,7 +35,7 @@ class ArmorDetailViewModel @Inject constructor(
 	private val materialUseCases: MaterialUseCases,
 	private val craftingObjectUseCases: CraftingObjectUseCases
 ) : ViewModel() {
-	private val _armorId: String = checkNotNull(savedStateHandle["armorId"])
+	private val _armorId: String = checkNotNull(savedStateHandle[ARMOR_KEY])
 	private val _armor: MutableStateFlow<Armor?> = MutableStateFlow(null)
 
 

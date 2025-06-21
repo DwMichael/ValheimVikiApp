@@ -14,6 +14,7 @@ import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.presentation.detail.creature.aggressive_screen.model.AggressiveCreatureDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.creature.components.MaterialDrop
+import com.rabbitv.valheimviki.utils.Constants.AGGRESSIVE_CREATURE_KEY
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
@@ -35,7 +36,7 @@ class AggressiveCreatureDetailScreenViewModel @Inject constructor(
 	private val materialUseCases: MaterialUseCases,
 ) : ViewModel() {
 	private val _aggressiveCreatureId: String =
-		checkNotNull(savedStateHandle["aggressiveCreatureId"])
+		checkNotNull(savedStateHandle[AGGRESSIVE_CREATURE_KEY])
 	private val _creature = MutableStateFlow<AggressiveCreature?>(null)
 	private val _biome = MutableStateFlow<Biome?>(null)
 	private val _Material_dropItems = MutableStateFlow<List<MaterialDrop>>(emptyList())
