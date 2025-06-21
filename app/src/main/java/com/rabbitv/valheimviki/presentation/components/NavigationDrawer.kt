@@ -94,8 +94,8 @@ fun NavigationDrawer(
 	) {
 	ModalNavigationDrawer(
 		modifier = modifier
-            .fillMaxSize()
-            .testTag("NavigationDrawer"),
+			.fillMaxSize()
+			.testTag("NavigationDrawer"),
 		drawerState = drawerState,
 		gesturesEnabled = isDetailScreen && !isTransitionActive,
 		drawerContent = {
@@ -112,8 +112,8 @@ fun NavigationDrawer(
 					Spacer(Modifier.height(12.dp))
 					Row(
 						modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 12.dp, top = 0.dp, end = 12.dp),
+							.fillMaxWidth()
+							.padding(start = 12.dp, top = 0.dp, end = 12.dp),
 						verticalAlignment = Alignment.CenterVertically,
 						horizontalArrangement = Arrangement.Start
 
@@ -190,11 +190,11 @@ fun NavigationDrawer(
 								scope.launch { drawerState.close() }
 							},
 							modifier = Modifier
-                                .height(48.dp)
-                                .padding(
-                                    NavigationDrawerItemDefaults
-                                        .ItemPadding
-                                )
+								.height(48.dp)
+								.padding(
+									NavigationDrawerItemDefaults
+										.ItemPadding
+								)
 						)
 					}
 					Spacer(Modifier.height(24.dp))
@@ -214,8 +214,8 @@ private fun NavigationDrawerImage() {
 
 		Image(
 			modifier = Modifier
-                .padding(start = 16.dp, top = 24.dp, end = 12.dp)
-                .size(80.dp),
+				.padding(start = 16.dp, top = 24.dp, end = 12.dp)
+				.size(80.dp),
 			painter = painterResource(R.drawable.viking),
 			contentDescription = "DrawerBackground",
 			contentScale = ContentScale.Crop,
@@ -235,19 +235,19 @@ private fun PreviewNavigationDrawer() {
 			icon = Lucide.MountainSnow,
 			label = "Biomes",
 			contentDescription = "List of Biomes",
-			screen = Screen.Biome
+			screen = Screen.BiomeList
 		),
 		DrawerItem(
 			iconPainter = painterResource(R.drawable.skull),
 			label = "Bosses",
 			contentDescription = "Bosses section",
-			screen = Screen.Boss
+			screen = Screen.BossList
 		),
 		DrawerItem(
 			iconPainter = painterResource(R.drawable.ogre),
 			label = "MiniBosses",
 			contentDescription = "MiniBosses section",
-			screen = Screen.MiniBoss
+			screen = Screen.MiniBossList
 		),
 		DrawerItem(
 			icon = Lucide.Rabbit,
@@ -327,7 +327,7 @@ private fun PreviewNavigationDrawer() {
 			selectedItem = remember { mutableStateOf(items[0]) },
 			content = {},
 			isDetailScreen = false,
-            currentRoute = "",
+			currentRoute = "",
 			isTransitionActive = true,
 		)
 	}

@@ -4,7 +4,9 @@
 
 package com.rabbitv.valheimviki.navigation
 
+import android.os.Build
 import androidx.activity.compose.BackHandler
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
@@ -48,6 +50,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.composables.icons.lucide.Cuboid
 import com.composables.icons.lucide.FlaskRound
 import com.composables.icons.lucide.Gavel
@@ -100,6 +103,7 @@ import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import kotlinx.coroutines.launch
 
 
+@RequiresApi(Build.VERSION_CODES.S)
 @Preview
 @Composable
 fun ValheimVikiApp() {
@@ -115,6 +119,7 @@ fun ValheimVikiApp() {
 	}
 }
 
+@RequiresApi(Build.VERSION_CODES.S)
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun MainContainer(
@@ -139,10 +144,14 @@ fun MainContainer(
 	}
 
 	LaunchedEffect(currentRoute) {
-		val match = drawerItems.firstOrNull { item ->
-			currentRoute?.contains(item.screenName, ignoreCase = true) == true
+		if (currentRoute != null) {
+			val match = drawerItems.firstOrNull { item ->
+				val screenName = item.screen::class.simpleName ?: ""
+				val matches = currentRoute.contains(screenName, ignoreCase = true)
+				matches
+			}
+			selectedItem.value = match ?: drawerItems.first()
 		}
-		selectedItem.value = match ?: drawerItems.first()
 	}
 
 	val showTopAppBar by remember {
@@ -179,7 +188,7 @@ fun MainContainer(
 					MainAppBar(
 						scope = scope,
 						drawerState = drawerState,
-						enabled = !running
+						enabled = running
 					)
 				}
 			},
@@ -205,6 +214,7 @@ fun MainContainer(
 	}
 }
 
+@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun ValheimNavGraph(
 	valheimVikiNavController: NavHostController,
@@ -224,7 +234,7 @@ fun ValheimNavGraph(
 			WelcomeScreen(valheimVikiNavController)
 		}
 
-		composable<Screen.Biome> {
+		composable<Screen.BiomeList> {
 			BiomeScreen(
 				modifier = Modifier.padding(10.dp),
 				onItemClick = { id ->
@@ -243,7 +253,7 @@ fun ValheimNavGraph(
 			)
 		}
 
-		composable<Screen.Boss> {
+		composable<Screen.BossList> {
 			BossScreen(
 				modifier = Modifier.padding(10.dp),
 				onItemClick = { mainBossId ->
@@ -261,7 +271,7 @@ fun ValheimNavGraph(
 				animatedVisibilityScope = this@composable
 			)
 		}
-		composable<Screen.MiniBoss> {
+		composable<Screen.MiniBossList> {
 			MiniBossScreen(
 				modifier = Modifier.padding(10.dp),
 				onItemClick = { miniBossId ->
@@ -334,7 +344,7 @@ fun ValheimNavGraph(
 					valheimVikiNavController.navigate(
 						Screen.FoodDetail(
 							foodId = foodId,
-							foodCategory = foodSubCategory.toString()
+							foodCategory = foodSubCategory
 						)
 					)
 				},
@@ -394,12 +404,13 @@ fun ValheimNavGraph(
 				)
 			}
 		}
-		navigation<Screen.MaterialGraph>(
+
+		navigation<Screen.BuildingMaterialsGraph>(
 			startDestination = Screen.BuildingMaterialCategory
 		) {
 			composable<Screen.BuildingMaterialCategory> { backStackEntry ->
 				val parentEntry = remember(backStackEntry) {
-					valheimVikiNavController.getBackStackEntry("building_material_graph")
+					valheimVikiNavController.getBackStackEntry<Screen.BuildingMaterialsGraph>()
 				}
 				val vm = hiltViewModel<BuildingMaterialListViewModel>(parentEntry)
 				BuildingMaterialCategoryScreen(
@@ -578,8 +589,10 @@ fun ValheimNavGraph(
 			)
 		}
 
-		composable<Screen.FoodDetail> {
+		composable<Screen.FoodDetail> { backStackEntry ->
+			val args = backStackEntry.toRoute<Screen.FoodDetail>()
 			FoodDetailScreen(
+				category = args.foodCategory,
 				onBack = {
 					valheimVikiNavController.popBackStack()
 				},
@@ -659,21 +672,21 @@ fun rememberDrawerItems(): List<DrawerItem> {
 				icon = mountainSnowIcon,
 				label = biomesLabel,
 				contentDescription = biomesDesc,
-				screen = Screen.Biome
+				screen = Screen.BiomeList
 			),
 			// Bosses
 			DrawerItem(
 				iconPainter = skullPainter,
 				label = bossesLabel,
 				contentDescription = bossesDesc,
-				screen = Screen.Boss
+				screen = Screen.BossList
 			),
 			// Mini-bosses
 			DrawerItem(
 				iconPainter = ogrePainter,
 				label = minibossesLabel,
 				contentDescription = minibossesDesc,
-				screen = Screen.MiniBoss
+				screen = Screen.MiniBossList
 			),
 			// Creatures
 			DrawerItem(
@@ -759,7 +772,7 @@ fun rememberDrawerItems(): List<DrawerItem> {
 fun NavDestination.shouldShowTopBar(): Boolean {
 	val route = this.route ?: return false
 	return listOf(
-		"BossList", "BiomeList", "MiniBossList", "CreatureList",
+		"BiomeList", "BossList", "MiniBossList", "MobList",
 		"WeaponList", "ArmorList", "FoodList", "MeadList", "ToolList",
 		"MaterialCategory", "BuildingMaterialCategory",
 		"OreDeposit", "Tree", "PointOfInterest"

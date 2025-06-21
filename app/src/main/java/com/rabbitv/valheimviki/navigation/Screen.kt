@@ -1,6 +1,7 @@
 package com.rabbitv.valheimviki.navigation
 
 
+import com.rabbitv.valheimviki.domain.model.food.FoodSubCategory
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -15,13 +16,13 @@ sealed class Screen() {
 	data object Home : Screen()
 
 	@Serializable
-	data object Biome : Screen()
+	data object BiomeList : Screen()
 
 	@Serializable
-	data object Boss : Screen()
+	data object BossList : Screen()
 
 	@Serializable
-	data object MiniBoss : Screen()
+	data object MiniBossList : Screen()
 
 	@Serializable
 	data object MobList : Screen()
@@ -62,6 +63,7 @@ sealed class Screen() {
 	@Serializable
 	data object PointOfInterest : Screen()
 
+	//graphs
 	@Serializable
 	data object MaterialGraph : Screen()
 
@@ -111,6 +113,6 @@ sealed class Screen() {
 	@Serializable
 	data class FoodDetail(
 		val foodId: String,
-		val foodCategory: String
+		val foodCategory: FoodSubCategory
 	) : Screen()
 }
