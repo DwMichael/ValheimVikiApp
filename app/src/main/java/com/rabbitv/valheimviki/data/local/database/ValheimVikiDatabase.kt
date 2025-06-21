@@ -6,7 +6,6 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.example.domain.entities.tool.Tool
 import com.rabbitv.valheimviki.data.local.converter.Converters
 import com.rabbitv.valheimviki.data.local.dao.ArmorDao
 import com.rabbitv.valheimviki.data.local.dao.BiomeDao
@@ -28,6 +27,7 @@ import com.rabbitv.valheimviki.domain.model.building_material.BuildingMaterial
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.model.food.Food
+import com.rabbitv.valheimviki.domain.model.item_tool.GameTool
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.mead.Mead
 import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
@@ -37,41 +37,41 @@ import com.rabbitv.valheimviki.domain.model.tree.Tree
 import com.rabbitv.valheimviki.domain.model.weapon.Weapon
 
 @Database(
-    entities = [Biome::class, Creature::class,
-        Relation::class, OreDeposit::class,
-        Material::class, PointOfInterest::class,
-        Tree::class, Food::class, Weapon::class,
-        Armor::class, Mead::class, Tool::class,
-        BuildingMaterial::class, CraftingObject::class],
-    version = 20,
-    exportSchema = false
+	entities = [Biome::class, Creature::class,
+		Relation::class, OreDeposit::class,
+		Material::class, PointOfInterest::class,
+		Tree::class, Food::class, Weapon::class,
+		Armor::class, Mead::class, GameTool::class,
+		BuildingMaterial::class, CraftingObject::class],
+	version = 21,
+	exportSchema = false
 )
 @TypeConverters(Converters::class)
 abstract class ValheimVikiDatabase : RoomDatabase() {
 
-    companion object {
-        fun create(context: Context, useInMemory: Boolean): ValheimVikiDatabase {
-            val databaseBuilder = if (useInMemory) {
-                Room.inMemoryDatabaseBuilder(context, ValheimVikiDatabase::class.java)
-            } else {
-                Room.databaseBuilder(context, ValheimVikiDatabase::class.java, "valheimviki.db")
-            }
-            return databaseBuilder.fallbackToDestructiveMigration(false).build()
-        }
-    }
+	companion object {
+		fun create(context: Context, useInMemory: Boolean): ValheimVikiDatabase {
+			val databaseBuilder = if (useInMemory) {
+				Room.inMemoryDatabaseBuilder(context, ValheimVikiDatabase::class.java)
+			} else {
+				Room.databaseBuilder(context, ValheimVikiDatabase::class.java, "valheimviki.db")
+			}
+			return databaseBuilder.fallbackToDestructiveMigration(false).build()
+		}
+	}
 
-    abstract fun biomeDao(): BiomeDao
-    abstract fun creatureDao(): CreatureDao
-    abstract fun relationDao(): RelationDao
-    abstract fun oreDepositDao(): OreDepositDao
-    abstract fun materialDao(): MaterialDao
-    abstract fun pointOfInterestDao(): PointOfInterestDao
-    abstract fun treeDao(): TreeDao
-    abstract fun foodDao(): FoodDao
-    abstract fun weaponDao(): WeaponDao
-    abstract fun armorDao(): ArmorDao
-    abstract fun meadDao(): MeadDao
-    abstract fun toolDao(): ToolDao
-    abstract fun buildingMaterialDao(): BuildingMaterialDao
-    abstract fun craftingObjectDao(): CraftingObjectDao
+	abstract fun biomeDao(): BiomeDao
+	abstract fun creatureDao(): CreatureDao
+	abstract fun relationDao(): RelationDao
+	abstract fun oreDepositDao(): OreDepositDao
+	abstract fun materialDao(): MaterialDao
+	abstract fun pointOfInterestDao(): PointOfInterestDao
+	abstract fun treeDao(): TreeDao
+	abstract fun foodDao(): FoodDao
+	abstract fun weaponDao(): WeaponDao
+	abstract fun armorDao(): ArmorDao
+	abstract fun meadDao(): MeadDao
+	abstract fun toolDao(): ToolDao
+	abstract fun buildingMaterialDao(): BuildingMaterialDao
+	abstract fun craftingObjectDao(): CraftingObjectDao
 }

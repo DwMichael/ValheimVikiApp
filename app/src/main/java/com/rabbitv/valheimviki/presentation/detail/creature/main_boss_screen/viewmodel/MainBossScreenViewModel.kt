@@ -18,7 +18,7 @@ import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.PointOfInterestUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.presentation.detail.creature.main_boss_screen.model.MainBossDetailUiState
-import com.rabbitv.valheimviki.utils.Constants
+import com.rabbitv.valheimviki.utils.Constants.MAIN_BOSS_ARGUMENT_KEY
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -33,145 +33,145 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainBossScreenViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
-    private val creatureUseCases: CreatureUseCases,
-    private val pointOfInterestUseCases: PointOfInterestUseCases,
-    private val materialUseCases: MaterialUseCases,
-    private val biomeUseCases: BiomeUseCases,
-    private val relationUseCases: RelationUseCases
+	savedStateHandle: SavedStateHandle,
+	private val creatureUseCases: CreatureUseCases,
+	private val pointOfInterestUseCases: PointOfInterestUseCases,
+	private val materialUseCases: MaterialUseCases,
+	private val biomeUseCases: BiomeUseCases,
+	private val relationUseCases: RelationUseCases
 ) : ViewModel() {
-    private val mainBossId: String =
-        checkNotNull(savedStateHandle[Constants.MAIN_BOSS_ARGUMENT_KEY])
-    private val _mainBoss = MutableStateFlow<MainBoss?>(null)
-    private val _relatedForsakenAltar = MutableStateFlow<PointOfInterest?>(null)
-    private val _sacrificialStones = MutableStateFlow<PointOfInterest?>(null)
-    private val _dropItems = MutableStateFlow<List<Material>>(emptyList())
-    private val _relatedSummoningItems = MutableStateFlow<List<Material>>(emptyList())
-    private val _relatedBiome = MutableStateFlow<Biome?>(null)
-    private val _trophy = MutableStateFlow<Material?>(null)
+	private val mainBossId: String =
+		checkNotNull(savedStateHandle[MAIN_BOSS_ARGUMENT_KEY])
+	private val _mainBoss = MutableStateFlow<MainBoss?>(null)
+	private val _relatedForsakenAltar = MutableStateFlow<PointOfInterest?>(null)
+	private val _sacrificialStones = MutableStateFlow<PointOfInterest?>(null)
+	private val _dropItems = MutableStateFlow<List<Material>>(emptyList())
+	private val _relatedSummoningItems = MutableStateFlow<List<Material>>(emptyList())
+	private val _relatedBiome = MutableStateFlow<Biome?>(null)
+	private val _trophy = MutableStateFlow<Material?>(null)
 
-    private val _isLoading = MutableStateFlow(false)
-    private val _error = MutableStateFlow<String?>(null)
-
-
-    val uiState = combine(
-        _mainBoss,
-        _relatedForsakenAltar,
-        _sacrificialStones,
-        _dropItems,
-        _relatedSummoningItems,
-        _relatedBiome,
-        _trophy,
-        _isLoading,
-        _error
-    ) { values ->
-        @Suppress("UNCHECKED_CAST")
-        (MainBossDetailUiState(
-            mainBoss = values[0] as MainBoss?,
-            relatedForsakenAltar = values[1] as PointOfInterest?,
-            sacrificialStones = values[2] as PointOfInterest?,
-            dropItems = values[3] as List<Material>,
-            relatedSummoningItems = values[4] as List<Material>,
-            relatedBiome = values[5] as Biome?,
-            trophy = values[6] as Material?,
-            isLoading = values[7] as Boolean,
-            error = values[8] as String?
-        ))
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.Companion.WhileSubscribed(5000),
-        initialValue = MainBossDetailUiState()
-    )
+	private val _isLoading = MutableStateFlow(false)
+	private val _error = MutableStateFlow<String?>(null)
 
 
-    init {
-        launch()
-    }
+	val uiState = combine(
+		_mainBoss,
+		_relatedForsakenAltar,
+		_sacrificialStones,
+		_dropItems,
+		_relatedSummoningItems,
+		_relatedBiome,
+		_trophy,
+		_isLoading,
+		_error
+	) { values ->
+		@Suppress("UNCHECKED_CAST")
+		(MainBossDetailUiState(
+			mainBoss = values[0] as MainBoss?,
+			relatedForsakenAltar = values[1] as PointOfInterest?,
+			sacrificialStones = values[2] as PointOfInterest?,
+			dropItems = values[3] as List<Material>,
+			relatedSummoningItems = values[4] as List<Material>,
+			relatedBiome = values[5] as Biome?,
+			trophy = values[6] as Material?,
+			isLoading = values[7] as Boolean,
+			error = values[8] as String?
+		))
+	}.stateIn(
+		scope = viewModelScope,
+		started = SharingStarted.Companion.WhileSubscribed(5000),
+		initialValue = MainBossDetailUiState()
+	)
 
 
-    fun launch() {
-
-        try {
-            _isLoading.value = true
-            viewModelScope.launch(Dispatchers.IO) {
-                _mainBoss.value = CreatureFactory.createFromCreature(
-                    creatureUseCases.getCreatureById(mainBossId).first()
-                )
+	init {
+		launch()
+	}
 
 
-                val relatedIds: List<String> = async {
-                    relationUseCases.getRelatedIdsUseCase(mainBossId)
-                        .first()
-                        .map { it.id }
-                }.await()
+	fun launch() {
 
-                val deferreds = listOf(
-                    async {
-                        val pointOfInterestList = pointOfInterestUseCases
-                            .getPointsOfInterestBySubCategoryUseCase(PointOfInterestSubCategory.FORSAKEN_ALTAR)
-                            .first()
-
-                        val poiList = pointOfInterestUseCases
-                            .getPointsOfInterestBySubCategoryUseCase(PointOfInterestSubCategory.STRUCTURE)
-                            .first()
-
-                        _sacrificialStones.value = poiList.find {
-                            it.imageUrl == "https://static.wikia.nocookie.net/valheim/images/2/29/Sarcrifial_Stones.jpg/revision/latest?cb=20230416093844"
-                        }
-
-                        _relatedForsakenAltar.value = pointOfInterestList.find {
-                            it.id in relatedIds
-                        }
+		try {
+			_isLoading.value = true
+			viewModelScope.launch(Dispatchers.IO) {
+				_mainBoss.value = CreatureFactory.createFromCreature(
+					creatureUseCases.getCreatureById(mainBossId).first()
+				)
 
 
-                    },
-                    async {
-                        val biome = biomeUseCases.getLocalBiomesUseCase().first()
-                        _relatedBiome.value = biome.find {
-                            it.id in relatedIds
-                        }
-                    },
-                    async {
+				val relatedIds: List<String> = async {
+					relationUseCases.getRelatedIdsUseCase(mainBossId)
+						.first()
+						.map { it.id }
+				}.await()
 
-                        val relatedAltarOfferings = materialUseCases.getMaterialsBySubCategory(
-                            subCategory = MaterialSubCategory.FORSAKEN_ALTAR_OFFERING,
-                        ).first().filter { it.id in relatedIds }
+				val deferreds = listOf(
+					async {
+						val pointOfInterestList = pointOfInterestUseCases
+							.getPointsOfInterestBySubCategoryUseCase(PointOfInterestSubCategory.FORSAKEN_ALTAR)
+							.first()
 
-                        val relevantCreatureDrops = materialUseCases.getMaterialsBySubCategory(
-                            MaterialSubCategory.CREATURE_DROP
-                        ).first().filter { it.id in relatedIds }
+						val poiList = pointOfInterestUseCases
+							.getPointsOfInterestBySubCategoryUseCase(PointOfInterestSubCategory.STRUCTURE)
+							.first()
 
-                        val allRelevantDrops = relatedAltarOfferings + relevantCreatureDrops
-                        _relatedSummoningItems.value = allRelevantDrops.distinctBy { it.id }
+						_sacrificialStones.value = poiList.find {
+							it.imageUrl == "https://static.wikia.nocookie.net/valheim/images/2/29/Sarcrifial_Stones.jpg/revision/latest?cb=20230416093844"
+						}
+
+						_relatedForsakenAltar.value = pointOfInterestList.find {
+							it.id in relatedIds
+						}
 
 
-                    },
-                    async {
+					},
+					async {
+						val biome = biomeUseCases.getLocalBiomesUseCase().first()
+						_relatedBiome.value = biome.find {
+							it.id in relatedIds
+						}
+					},
+					async {
 
-                        val materials = materialUseCases.getMaterialsBySubCategory(
-                            MaterialSubCategory.BOSS_DROP
-                        ).first()
-                        _dropItems.value = materials.filter { material ->
-                            material.id in relatedIds
-                        }
+						val relatedAltarOfferings = materialUseCases.getMaterialsBySubCategory(
+							subCategory = MaterialSubCategory.FORSAKEN_ALTAR_OFFERING,
+						).first().filter { it.id in relatedIds }
 
-                        _trophy.value = materials.filter { material ->
-                            (material.id in relatedIds)
-                        }.find {
-                            it.subType == MaterialSubType.TROPHY.toString()
-                        }
+						val relevantCreatureDrops = materialUseCases.getMaterialsBySubCategory(
+							MaterialSubCategory.CREATURE_DROP
+						).first().filter { it.id in relatedIds }
 
-                    }
-                )
+						val allRelevantDrops = relatedAltarOfferings + relevantCreatureDrops
+						_relatedSummoningItems.value = allRelevantDrops.distinctBy { it.id }
 
-                deferreds.awaitAll()
 
-            }
-            _isLoading.value = false
-        } catch (e: Exception) {
-            Log.e("General fetch error BiomeDetailViewModel", e.message.toString())
-            _isLoading.value = false
-            _error.value = e.message
-        }
-    }
+					},
+					async {
+
+						val materials = materialUseCases.getMaterialsBySubCategory(
+							MaterialSubCategory.BOSS_DROP
+						).first()
+						_dropItems.value = materials.filter { material ->
+							material.id in relatedIds
+						}
+
+						_trophy.value = materials.filter { material ->
+							(material.id in relatedIds)
+						}.find {
+							it.subType == MaterialSubType.TROPHY.toString()
+						}
+
+					}
+				)
+
+				deferreds.awaitAll()
+
+			}
+			_isLoading.value = false
+		} catch (e: Exception) {
+			Log.e("General fetch error BiomeDetailViewModel", e.message.toString())
+			_isLoading.value = false
+			_error.value = e.message
+		}
+	}
 }

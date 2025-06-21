@@ -32,7 +32,7 @@ import com.composables.icons.lucide.TestTubeDiagonal
 import com.composables.icons.lucide.Wheat
 import com.composables.icons.lucide.Wrench
 import com.rabbitv.valheimviki.R
-import com.rabbitv.valheimviki.domain.model.tool.ToolSubCategory
+import com.rabbitv.valheimviki.domain.model.item_tool.ToolSubCategory
 import com.rabbitv.valheimviki.domain.model.ui_state.category_state.UiCategoryState
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.ListContent
@@ -48,113 +48,113 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ToolListScreen(
-    onItemClick: (String, ToolSubCategory) -> Unit,
-    modifier: Modifier,
-    paddingValues: PaddingValues,
-    viewModel: ToolListViewModel = hiltViewModel()
+	onItemClick: (String, ToolSubCategory) -> Unit,
+	modifier: Modifier,
+	paddingValues: PaddingValues,
+	viewModel: ToolListViewModel = hiltViewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val lazyListState = rememberLazyListState()
-    val scope = rememberCoroutineScope()
-    val backButtonVisibleState by remember {
-        derivedStateOf { lazyListState.firstVisibleItemIndex >= 2 }
-    }
+	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+	val lazyListState = rememberLazyListState()
+	val scope = rememberCoroutineScope()
+	val backButtonVisibleState by remember {
+		derivedStateOf { lazyListState.firstVisibleItemIndex >= 2 }
+	}
 
 
-    Surface(
-        color = Color.Transparent,
-        modifier = Modifier
+	Surface(
+		color = Color.Transparent,
+		modifier = Modifier
             .testTag("FoodListSurface")
             .fillMaxSize()
             .padding(paddingValues)
-    ) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            Column(
-                modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                SearchFilterBar(
-                    chips = getChipsForCategory(),
-                    selectedOption = uiState.selectedCategory,
-                    onSelectedChange = { _, subCategory ->
-                        if (uiState.selectedCategory == subCategory) {
-                            viewModel.onChipSelected(null)
-                        } else {
-                            viewModel.onChipSelected(subCategory)
-                        }
-                    },
-                    modifier = Modifier,
-                )
-                Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
+	) {
+		Box(modifier = Modifier.fillMaxSize()) {
+			Column(
+				modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+				horizontalAlignment = Alignment.CenterHorizontally
+			) {
+				SearchFilterBar(
+					chips = getChipsForCategory(),
+					selectedOption = uiState.selectedCategory,
+					onSelectedChange = { _, subCategory ->
+						if (uiState.selectedCategory == subCategory) {
+							viewModel.onChipSelected(null)
+						} else {
+							viewModel.onChipSelected(subCategory)
+						}
+					},
+					modifier = Modifier,
+				)
+				Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
 
-                Box(modifier = Modifier.fillMaxSize()) {
-                    when (val state = uiState) {
-                        is UiCategoryState.Error -> EmptyScreen(errorMessage = state.message.toString())
-                        is UiCategoryState.Loading -> {
-                            Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
-                            ShimmerListEffect()
-                        }
+				Box(modifier = Modifier.fillMaxSize()) {
+					when (val state = uiState) {
+						is UiCategoryState.Error -> EmptyScreen(errorMessage = state.message.toString())
+						is UiCategoryState.Loading -> {
+							Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
+							ShimmerListEffect()
+						}
 
-                        is UiCategoryState.Success -> ListContent(
-                            items = state.list,
-                            clickToNavigate = { s, i -> {} },
-                            lazyListState = lazyListState,
-                            subCategoryNumber = 0,
-                            imageScale = ContentScale.Fit,
-                            horizontalPadding = 0.dp
-                        )
-                    }
-                }
-            }
+						is UiCategoryState.Success -> ListContent(
+							items = state.list,
+							clickToNavigate = { s, i -> {} },
+							lazyListState = lazyListState,
+							subCategoryNumber = 0,
+							imageScale = ContentScale.Fit,
+							horizontalPadding = 0.dp
+						)
+					}
+				}
+			}
 
-            CustomFloatingActionButton(
-                showBackButton = backButtonVisibleState,
-                onClick = {
-                    scope.launch {
-                        lazyListState.animateScrollToItem(0)
-                    }
-                },
-                modifier = Modifier
+			CustomFloatingActionButton(
+				showBackButton = backButtonVisibleState,
+				onClick = {
+					scope.launch {
+						lazyListState.animateScrollToItem(0)
+					}
+				},
+				modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(BODY_CONTENT_PADDING.dp)
-            )
-        }
-    }
+			)
+		}
+	}
 }
 
 
 @Composable
 private fun getChipsForCategory(): List<ToolChip> {
-    return listOf(
-        ToolChip(
-            ToolSubCategory.MEAD_CONSUMPTION,
-            Lucide.TestTubeDiagonal,
-            "Mead consumption"
-        ),
-        ToolChip(
-            ToolSubCategory.BUILDING,
-            Lucide.Wrench,
-            "Building"
-        ),
-        ToolChip(
-            ToolSubCategory.PICKAXES,
-            Lucide.Pickaxe,
-            "Pickaxe"
-        ),
-        ToolChip(
-            ToolSubCategory.TRAVERSAL,
-            Lucide.Diamond,
-            "Accessories"
-        ),
-        ToolChip(
-            ToolSubCategory.FARMING,
-            Lucide.Wheat,
-            "Farming"
-        ),
-        ToolChip(
-            ToolSubCategory.FISHING,
-            ImageVector.vectorResource(id = R.drawable.fishing_rod),
-            "Fishing"
-        ),
-    )
+	return listOf(
+		ToolChip(
+			ToolSubCategory.MEAD_CONSUMPTION,
+			Lucide.TestTubeDiagonal,
+			"Mead consumption"
+		),
+		ToolChip(
+			ToolSubCategory.BUILDING,
+			Lucide.Wrench,
+			"Building"
+		),
+		ToolChip(
+			ToolSubCategory.PICKAXES,
+			Lucide.Pickaxe,
+			"Pickaxe"
+		),
+		ToolChip(
+			ToolSubCategory.TRAVERSAL,
+			Lucide.Diamond,
+			"Accessories"
+		),
+		ToolChip(
+			ToolSubCategory.FARMING,
+			Lucide.Wheat,
+			"Farming"
+		),
+		ToolChip(
+			ToolSubCategory.FISHING,
+			ImageVector.vectorResource(id = R.drawable.fishing_rod),
+			"Fishing"
+		),
+	)
 }

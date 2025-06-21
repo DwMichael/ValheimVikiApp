@@ -104,9 +104,8 @@ fun LevelInfoCard(
     val hasFoodForLevel = foodForUpgrade.any { food ->
         food.quantityList.getOrNull(level)?.let { it > 0 } ?: false
     }
-    Log.e("LevelInfoCard", "hasMaterialsForLevel: $hasMaterialsForLevel")
     val canUpgradeToLevel = hasMaterialsForLevel || hasFoodForLevel
-    Log.e("canUpgradeToLevel", "canUpgradeToLevel: $canUpgradeToLevel")
+
     Card(
         modifier = modifier
             .fillMaxWidth()

@@ -59,22 +59,22 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun WelcomeScreen(
-    navController: NavHostController,
-    welcomeViewModel: WelcomeViewModel = hiltViewModel()
+	navController: NavHostController,
+	welcomeViewModel: WelcomeViewModel = hiltViewModel()
 ) {
 
 
-    val pages = listOf(
-        OnBoardingPage.First,
-        OnBoardingPage.Second,
-        OnBoardingPage.Third
-    )
-    val pagerState = rememberPagerState { pages.size }
-    val currentPage = pagerState.currentPage
-    val horizontalPadding = 16.dp
-    val scope = rememberCoroutineScope()
-    Column(
-        modifier = Modifier
+	val pages = listOf(
+		OnBoardingPage.First,
+		OnBoardingPage.Second,
+		OnBoardingPage.Third
+	)
+	val pagerState = rememberPagerState { pages.size }
+	val currentPage = pagerState.currentPage
+	val horizontalPadding = 16.dp
+	val scope = rememberCoroutineScope()
+	Column(
+		modifier = Modifier
             .testTag("WelcomeScreen")
             .fillMaxSize()
             .paint(
@@ -82,35 +82,35 @@ fun WelcomeScreen(
                 contentScale = ContentScale.Crop
             )
             .padding(bottom = 50.dp)
-    ) {
-        HorizontalPager(
-            state = pagerState,
-            verticalAlignment = Alignment.Top,
-            modifier = Modifier
+	) {
+		HorizontalPager(
+			state = pagerState,
+			verticalAlignment = Alignment.Top,
+			modifier = Modifier
                 .weight(7f)
                 .fillMaxWidth()
-        ) { position ->
+		) { position ->
 
-            PagerScreen(onBoardingPage = pages[position], position, horizontalPadding)
-        }
-        NavigationButton(
-            pages[currentPage],
-            horizontalPadding,
-            pagerState,
-            scope,
-            navController,
-            welcomeViewModel
-        )
-        Row(
-            modifier = Modifier
+			PagerScreen(onBoardingPage = pages[position], position, horizontalPadding)
+		}
+		NavigationButton(
+			pages[currentPage],
+			horizontalPadding,
+			pagerState,
+			scope,
+			navController,
+			welcomeViewModel
+		)
+		Row(
+			modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            repeat(pages.size) { page ->
-                Box(
-                    modifier = Modifier
+			horizontalArrangement = Arrangement.Center,
+			verticalAlignment = Alignment.CenterVertically
+		) {
+			repeat(pages.size) { page ->
+				Box(
+					modifier = Modifier
                         .width(12.dp)
                         .height(12.dp)
                         .clip(CircleShape)
@@ -120,44 +120,44 @@ fun WelcomeScreen(
                             else
                                 MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                         )
-                )
-                if (page < pages.size - 1) {
-                    Spacer(Modifier.width(8.dp))
-                }
-            }
-        }
+				)
+				if (page < pages.size - 1) {
+					Spacer(Modifier.width(8.dp))
+				}
+			}
+		}
 
 
-    }
+	}
 
 }
 
 
 @Composable
 fun PagerScreen(onBoardingPage: OnBoardingPage, position: Int, horizontalPadding: Dp) {
-    Column(
-        modifier = Modifier
+	Column(
+		modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = horizontalPadding),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        if (position == 0) {
-            Image(
-                painter = painterResource(id = R.drawable.viking_logo_hd),
-                contentDescription = "VikingLogo",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
+		verticalArrangement = Arrangement.Center,
+		horizontalAlignment = Alignment.CenterHorizontally
+	) {
+		if (position == 0) {
+			Image(
+				painter = painterResource(id = R.drawable.viking_logo_hd),
+				contentDescription = "VikingLogo",
+				contentScale = ContentScale.Crop,
+				modifier = Modifier
                     .size(260.dp)
                     .clip(CircleShape)
-            )
-            Spacer(modifier = Modifier.height(24.dp))
-        }
-        Text(
-            modifier = Modifier.testTag("AppTitle"),
-            text = onBoardingPage.title,
-            style = MaterialTheme.typography.displayLarge,
-            color = Color.White
+			)
+			Spacer(modifier = Modifier.height(24.dp))
+		}
+		Text(
+			modifier = Modifier.testTag("AppTitle"),
+			text = onBoardingPage.title,
+			style = MaterialTheme.typography.displayLarge,
+			color = Color.White
 //            style = TextStyle(
 //                color = Color.PrimaryWhite,
 //                fontSize = 48.sp,
@@ -166,105 +166,105 @@ fun PagerScreen(onBoardingPage: OnBoardingPage, position: Int, horizontalPadding
 //                lineHeight = 62.sp,
 //                textAlign = TextAlign.Center
 //            )
-        )
-        Spacer(modifier = Modifier.height(18.dp))
-        Text(
-            text = onBoardingPage.description,
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.labelLarge, // Now style is correctly used
-            color = Color.White
-        )
+		)
+		Spacer(modifier = Modifier.height(18.dp))
+		Text(
+			text = onBoardingPage.description,
+			textAlign = TextAlign.Center,
+			style = MaterialTheme.typography.labelLarge, // Now style is correctly used
+			color = Color.White
+		)
 
 
-    }
+	}
 }
 
 @Composable
 fun NavigationButton(
-    onBoardingPage: OnBoardingPage,
-    horizontalPadding: Dp,
-    pagerState: PagerState,
-    scope: CoroutineScope,
-    navController: NavHostController,
-    welcomeViewModel: WelcomeViewModel
+	onBoardingPage: OnBoardingPage,
+	horizontalPadding: Dp,
+	pagerState: PagerState,
+	scope: CoroutineScope,
+	navController: NavHostController,
+	welcomeViewModel: WelcomeViewModel
 ) {
-    ElevatedButton(
-        onClick = {
-            scope.launch {
-                if (pagerState.currentPage != LAST_ON_BOARDING_PAGE) {
-                    pagerState.scrollToPage(pagerState.currentPage + 1)
-                } else {
-                    welcomeViewModel.saveOnBoardingState(completed = true)
-                    navController.popBackStack()
-                    navController.navigate(Screen.Biome.route)
-                }
-            }
-        },
-        modifier = Modifier
+	ElevatedButton(
+		onClick = {
+			scope.launch {
+				if (pagerState.currentPage != LAST_ON_BOARDING_PAGE) {
+					pagerState.scrollToPage(pagerState.currentPage + 1)
+				} else {
+					welcomeViewModel.saveOnBoardingState(completed = true)
+					navController.popBackStack()
+					navController.navigate(Screen.BiomeList)
+				}
+			}
+		},
+		modifier = Modifier
             .height(64.dp)
             .fillMaxWidth()
             .padding(horizontal = horizontalPadding),
-        shape = RoundedCornerShape(12.dp),
-        colors = ButtonDefaults.elevatedButtonColors(
-            containerColor = ForestGreen10Dark,
-            contentColor = Color.White,
-            disabledContainerColor = ForestGreen10Dark.copy(alpha = 0.5f),
-            disabledContentColor = Color.White.copy(alpha = 0.5f)
-        ),
-        contentPadding = PaddingValues(horizontal = horizontalPadding, vertical = 8.dp),
-        interactionSource = remember { MutableInteractionSource() }
-    ) {
-        Text(
-            text = onBoardingPage.buttonTitle,
-            style = TextStyle(
-                color = Color.White,
-                fontSize = 16.sp,
-                fontWeight = FontWeight(600),
-                letterSpacing = 0.6.sp,
-                lineHeight = 22.sp,
-                textAlign = TextAlign.Center
-            )
-        )
-    }
+		shape = RoundedCornerShape(12.dp),
+		colors = ButtonDefaults.elevatedButtonColors(
+			containerColor = ForestGreen10Dark,
+			contentColor = Color.White,
+			disabledContainerColor = ForestGreen10Dark.copy(alpha = 0.5f),
+			disabledContentColor = Color.White.copy(alpha = 0.5f)
+		),
+		contentPadding = PaddingValues(horizontal = horizontalPadding, vertical = 8.dp),
+		interactionSource = remember { MutableInteractionSource() }
+	) {
+		Text(
+			text = onBoardingPage.buttonTitle,
+			style = TextStyle(
+				color = Color.White,
+				fontSize = 16.sp,
+				fontWeight = FontWeight(600),
+				letterSpacing = 0.6.sp,
+				lineHeight = 22.sp,
+				textAlign = TextAlign.Center
+			)
+		)
+	}
 }
 
 
 @Composable
 @Preview(showBackground = true, backgroundColor = 0xFF000000)
 fun FirstOnBoardingScreenPreview() {
-    ValheimVikiAppTheme {
-        Column(modifier = Modifier.fillMaxSize()) {
-            PagerScreen(onBoardingPage = OnBoardingPage.First, 0, 16.dp)
-        }
-    }
+	ValheimVikiAppTheme {
+		Column(modifier = Modifier.fillMaxSize()) {
+			PagerScreen(onBoardingPage = OnBoardingPage.First, 0, 16.dp)
+		}
+	}
 }
 
 @Composable
 @Preview(showBackground = true, backgroundColor = 0xFF000000)
 fun SecondOnBoardingScreenPreview() {
-    ValheimVikiAppTheme {
-        Column(modifier = Modifier.fillMaxSize()) {
-            PagerScreen(onBoardingPage = OnBoardingPage.Second, 1, 16.dp)
-        }
-    }
+	ValheimVikiAppTheme {
+		Column(modifier = Modifier.fillMaxSize()) {
+			PagerScreen(onBoardingPage = OnBoardingPage.Second, 1, 16.dp)
+		}
+	}
 }
 
 @Composable
 @Preview(showBackground = true, backgroundColor = 0xFF000000)
 fun ThirdOnBoardingScreenPreview() {
-    ValheimVikiAppTheme {
-        Column(modifier = Modifier.fillMaxSize()) {
-            PagerScreen(onBoardingPage = OnBoardingPage.Third, 2, 16.dp)
-        }
-    }
+	ValheimVikiAppTheme {
+		Column(modifier = Modifier.fillMaxSize()) {
+			PagerScreen(onBoardingPage = OnBoardingPage.Third, 2, 16.dp)
+		}
+	}
 }
 
 
 @Preview(name = "WelcomePage")
 @Composable
 private fun PreviewWelcomePage() {
-    ValheimVikiAppTheme {
-        val navController = rememberNavController()
-        WelcomeScreen(navController = navController)
-    }
+	ValheimVikiAppTheme {
+		val navController = rememberNavController()
+		WelcomeScreen(navController = navController)
+	}
 }
