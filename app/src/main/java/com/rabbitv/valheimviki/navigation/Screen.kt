@@ -63,15 +63,15 @@ sealed class Screen() {
 	data object PointOfInterest : Screen()
 
 	@Serializable
-	data class BiomeDetail(
-		val biomeId: String
-	)
-
-	@Serializable
 	data object MaterialGraph : Screen()
 
 	@Serializable
 	data object BuildingMaterialsGraph : Screen()
+
+	@Serializable
+	data class BiomeDetail(
+		val biomeId: String
+	)
 
 	@Serializable
 	data class MainBossDetail(

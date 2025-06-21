@@ -16,7 +16,6 @@ import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.PointOfInterestUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.presentation.detail.creature.mini_boss_screen.model.MiniBossDetailUiState
-import com.rabbitv.valheimviki.utils.Constants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -31,100 +30,100 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MiniBossDetailScreenViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
-    private val creatureUseCases: CreatureUseCases,
-    private val pointOfInterestUseCases: PointOfInterestUseCases,
-    private val materialUseCases: MaterialUseCases,
-    private val relationUseCases: RelationUseCases,
+	savedStateHandle: SavedStateHandle,
+	private val creatureUseCases: CreatureUseCases,
+	private val pointOfInterestUseCases: PointOfInterestUseCases,
+	private val materialUseCases: MaterialUseCases,
+	private val relationUseCases: RelationUseCases,
 ) : ViewModel() {
-    private val miniBossId: String =
-        checkNotNull(savedStateHandle[Constants.MINI_BOSS_ARGUMENT_KEY])
-    private val _miniBoss = MutableStateFlow<MiniBoss?>(null)
-    private val _primarySpawn = MutableStateFlow<PointOfInterest?>(null)
-    private val _dropItems = MutableStateFlow<List<Material>>(emptyList())
-    private val _isLoading = MutableStateFlow(false)
-    private val _error = MutableStateFlow<String?>(null)
+	private val miniBossId: String =
+		checkNotNull(savedStateHandle["miniBossId"])
+	private val _miniBoss = MutableStateFlow<MiniBoss?>(null)
+	private val _primarySpawn = MutableStateFlow<PointOfInterest?>(null)
+	private val _dropItems = MutableStateFlow<List<Material>>(emptyList())
+	private val _isLoading = MutableStateFlow(false)
+	private val _error = MutableStateFlow<String?>(null)
 
-    val uiState = combine(
-        _miniBoss,
-        _primarySpawn,
-        _dropItems,
-        _isLoading,
-        _error,
-    ) { values ->
-        @Suppress("UNCHECKED_CAST")
-        (MiniBossDetailUiState(
-            miniBoss = values[0] as MiniBoss?,
-            primarySpawn = values[1] as PointOfInterest?,
-            dropItems = values[2] as List<Material>,
-            isLoading = values[3] as Boolean,
-            error = values[4] as String?
-        ))
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = MiniBossDetailUiState()
-    )
+	val uiState = combine(
+		_miniBoss,
+		_primarySpawn,
+		_dropItems,
+		_isLoading,
+		_error,
+	) { values ->
+		@Suppress("UNCHECKED_CAST")
+		(MiniBossDetailUiState(
+			miniBoss = values[0] as MiniBoss?,
+			primarySpawn = values[1] as PointOfInterest?,
+			dropItems = values[2] as List<Material>,
+			isLoading = values[3] as Boolean,
+			error = values[4] as String?
+		))
+	}.stateIn(
+		scope = viewModelScope,
+		started = SharingStarted.WhileSubscribed(5000),
+		initialValue = MiniBossDetailUiState()
+	)
 
-    init {
-        launch()
-    }
-
-
-    fun launch() {
-
-        try {
-            _isLoading.value = true
-            viewModelScope.launch(Dispatchers.IO) {
-
-                _miniBoss.value = CreatureFactory.createFromCreature(
-                    creatureUseCases.getCreatureById(miniBossId).first()
-                )
-
-                val relatedIds: List<String> = async {
-                    relationUseCases.getRelatedIdsUseCase(miniBossId)
-                        .first()
-                        .map { it.id }
-                }.await()
+	init {
+		launch()
+	}
 
 
-                val deferreds = listOf(
-                    async {
-                        try {
-                            val pointOfInterest =
-                                pointOfInterestUseCases.getPointsOfInterestByIdsUseCase(relatedIds)
-                                    .first()
-                            _primarySpawn.value = pointOfInterest.find {
-                                it.id in relatedIds
-                            }
-                        } catch (e: PointOfInterestByIdsFetchLocalException) {
-                            _primarySpawn.value = null
-                        } catch (e: Exception) {
-                            throw e
-                        }
+	fun launch() {
 
-                    },
-                    async {
-                        try {
-                            val materials = materialUseCases.getMaterialsBySubCategory(
-                                MaterialSubCategory.MINI_BOSS_DROP
-                            )
-                            _dropItems.value = materials.first().filter { material ->
-                                material.id in relatedIds
-                            }
-                        } catch (e: MaterialsFetchLocalException) {
-                            _dropItems.value = emptyList()
-                        }
-                        //TODO: FOR LORD RETO MAYBE ADD AS MATERIALS fragments for DYRNWYN
-                    }
-                )
-                deferreds.awaitAll()
-            }
-            _isLoading.value = false
-        } catch (e: Exception) {
-            Log.e("General fetch error BiomeDetailViewModel", e.message.toString())
-            _isLoading.value = false
-            _error.value = e.message
-        }
-    }
+		try {
+			_isLoading.value = true
+			viewModelScope.launch(Dispatchers.IO) {
+
+				_miniBoss.value = CreatureFactory.createFromCreature(
+					creatureUseCases.getCreatureById(miniBossId).first()
+				)
+
+				val relatedIds: List<String> = async {
+					relationUseCases.getRelatedIdsUseCase(miniBossId)
+						.first()
+						.map { it.id }
+				}.await()
+
+
+				val deferreds = listOf(
+					async {
+						try {
+							val pointOfInterest =
+								pointOfInterestUseCases.getPointsOfInterestByIdsUseCase(relatedIds)
+									.first()
+							_primarySpawn.value = pointOfInterest.find {
+								it.id in relatedIds
+							}
+						} catch (e: PointOfInterestByIdsFetchLocalException) {
+							_primarySpawn.value = null
+						} catch (e: Exception) {
+							throw e
+						}
+
+					},
+					async {
+						try {
+							val materials = materialUseCases.getMaterialsBySubCategory(
+								MaterialSubCategory.MINI_BOSS_DROP
+							)
+							_dropItems.value = materials.first().filter { material ->
+								material.id in relatedIds
+							}
+						} catch (e: MaterialsFetchLocalException) {
+							_dropItems.value = emptyList()
+						}
+						//TODO: FOR LORD RETO MAYBE ADD AS MATERIALS fragments for DYRNWYN
+					}
+				)
+				deferreds.awaitAll()
+			}
+			_isLoading.value = false
+		} catch (e: Exception) {
+			Log.e("General fetch error BiomeDetailViewModel", e.message.toString())
+			_isLoading.value = false
+			_error.value = e.message
+		}
+	}
 }

@@ -64,7 +64,6 @@ import com.composables.icons.lucide.Utensils
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.creature.CreatureSubCategory
 import com.rabbitv.valheimviki.domain.model.food.FoodSubCategory
-import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterestSubCategory
 import com.rabbitv.valheimviki.presentation.armor.ArmorListScreen
 import com.rabbitv.valheimviki.presentation.biome.BiomeScreen
 import com.rabbitv.valheimviki.presentation.building_material.BuildingMaterialCategoryScreen
@@ -454,12 +453,7 @@ fun ValheimNavGraph(
 		composable<Screen.PointOfInterest> {
 			PoiListScreen(
 				modifier = Modifier.padding(10.dp),
-				onItemClick = { poiId, poiSubCategory: PointOfInterestSubCategory ->
-					when (poiSubCategory) {
-						PointOfInterestSubCategory.FORSAKEN_ALTAR -> null
-						PointOfInterestSubCategory.STRUCTURE -> null
-					}
-				},
+				onItemClick = { _, _ -> {} },
 				paddingValues = innerPadding,
 			)
 		}
@@ -486,9 +480,7 @@ fun ValheimNavGraph(
 		) {
 			val animatedContentScope = this
 			BiomeDetailScreen(
-				onBack = {
-					valheimVikiNavController.popBackStack()
-				},
+				onBack = { valheimVikiNavController.popBackStack() },
 				animatedVisibilityScope = animatedContentScope
 			)
 		}
