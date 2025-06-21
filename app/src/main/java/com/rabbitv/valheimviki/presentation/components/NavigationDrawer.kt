@@ -68,154 +68,161 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 data class DrawerItem(
-    val iconPainter: Painter? = null,
-    val icon: ImageVector? = null,
-    val label: String,
-    val contentDescription: String,
-    val route: String = label
-)
+	val iconPainter: Painter? = null,
+	val icon: ImageVector? = null,
+	val label: String,
+	val contentDescription: String,
+	val screen: Screen
+) {
+	val screenName: String
+		get() = screen::class.simpleName ?: ""
+}
 
 @Composable
 fun NavigationDrawer(
-    modifier: Modifier,
-    drawerState: DrawerState,
-    scope: CoroutineScope,
-    childNavController: NavHostController,
-    items: List<DrawerItem>,
-    selectedItem: MutableState<DrawerItem>,
-    isDetailScreen: Boolean,
-    isTransitionActive: Boolean,
-    currentRoute: String?,
-    content: @Composable () -> Unit,
+	modifier: Modifier,
+	drawerState: DrawerState,
+	scope: CoroutineScope,
+	childNavController: NavHostController,
+	items: List<DrawerItem>,
+	selectedItem: MutableState<DrawerItem>,
+	isDetailScreen: Boolean,
+	isTransitionActive: Boolean,
+	currentRoute: String?,
+	content: @Composable () -> Unit,
 
-    ) {
-    ModalNavigationDrawer(
-        modifier = modifier
+	) {
+	ModalNavigationDrawer(
+		modifier = modifier
             .fillMaxSize()
             .testTag("NavigationDrawer"),
-        drawerState = drawerState,
-        gesturesEnabled = isDetailScreen && !isTransitionActive,
-        drawerContent = {
-            ModalDrawerSheet(
-                modifier = Modifier.fillMaxWidth(0.92f),
-                drawerContainerColor = ForestGreen40Dark,
-            ) {
-                Column(
-                    Modifier.verticalScroll(rememberScrollState()),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
+		drawerState = drawerState,
+		gesturesEnabled = isDetailScreen && !isTransitionActive,
+		drawerContent = {
+			ModalDrawerSheet(
+				modifier = Modifier.fillMaxWidth(0.92f),
+				drawerContainerColor = ForestGreen40Dark,
+			) {
+				Column(
+					Modifier.verticalScroll(rememberScrollState()),
+					verticalArrangement = Arrangement.Center,
+					horizontalAlignment = Alignment.CenterHorizontally
 
-                ) {
-                    Spacer(Modifier.height(12.dp))
-                    Row(
-                        modifier = Modifier
+				) {
+					Spacer(Modifier.height(12.dp))
+					Row(
+						modifier = Modifier
                             .fillMaxWidth()
                             .padding(start = 12.dp, top = 0.dp, end = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Start
+						verticalAlignment = Alignment.CenterVertically,
+						horizontalArrangement = Arrangement.Start
 
-                    ) {
-                        Image(
-                            modifier = Modifier
-                                .size(42.dp),
-                            painter = painterResource(R.drawable.viking),
-                            contentDescription = "DrawerLogoImage",
-                            contentScale = ContentScale.FillBounds,
-                        )
-                        Spacer(modifier.padding(12.dp))
-                        Text(
-                            text = "ValheimViki",
-                            fontWeight = FontWeight.Medium,
-                            fontSize = 28.sp,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer,
-                        )
-                    }
-                    Spacer(Modifier.height(12.dp))
-                    HorizontalDivider()
-                    Spacer(Modifier.height(12.dp))
-                    items.forEach { item ->
-                        NavigationDrawerItem(
-                            colors = NavigationDrawerItemDefaults.colors(
-                                selectedIconColor = PrimaryText,
-                                selectedTextColor = PrimaryText,
-                                selectedContainerColor = ForestGreen10Dark,
-                                unselectedIconColor = PrimaryWhite,
-                                unselectedTextColor = PrimaryWhite,
-                                unselectedContainerColor = Color.Transparent,
-                            ),
-                            icon = {
-                                if (item.iconPainter != null) {
-                                    Icon(
-                                        painter = item.iconPainter,
-                                        contentDescription = item.contentDescription,
-                                        modifier = Modifier.size(24.dp)
-                                    )
-                                } else {
-                                    item.icon?.let {
-                                        Icon(
-                                            imageVector = it,
-                                            contentDescription = item.contentDescription,
-                                            modifier = Modifier.size(24.dp)
-                                        )
-                                    }
-                                }
-                            },
-                            label = {
-                                Text(
-                                    item.label,
-                                    fontWeight = FontWeight.Normal,
-                                    lineHeight = 20.sp,
-                                    fontSize = 16.sp,
-                                )
-                            },
-                            selected = (item == selectedItem.value),
-                            onClick = {
-                                if (item.route != currentRoute) {
-                                    selectedItem.value = item
-                                    childNavController.navigate(item.route) {
-                                        popUpTo(childNavController.graph.findStartDestination().id) {
-                                            saveState = true
-                                        }
-                                        launchSingleTop = true
-                                        restoreState = true
-                                    }
-                                }
-                                scope.launch { drawerState.close() }
-                            },
-                            modifier = Modifier
+					) {
+						Image(
+							modifier = Modifier
+								.size(42.dp),
+							painter = painterResource(R.drawable.viking),
+							contentDescription = "DrawerLogoImage",
+							contentScale = ContentScale.FillBounds,
+						)
+						Spacer(modifier.padding(12.dp))
+						Text(
+							text = "ValheimViki",
+							fontWeight = FontWeight.Medium,
+							fontSize = 28.sp,
+							color = MaterialTheme.colorScheme.onPrimaryContainer,
+						)
+					}
+					Spacer(Modifier.height(12.dp))
+					HorizontalDivider()
+					Spacer(Modifier.height(12.dp))
+					items.forEach { item ->
+						NavigationDrawerItem(
+							colors = NavigationDrawerItemDefaults.colors(
+								selectedIconColor = PrimaryText,
+								selectedTextColor = PrimaryText,
+								selectedContainerColor = ForestGreen10Dark,
+								unselectedIconColor = PrimaryWhite,
+								unselectedTextColor = PrimaryWhite,
+								unselectedContainerColor = Color.Transparent,
+							),
+							icon = {
+								if (item.iconPainter != null) {
+									Icon(
+										painter = item.iconPainter,
+										contentDescription = item.contentDescription,
+										modifier = Modifier.size(24.dp)
+									)
+								} else {
+									item.icon?.let {
+										Icon(
+											imageVector = it,
+											contentDescription = item.contentDescription,
+											modifier = Modifier.size(24.dp)
+										)
+									}
+								}
+							},
+							label = {
+								Text(
+									item.label,
+									fontWeight = FontWeight.Normal,
+									lineHeight = 20.sp,
+									fontSize = 16.sp,
+								)
+							},
+							selected = (item == selectedItem.value),
+							onClick = {
+								val isCurrentScreen = currentRoute?.contains(
+									item.screenName,
+									ignoreCase = true
+								) == true
+								if (!isCurrentScreen) {
+									selectedItem.value = item
+									childNavController.navigate(item.screen) {
+										popUpTo(childNavController.graph.findStartDestination().id) {
+											saveState = true
+										}
+										launchSingleTop = true
+										restoreState = true
+									}
+								}
+								scope.launch { drawerState.close() }
+							},
+							modifier = Modifier
                                 .height(48.dp)
                                 .padding(
                                     NavigationDrawerItemDefaults
                                         .ItemPadding
                                 )
-                        )
-                    }
-                    Spacer(Modifier.height(24.dp))
-                }
-            }
-        },
-    ) {
-        content()
-    }
+						)
+					}
+					Spacer(Modifier.height(24.dp))
+				}
+			}
+		},
+	) {
+		content()
+	}
 }
 
 @Preview(name = "NavigationDrawerImage", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun NavigationDrawerImage() {
 
-    ValheimVikiAppTheme {
+	ValheimVikiAppTheme {
 
-        Image(
-            modifier = Modifier
+		Image(
+			modifier = Modifier
                 .padding(start = 16.dp, top = 24.dp, end = 12.dp)
                 .size(80.dp),
-            painter = painterResource(R.drawable.viking),
-            contentDescription = "DrawerBackground",
-            contentScale = ContentScale.Crop,
+			painter = painterResource(R.drawable.viking),
+			contentDescription = "DrawerBackground",
+			contentScale = ContentScale.Crop,
 
-            )
+			)
 
-    }
+	}
 }
 
 
@@ -223,105 +230,105 @@ private fun NavigationDrawerImage() {
 @Composable
 private fun PreviewNavigationDrawer() {
 
-    val items = listOf(
-        DrawerItem(
-            icon = Lucide.MountainSnow,
-            label = "Biomes",
-            contentDescription = "List of Biomes",
-            route = Screen.Biome.route
-        ),
-        DrawerItem(
-            iconPainter = painterResource(R.drawable.skull),
-            label = "Bosses",
-            contentDescription = "Bosses section",
-            route = Screen.Boss.route
-        ),
-        DrawerItem(
-            iconPainter = painterResource(R.drawable.ogre),
-            label = "MiniBosses",
-            contentDescription = "MiniBosses section",
-            route = Screen.MiniBoss.route
-        ),
-        DrawerItem(
-            icon = Lucide.Rabbit,
-            label = "Creatures",
-            contentDescription = "Creatures section",
-            route = ""
-        ),
-        DrawerItem(
-            icon = Lucide.Swords,
-            label = "Weapons",
-            contentDescription = "Weapons section",
-            route = Screen.WeaponList.route
-        ),
-        DrawerItem(
-            icon = Lucide.Shield,
-            label = "Armor",
-            contentDescription = "Armor section",
-            route = Screen.ArmorList.route
-        ),
-        DrawerItem(
-            icon = Lucide.Utensils,
-            label = "Food",
-            contentDescription = "Food section",
-            route = Screen.FoodList.route
-        ),
-        DrawerItem(
-            icon = Lucide.FlaskRound,
-            label = "Mead",
-            contentDescription = "Mead section",
-            route = Screen.MeadList.route
-        ),
-        DrawerItem(
-            icon = Lucide.Gavel,
-            label = "Tools",
-            contentDescription = "Tools section",
-            route = Screen.ToolList.route
-        ),
-        DrawerItem(
-            icon = Lucide.Cuboid,
-            label = "Materials",
-            contentDescription = "Materials section",
-            route = Screen.MaterialCategory.route
-        ),
-        DrawerItem(
-            icon = Lucide.House,
-            label = "Building Materials",
-            contentDescription = "Building Materials section",
-            route = Screen.BuildingMaterialCategory.route
-        ),
-        DrawerItem(
-            icon = Lucide.Pickaxe,
-            label = "Ore Deposits",
-            contentDescription = "Ore Deposits section",
-            route = Screen.OreDeposit.route
-        ),
-        DrawerItem(
-            icon = Lucide.Trees,
-            label = "Trees",
-            contentDescription = "Trees section",
-            route = Screen.Tree.route
-        ),
-        DrawerItem(
-            icon = Lucide.MapPinned,
-            label = "Points Of Interest",
-            contentDescription = "Points Of Interest section",
-            route = Screen.PointOfInterest.route
-        )
-    )
-    val isAnimationRunning: MutableState<Boolean> = remember { mutableStateOf(false) }
-    ValheimVikiAppTheme {
-        NavigationDrawer(
-            modifier = Modifier,
-            drawerState = rememberDrawerState(DrawerValue.Open),
-            scope = rememberCoroutineScope(),
-            childNavController = rememberNavController(),
-            items = items,
-            selectedItem = remember { mutableStateOf(items[0]) },
-            content = {},
-            isDetailScreen = false,
+	val items = listOf(
+		DrawerItem(
+			icon = Lucide.MountainSnow,
+			label = "Biomes",
+			contentDescription = "List of Biomes",
+			screen = Screen.Biome
+		),
+		DrawerItem(
+			iconPainter = painterResource(R.drawable.skull),
+			label = "Bosses",
+			contentDescription = "Bosses section",
+			screen = Screen.Boss
+		),
+		DrawerItem(
+			iconPainter = painterResource(R.drawable.ogre),
+			label = "MiniBosses",
+			contentDescription = "MiniBosses section",
+			screen = Screen.MiniBoss
+		),
+		DrawerItem(
+			icon = Lucide.Rabbit,
+			label = "Creatures",
+			contentDescription = "Creatures section",
+			screen = Screen.MobList
+		),
+		DrawerItem(
+			icon = Lucide.Swords,
+			label = "Weapons",
+			contentDescription = "Weapons section",
+			screen = Screen.WeaponList
+		),
+		DrawerItem(
+			icon = Lucide.Shield,
+			label = "Armor",
+			contentDescription = "Armor section",
+			screen = Screen.ArmorList
+		),
+		DrawerItem(
+			icon = Lucide.Utensils,
+			label = "Food",
+			contentDescription = "Food section",
+			screen = Screen.FoodList
+		),
+		DrawerItem(
+			icon = Lucide.FlaskRound,
+			label = "Mead",
+			contentDescription = "Mead section",
+			screen = Screen.MeadList
+		),
+		DrawerItem(
+			icon = Lucide.Gavel,
+			label = "Tools",
+			contentDescription = "Tools section",
+			screen = Screen.ToolList
+		),
+		DrawerItem(
+			icon = Lucide.Cuboid,
+			label = "Materials",
+			contentDescription = "Materials section",
+			screen = Screen.MaterialCategory
+		),
+		DrawerItem(
+			icon = Lucide.House,
+			label = "Building Materials",
+			contentDescription = "Building Materials section",
+			screen = Screen.BuildingMaterialCategory
+		),
+		DrawerItem(
+			icon = Lucide.Pickaxe,
+			label = "Ore Deposits",
+			contentDescription = "Ore Deposits section",
+			screen = Screen.OreDeposit
+		),
+		DrawerItem(
+			icon = Lucide.Trees,
+			label = "Trees",
+			contentDescription = "Trees section",
+			screen = Screen.Tree
+		),
+		DrawerItem(
+			icon = Lucide.MapPinned,
+			label = "Points Of Interest",
+			contentDescription = "Points Of Interest section",
+			screen = Screen.PointOfInterest
+		)
+	)
+	val isAnimationRunning: MutableState<Boolean> = remember { mutableStateOf(false) }
+	ValheimVikiAppTheme {
+		NavigationDrawer(
+			modifier = Modifier,
+			drawerState = rememberDrawerState(DrawerValue.Open),
+			scope = rememberCoroutineScope(),
+			childNavController = rememberNavController(),
+			items = items,
+			selectedItem = remember { mutableStateOf(items[0]) },
+			content = {},
+			isDetailScreen = false,
             currentRoute = "",
-            isTransitionActive = true,
-        )
-    }
+			isTransitionActive = true,
+		)
+	}
 }
