@@ -91,13 +91,13 @@ fun AggressiveCreatureDetailContent(
     val isExpandable = remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
     Scaffold { padding ->
-        uiState.aggressiveCreature?.let {
+        uiState.aggressiveCreature?.let { aggressiveCreature ->
             HorizontalPager(
                 state = pagerState,
                 modifier = Modifier
                     .padding(padding)
                     .fillMaxWidth(),
-                beyondViewportPageCount = it.levels.size,
+                beyondViewportPageCount = aggressiveCreature.levels.size,
             ) { pageIndex ->
                 Column(
                     modifier = Modifier.verticalScroll(sharedScrollState),
@@ -105,13 +105,13 @@ fun AggressiveCreatureDetailContent(
                 ) {
                     MainDetailImage(
                         onBack = onBack,
-                        imageUrl = it.levels[pageIndex].image.toString(),
-                        name = it.name,
+                        imageUrl = aggressiveCreature.levels[pageIndex].image.toString(),
+                        name = aggressiveCreature.name,
                         textAlign = TextAlign.Center
                     )
                     PageIndicator(pagerState)
                     StarLevelRow(
-                        levelsNumber = it.levels.size,
+                        levelsNumber = aggressiveCreature.levels.size,
                         pageIndex = pageIndex,
                         paddingValues = PaddingValues(BODY_CONTENT_PADDING.dp),
                         onClick = {
@@ -128,7 +128,7 @@ fun AggressiveCreatureDetailContent(
                         color = PrimaryWhite
                     )
                     DetailExpandableText(
-                        text = it.description,
+                        text = aggressiveCreature.description,
                         collapsedMaxLine = 3,
                         isExpanded = isExpandable
                     )
@@ -166,18 +166,44 @@ fun AggressiveCreatureDetailContent(
                     if (uiState.materialDrops.isNotEmpty()) {
                         SlavicDivider()
                         CreatureHorizontalPager(
-                            rememberPagerState(
+	                        pagerState = rememberPagerState(
+		                        initialPage = 0,
+		                        pageCount = { uiState.materialDrops.size }),
+	                        list = uiState.materialDrops,
+	                        data = CreatureHorizontalPagerData(
+		                        title = "Drop Items",
+		                        subTitle = "Food items that drop from creature after defeating him",
+		                        icon = Lucide.Trophy,
+		                        iconRotationDegrees = -85f,
+		                        contentScale = ContentScale.Crop,
+		                        parentPageIndex = pageIndex,
+	                        ),
+                            getImageUrl = { it.itemDrop.imageUrl },
+                            getName = { it.itemDrop.name },
+                            getQuantity = { item, index -> item.quantityList[index] },
+                            getChance = { item, index -> item.chanceStarList[index] }
+                        )
+                    }
+
+                    if (uiState.foodDrops.isNotEmpty()) {
+                        SlavicDivider()
+                        CreatureHorizontalPager(
+                            pagerState = rememberPagerState(
                                 initialPage = 0,
-                                pageCount = { uiState.materialDrops.size }),
-                            uiState.materialDrops,
-                            CreatureHorizontalPagerData(
-                                title = "Drop Items",
-                                subTitle = "Items that drop from creature after defeating him",
+                                pageCount = { uiState.foodDrops.size }),
+                            list = uiState.foodDrops,
+                            data = CreatureHorizontalPagerData(
+                                title = "Food Drops",
+                                subTitle = "Food items that drop from creature and can be instanly eaten",
                                 icon = Lucide.Trophy,
                                 iconRotationDegrees = -85f,
                                 contentScale = ContentScale.Crop,
                                 parentPageIndex = pageIndex,
-                            )
+                            ),
+                            getImageUrl = { it.itemDrop.imageUrl },
+                            getName = { it.itemDrop.name },
+                            getQuantity = { item, index -> item.quantityList[index] },
+                            getChance = { item, index -> item.chanceStarList[index] }
                         )
                     }
 

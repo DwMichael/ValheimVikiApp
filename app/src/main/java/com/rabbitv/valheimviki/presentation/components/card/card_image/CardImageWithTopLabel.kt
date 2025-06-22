@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -58,7 +59,8 @@ fun CardImageWithTopLabel(
     horizontalDividerWidth: Dp = 150.dp ,
     subTitle: String? = null,
     textStyle: TextStyle = MaterialTheme.typography.titleLarge,
-    contentScale: ContentScale =  ContentScale.Crop
+    contentScale: ContentScale =  ContentScale.Crop,
+    painter:Painter = painterResource(id = R.drawable.bg_crafting)
 ) {
     Card(
         modifier = modifier
@@ -122,7 +124,7 @@ fun CardImageWithTopLabel(
             Box(modifier = Modifier.fillMaxSize().background(Color.Transparent)) {
                 Image(
                         modifier = Modifier.fillMaxSize(),
-                        painter = painterResource(id = R.drawable.bg_crafting),
+                        painter = painter,
                         contentDescription = "Bg_image",
                         contentScale = ContentScale.Crop
                     )
