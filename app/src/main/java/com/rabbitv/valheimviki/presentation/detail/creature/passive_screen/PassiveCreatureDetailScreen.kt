@@ -35,7 +35,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -46,7 +45,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.rememberAsyncImagePainter
 import com.composables.icons.lucide.Atom
 import com.composables.icons.lucide.Lucide
-import com.composables.icons.lucide.Trophy
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.creature.aggresive.AggressiveCreature
 import com.rabbitv.valheimviki.domain.model.creature.aggresive.LevelCreatureData
@@ -56,8 +54,7 @@ import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDet
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardStatDetails
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
-import com.rabbitv.valheimviki.presentation.detail.creature.components.horizontal_pager.CreatureHorizontalPager
-import com.rabbitv.valheimviki.presentation.detail.creature.components.horizontal_pager.CreatureHorizontalPagerData
+import com.rabbitv.valheimviki.presentation.detail.creature.components.horizontal_pager.CreatureDropsSection
 import com.rabbitv.valheimviki.presentation.detail.creature.components.rows.StarLevelRow
 import com.rabbitv.valheimviki.presentation.detail.creature.passive_screen.model.PassiveCreatureDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.creature.passive_screen.viewmodel.PassiveCreatureDetailScreenViewModel
@@ -102,8 +99,8 @@ fun PassiveCreatureDetailContent(
 			HorizontalPager(
 				state = pagerState,
 				modifier = Modifier
-                    .padding(padding)
-                    .fillMaxWidth(),
+					.padding(padding)
+					.fillMaxWidth(),
 				beyondViewportPageCount = passiveCreature.levels.size,
 			) { pageIndex ->
 				Column(
@@ -129,8 +126,8 @@ fun PassiveCreatureDetailContent(
 					)
 					HorizontalDivider(
 						modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(BODY_CONTENT_PADDING.dp),
+							.fillMaxWidth()
+							.padding(BODY_CONTENT_PADDING.dp),
 						thickness = 1.dp,
 						color = PrimaryWhite
 					)
@@ -155,9 +152,9 @@ fun PassiveCreatureDetailContent(
 							content = {
 								Box(
 									modifier = Modifier
-                                        .fillMaxSize()
-                                        .wrapContentHeight(Alignment.CenterVertically)
-                                        .wrapContentWidth(Alignment.CenterHorizontally)
+										.fillMaxSize()
+										.wrapContentHeight(Alignment.CenterVertically)
+										.wrapContentWidth(Alignment.CenterHorizontally)
 								) {
 									Text(
 										it.name.uppercase(),
@@ -172,23 +169,11 @@ fun PassiveCreatureDetailContent(
 					}
 					if (uiState.materialDrops.isNotEmpty()) {
 						SlavicDivider()
-						CreatureHorizontalPager(
-							rememberPagerState(
-								initialPage = 0,
-								pageCount = { uiState.materialDrops.size }),
-							uiState.materialDrops,
-							data = CreatureHorizontalPagerData(
-								title = "Drop Items",
-								subTitle = "Items that drop from creature after defeating him",
-								icon = Lucide.Trophy,
-								iconRotationDegrees = -85f,
-								contentScale = ContentScale.Crop,
-								parentPageIndex = pageIndex,
-							),
-							getImageUrl = { it.itemDrop.imageUrl },
-							getName = { it.itemDrop.name },
-							getQuantity = { item, index -> item.quantityList[index] },
-							getChance = { item, index -> item.chanceStarList[index] }
+						CreatureDropsSection(
+							materialDrops = uiState.materialDrops,
+							starLevel = pageIndex,
+							title = "Drop Items",
+							subTitle = "Materials that drop from creature after defeating",
 						)
 					}
 
@@ -216,8 +201,8 @@ fun PassiveCreatureDetailContent(
 						SlavicDivider()
 						Text(
 							modifier = Modifier
-                                .align(Alignment.CenterHorizontally)
-                                .padding(horizontal = 10.dp),
+								.align(Alignment.CenterHorizontally)
+								.padding(horizontal = 10.dp),
 							text = "NOTE",
 							textAlign = TextAlign.Center,
 							style = MaterialTheme.typography.headlineMedium,
@@ -243,9 +228,9 @@ fun PageIndicator(
 ) {
 	Row(
 		Modifier
-            .wrapContentHeight()
-            .fillMaxWidth()
-            .padding(8.dp),
+			.wrapContentHeight()
+			.fillMaxWidth()
+			.padding(8.dp),
 		horizontalArrangement = Arrangement.Center,
 		verticalAlignment = Alignment.Bottom
 	) {
@@ -254,10 +239,10 @@ fun PageIndicator(
 				if (pagerState.currentPage == iteration) Color.DarkGray else Color.LightGray
 			Box(
 				modifier = Modifier
-                    .padding(2.dp)
-                    .clip(CircleShape)
-                    .background(color)
-                    .size(8.dp)
+					.padding(2.dp)
+					.clip(CircleShape)
+					.background(color)
+					.size(8.dp)
 			)
 		}
 	}
