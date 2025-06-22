@@ -41,6 +41,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.rememberAsyncImagePainter
+import com.composables.icons.lucide.Beef
+import com.composables.icons.lucide.Lucide
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.aggresive.AggressiveCreature
@@ -57,13 +59,12 @@ import com.rabbitv.valheimviki.presentation.detail.creature.aggressive_screen.mo
 import com.rabbitv.valheimviki.presentation.detail.creature.aggressive_screen.viewModel.AggressiveCreatureDetailScreenViewModel
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardStatDetails
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
-import com.rabbitv.valheimviki.presentation.detail.creature.components.horizontal_pager.CreatureDropsSection
+import com.rabbitv.valheimviki.presentation.detail.creature.components.horizontal_pager.DroppedItemsSection
 import com.rabbitv.valheimviki.presentation.detail.creature.components.rows.StarLevelRow
 import com.rabbitv.valheimviki.presentation.detail.creature.components.rows.StatsFlowRow
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
-import com.rabbitv.valheimviki.utils.FakeData
 import kotlinx.coroutines.launch
 
 @Composable
@@ -168,8 +169,8 @@ fun AggressiveCreatureDetailContent(
 					}
 					if (uiState.materialDrops.isNotEmpty()) {
 						SlavicDivider()
-						CreatureDropsSection(
-							materialDrops = uiState.materialDrops,
+						DroppedItemsSection(
+							list = uiState.materialDrops,
 							starLevel = pageIndex,
 							title = "Drop Items",
 							subTitle = "Materials that drop from creature after defeating",
@@ -178,8 +179,9 @@ fun AggressiveCreatureDetailContent(
 
 					if (uiState.foodDrops.isNotEmpty()) {
 						SlavicDivider()
-						CreatureDropsSection(
-							foodDrops = uiState.foodDrops,
+						DroppedItemsSection(
+							list = uiState.foodDrops,
+							icon = Lucide.Beef,
 							starLevel = pageIndex,
 							title = "Food Drops",
 							subTitle = "Food items that drop from creature and can be instanly eaten",
@@ -341,7 +343,7 @@ fun PreviewCreaturePage() {
 				chanceStarList = listOf(100, 75, 50)
 			)
 
-			),
+		),
 		foodDrops = listOf(
 			FoodDrop(
 				itemDrop = Food(

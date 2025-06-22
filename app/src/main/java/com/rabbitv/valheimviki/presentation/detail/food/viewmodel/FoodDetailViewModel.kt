@@ -105,7 +105,7 @@ class FoodDetailViewModel @Inject constructor(
 						)
 						tempList.add(
 							RecipeFoodData(
-								item = food,
+								itemDrop = food,
 								quantityList = quantityList,
 								chanceStarList = emptyList(),
 							)
@@ -126,7 +126,7 @@ class FoodDetailViewModel @Inject constructor(
 						)
 						tempList.add(
 							RecipeMaterialData(
-								item = material,
+								itemDrop = material,
 								quantityList = quantityList,
 								chanceStarList = emptyList(),
 							)

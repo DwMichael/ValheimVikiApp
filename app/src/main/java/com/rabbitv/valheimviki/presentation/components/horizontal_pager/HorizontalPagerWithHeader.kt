@@ -17,12 +17,12 @@ import com.rabbitv.valheimviki.presentation.components.section_header.SectionHea
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 
 data class HorizontalPagerWithHeaderData(
-	val title: String,
-	val subTitle: String,
+	val title: String?,
+	val subTitle: String?,
 	val icon: ImageVector,
 	val iconRotationDegrees: Float = -85f,
 	val contentScale: ContentScale,
-	val parentPageIndex: Int,
+	val starLevelIndex: Int,
 )
 
 @Composable
@@ -44,6 +44,7 @@ fun <T> HorizontalPagerWithHeader(
 			),
 		horizontalAlignment = Alignment.Start
 	) {
+
 		SectionHeader(
 			data = headerData,
 			modifier = Modifier

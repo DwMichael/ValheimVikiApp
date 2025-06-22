@@ -104,7 +104,7 @@ fun BiomeDetailContent(
         title = "Ore Deposits",
         subTitle = "Ore Deposits you may encounter in this biome",
         icon = Lucide.Pickaxe,
-        iconRotationDegrees = -85f,
+        iconRotationDegrees = 0f,
         itemContentScale = ContentScale.Crop,
     )
 
@@ -112,7 +112,7 @@ fun BiomeDetailContent(
         title = "Materials",
         subTitle = "Unique materials you may encounter in this biome",
         icon = Lucide.Gem,
-        iconRotationDegrees = -85f,
+        iconRotationDegrees = 0f,
         itemContentScale = ContentScale.Crop,
     )
 
@@ -120,14 +120,14 @@ fun BiomeDetailContent(
         title = "Points Of Interest",
         subTitle = "Points Of Interest you may encounter in this biome",
         icon = Lucide.House,
-        iconRotationDegrees = -85f,
+        iconRotationDegrees = 0f,
         itemContentScale = ContentScale.Crop,
     )
     val treeData = HorizontalPagerData(
         title = "Trees",
         subTitle = "Trees you may encounter in this biome",
         icon = Lucide.Trees,
-        iconRotationDegrees = -85f,
+        iconRotationDegrees = 0f,
         itemContentScale = ContentScale.Crop,
     )
     Scaffold(

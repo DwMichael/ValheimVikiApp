@@ -7,7 +7,6 @@ import androidx.compose.foundation.pager.PageSize
 import androidx.compose.foundation.pager.PagerDefaults
 import androidx.compose.foundation.pager.PagerSnapDistance
 import androidx.compose.foundation.pager.PagerState
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
@@ -17,7 +16,7 @@ import androidx.compose.ui.unit.dp
 fun <T> BaseHorizontalPager(
 	list: List<T>,
 	modifier: Modifier = Modifier,
-	pageWidth: Dp = 300.dp,
+	pageWidth: Dp = 260.dp,
 	pagerState: PagerState,
 	itemContent: @Composable (item: T, pageIndex: Int) -> Unit
 ) {
@@ -26,7 +25,7 @@ fun <T> BaseHorizontalPager(
 		modifier = modifier.fillMaxWidth(),
 		pageSize = PageSize.Fixed(pageWidth),
 		beyondViewportPageCount = list.size,
-		contentPadding = PaddingValues(end = 40.dp),
+		contentPadding = PaddingValues(end = 80.dp),
 		flingBehavior = PagerDefaults.flingBehavior(
 			state = pagerState,
 			pagerSnapDistance = PagerSnapDistance.atMost(list.size)

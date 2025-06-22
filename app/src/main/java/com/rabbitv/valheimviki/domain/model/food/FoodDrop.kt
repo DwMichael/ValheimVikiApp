@@ -1,7 +1,9 @@
 package com.rabbitv.valheimviki.domain.model.food
 
+import com.rabbitv.valheimviki.domain.repository.Droppable
+
 data class FoodDrop(
-	val itemDrop: Food,
-	val quantityList: List<Int?> = emptyList(),
-	val chanceStarList: List<Int?> = emptyList(),
-)
+	override val itemDrop: Food,
+	override val quantityList: List<Int?> = emptyList(),
+	override val chanceStarList: List<Int?> = emptyList(),
+): Droppable

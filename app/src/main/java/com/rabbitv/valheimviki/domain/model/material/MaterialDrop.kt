@@ -1,7 +1,9 @@
 package com.rabbitv.valheimviki.domain.model.material
 
+import com.rabbitv.valheimviki.domain.repository.Droppable
+
 data class MaterialDrop(
-	val itemDrop: Material,
-	val quantityList: List<Int?> = emptyList(),
-	val chanceStarList: List<Int?> = emptyList(),
-)
+	override val itemDrop: Material,
+	override val quantityList: List<Int?> = emptyList(),
+	override val chanceStarList: List<Int?> = emptyList(),
+) : Droppable

@@ -23,25 +23,30 @@ fun SectionHeader(
 	modifier: Modifier = Modifier
 ) {
 	Column(horizontalAlignment = Alignment.Start) {
-		Row(
-			horizontalArrangement = Arrangement.Start,
-			verticalAlignment = Alignment.CenterVertically
-		) {
-			Icon(
-				data.icon,
-				tint = Color.White,
-				contentDescription = "Rectangle section Icon",
-			)
-			Spacer(modifier = modifier.width(11.dp))
+		data.title?.let {
+			Row(
+				horizontalArrangement = Arrangement.Start,
+				verticalAlignment = Alignment.CenterVertically
+			) {
+				Icon(
+					data.icon,
+					tint = Color.White,
+					contentDescription = "Rectangle section Icon",
+				)
+				Spacer(modifier = modifier.width(11.dp))
+
+				Text(
+					it.uppercase(),
+					style = MaterialTheme.typography.titleLarge,
+				)
+			}
+		}
+		data.subTitle?.let {
+			Spacer(modifier = modifier.padding(6.dp))
 			Text(
-				data.title.uppercase(),
-				style = MaterialTheme.typography.titleLarge,
+				it,
+				style = MaterialTheme.typography.titleMedium,
 			)
 		}
-		Spacer(modifier = modifier.padding(6.dp))
-		Text(
-			data.subTitle,
-			style = MaterialTheme.typography.titleMedium,
-		)
 	}
 }

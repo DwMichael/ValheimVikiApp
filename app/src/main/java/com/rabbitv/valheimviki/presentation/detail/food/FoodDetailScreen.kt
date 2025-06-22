@@ -67,6 +67,7 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.composables.icons.lucide.Clock2
+import com.composables.icons.lucide.CookingPot
 import com.composables.icons.lucide.Heart
 import com.composables.icons.lucide.Info
 import com.composables.icons.lucide.Layers2
@@ -78,10 +79,14 @@ import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 import com.rabbitv.valheimviki.domain.model.food.Food
 import com.rabbitv.valheimviki.domain.model.food.FoodSubCategory
+import com.rabbitv.valheimviki.domain.repository.Droppable
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
+import com.rabbitv.valheimviki.presentation.detail.creature.components.horizontal_pager.DroppedItemsSection
 import com.rabbitv.valheimviki.presentation.detail.food.model.FoodDetailUiState
+import com.rabbitv.valheimviki.presentation.detail.food.model.RecipeFoodData
+import com.rabbitv.valheimviki.presentation.detail.food.model.RecipeMaterialData
 import com.rabbitv.valheimviki.presentation.detail.food.viewmodel.FoodDetailViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.BlackBrownBorder
@@ -89,6 +94,7 @@ import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.Shapes
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
+import com.rabbitv.valheimviki.utils.FakeData
 
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
@@ -117,14 +123,7 @@ fun FoodDetailContent(
 ) {
 	val healingPainter = painterResource(R.drawable.heart_plus)
 	val staminaPainter = painterResource(R.drawable.runing)
-//	val recipeData = HorizontalPagerData(
-//		title = "Recipe",
-//		subTitle = "Those are ingredients needed to make this dish",
-//		icon = Lucide.CookingPot,
-//		iconRotationDegrees = 0f,
-//		contentScale = ContentScale.Crop,
-//		parentPageIndex = 0,
-//	)
+
 
 	val isStatInfoExpanded1 = remember { mutableStateOf(false) }
 	val isStatInfoExpanded2 = remember { mutableStateOf(false) }
@@ -149,6 +148,7 @@ fun FoodDetailContent(
 
 		previousScrollValue = currentScroll
 	}
+	val recipeItems: List<Droppable> = uiState.materialsForRecipe + uiState.foodForRecipe
 	val isExpandable = remember { mutableStateOf(false) }
 	fun shouldShowValue(value: Any?): Boolean {
 		return when (value) {
@@ -184,8 +184,6 @@ fun FoodDetailContent(
 						.fillMaxSize()
 						.verticalScroll(scrollState)
 						.padding(
-							start = BODY_CONTENT_PADDING.dp,
-							end = BODY_CONTENT_PADDING.dp,
 							top = 20.dp,
 							bottom = 70.dp
 						),
@@ -201,6 +199,7 @@ fun FoodDetailContent(
 						textAlign = TextAlign.Center
 					)
 					DetailExpandableText(
+						modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
 						text = food.description,
 						isExpanded = isExpandable
 					)
@@ -351,21 +350,17 @@ fun FoodDetailContent(
 							painter = painterResource(R.drawable.food_bg)
 						)
 					}
-//					if (uiState.foodForRecipe.isNotEmpty() || uiState.materialsForRecipe.isNotEmpty()) {
-//						SlavicDivider()
-//						CreatureHorizontalPager(
-//							pagerState = rememberPagerState(
-//								initialPage = 0,
-//								pageCount = { uiState.foodForRecipe.size }),
-//							list = uiState.foodForRecipe + uiState.materialsForRecipe,
-//							data = recipeData,
-//							getImageUrl = { it.item.imageUrl },
-//							getName = { it.item.name },
-//							getQuantity = { item, index -> item.quantityList[index] },
-//							getChance = { _, _ -> null }
-//						)
-//
-//					}
+
+					if (recipeItems.isNotEmpty()) {
+						SlavicDivider()
+						DroppedItemsSection(
+							icon = Lucide.CookingPot,
+							list = recipeItems,
+							starLevel = 0,
+							title = "RECIPE",
+							subTitle = "Ingredients required to craft this item",
+						)
+					}
 				}
 			}
 			AnimatedVisibility(
@@ -595,7 +590,6 @@ fun PreviewFoodImage() {
 @Preview("FoodDetailContentPreview", showBackground = true)
 @Composable
 fun PreviewFoodDetailContentCooked() {
-
 	val fakeFood = Food(
 		id = "serpent_stew",
 		imageUrl = "https://example.com/images/serpent_stew.png",
@@ -613,6 +607,43 @@ fun PreviewFoodDetailContentCooked() {
 		forkType = "Blue",
 		stackSize = 10
 	)
+	val fakeMaterial = FakeData.generateFakeMaterials()[0]
+	val fakeFoodList = listOf(
+		RecipeFoodData(
+			itemDrop = fakeFood,
+			quantityList = listOf(1, 2, 3),
+			chanceStarList = listOf(100, 75, 50)
+		),
+		RecipeFoodData(
+			itemDrop = fakeFood,
+			quantityList = listOf(2, 3, 4),
+			chanceStarList = listOf(90, 70, 40)
+		),
+		RecipeFoodData(
+			itemDrop = fakeFood,
+			quantityList = listOf(1, 1, 2),
+			chanceStarList = listOf(80, 60, 30)
+		)
+	)
+
+	val fakeMaterialsList = listOf(
+		RecipeMaterialData(
+			itemDrop = fakeMaterial,
+			quantityList = listOf(3, 4, 5),
+			chanceStarList = listOf(100, 85, 60)
+		),
+		RecipeMaterialData(
+			itemDrop = fakeMaterial,
+			quantityList = listOf(2, 3, 4),
+			chanceStarList = listOf(95, 70, 45)
+		),
+		RecipeMaterialData(
+			itemDrop = fakeMaterial,
+			quantityList = listOf(1, 2, 3),
+			chanceStarList = listOf(85, 65, 40)
+		)
+	)
+
 
 	val craftingStation = CraftingObject(
 		id = "workbench",
@@ -629,6 +660,8 @@ fun PreviewFoodDetailContentCooked() {
 			uiState = FoodDetailUiState(
 				food = fakeFood,
 				craftingCookingStation = craftingStation,
+				foodForRecipe = fakeFoodList,
+				materialsForRecipe = fakeMaterialsList,
 				isLoading = false,
 				error = null
 			),

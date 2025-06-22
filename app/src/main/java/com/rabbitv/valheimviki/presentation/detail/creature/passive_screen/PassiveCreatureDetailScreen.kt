@@ -54,7 +54,7 @@ import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDet
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardStatDetails
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
-import com.rabbitv.valheimviki.presentation.detail.creature.components.horizontal_pager.CreatureDropsSection
+import com.rabbitv.valheimviki.presentation.detail.creature.components.horizontal_pager.DroppedItemsSection
 import com.rabbitv.valheimviki.presentation.detail.creature.components.rows.StarLevelRow
 import com.rabbitv.valheimviki.presentation.detail.creature.passive_screen.model.PassiveCreatureDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.creature.passive_screen.viewmodel.PassiveCreatureDetailScreenViewModel
@@ -169,8 +169,8 @@ fun PassiveCreatureDetailContent(
 					}
 					if (uiState.materialDrops.isNotEmpty()) {
 						SlavicDivider()
-						CreatureDropsSection(
-							materialDrops = uiState.materialDrops,
+						DroppedItemsSection(
+							list = uiState.materialDrops,
 							starLevel = pageIndex,
 							title = "Drop Items",
 							subTitle = "Materials that drop from creature after defeating",

@@ -19,18 +19,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Trophy
-import com.rabbitv.valheimviki.domain.model.food.FoodDrop
 import com.rabbitv.valheimviki.domain.model.material.MaterialDrop
+import com.rabbitv.valheimviki.domain.repository.Droppable
 import com.rabbitv.valheimviki.domain.repository.ItemData
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerWithHeader
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerWithHeaderData
@@ -43,53 +46,44 @@ import com.rabbitv.valheimviki.utils.FakeData
 
 
 @Composable
-fun CreatureDropsSection(
+fun DroppedItemsSection(
 	modifier: Modifier = Modifier,
-	materialDrops: List<MaterialDrop>? = null,
-	foodDrops: List<FoodDrop>? = null,
+	list: List<Droppable> = emptyList(),
 	starLevel: Int,
-	title: String = "Drop Items",
-	subTitle: String = "Materials that drop from creature after defeating"
+	icon: ImageVector = Lucide.Trophy,
+	iconRotationDegrees: Float = -85f,
+	contentScale: ContentScale = ContentScale.Crop,
+	title: String? = "Drop Items",
+	subTitle: String? = "Materials that drop from creature after defeating",
 ) {
-	val items = materialDrops ?: foodDrops ?: emptyList()
-	val pagerState = rememberPagerState(pageCount = { items.size })
+
+	val pagerState = rememberPagerState(pageCount = { list.size })
 
 	HorizontalPagerWithHeader(
-		list = items,
+		list = list,
 		pagerState = pagerState,
 		headerData = HorizontalPagerWithHeaderData(
 			title = title,
 			subTitle = subTitle,
-			icon = Lucide.Trophy,
-			iconRotationDegrees = -85f,
-			contentScale = ContentScale.Crop,
-			parentPageIndex = starLevel,
+			icon = icon,
+			iconRotationDegrees = iconRotationDegrees,
+			contentScale = contentScale,
+			starLevelIndex = starLevel,
 		),
-		modifier = modifier
+		modifier = modifier,
 	) { item, pageIndex ->
-		when (item) {
-			is MaterialDrop -> CreatureDropCard(
-				itemData = item.itemDrop,
-				quantityList = item.quantityList,
-				chanceStarList = item.chanceStarList,
-				starLevel = starLevel,
-				modifier = Modifier.carouselEffect(pagerState, pageIndex),
-
-				)
-
-			is FoodDrop -> CreatureDropCard(
-				itemData = item.itemDrop,
-				quantityList = item.quantityList,
-				chanceStarList = item.chanceStarList,
-				starLevel = starLevel,
-				modifier = Modifier.carouselEffect(pagerState, pageIndex)
-			)
-		}
+		DropItemCard(
+			itemData = item.itemDrop,
+			quantityList = item.quantityList,
+			chanceStarList = item.chanceStarList,
+			starLevel = starLevel,
+			modifier = Modifier.carouselEffect(pagerState, pageIndex)
+		)
 	}
 }
 
 @Composable
-fun CreatureDropCard(
+fun DropItemCard(
 	itemData: ItemData,
 	quantityList: List<Int?>,
 	chanceStarList: List<Int?>,
@@ -176,8 +170,8 @@ fun PreviewCreatureHorizontalPagerMaterial() {
 			)
 		)
 
-		CreatureDropsSection(
-			materialDrops = materialDrops,
+		DroppedItemsSection(
+			list = materialDrops,
 			starLevel = 0
 		)
 	}
@@ -195,7 +189,7 @@ fun PreviewCreatureDropCard() {
 			chanceStarList = listOf(25, 50, 75)
 		)
 
-		CreatureDropCard(
+		DropItemCard(
 			itemData = materialDrop.itemDrop,
 			quantityList = materialDrop.quantityList,
 			chanceStarList = materialDrop.chanceStarList,
@@ -229,24 +223,24 @@ fun PreviewCreatureHorizontalPagerStarLevels() {
 
 		Column {
 
-			CreatureDropsSection(
-				materialDrops = materialDrops,
+			DroppedItemsSection(
+				list = materialDrops,
 				starLevel = 0
 			)
 
 			Spacer(modifier = Modifier.height(16.dp))
 
 			// 1 star creature
-			CreatureDropsSection(
-				materialDrops = materialDrops,
+			DroppedItemsSection(
+				list = materialDrops,
 				starLevel = 1
 			)
 
 			Spacer(modifier = Modifier.height(16.dp))
 
 			// 2 star creature
-			CreatureDropsSection(
-				materialDrops = materialDrops,
+			DroppedItemsSection(
+				list = materialDrops,
 				starLevel = 2
 			)
 		}
