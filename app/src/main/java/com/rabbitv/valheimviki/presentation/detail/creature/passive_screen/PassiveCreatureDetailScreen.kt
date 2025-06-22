@@ -68,223 +68,227 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun PassiveCreatureDetailScreen(
-    onBack: () -> Unit,
-    viewModel: PassiveCreatureDetailScreenViewModel = hiltViewModel()
+	onBack: () -> Unit,
+	viewModel: PassiveCreatureDetailScreenViewModel = hiltViewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    PassiveCreatureDetailContent(
-        uiState = uiState,
-        onBack = onBack
-    )
+	PassiveCreatureDetailContent(
+		uiState = uiState,
+		onBack = onBack
+	)
 
 }
 
 
 @Composable
 fun PassiveCreatureDetailContent(
-    onBack: () -> Unit,
-    uiState: PassiveCreatureDetailUiState,
+	onBack: () -> Unit,
+	uiState: PassiveCreatureDetailUiState,
 ) {
 
 
-    val pagerState =
-        rememberPagerState(
-            pageCount = { uiState.passiveCreature?.levels?.size ?: 0 },
-        )
+	val pagerState =
+		rememberPagerState(
+			pageCount = { uiState.passiveCreature?.levels?.size ?: 0 },
+		)
 
-    val sharedScrollState = rememberScrollState()
-    val isExpandable = remember { mutableStateOf(false) }
-    val isExpandableNote = remember { mutableStateOf(false) }
-    val coroutineScope = rememberCoroutineScope()
-    Scaffold { padding ->
-        uiState.passiveCreature?.let {
-            HorizontalPager(
-                state = pagerState,
-                modifier = Modifier
+	val sharedScrollState = rememberScrollState()
+	val isExpandable = remember { mutableStateOf(false) }
+	val isExpandableNote = remember { mutableStateOf(false) }
+	val coroutineScope = rememberCoroutineScope()
+	Scaffold { padding ->
+		uiState.passiveCreature?.let { passiveCreature ->
+			HorizontalPager(
+				state = pagerState,
+				modifier = Modifier
                     .padding(padding)
                     .fillMaxWidth(),
-                beyondViewportPageCount = it.levels.size,
-            ) { pageIndex ->
-                Column(
-                    modifier = Modifier.verticalScroll(sharedScrollState),
-                    verticalArrangement = Arrangement.Center,
-                ) {
-                    MainDetailImage(
-                        onBack = onBack,
-                        imageUrl = it.levels[pageIndex].image.toString(),
-                        name = it.name,
-                        textAlign = TextAlign.Center
-                    )
-                    PageIndicator(pagerState)
-                    StarLevelRow(
-                        levelsNumber = it.levels.size,
-                        pageIndex = pageIndex,
-                        paddingValues = PaddingValues(BODY_CONTENT_PADDING.dp),
-                        onClick = {
-                            coroutineScope.launch {
-                                pagerState.animateScrollToPage(it)
-                            }
-                        }
-                    )
-                    HorizontalDivider(
-                        modifier = Modifier
+				beyondViewportPageCount = passiveCreature.levels.size,
+			) { pageIndex ->
+				Column(
+					modifier = Modifier.verticalScroll(sharedScrollState),
+					verticalArrangement = Arrangement.Center,
+				) {
+					MainDetailImage(
+						onBack = onBack,
+						imageUrl = passiveCreature.levels[pageIndex].image.toString(),
+						name = passiveCreature.name,
+						textAlign = TextAlign.Center
+					)
+					PageIndicator(pagerState)
+					StarLevelRow(
+						levelsNumber = passiveCreature.levels.size,
+						pageIndex = pageIndex,
+						paddingValues = PaddingValues(BODY_CONTENT_PADDING.dp),
+						onClick = {
+							coroutineScope.launch {
+								pagerState.animateScrollToPage(it)
+							}
+						}
+					)
+					HorizontalDivider(
+						modifier = Modifier
                             .fillMaxWidth()
                             .padding(BODY_CONTENT_PADDING.dp),
-                        thickness = 1.dp,
-                        color = PrimaryWhite
-                    )
-                    DetailExpandableText(
-                        text = it.description,
-                        collapsedMaxLine = 3,
-                        isExpanded = isExpandable
-                    )
+						thickness = 1.dp,
+						color = PrimaryWhite
+					)
+					DetailExpandableText(
+						text = passiveCreature.description,
+						collapsedMaxLine = 3,
+						isExpanded = isExpandable
+					)
 
-                    TridentsDividedRow(text = "DETAILS")
-                    uiState.biome?.let {
-                        Text(
-                            modifier = Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp),
-                            text = "PRIMARY SPAWN",
-                            textAlign = TextAlign.Left,
-                            style = MaterialTheme.typography.titleSmall,
-                            maxLines = 1,
-                            overflow = TextOverflow.Visible
-                        )
-                        CardWithOverlayLabel(
-                            painter = rememberAsyncImagePainter(uiState.biome.imageUrl),
-                            content = {
-                                Box(
-                                    modifier = Modifier
+					TridentsDividedRow(text = "DETAILS")
+					uiState.biome?.let {
+						Text(
+							modifier = Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp),
+							text = "PRIMARY SPAWN",
+							textAlign = TextAlign.Left,
+							style = MaterialTheme.typography.titleSmall,
+							maxLines = 1,
+							overflow = TextOverflow.Visible
+						)
+						CardWithOverlayLabel(
+							painter = rememberAsyncImagePainter(uiState.biome.imageUrl),
+							content = {
+								Box(
+									modifier = Modifier
                                         .fillMaxSize()
                                         .wrapContentHeight(Alignment.CenterVertically)
                                         .wrapContentWidth(Alignment.CenterHorizontally)
-                                ) {
-                                    Text(
-                                        it.name.uppercase(),
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        modifier = Modifier,
-                                        color = Color.White,
-                                        textAlign = TextAlign.Center
-                                    )
-                                }
-                            }
-                        )
-                    }
-                    if (uiState.materialDrops.isNotEmpty()) {
-                        SlavicDivider()
-                        CreatureHorizontalPager(
-                            rememberPagerState(
-                                initialPage = 0,
-                                pageCount = { uiState.materialDrops.size }),
-                            uiState.materialDrops,
-                            CreatureHorizontalPagerData(
-                                title = "Drop Items",
-                                subTitle = "Items that drop from creature after defeating him",
-                                icon = Lucide.Trophy,
-                                iconRotationDegrees = -85f,
-                                contentScale = ContentScale.Crop,
-                                parentPageIndex = pageIndex,
-                            )
-                        )
-                    }
+								) {
+									Text(
+										it.name.uppercase(),
+										style = MaterialTheme.typography.bodyLarge,
+										modifier = Modifier,
+										color = Color.White,
+										textAlign = TextAlign.Center
+									)
+								}
+							}
+						)
+					}
+					if (uiState.materialDrops.isNotEmpty()) {
+						SlavicDivider()
+						CreatureHorizontalPager(
+							rememberPagerState(
+								initialPage = 0,
+								pageCount = { uiState.materialDrops.size }),
+							uiState.materialDrops,
+							data = CreatureHorizontalPagerData(
+								title = "Drop Items",
+								subTitle = "Items that drop from creature after defeating him",
+								icon = Lucide.Trophy,
+								iconRotationDegrees = -85f,
+								contentScale = ContentScale.Crop,
+								parentPageIndex = pageIndex,
+							),
+							getImageUrl = { it.itemDrop.imageUrl },
+							getName = { it.itemDrop.name },
+							getQuantity = { item, index -> item.quantityList[index] },
+							getChance = { item, index -> item.chanceStarList[index] }
+						)
+					}
 
-                    TridentsDividedRow(text = "BOSS STATS")
-                    CardStatDetails(
-                        title = stringResource(R.string.baseHp),
-                        text = uiState.passiveCreature.levels[pageIndex].baseHp.toString(),
-                        icon = Icons.Outlined.Favorite,
-                        iconColor = Color.Red,
-                        styleTextFirst = MaterialTheme.typography.labelSmall,
-                        styleTextSecond = MaterialTheme.typography.bodyLarge,
-                        iconSize = 36.dp
-                    )
-                    Spacer(Modifier.height(10.dp))
-                    CardStatDetails(
-                        title = stringResource(R.string.fun_fact),
-                        text = uiState.passiveCreature.abilities.toString(),
-                        icon = Lucide.Atom,
-                        iconColor = Color.White,
-                        styleTextFirst = MaterialTheme.typography.labelSmall,
-                        styleTextSecond = MaterialTheme.typography.bodyMedium,
-                        iconSize = 36.dp
-                    )
-                    if (uiState.passiveCreature.notes.isNotBlank()) {
-                        SlavicDivider()
-                        Text(
-                            modifier = Modifier
+					TridentsDividedRow(text = "BOSS STATS")
+					CardStatDetails(
+						title = stringResource(R.string.baseHp),
+						text = uiState.passiveCreature.levels[pageIndex].baseHp.toString(),
+						icon = Icons.Outlined.Favorite,
+						iconColor = Color.Red,
+						styleTextFirst = MaterialTheme.typography.labelSmall,
+						styleTextSecond = MaterialTheme.typography.bodyLarge,
+						iconSize = 36.dp
+					)
+					Spacer(Modifier.height(10.dp))
+					CardStatDetails(
+						title = stringResource(R.string.fun_fact),
+						text = uiState.passiveCreature.abilities.toString(),
+						icon = Lucide.Atom,
+						iconColor = Color.White,
+						styleTextFirst = MaterialTheme.typography.labelSmall,
+						styleTextSecond = MaterialTheme.typography.bodyMedium,
+						iconSize = 36.dp
+					)
+					if (uiState.passiveCreature.notes.isNotBlank()) {
+						SlavicDivider()
+						Text(
+							modifier = Modifier
                                 .align(Alignment.CenterHorizontally)
                                 .padding(horizontal = 10.dp),
-                            text = "NOTE",
-                            textAlign = TextAlign.Center,
-                            style = MaterialTheme.typography.headlineMedium,
-                        )
-                        DetailExpandableText(
-                            text = it.notes,
-                            collapsedMaxLine = 3,
-                            isExpanded = isExpandableNote
-                        )
-                    }
-                    SlavicDivider()
-                    Box(modifier = Modifier.size(45.dp))
-                }
-            }
-        }
-    }
+							text = "NOTE",
+							textAlign = TextAlign.Center,
+							style = MaterialTheme.typography.headlineMedium,
+						)
+						DetailExpandableText(
+							text = passiveCreature.notes,
+							collapsedMaxLine = 3,
+							isExpanded = isExpandableNote
+						)
+					}
+					SlavicDivider()
+					Box(modifier = Modifier.size(45.dp))
+				}
+			}
+		}
+	}
 }
 
 
 @Composable
 fun PageIndicator(
-    pagerState: PagerState,
+	pagerState: PagerState,
 ) {
-    Row(
-        Modifier
+	Row(
+		Modifier
             .wrapContentHeight()
             .fillMaxWidth()
             .padding(8.dp),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.Bottom
-    ) {
-        repeat(pagerState.pageCount) { iteration ->
-            val color =
-                if (pagerState.currentPage == iteration) Color.DarkGray else Color.LightGray
-            Box(
-                modifier = Modifier
+		horizontalArrangement = Arrangement.Center,
+		verticalAlignment = Alignment.Bottom
+	) {
+		repeat(pagerState.pageCount) { iteration ->
+			val color =
+				if (pagerState.currentPage == iteration) Color.DarkGray else Color.LightGray
+			Box(
+				modifier = Modifier
                     .padding(2.dp)
                     .clip(CircleShape)
                     .background(color)
                     .size(8.dp)
-            )
-        }
-    }
+			)
+		}
+	}
 }
 
 
 @Preview(name = "CreaturePage")
 @Composable
 fun PreviewCreaturePage() {
-    AggressiveCreature(
-        id = "1",
-        category = "asd",
-        subCategory = "sdasd",
-        imageUrl = "sadasd",
-        name = "sadsdd",
-        description = "asdasd2",
-        order = 2,
-        weakness = "SDASD",
-        resistance = "dasdas2",
-        baseDamage = "dsasdasd",
-        levels = listOf(
-            LevelCreatureData(
-                level = 1,
-                baseHp = 23123,
-                baseDamage = "DAsdasd",
-                image = "dsadasd"
-            )
-        ),
-        abilities = "SDASDAD"
-    )
-    remember { mutableStateOf(true) }
+	AggressiveCreature(
+		id = "1",
+		category = "asd",
+		subCategory = "sdasd",
+		imageUrl = "sadasd",
+		name = "sadsdd",
+		description = "asdasd2",
+		order = 2,
+		weakness = "SDASD",
+		resistance = "dasdas2",
+		baseDamage = "dsasdasd",
+		levels = listOf(
+			LevelCreatureData(
+				level = 1,
+				baseHp = 23123,
+				baseDamage = "DAsdasd",
+				image = "dsadasd"
+			)
+		),
+		abilities = "SDASDAD"
+	)
+	remember { mutableStateOf(true) }
 
 }
 

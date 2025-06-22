@@ -181,7 +181,7 @@ fun FoodDetailContent(
 							start = BODY_CONTENT_PADDING.dp,
 							end = BODY_CONTENT_PADDING.dp,
 							top = 20.dp,
-							bottom = 45.dp
+							bottom = 70.dp
 						),
 					horizontalAlignment = Alignment.CenterHorizontally,
 					verticalArrangement = Arrangement.Top,
@@ -211,6 +211,7 @@ fun FoodDetailContent(
 								itemData = craftingStation,
 								subTitle = if (category == FoodSubCategory.UNCOOKED_FOOD) "Cook at Station to Consume" else "Requires Cooking Station",
 								contentScale = ContentScale.FillBounds,
+								painter = painterResource(R.drawable.food_bg)
 							)
 						}
 						SlavicDivider()

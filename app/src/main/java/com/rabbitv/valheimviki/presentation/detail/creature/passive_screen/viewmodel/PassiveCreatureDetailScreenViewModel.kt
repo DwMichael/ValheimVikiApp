@@ -7,12 +7,12 @@ import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.mapper.CreatureFactory
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.passive.PassiveCreature
+import com.rabbitv.valheimviki.domain.model.material.MaterialDrop
 import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
-import com.rabbitv.valheimviki.presentation.detail.creature.components.MaterialDrop
 import com.rabbitv.valheimviki.presentation.detail.creature.passive_screen.model.PassiveCreatureDetailUiState
 import com.rabbitv.valheimviki.utils.Constants.PASSIVE_CREATURE_KEY
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -39,7 +39,7 @@ class PassiveCreatureDetailScreenViewModel @Inject constructor(
 		checkNotNull(savedStateHandle[PASSIVE_CREATURE_KEY])
 	private val _creature = MutableStateFlow<PassiveCreature?>(null)
 	private val _biome = MutableStateFlow<Biome?>(null)
-	private val _Material_dropItems = MutableStateFlow<List<MaterialDrop>>(emptyList())
+	private val _materialDropItem = MutableStateFlow<List<MaterialDrop>>(emptyList())
 	private val _isLoading = MutableStateFlow<Boolean>(false)
 	private val _error = MutableStateFlow<String?>(null)
 
@@ -47,7 +47,7 @@ class PassiveCreatureDetailScreenViewModel @Inject constructor(
 	val uiState = combine(
 		_creature,
 		_biome,
-		_Material_dropItems,
+		_materialDropItem,
 		_isLoading,
 		_error,
 	) { values ->
@@ -113,17 +113,17 @@ class PassiveCreatureDetailScreenViewModel @Inject constructor(
 								)
 								tempList.add(
 									MaterialDrop(
-										material = material,
+										itemDrop = material,
 										quantityList = quantityList,
 										chanceStarList = chanceStarList,
 									)
 								)
 							}
-							_Material_dropItems.value = tempList
+							_materialDropItem.value = tempList
 							Log.e("DROP ITEMS ", "$tempList")
 						} catch (e: Exception) {
 							Log.e("PassiveCreatureDetail ViewModel", "$e")
-							_Material_dropItems.value = emptyList()
+							_materialDropItem.value = emptyList()
 						}
 					},
 				)
