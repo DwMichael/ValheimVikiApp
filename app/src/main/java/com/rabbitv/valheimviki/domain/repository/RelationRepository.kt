@@ -6,9 +6,10 @@ import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 
 interface RelationRepository {
-    fun getLocalRelations(): Flow<List<Relation>>
-    fun getRelatedId(queryId: String): Flow<String?>
-    fun getRelatedIds(queryId: String): Flow<List<RelatedItem>>
-    suspend fun insertRelations(relations: List<Relation>)
-    suspend fun fetchRelations(): Response<List<Relation>>
+	fun getLocalRelations(): Flow<List<Relation>>
+	fun getRelatedId(queryId: String): Flow<String?>
+	fun getRelatedIdsFor(queryId: String): Flow<List<RelatedItem>>
+	fun getRelatedIds(queryId: String): Flow<List<RelatedItem>>
+	suspend fun insertRelations(relations: List<Relation>)
+	suspend fun fetchRelations(): Response<List<Relation>>
 }

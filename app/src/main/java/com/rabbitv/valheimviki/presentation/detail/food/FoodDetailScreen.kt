@@ -81,7 +81,6 @@ import com.rabbitv.valheimviki.domain.model.food.FoodSubCategory
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
-import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.food.model.FoodDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.food.viewmodel.FoodDetailViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
@@ -90,7 +89,6 @@ import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.Shapes
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
-
 
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
@@ -119,6 +117,14 @@ fun FoodDetailContent(
 ) {
 	val healingPainter = painterResource(R.drawable.heart_plus)
 	val staminaPainter = painterResource(R.drawable.runing)
+//	val recipeData = HorizontalPagerData(
+//		title = "Recipe",
+//		subTitle = "Those are ingredients needed to make this dish",
+//		icon = Lucide.CookingPot,
+//		iconRotationDegrees = 0f,
+//		contentScale = ContentScale.Crop,
+//		parentPageIndex = 0,
+//	)
 
 	val isStatInfoExpanded1 = remember { mutableStateOf(false) }
 	val isStatInfoExpanded2 = remember { mutableStateOf(false) }
@@ -205,15 +211,6 @@ fun FoodDetailContent(
 						verticalArrangement = Arrangement.spacedBy(BODY_CONTENT_PADDING.dp)
 					) {
 
-						uiState.craftingCookingStation?.let { craftingStation ->
-							TridentsDividedRow()
-							CardImageWithTopLabel(
-								itemData = craftingStation,
-								subTitle = if (category == FoodSubCategory.UNCOOKED_FOOD) "Cook at Station to Consume" else "Requires Cooking Station",
-								contentScale = ContentScale.FillBounds,
-								painter = painterResource(R.drawable.food_bg)
-							)
-						}
 						SlavicDivider()
 						if (shouldShowValue(food.health)) {
 							DarkGlassStatCard(
@@ -343,7 +340,32 @@ fun FoodDetailContent(
 								)
 							}
 						}
+
 					}
+					uiState.craftingCookingStation?.let { craftingStation ->
+						SlavicDivider()
+						CardImageWithTopLabel(
+							itemData = craftingStation,
+							subTitle = if (category == FoodSubCategory.UNCOOKED_FOOD) "Cook at Station to Consume" else "Requires Cooking Station",
+							contentScale = ContentScale.FillBounds,
+							painter = painterResource(R.drawable.food_bg)
+						)
+					}
+//					if (uiState.foodForRecipe.isNotEmpty() || uiState.materialsForRecipe.isNotEmpty()) {
+//						SlavicDivider()
+//						CreatureHorizontalPager(
+//							pagerState = rememberPagerState(
+//								initialPage = 0,
+//								pageCount = { uiState.foodForRecipe.size }),
+//							list = uiState.foodForRecipe + uiState.materialsForRecipe,
+//							data = recipeData,
+//							getImageUrl = { it.item.imageUrl },
+//							getName = { it.item.name },
+//							getQuantity = { item, index -> item.quantityList[index] },
+//							getChance = { _, _ -> null }
+//						)
+//
+//					}
 				}
 			}
 			AnimatedVisibility(

@@ -77,8 +77,8 @@ import com.rabbitv.valheimviki.domain.use_cases.building_material.get_local_buil
 import com.rabbitv.valheimviki.domain.use_cases.connection.NetworkConnectivityObserver
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.CraftingObjectUseCases
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.get_crafting_object_by_ids.GetCraftingObjectByIdsUseCase
-import com.rabbitv.valheimviki.domain.use_cases.crafting_object.get_crafting_objects_by_ids.GetCraftingObjectsByIdsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.get_crafting_object_by_sub_category_use_case.GetCraftingObjectsBySubCategoryUseCase
+import com.rabbitv.valheimviki.domain.use_cases.crafting_object.get_crafting_objects_by_ids.GetCraftingObjectsByIdsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.get_local_crafting_object_use_case.GetLocalCraftingObjectsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
 import com.rabbitv.valheimviki.domain.use_cases.creature.get_aggressive_creatures.GetAggressiveCreatures
@@ -126,6 +126,7 @@ import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.get_item_id_in_relation.GetRelatedIdsRelationUseCase
 import com.rabbitv.valheimviki.domain.use_cases.relation.get_item_related_by_id.GetItemRelatedById
 import com.rabbitv.valheimviki.domain.use_cases.relation.get_local_relations.GetLocalRelationsUseCase
+import com.rabbitv.valheimviki.domain.use_cases.relation.get_related_ids_for.GetRelatedIdsForUseCase
 import com.rabbitv.valheimviki.domain.use_cases.tool.ToolUseCases
 import com.rabbitv.valheimviki.domain.use_cases.tool.get_local_tools_use_case.GetLocalToolsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.tool.get_tools_by_sub_category_use_case.GetToolsBySubCategoryUseCase
@@ -149,370 +150,371 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object RepositoryModule {
 
-    @Provides
-    @Singleton
-    fun provideDataStoreOperationsImpl(
-        @ApplicationContext context: Context
-    ): DataStoreOperations {
-        return DataStoreOperationsImpl(context = context)
-    }
+	@Provides
+	@Singleton
+	fun provideDataStoreOperationsImpl(
+		@ApplicationContext context: Context
+	): DataStoreOperations {
+		return DataStoreOperationsImpl(context = context)
+	}
 
-    @Provides
-    @Singleton
-    fun provideBiomeRepositoryImpl(
-        apiService: ApiBiomeService,
-        biomeDao: BiomeDao
-    ): BiomeRepository {
-        return BiomeRepositoryImpl(apiService, biomeDao)
-    }
+	@Provides
+	@Singleton
+	fun provideBiomeRepositoryImpl(
+		apiService: ApiBiomeService,
+		biomeDao: BiomeDao
+	): BiomeRepository {
+		return BiomeRepositoryImpl(apiService, biomeDao)
+	}
 
-    @Provides
-    @Singleton
-    fun provideCreatureRepositoryImpl(
-        apiService: ApiCreatureService,
-        creatureDao: CreatureDao
-    ): CreatureRepository {
-        return CreatureRepositoryImpl(apiService, creatureDao)
-    }
+	@Provides
+	@Singleton
+	fun provideCreatureRepositoryImpl(
+		apiService: ApiCreatureService,
+		creatureDao: CreatureDao
+	): CreatureRepository {
+		return CreatureRepositoryImpl(apiService, creatureDao)
+	}
 
-    @Provides
-    @Singleton
-    fun provideRelationRepositoryImpl(
-        apiService: ApiRelationsService,
-        relationDao: RelationDao
-    ): RelationRepository {
-        return RelationRepositoryImpl(apiService, relationDao)
-    }
+	@Provides
+	@Singleton
+	fun provideRelationRepositoryImpl(
+		apiService: ApiRelationsService,
+		relationDao: RelationDao
+	): RelationRepository {
+		return RelationRepositoryImpl(apiService, relationDao)
+	}
 
-    @Provides
-    @Singleton
-    fun provideOreDepositRepositoryImpl(
-        apiService: ApiOreDepositService,
-        oreDepositDao: OreDepositDao
-    ): OreDepositRepository {
-        return OreDepositRepositoryImpl(apiService, oreDepositDao)
-    }
+	@Provides
+	@Singleton
+	fun provideOreDepositRepositoryImpl(
+		apiService: ApiOreDepositService,
+		oreDepositDao: OreDepositDao
+	): OreDepositRepository {
+		return OreDepositRepositoryImpl(apiService, oreDepositDao)
+	}
 
-    @Provides
-    @Singleton
-    fun provideMaterialsRepositoryImpl(
-        apiService: ApiMaterialsService,
-        materialDao: MaterialDao
-    ): MaterialRepository {
-        return MaterialRepositoryImpl(apiService, materialDao)
-    }
+	@Provides
+	@Singleton
+	fun provideMaterialsRepositoryImpl(
+		apiService: ApiMaterialsService,
+		materialDao: MaterialDao
+	): MaterialRepository {
+		return MaterialRepositoryImpl(apiService, materialDao)
+	}
 
-    @Provides
-    @Singleton
-    fun providePointOfInterestRepositoryImpl(
-        apiService: ApiPointOfInterestService,
-        pointOfInterestDao: PointOfInterestDao
-    ): PointOfInterestRepository {
-        return PointOfInterestRepositoryImpl(apiService, pointOfInterestDao)
-    }
-
-
-    @Provides
-    @Singleton
-    fun provideTreeRepositoryImpl(
-        apiService: ApiTreeService,
-        treeDao: TreeDao
-    ): TreeRepository {
-        return TreeRepositoryImpl(apiService, treeDao)
-    }
-
-    @Provides
-    @Singleton
-    fun provideFoodRepositoryImpl(
-        apiService: ApiFoodService,
-        treeDao: FoodDao
-    ): FoodRepository {
-        return FoodRepositoryImpl(apiService, treeDao)
-    }
-
-    @Provides
-    @Singleton
-    fun provideWeaponRepositoryImpl(
-        apiService: ApiWeaponService,
-        weaponDao: WeaponDao
-    ): WeaponRepository {
-        return WeaponRepositoryImplementation(apiService, weaponDao)
-    }
-
-    @Provides
-    @Singleton
-    fun provideArmorRepositoryImpl(
-        apiService: ApiArmorService,
-        armorDao: ArmorDao
-    ): ArmorRepository {
-        return ArmorRepositoryImpl(apiService, armorDao)
-    }
-
-    @Provides
-    @Singleton
-    fun provideMeadRepositoryImpl(
-        apiService: ApiMeadService,
-        meadDao: MeadDao
-    ): MeadRepository {
-        return MeadRepositoryImpl(apiService, meadDao)
-    }
-
-    @Provides
-    @Singleton
-    fun provideToolRepositoryImpl(
-        apiService: ApiToolService,
-        toolDao: ToolDao
-    ): ToolRepository {
-        return ToolRepositoryImpl(apiService, toolDao)
-    }
-
-    @Provides
-    @Singleton
-    fun provideBuildingMaterialRepositoryImpl(
-        apiService: ApiBuildingMaterialService,
-        buildingMaterialDao: BuildingMaterialDao
-    ): BuildingMaterialRepository {
-        return BuildingMaterialRepositoryImpl(apiService, buildingMaterialDao)
-    }
-
-    @Provides
-    @Singleton
-    fun provideCraftingObjectRepositoryImpl(
-        apiService: ApiCraftingService,
-        craftingObjectDao: CraftingObjectDao
-    ): CraftingObjectRepository {
-        return CraftingObjectRepositoryImpl(apiService, craftingObjectDao)
-    }
-
-    @Provides
-    @Singleton
-    fun provideNetworkConnectivityObserver(
-        @ApplicationContext context: Context
-    ): NetworkConnectivity {
-        return NetworkConnectivityObserver(context = context)
-    }
-
-    @Provides
-    @Singleton
-    fun provideRefetchUseCase(
-        biomeRepository: BiomeRepository,
-        creatureRepository: CreatureRepository,
-        relationsRepository: RelationRepository,
-        materialRepository: MaterialRepository,
-        oreDepositRepository: OreDepositRepository,
-        pointOfInterestRepository: PointOfInterestRepository,
-        treeRepository: TreeRepository,
-        foodRepository: FoodRepository,
-        weaponRepository: WeaponRepository,
-        armorRepository: ArmorRepository,
-        meadRepository: MeadRepository,
-        toolRepository: ToolRepository,
-        buildingMaterialRepository: BuildingMaterialRepository,
-        craftingObjectRepository: CraftingObjectRepository,
-        dataStoreUseCases: DataStoreUseCases
-    ): DataRefetchUseCase {
-        return DataRefetchUseCase(
-            creatureRepository = creatureRepository,
-            relationsRepository = relationsRepository,
-            biomeRepository = biomeRepository,
-            oreDepositRepository = oreDepositRepository,
-            dataStoreUseCases = dataStoreUseCases,
-            materialsRepository = materialRepository,
-            pointOfInterestRepository = pointOfInterestRepository,
-            treeRepository = treeRepository,
-            foodRepository = foodRepository,
-            weaponRepository = weaponRepository,
-            armorRepository = armorRepository,
-            meadRepository = meadRepository,
-            toolRepository = toolRepository,
-            buildingMaterialRepository = buildingMaterialRepository,
-            craftingObjectRepository = craftingObjectRepository
-        )
-    }
-
-    @Provides
-    @Singleton
-    fun provideBiomeUseCases(biomeRepository: BiomeRepository): BiomeUseCases {
-        return BiomeUseCases(
-            getLocalBiomesUseCase = GetLocalBiomesUseCase(biomeRepository),
-            getBiomeByIdUseCase = GetBiomeByIdUseCase(biomeRepository),
-        )
-    }
-
-    @Provides
-    @Singleton
-    fun provideCreatureUseCases(
-        creatureRepository: CreatureRepository,
-    ): CreatureUseCases {
-        return CreatureUseCases(
-            getCreaturesByIds = GetCreaturesByIdsUseCase(creatureRepository),
-            getCreatureById = GetCreatureByIdUseCase(creatureRepository),
-            getCreatureByIdAndSubCategoryUseCase = GetCreatureByIdAndSubCategoryUseCase(
-                creatureRepository
-            ),
-            getMainBossesUseCase = GetMainBossesUseCase(creatureRepository),
-            getMiniBossesUseCase = GetMiniBossesUseCase(creatureRepository),
-            getAggressiveCreatures = GetAggressiveCreatures(creatureRepository),
-            getPassiveCreature = GetPassiveCreature(creatureRepository),
-            getNPCsUseCase = GetNPCsUseCase(creatureRepository),
-            getLocalCreaturesUseCase = GetLocalCreaturesUseCase(creatureRepository),
-            getCreatureByRelationAndSubCategory = GetCreatureByRelationAndSubCategory(
-                creatureRepository
-            ),
-            getCreaturesBySubCategory = GetCreatureBySubCategoryUseCase(creatureRepository),
-        )
-    }
-
-    @Provides
-    @Singleton
-    fun provideRelationUseCases(relationsRepository: RelationRepository): RelationUseCases {
-        return RelationUseCases(
-            getRelatedIdUseCase = GetItemRelatedById(relationsRepository),
-            getRelatedIdsUseCase = GetRelatedIdsRelationUseCase(relationsRepository),
-            getLocalRelationsUseCase = GetLocalRelationsUseCase(relationsRepository),
-        )
-    }
-
-    @Provides
-    @Singleton
-    fun provideDataStoreUseCases(dataStoreRepository: DataStoreRepository): DataStoreUseCases {
-        return DataStoreUseCases(
-            saveOnBoardingState = SaveOnBoardingState(dataStoreRepository),
-            readOnBoardingUseCase = ReadOnBoardingState(dataStoreRepository),
-            languageProvider = LanguageProvider(dataStoreRepository),
-            saveLanguageState = SaveLanguageState(dataStoreRepository),
-        )
-    }
-
-    @Provides
-    @Singleton
-    fun provideOreDepositUseCases(oreDepositRepository: OreDepositRepository): OreDepositUseCases {
-        return OreDepositUseCases(
-            getLocalOreDepositsUseCase = GetLocalOreDepositUseCase(oreDepositRepository),
-            getOreDepositsByIdsUseCase = GetOreDepositsByIdsUseCase(oreDepositRepository),
-            getOreDepositByIdUseCase = GetOreDepositByIdUseCase(oreDepositRepository),
-        )
-    }
-
-    @Provides
-    @Singleton
-    fun provideMaterialUseCases(materialRepository: MaterialRepository): MaterialUseCases {
-        return MaterialUseCases(
-            getLocalMaterials = GetLocalMaterialsUseCase(materialRepository),
-            getMaterialsByIds = GetMaterialsByIdsUseCase(materialRepository),
-            getMaterialById = GetMaterialByIdUseCase(materialRepository),
-            getMaterialsBySubCategory = GetMaterialsBySubCategoryUseCase(materialRepository),
-            getMaterialsBySubCategoryAndSubType = GetMaterialsBySubCategoryAndSubTypeUseCase(
-                materialRepository
-            )
-        )
-    }
-
-    @Provides
-    @Singleton
-    fun providePointOfInterestUseCases(pointOfInterestRepository: PointOfInterestRepository): PointOfInterestUseCases {
-        return PointOfInterestUseCases(
-            getLocalPointOfInterestUseCase = GetLocalPointOfInterestUseCase(
-                pointOfInterestRepository
-            ),
-            getPointOfInterestByIdUseCase = GetPointOfInterestByIdUseCase(pointOfInterestRepository),
-            getPointsOfInterestBySubCategoryUseCase = GetPointsOfInterestBySubCategoryUseCase(
-                pointOfInterestRepository
-            ),
-            getPointOfInterestBySubCategoryAndIdUseCase = GetPointOfInterestBySubCategoryAndIdUseCase(
-                pointOfInterestRepository
-            ),
-            getPointsOfInterestByIdsUseCase = GetPointsOfInterestByIdsUseCase(
-                pointOfInterestRepository
-            )
-        )
-    }
-
-    @Provides
-    @Singleton
-    fun provideTreesUseCases(treeRepository: TreeRepository): TreeUseCases {
-        return TreeUseCases(
-            getLocalTreesUseCase = GetLocalTreesUseCase(treeRepository),
-            getTreeByIdUseCase = GetTreeByIdUseCase(treeRepository),
-            getTreesByIdsUseCase = GetTreesByIdsUseCase(treeRepository)
-        )
-    }
-
-    @Provides
-    @Singleton
-    fun provideFoodUseCases(foodRepository: FoodRepository): FoodUseCases {
-        return FoodUseCases(
-            getLocalFoodListUseCase = GetLocalFoodListUseCase(foodRepository),
-            getFoodBySubCategoryUseCase = GetFoodListBySubCategoryUseCase(foodRepository),
-            getFoodListByIdsUseCase = GetFoodListByIdsUseCase(foodRepository),
-            getFoodByIdUseCase = GetFoodByIdUseCase(foodRepository)
-        )
-    }
-
-    @Provides
-    @Singleton
-    fun provideWeaponUseCases(weaponRepository: WeaponRepository): WeaponUseCases {
-        return WeaponUseCases(
-            getLocalWeaponsUseCase = GetLocalWeaponsUseCase(weaponRepository),
-            getWeaponsBySubCategoryUseCase = GetWeaponsBySubCategoryUseCase(),
-            getWeaponsBySubTypeUseCase = GetWeaponsBySubTypeUseCase(),
-            getWeaponByIdUseCase = GetWeaponByIdUseCase(weaponRepository)
-        )
-    }
-
-    @Provides
-    @Singleton
-    fun provideArmorUseCases(armorRepository: ArmorRepository): ArmorUseCases {
-        return ArmorUseCases(
-            getLocalArmorsUseCase = GetLocalArmorsUseCase(armorRepository),
-            getArmorByIdUseCase = GetArmorByIdUseCase(armorRepository),
-            getArmorsBySubCategoryUseCase = GetArmorsBySubCategoryUseCase()
-        )
-    }
+	@Provides
+	@Singleton
+	fun providePointOfInterestRepositoryImpl(
+		apiService: ApiPointOfInterestService,
+		pointOfInterestDao: PointOfInterestDao
+	): PointOfInterestRepository {
+		return PointOfInterestRepositoryImpl(apiService, pointOfInterestDao)
+	}
 
 
-    @Provides
-    @Singleton
-    fun provideMeadUseCases(meadRepository: MeadRepository): MeadUseCases {
-        return MeadUseCases(
-            getLocalMeadsUseCase = GetLocalMeadsUseCase(meadRepository),
-            getMeadsBySubCategoryUseCase = GetMeadsBySubCategoryUseCase()
-        )
-    }
+	@Provides
+	@Singleton
+	fun provideTreeRepositoryImpl(
+		apiService: ApiTreeService,
+		treeDao: TreeDao
+	): TreeRepository {
+		return TreeRepositoryImpl(apiService, treeDao)
+	}
 
-    @Provides
-    @Singleton
-    fun provideToolUseCases(toolRepository: ToolRepository): ToolUseCases {
-        return ToolUseCases(
-            getLocalToolsUseCase = GetLocalToolsUseCase(toolRepository),
-            getToolsBySubCategoryUseCase = GetToolsBySubCategoryUseCase()
-        )
-    }
+	@Provides
+	@Singleton
+	fun provideFoodRepositoryImpl(
+		apiService: ApiFoodService,
+		treeDao: FoodDao
+	): FoodRepository {
+		return FoodRepositoryImpl(apiService, treeDao)
+	}
 
-    @Provides
-    @Singleton
-    fun provideBuildingMaterialUseCases(buildingMaterialRepository: BuildingMaterialRepository): BuildMaterialUseCases {
-        return BuildMaterialUseCases(
-            getLocalBuildMaterial = GetLocalBuildMaterialsUseCase(buildingMaterialRepository),
-            getBuildMaterialByIds = GetBuildMaterialsByIdsUseCase(buildingMaterialRepository),
-            getBuildMaterialById = GetBuildMaterialByIdUseCase(buildingMaterialRepository),
-            getBuildMaterialsBySubCategory = GetBuildMaterialsBySubCategoryUseCase(
-                buildingMaterialRepository
-            ),
-            getBuildMaterialsBySubCategoryAndSubType = GetBuildMaterialsBySubCategoryAndSubTypeUseCase(
-                buildingMaterialRepository
-            ),
-        )
-    }
+	@Provides
+	@Singleton
+	fun provideWeaponRepositoryImpl(
+		apiService: ApiWeaponService,
+		weaponDao: WeaponDao
+	): WeaponRepository {
+		return WeaponRepositoryImplementation(apiService, weaponDao)
+	}
 
-    @Provides
-    @Singleton
-    fun provideCraftingObjectUseCases(craftingObjectRepository: CraftingObjectRepository): CraftingObjectUseCases {
-        return CraftingObjectUseCases(
-            getCraftingObjectByIds = GetCraftingObjectByIdsUseCase(craftingObjectRepository) ,
-            getCraftingObjectsByIds = GetCraftingObjectsByIdsUseCase(craftingObjectRepository) ,
-            getLocalCraftingObjectsUseCase = GetLocalCraftingObjectsUseCase(craftingObjectRepository),
-            getCraftingObjectsBySubCategoryUseCase = GetCraftingObjectsBySubCategoryUseCase()
-        )
-    }
+	@Provides
+	@Singleton
+	fun provideArmorRepositoryImpl(
+		apiService: ApiArmorService,
+		armorDao: ArmorDao
+	): ArmorRepository {
+		return ArmorRepositoryImpl(apiService, armorDao)
+	}
+
+	@Provides
+	@Singleton
+	fun provideMeadRepositoryImpl(
+		apiService: ApiMeadService,
+		meadDao: MeadDao
+	): MeadRepository {
+		return MeadRepositoryImpl(apiService, meadDao)
+	}
+
+	@Provides
+	@Singleton
+	fun provideToolRepositoryImpl(
+		apiService: ApiToolService,
+		toolDao: ToolDao
+	): ToolRepository {
+		return ToolRepositoryImpl(apiService, toolDao)
+	}
+
+	@Provides
+	@Singleton
+	fun provideBuildingMaterialRepositoryImpl(
+		apiService: ApiBuildingMaterialService,
+		buildingMaterialDao: BuildingMaterialDao
+	): BuildingMaterialRepository {
+		return BuildingMaterialRepositoryImpl(apiService, buildingMaterialDao)
+	}
+
+	@Provides
+	@Singleton
+	fun provideCraftingObjectRepositoryImpl(
+		apiService: ApiCraftingService,
+		craftingObjectDao: CraftingObjectDao
+	): CraftingObjectRepository {
+		return CraftingObjectRepositoryImpl(apiService, craftingObjectDao)
+	}
+
+	@Provides
+	@Singleton
+	fun provideNetworkConnectivityObserver(
+		@ApplicationContext context: Context
+	): NetworkConnectivity {
+		return NetworkConnectivityObserver(context = context)
+	}
+
+	@Provides
+	@Singleton
+	fun provideRefetchUseCase(
+		biomeRepository: BiomeRepository,
+		creatureRepository: CreatureRepository,
+		relationsRepository: RelationRepository,
+		materialRepository: MaterialRepository,
+		oreDepositRepository: OreDepositRepository,
+		pointOfInterestRepository: PointOfInterestRepository,
+		treeRepository: TreeRepository,
+		foodRepository: FoodRepository,
+		weaponRepository: WeaponRepository,
+		armorRepository: ArmorRepository,
+		meadRepository: MeadRepository,
+		toolRepository: ToolRepository,
+		buildingMaterialRepository: BuildingMaterialRepository,
+		craftingObjectRepository: CraftingObjectRepository,
+		dataStoreUseCases: DataStoreUseCases
+	): DataRefetchUseCase {
+		return DataRefetchUseCase(
+			creatureRepository = creatureRepository,
+			relationsRepository = relationsRepository,
+			biomeRepository = biomeRepository,
+			oreDepositRepository = oreDepositRepository,
+			dataStoreUseCases = dataStoreUseCases,
+			materialsRepository = materialRepository,
+			pointOfInterestRepository = pointOfInterestRepository,
+			treeRepository = treeRepository,
+			foodRepository = foodRepository,
+			weaponRepository = weaponRepository,
+			armorRepository = armorRepository,
+			meadRepository = meadRepository,
+			toolRepository = toolRepository,
+			buildingMaterialRepository = buildingMaterialRepository,
+			craftingObjectRepository = craftingObjectRepository
+		)
+	}
+
+	@Provides
+	@Singleton
+	fun provideBiomeUseCases(biomeRepository: BiomeRepository): BiomeUseCases {
+		return BiomeUseCases(
+			getLocalBiomesUseCase = GetLocalBiomesUseCase(biomeRepository),
+			getBiomeByIdUseCase = GetBiomeByIdUseCase(biomeRepository),
+		)
+	}
+
+	@Provides
+	@Singleton
+	fun provideCreatureUseCases(
+		creatureRepository: CreatureRepository,
+	): CreatureUseCases {
+		return CreatureUseCases(
+			getCreaturesByIds = GetCreaturesByIdsUseCase(creatureRepository),
+			getCreatureById = GetCreatureByIdUseCase(creatureRepository),
+			getCreatureByIdAndSubCategoryUseCase = GetCreatureByIdAndSubCategoryUseCase(
+				creatureRepository
+			),
+			getMainBossesUseCase = GetMainBossesUseCase(creatureRepository),
+			getMiniBossesUseCase = GetMiniBossesUseCase(creatureRepository),
+			getAggressiveCreatures = GetAggressiveCreatures(creatureRepository),
+			getPassiveCreature = GetPassiveCreature(creatureRepository),
+			getNPCsUseCase = GetNPCsUseCase(creatureRepository),
+			getLocalCreaturesUseCase = GetLocalCreaturesUseCase(creatureRepository),
+			getCreatureByRelationAndSubCategory = GetCreatureByRelationAndSubCategory(
+				creatureRepository
+			),
+			getCreaturesBySubCategory = GetCreatureBySubCategoryUseCase(creatureRepository),
+		)
+	}
+
+	@Provides
+	@Singleton
+	fun provideRelationUseCases(relationsRepository: RelationRepository): RelationUseCases {
+		return RelationUseCases(
+			getRelatedIdUseCase = GetItemRelatedById(relationsRepository),
+			getRelatedIdsUseCase = GetRelatedIdsRelationUseCase(relationsRepository),
+			getLocalRelationsUseCase = GetLocalRelationsUseCase(relationsRepository),
+			getRelatedIdsForUseCase = GetRelatedIdsForUseCase(relationsRepository)
+		)
+	}
+
+	@Provides
+	@Singleton
+	fun provideDataStoreUseCases(dataStoreRepository: DataStoreRepository): DataStoreUseCases {
+		return DataStoreUseCases(
+			saveOnBoardingState = SaveOnBoardingState(dataStoreRepository),
+			readOnBoardingUseCase = ReadOnBoardingState(dataStoreRepository),
+			languageProvider = LanguageProvider(dataStoreRepository),
+			saveLanguageState = SaveLanguageState(dataStoreRepository),
+		)
+	}
+
+	@Provides
+	@Singleton
+	fun provideOreDepositUseCases(oreDepositRepository: OreDepositRepository): OreDepositUseCases {
+		return OreDepositUseCases(
+			getLocalOreDepositsUseCase = GetLocalOreDepositUseCase(oreDepositRepository),
+			getOreDepositsByIdsUseCase = GetOreDepositsByIdsUseCase(oreDepositRepository),
+			getOreDepositByIdUseCase = GetOreDepositByIdUseCase(oreDepositRepository),
+		)
+	}
+
+	@Provides
+	@Singleton
+	fun provideMaterialUseCases(materialRepository: MaterialRepository): MaterialUseCases {
+		return MaterialUseCases(
+			getLocalMaterials = GetLocalMaterialsUseCase(materialRepository),
+			getMaterialsByIds = GetMaterialsByIdsUseCase(materialRepository),
+			getMaterialById = GetMaterialByIdUseCase(materialRepository),
+			getMaterialsBySubCategory = GetMaterialsBySubCategoryUseCase(materialRepository),
+			getMaterialsBySubCategoryAndSubType = GetMaterialsBySubCategoryAndSubTypeUseCase(
+				materialRepository
+			)
+		)
+	}
+
+	@Provides
+	@Singleton
+	fun providePointOfInterestUseCases(pointOfInterestRepository: PointOfInterestRepository): PointOfInterestUseCases {
+		return PointOfInterestUseCases(
+			getLocalPointOfInterestUseCase = GetLocalPointOfInterestUseCase(
+				pointOfInterestRepository
+			),
+			getPointOfInterestByIdUseCase = GetPointOfInterestByIdUseCase(pointOfInterestRepository),
+			getPointsOfInterestBySubCategoryUseCase = GetPointsOfInterestBySubCategoryUseCase(
+				pointOfInterestRepository
+			),
+			getPointOfInterestBySubCategoryAndIdUseCase = GetPointOfInterestBySubCategoryAndIdUseCase(
+				pointOfInterestRepository
+			),
+			getPointsOfInterestByIdsUseCase = GetPointsOfInterestByIdsUseCase(
+				pointOfInterestRepository
+			)
+		)
+	}
+
+	@Provides
+	@Singleton
+	fun provideTreesUseCases(treeRepository: TreeRepository): TreeUseCases {
+		return TreeUseCases(
+			getLocalTreesUseCase = GetLocalTreesUseCase(treeRepository),
+			getTreeByIdUseCase = GetTreeByIdUseCase(treeRepository),
+			getTreesByIdsUseCase = GetTreesByIdsUseCase(treeRepository)
+		)
+	}
+
+	@Provides
+	@Singleton
+	fun provideFoodUseCases(foodRepository: FoodRepository): FoodUseCases {
+		return FoodUseCases(
+			getLocalFoodListUseCase = GetLocalFoodListUseCase(foodRepository),
+			getFoodBySubCategoryUseCase = GetFoodListBySubCategoryUseCase(foodRepository),
+			getFoodListByIdsUseCase = GetFoodListByIdsUseCase(foodRepository),
+			getFoodByIdUseCase = GetFoodByIdUseCase(foodRepository)
+		)
+	}
+
+	@Provides
+	@Singleton
+	fun provideWeaponUseCases(weaponRepository: WeaponRepository): WeaponUseCases {
+		return WeaponUseCases(
+			getLocalWeaponsUseCase = GetLocalWeaponsUseCase(weaponRepository),
+			getWeaponsBySubCategoryUseCase = GetWeaponsBySubCategoryUseCase(),
+			getWeaponsBySubTypeUseCase = GetWeaponsBySubTypeUseCase(),
+			getWeaponByIdUseCase = GetWeaponByIdUseCase(weaponRepository)
+		)
+	}
+
+	@Provides
+	@Singleton
+	fun provideArmorUseCases(armorRepository: ArmorRepository): ArmorUseCases {
+		return ArmorUseCases(
+			getLocalArmorsUseCase = GetLocalArmorsUseCase(armorRepository),
+			getArmorByIdUseCase = GetArmorByIdUseCase(armorRepository),
+			getArmorsBySubCategoryUseCase = GetArmorsBySubCategoryUseCase()
+		)
+	}
+
+
+	@Provides
+	@Singleton
+	fun provideMeadUseCases(meadRepository: MeadRepository): MeadUseCases {
+		return MeadUseCases(
+			getLocalMeadsUseCase = GetLocalMeadsUseCase(meadRepository),
+			getMeadsBySubCategoryUseCase = GetMeadsBySubCategoryUseCase()
+		)
+	}
+
+	@Provides
+	@Singleton
+	fun provideToolUseCases(toolRepository: ToolRepository): ToolUseCases {
+		return ToolUseCases(
+			getLocalToolsUseCase = GetLocalToolsUseCase(toolRepository),
+			getToolsBySubCategoryUseCase = GetToolsBySubCategoryUseCase()
+		)
+	}
+
+	@Provides
+	@Singleton
+	fun provideBuildingMaterialUseCases(buildingMaterialRepository: BuildingMaterialRepository): BuildMaterialUseCases {
+		return BuildMaterialUseCases(
+			getLocalBuildMaterial = GetLocalBuildMaterialsUseCase(buildingMaterialRepository),
+			getBuildMaterialByIds = GetBuildMaterialsByIdsUseCase(buildingMaterialRepository),
+			getBuildMaterialById = GetBuildMaterialByIdUseCase(buildingMaterialRepository),
+			getBuildMaterialsBySubCategory = GetBuildMaterialsBySubCategoryUseCase(
+				buildingMaterialRepository
+			),
+			getBuildMaterialsBySubCategoryAndSubType = GetBuildMaterialsBySubCategoryAndSubTypeUseCase(
+				buildingMaterialRepository
+			),
+		)
+	}
+
+	@Provides
+	@Singleton
+	fun provideCraftingObjectUseCases(craftingObjectRepository: CraftingObjectRepository): CraftingObjectUseCases {
+		return CraftingObjectUseCases(
+			getCraftingObjectByIds = GetCraftingObjectByIdsUseCase(craftingObjectRepository),
+			getCraftingObjectsByIds = GetCraftingObjectsByIdsUseCase(craftingObjectRepository),
+			getLocalCraftingObjectsUseCase = GetLocalCraftingObjectsUseCase(craftingObjectRepository),
+			getCraftingObjectsBySubCategoryUseCase = GetCraftingObjectsBySubCategoryUseCase()
+		)
+	}
 }
