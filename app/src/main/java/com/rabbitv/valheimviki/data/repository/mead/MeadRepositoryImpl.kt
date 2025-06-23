@@ -20,6 +20,14 @@ class MeadRepositoryImpl @Inject constructor(
         return meadDao.getLocalMeads()
     }
 
+    override fun getMeadsByIds(ids: List<String>): Flow<List<Mead>> {
+        return meadDao.getMeadsByIds(ids)
+    }
+
+    override fun getMeadById(id: String): Flow<Mead?> {
+        return meadDao.getMeadById(id)
+    }
+
     override fun getMeadsBySubCategory(subCategory: String): Flow<List<Mead>> {
         return meadDao.getMeadsBySubCategory(subCategory)
     }
