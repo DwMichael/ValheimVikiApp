@@ -165,7 +165,7 @@ class MeadDetailViewModel @Inject constructor(
 				awaitAll(craftingDeferred, foodDeferred,meadDeferred, materialsDeferred)
 
 			} catch (e: Exception) {
-				Log.e("General fetch error FoodDetailViewModel", e.message.toString())
+				Log.e("General fetch error MeadDetailViewModel", e.message.toString())
 				_isLoading.value = false
 				_error.value = e.message
 			} finally {

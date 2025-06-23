@@ -1,37 +1,26 @@
 package com.rabbitv.valheimviki.presentation.detail.food
 
-import android.graphics.RenderEffect
-import android.graphics.Shader
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -47,20 +36,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asComposeRenderEffect
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
@@ -83,6 +65,8 @@ import com.rabbitv.valheimviki.domain.repository.Droppable
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
+import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCard
+import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCardPainter
 import com.rabbitv.valheimviki.presentation.detail.creature.components.horizontal_pager.DroppedItemsSection
 import com.rabbitv.valheimviki.presentation.detail.food.model.FoodDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.food.model.RecipeFoodData
@@ -191,7 +175,7 @@ fun FoodDetailContent(
 					verticalArrangement = Arrangement.Top,
 
 					) {
-					FoodImage(food.imageUrl)
+					SmallFramedImage(food.imageUrl)
 					Text(
 						food.name,
 						modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
@@ -390,201 +374,18 @@ fun FoodDetailContent(
 	}
 }
 
-@Composable
-fun DarkGlassStatCard(
-	icon: ImageVector,
-	label: String,
-	value: String,
-	modifier: Modifier = Modifier,
-	expand: () -> Unit,
-	isExpanded: Boolean,
-) {
-	BaseDarkGlassStatCard(
-		iconContent = {
-			Icon(
-				imageVector = icon,
-				contentDescription = null,
-				tint = Color(0xFFFF6B35),
-				modifier = Modifier.size(24.dp)
-			)
-		},
-		label = label,
-		value = value,
-		modifier = modifier.clickable { expand() },
-		expand = expand,
-		isExpanded = isExpanded
-	)
-}
-
-@Composable
-fun DarkGlassStatCardPainter(
-	painter: Painter,
-	label: String,
-	value: String,
-	modifier: Modifier = Modifier,
-	expand: () -> Unit,
-	isExpanded: Boolean,
-) {
-	BaseDarkGlassStatCard(
-		iconContent = {
-			Icon(
-				painter = painter,
-				contentDescription = null,
-				tint = Color(0xFFFF6B35),
-				modifier = Modifier.size(24.dp)
-			)
-		},
-		label = label,
-		value = value,
-		modifier = modifier.clickable { expand() },
-		expand = expand,
-		isExpanded = isExpanded
-	)
-}
-
-@Composable
-private fun BaseDarkGlassStatCard(
-	iconContent: @Composable () -> Unit,
-	label: String,
-	value: String,
-	modifier: Modifier = Modifier,
-	expand: () -> Unit,
-	isExpanded: Boolean
-) {
-	Box(
-		modifier = modifier
-			.fillMaxWidth()
-			.height(60.dp)
-			.clip(Shapes.large)
-			.background(
-				Color.Black.copy(alpha = 0.3f)
-			)
-			.border(
-				width = 1.dp,
-				color = Color(0xFF4A4A4A).copy(alpha = 0.5f),
-				shape = Shapes.large
-			)
-	) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-			Box(
-				modifier = Modifier
-					.matchParentSize()
-					.graphicsLayer {
-						renderEffect = RenderEffect.createBlurEffect(
-							10f,
-							10f,
-							Shader.TileMode.CLAMP
-						).asComposeRenderEffect()
-					}
-			)
-		}
-
-		Row(
-			modifier = Modifier
-				.fillMaxSize()
-				.padding(horizontal = 24.dp),
-			horizontalArrangement = Arrangement.Start,
-			verticalAlignment = Alignment.CenterVertically
-		) {
-			iconContent()
-
-			Spacer(modifier = Modifier.width(16.dp))
-
-			Text(
-				text = label,
-				color = Color(0xFFFF6B35),
-				style = MaterialTheme.typography.bodyLarge.copy(
-					fontSize = 22.sp,
-					fontWeight = FontWeight.Bold
-				),
-				letterSpacing = 1.sp
-			)
-
-			Spacer(modifier = Modifier.width(10.dp))
 
 
-			Text(
-				modifier = Modifier
-					.weight(1f)
-					.padding(horizontal = 5.dp),
-				text = value,
-				color = Color.White,
-				style = MaterialTheme.typography.bodyLarge.copy(
-					fontWeight = FontWeight.Bold,
-					lineHeight = 18.sp
-				),
-				maxLines = 2,
-				overflow = TextOverflow.Ellipsis,
-				textAlign = TextAlign.End
-			)
-
-			IconButton(
-				onClick = expand,
-			) {
-				Icon(
-					imageVector = if (isExpanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
-					contentDescription = null,
-					tint = Color(0xFFFF6B35),
-					modifier = Modifier.size(24.dp)
-				)
-			}
-		}
-	}
-}
 
 
-@Composable
-fun FoodImage(imageUrl: String) {
-	Box(
-		Modifier
-			.size(150.dp)
-			.border(1.dp, BlackBrownBorder, Shapes.large)
-	)
-	{
-		Image(
-			painter = painterResource(R.drawable.bg_food),
-			contentDescription = "bg",
-			contentScale = ContentScale.FillBounds,
-			modifier = Modifier
-				.clip(Shapes.large)
-				.fillMaxSize()
-		)
-		AsyncImage(
-			modifier = Modifier
-				.fillMaxSize(0.7f)
-				.align(Alignment.Center),
-			model = ImageRequest.Builder(LocalContext.current)
-				.data(imageUrl)
-				.crossfade(true)
-				.build(),
-			contentDescription = "Food Image",
-			error = if (LocalInspectionMode.current) painterResource(R.drawable.testweapon) else null,
-			contentScale = ContentScale.FillBounds,
-		)
-
-	}
-}
 
 
-@RequiresApi(Build.VERSION_CODES.S)
-@Preview("FoodStatCard")
-@Composable
-fun PreviewFoodStatCard() {
 
-	ValheimVikiAppTheme {
-		DarkGlassStatCard(Lucide.Utensils, "Health", "100", expand = {}, isExpanded = false)
-	}
 
-}
 
-@Preview("FoodImage")
-@Composable
-fun PreviewFoodImage() {
-	ValheimVikiAppTheme {
-		FoodImage("")
-	}
 
-}
+
+
 
 @RequiresApi(Build.VERSION_CODES.S)
 @Preview("FoodDetailContentPreview", showBackground = true)

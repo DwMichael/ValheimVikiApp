@@ -66,6 +66,9 @@ import com.rabbitv.valheimviki.domain.repository.Droppable
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
+import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCard
+import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCardPainter
+import com.rabbitv.valheimviki.presentation.components.images.SmallFramedImage
 import com.rabbitv.valheimviki.presentation.detail.creature.components.horizontal_pager.DroppedItemsSection
 import com.rabbitv.valheimviki.presentation.detail.food.DarkGlassStatCard
 import com.rabbitv.valheimviki.presentation.detail.food.DarkGlassStatCardPainter
@@ -175,7 +178,7 @@ fun MeadDetailContent(
 					verticalArrangement = Arrangement.Top,
 
 					) {
-//					FoodImage(food.imageUrl)
+					SmallFramedImage(mead.imageUrl)
 					Text(
 						mead.name,
 						modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
