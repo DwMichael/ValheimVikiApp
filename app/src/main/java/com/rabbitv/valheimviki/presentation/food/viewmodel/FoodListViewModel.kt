@@ -34,7 +34,6 @@ class FoodListViewModel @Inject constructor(
 
     private val _foods: StateFlow<List<Food>> = _selectedSubCategory.flatMapLatest { subCategory ->
         foodUseCases.getFoodBySubCategoryUseCase(subCategory).catch { e ->
-            Log.e("FoodListVM", "Error fetching data for subCategory: $subCategory", e)
             emit(emptyList<Food>())
         }
     }.flowOn(Dispatchers.Default)
