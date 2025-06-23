@@ -88,7 +88,7 @@ class MiniBossDetailScreenViewModel @Inject constructor(
 				}.await()
 
 
-				val deferreds = listOf(
+				val deferred = listOf(
 					async {
 						try {
 							val pointOfInterest =
@@ -118,7 +118,7 @@ class MiniBossDetailScreenViewModel @Inject constructor(
 						//TODO: FOR LORD RETO MAYBE ADD AS MATERIALS fragments for DYRNWYN
 					}
 				)
-				deferreds.awaitAll()
+				deferred.awaitAll()
 			}
 			_isLoading.value = false
 		} catch (e: Exception) {

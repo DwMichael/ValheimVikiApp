@@ -120,7 +120,6 @@ class PassiveCreatureDetailScreenViewModel @Inject constructor(
 								)
 							}
 							_materialDropItem.value = tempList
-							Log.e("DROP ITEMS ", "$tempList")
 						} catch (e: Exception) {
 							Log.e("PassiveCreatureDetail ViewModel", "$e")
 							_materialDropItem.value = emptyList()

@@ -111,6 +111,8 @@ import com.rabbitv.valheimviki.domain.use_cases.material.get_materials_by_subcat
 import com.rabbitv.valheimviki.domain.use_cases.material.get_materials_by_subcategory_and_subtype.GetMaterialsBySubCategoryAndSubTypeUseCase
 import com.rabbitv.valheimviki.domain.use_cases.mead.MeadUseCases
 import com.rabbitv.valheimviki.domain.use_cases.mead.get_local_meads_use_case.GetLocalMeadsUseCase
+import com.rabbitv.valheimviki.domain.use_cases.mead.get_mead_by_id.GetMeadByIdUseCase
+import com.rabbitv.valheimviki.domain.use_cases.mead.get_meads_by_ids.GetMeadsByIdsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.mead.get_meads_by_sub_category_use_case.GetMeadsBySubCategoryUseCase
 import com.rabbitv.valheimviki.domain.use_cases.ore_deposit.OreDepositUseCases
 import com.rabbitv.valheimviki.domain.use_cases.ore_deposit.get_local_ore_deposit.GetLocalOreDepositUseCase
@@ -478,6 +480,8 @@ object RepositoryModule {
 	fun provideMeadUseCases(meadRepository: MeadRepository): MeadUseCases {
 		return MeadUseCases(
 			getLocalMeadsUseCase = GetLocalMeadsUseCase(meadRepository),
+			getMeadsByIdsUseCase = GetMeadsByIdsUseCase(meadRepository),
+			getMeadByIdUseCase = GetMeadByIdUseCase(meadRepository),
 			getMeadsBySubCategoryUseCase = GetMeadsBySubCategoryUseCase()
 		)
 	}
