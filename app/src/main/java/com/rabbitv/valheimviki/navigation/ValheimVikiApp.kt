@@ -67,6 +67,7 @@ import com.composables.icons.lucide.Utensils
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.creature.CreatureSubCategory
 import com.rabbitv.valheimviki.domain.model.food.FoodSubCategory
+import com.rabbitv.valheimviki.domain.model.mead.MeadSubCategory
 import com.rabbitv.valheimviki.presentation.armor.ArmorListScreen
 import com.rabbitv.valheimviki.presentation.biome.BiomeScreen
 import com.rabbitv.valheimviki.presentation.building_material.BuildingMaterialCategoryScreen
@@ -85,6 +86,7 @@ import com.rabbitv.valheimviki.presentation.detail.creature.mini_boss_screen.Min
 import com.rabbitv.valheimviki.presentation.detail.creature.npc.NpcDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.creature.passive_screen.PassiveCreatureDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.food.FoodDetailScreen
+import com.rabbitv.valheimviki.presentation.detail.mead.MeadDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.weapon.WeaponDetailScreen
 import com.rabbitv.valheimviki.presentation.food.FoodListScreen
 import com.rabbitv.valheimviki.presentation.home.MainAppBar
@@ -355,8 +357,13 @@ fun ValheimNavGraph(
 		composable<Screen.MeadList> {
 			MeadListScreen(
 				modifier = Modifier.padding(10.dp),
-				onItemClick = { _, _ ->
-					// TODO: Implement mead detail navigation
+				onItemClick = { meadId, meadSubCategory: MeadSubCategory ->
+					valheimVikiNavController.navigate(
+						Screen.MeadDetail(
+							meadId = meadId,
+							meadCategory = meadSubCategory
+						)
+					)
 				},
 				paddingValues = innerPadding,
 			)
@@ -593,6 +600,16 @@ fun ValheimNavGraph(
 			val args = backStackEntry.toRoute<Screen.FoodDetail>()
 			FoodDetailScreen(
 				category = args.foodCategory,
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+			)
+		}
+
+		composable<Screen.MeadDetail> { backStackEntry ->
+			val args = backStackEntry.toRoute<Screen.MeadDetail>()
+			MeadDetailScreen(
+				category = args.meadCategory,
 				onBack = {
 					valheimVikiNavController.popBackStack()
 				},
