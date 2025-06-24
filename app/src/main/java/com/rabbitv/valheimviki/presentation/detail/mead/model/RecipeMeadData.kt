@@ -1,12 +1,13 @@
-package com.rabbitv.valheimviki.presentation.detail.food.model
+package com.rabbitv.valheimviki.presentation.detail.mead.model
 
-import com.rabbitv.valheimviki.domain.model.food.Food
+
+import com.rabbitv.valheimviki.domain.model.mead.Mead
 import com.rabbitv.valheimviki.domain.model.presentation.DroppableType
 import com.rabbitv.valheimviki.domain.repository.Droppable
 
-data class RecipeFoodData(
-	override val itemDrop: Food,
+data class RecipeMeadData(
+	override val itemDrop: Mead,
 	override val quantityList: List<Int?> = emptyList(),
 	override val chanceStarList: List<Int?> = emptyList(),
-	override val droppableType: DroppableType = DroppableType.FOOD
+	override val droppableType: DroppableType = DroppableType.MEAD
 ) : Droppable

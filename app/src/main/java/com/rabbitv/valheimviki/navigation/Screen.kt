@@ -2,6 +2,7 @@ package com.rabbitv.valheimviki.navigation
 
 
 import com.rabbitv.valheimviki.domain.model.food.FoodSubCategory
+import com.rabbitv.valheimviki.domain.model.mead.MeadSubCategory
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -114,5 +115,11 @@ sealed class Screen() {
 	data class FoodDetail(
 		val foodId: String,
 		val foodCategory: FoodSubCategory
+	) : Screen()
+
+	@Serializable
+	data class MeadDetail(
+		val meadId: String,
+		val meadCategory: MeadSubCategory
 	) : Screen()
 }

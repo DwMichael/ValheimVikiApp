@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import com.rabbitv.valheimviki.domain.repository.Droppable
 import com.rabbitv.valheimviki.presentation.components.section_header.SectionHeader
 
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
@@ -26,7 +27,7 @@ data class HorizontalPagerWithHeaderData(
 )
 
 @Composable
-fun <T> HorizontalPagerWithHeader(
+fun <T :Droppable> HorizontalPagerWithHeader(
 	list: List<T>,
 	headerData: HorizontalPagerWithHeaderData,
 	modifier: Modifier = Modifier,
