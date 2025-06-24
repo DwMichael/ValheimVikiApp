@@ -140,7 +140,7 @@ fun MeadDetailContent(
 
 		previousScrollValue.intValue = currentScroll
 	}
-	val recipeItems: List<Droppable> = uiState.materialsForRecipe + uiState.foodForRecipe
+	val recipeItems: List<Droppable> = uiState.materialsForRecipe + uiState.foodForRecipe + uiState.meadForRecipe
 	val isExpandable = remember { mutableStateOf(false) }
 	fun shouldShowValue(value: Any?): Boolean {
 		return when (value) {
@@ -254,8 +254,9 @@ fun MeadDetailContent(
 							.padding(horizontal = BODY_CONTENT_PADDING.dp),
 						verticalArrangement = Arrangement.spacedBy(BODY_CONTENT_PADDING.dp)
 					) {
-						SlavicDivider()
+
 						if (shouldShowValue(mead.duration)) {
+							SlavicDivider()
 							DarkGlassStatCard(
 								Lucide.Clock2,
 								"Duration",

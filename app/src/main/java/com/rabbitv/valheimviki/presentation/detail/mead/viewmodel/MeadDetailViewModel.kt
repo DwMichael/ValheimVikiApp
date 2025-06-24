@@ -161,8 +161,26 @@ class MeadDetailViewModel @Inject constructor(
 					}
 					_materialsForRecipe.value = tempList
 				}
+				val meadsDeferred = async {
+					val meads = meadUseCases.getMeadsByIdsUseCase(relatedIds).first()
 
-				awaitAll(craftingDeferred, foodDeferred,meadDeferred, materialsDeferred)
+					val tempList = mutableListOf<RecipeMeadData>()
+					val relatedItemsMap = relatedObjects.associateBy { it.id }
+					meads.forEach { mead ->
+						val relatedItem = relatedItemsMap[mead.id]
+						val quantityList = listOf(
+							relatedItem?.quantity,
+						)
+						tempList.add(
+							RecipeMeadData(
+								itemDrop = mead,
+								quantityList = quantityList,
+							)
+						)
+					}
+					_meadForRecipe.value = tempList
+				}
+				awaitAll(craftingDeferred, foodDeferred,meadDeferred,meadsDeferred, materialsDeferred)
 
 			} catch (e: Exception) {
 				Log.e("General fetch error MeadDetailViewModel", e.message.toString())
