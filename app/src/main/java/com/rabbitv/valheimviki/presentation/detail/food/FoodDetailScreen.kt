@@ -67,6 +67,7 @@ import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCard
 import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCardPainter
+import com.rabbitv.valheimviki.presentation.components.images.SmallFramedImage
 import com.rabbitv.valheimviki.presentation.detail.creature.components.horizontal_pager.DroppedItemsSection
 import com.rabbitv.valheimviki.presentation.detail.food.model.FoodDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.food.model.RecipeFoodData
@@ -341,7 +342,7 @@ fun FoodDetailContent(
 							icon = Lucide.CookingPot,
 							list = recipeItems,
 							starLevel = 0,
-							title = "RECIPE",
+							title = "Recipe",
 							subTitle = "Ingredients required to craft this item",
 						)
 					}

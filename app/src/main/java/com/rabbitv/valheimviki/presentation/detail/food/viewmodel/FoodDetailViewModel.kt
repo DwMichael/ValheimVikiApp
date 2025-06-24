@@ -107,7 +107,6 @@ class FoodDetailViewModel @Inject constructor(
 							RecipeFoodData(
 								itemDrop = food,
 								quantityList = quantityList,
-								chanceStarList = emptyList(),
 							)
 						)
 					}

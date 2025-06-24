@@ -8,7 +8,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
-import com.rabbitv.valheimviki.presentation.detail.food.BaseDarkGlassStatCard
 
 @Composable
 fun DarkGlassStatCardPainter(

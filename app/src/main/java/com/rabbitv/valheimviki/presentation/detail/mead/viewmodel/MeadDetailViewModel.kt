@@ -17,6 +17,7 @@ import com.rabbitv.valheimviki.presentation.detail.food.model.RecipeMaterialData
 import com.rabbitv.valheimviki.presentation.detail.mead.model.MeadDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.mead.model.RecipeMeadData
 import com.rabbitv.valheimviki.utils.Constants.FOOD_KEY
+import com.rabbitv.valheimviki.utils.Constants.MEAD_KEY
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -40,7 +41,7 @@ class MeadDetailViewModel @Inject constructor(
 	private val relationUseCases: RelationUseCases,
 	private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-	private val _meadId: String = checkNotNull(savedStateHandle[FOOD_KEY])
+	private val _meadId: String = checkNotNull(savedStateHandle[MEAD_KEY])
 	private val _mead = MutableStateFlow<Mead?>(null)
 	private val _craftingCookingStation = MutableStateFlow<CraftingObject?>(null)
 	private val _foodForRecipe = MutableStateFlow<List<RecipeFoodData>>(emptyList())
@@ -134,7 +135,6 @@ class MeadDetailViewModel @Inject constructor(
 							RecipeMeadData(
 								itemDrop = mead,
 								quantityList = quantityList,
-								chanceStarList = emptyList(),
 							)
 						)
 					}
