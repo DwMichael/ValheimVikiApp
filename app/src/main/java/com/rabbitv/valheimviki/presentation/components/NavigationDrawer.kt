@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.composables.icons.lucide.Anvil
 import com.composables.icons.lucide.Cuboid
 import com.composables.icons.lucide.FlaskRound
 import com.composables.icons.lucide.Gavel
@@ -278,6 +279,13 @@ private fun PreviewNavigationDrawer() {
 			label = "Mead",
 			contentDescription = "Mead section",
 			screen = Screen.MeadList
+		),
+
+		DrawerItem(
+			icon = Lucide.Anvil,
+			label = "Crafting Stations",
+			contentDescription = "Crafting Station section",
+			screen = Screen.CraftingObjectsList
 		),
 		DrawerItem(
 			icon = Lucide.Gavel,

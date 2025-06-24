@@ -51,6 +51,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.composables.icons.lucide.Anvil
 import com.composables.icons.lucide.Cuboid
 import com.composables.icons.lucide.FlaskRound
 import com.composables.icons.lucide.Gavel
@@ -75,6 +76,7 @@ import com.rabbitv.valheimviki.presentation.building_material.BuildingMaterialLi
 import com.rabbitv.valheimviki.presentation.building_material.viewmodel.BuildingMaterialListViewModel
 import com.rabbitv.valheimviki.presentation.components.DrawerItem
 import com.rabbitv.valheimviki.presentation.components.NavigationDrawer
+import com.rabbitv.valheimviki.presentation.crafting.CraftingListScreen
 import com.rabbitv.valheimviki.presentation.creatures.bosses.BossScreen
 import com.rabbitv.valheimviki.presentation.creatures.mini_bosses.MiniBossScreen
 import com.rabbitv.valheimviki.presentation.creatures.mob_list.MobListScreen
@@ -369,6 +371,16 @@ fun ValheimNavGraph(
 			)
 		}
 
+		composable<Screen.CraftingObjectsList> {
+			CraftingListScreen(
+				modifier = Modifier.padding(10.dp),
+				onItemClick = { _, _ ->
+					// TODO: Implement navigation
+				},
+				paddingValues = innerPadding,
+			)
+		}
+
 		composable<Screen.ToolList> {
 			ToolListScreen(
 				modifier = Modifier.padding(10.dp),
@@ -646,6 +658,9 @@ fun rememberDrawerItems(): List<DrawerItem> {
 	val meadsLabel = stringResource(R.string.meads)
 	val meadsDesc = stringResource(R.string.mead_section)
 
+	val craftingObjectsLabel = stringResource(R.string.crafting_stations)
+	val craftingObjectsDesc = stringResource(R.string.crafting_stations_section)
+
 	val toolsLabel = stringResource(R.string.tools)
 	val toolsDesc = stringResource(R.string.tools_section)
 
@@ -674,6 +689,7 @@ fun rememberDrawerItems(): List<DrawerItem> {
 	val shieldIcon = Lucide.Shield
 	val utensilsIcon = Lucide.Utensils
 	val flaskIcon = Lucide.FlaskRound
+	val anvilIcon = Lucide.Anvil
 	val gavelIcon = Lucide.Gavel
 	val cuboidIcon = Lucide.Cuboid
 	val houseIcon = Lucide.House
@@ -740,6 +756,13 @@ fun rememberDrawerItems(): List<DrawerItem> {
 				contentDescription = meadsDesc,
 				screen = Screen.MeadList
 			),
+			// CraftingObjects
+			DrawerItem(
+				icon = anvilIcon,
+				label = craftingObjectsLabel,
+				contentDescription = craftingObjectsDesc,
+				screen = Screen.CraftingObjectsList
+			),
 			// Tools
 			DrawerItem(
 				icon = gavelIcon,
@@ -790,7 +813,7 @@ fun NavDestination.shouldShowTopBar(): Boolean {
 	val route = this.route ?: return false
 	return listOf(
 		"BiomeList", "BossList", "MiniBossList", "MobList",
-		"WeaponList", "ArmorList", "FoodList", "MeadList", "ToolList",
+		"WeaponList", "ArmorList", "FoodList", "MeadList","CraftingObjectsList" ,"ToolList",
 		"MaterialCategory", "BuildingMaterialCategory",
 		"OreDeposit", "Tree", "PointOfInterest"
 	).any { route.contains(it, ignoreCase = true) }

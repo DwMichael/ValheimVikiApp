@@ -10,6 +10,7 @@ import com.composables.icons.lucide.Shield
 import com.rabbitv.valheimviki.domain.model.armor.Armor
 import com.rabbitv.valheimviki.domain.model.armor.UpgradeArmorInfo
 import com.rabbitv.valheimviki.domain.model.biome.Biome
+import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.model.creature.npc.NPC
 import com.rabbitv.valheimviki.domain.model.material.Material
@@ -23,7 +24,77 @@ import com.rabbitv.valheimviki.presentation.detail.creature.npc.model.NpcDetailU
 
 
 object FakeData {
+    fun fakeCraftingObjectList(count: Int = 5): List<CraftingObject> {
+        val baseCraftingObjects = listOf(
+            CraftingObject(
+                id = "workbench",
+                imageUrl = "https://picsum.photos/200/200?random=1",
+                category = "Crafting",
+                subCategory = "CRAFTING_STATION",
+                name = "Workbench",
+                description = "A basic crafting station for creating simple tools and weapons.",
+                order = 1
+            ),
+            CraftingObject(
+                id = "cauldron",
+                imageUrl = "https://picsum.photos/200/200?random=2",
+                category = "Crafting",
+                subCategory = "FOOD_CRAFTING",
+                name = "Cauldron",
+                description = "A large iron pot used for cooking hearty meals and brewing potions.",
+                order = 2
+            ),
+            CraftingObject(
+                id = "smelter",
+                imageUrl = "https://picsum.photos/200/200?random=3",
+                category = "Crafting",
+                subCategory = "SMELTING_CRAFTING",
+                name = "Smelter",
+                description = "A furnace for melting ores into valuable metal ingots.",
+                order = 3
+            ),
+            CraftingObject(
+                id = "stonecutter",
+                imageUrl = "https://picsum.photos/200/200?random=4",
+                category = "Crafting",
+                subCategory = "REFINING_STATION",
+                name = "Stonecutter",
+                description = "A precision tool for shaping stone blocks and decorative items.",
+                order = 4
+            ),
+            CraftingObject(
+                id = "forge",
+                imageUrl = "https://picsum.photos/200/200?random=5",
+                category = "Crafting",
+                subCategory = "CRAFTING_UPGRADER",
+                name = "Forge",
+                description = "An advanced smithing station for upgrading weapons and armor.",
+                order = 5
+            ),
+            CraftingObject(
+                id = "spice_rack",
+                imageUrl = "https://picsum.photos/200/200?random=6",
+                category = "Crafting",
+                subCategory = "CRAFTING_UPGRADER_FOOD",
+                name = "Spice Rack",
+                description = "A collection of rare spices that enhance the quality of cooked meals.",
+                order = 6
+            )
+        )
 
+        return if (count <= baseCraftingObjects.size) {
+            baseCraftingObjects.take(count)
+        } else {
+            baseCraftingObjects + List(count - baseCraftingObjects.size) { idx ->
+                val baseIndex = idx % baseCraftingObjects.size
+                val base = baseCraftingObjects[baseIndex]
+                base.copy(
+                    id = "${base.id}_${idx + baseCraftingObjects.size}",
+                    order = idx + baseCraftingObjects.size + 1
+                )
+            }
+        }
+    }
     fun fakeArmorList(count: Int = 10): List<Armor> {
         val baseArmor = Armor(
             id = "iron_helmet",

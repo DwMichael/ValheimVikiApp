@@ -48,4 +48,6 @@
     <string name="mead_section">Mead section</string>
     <string name="food_section">Food section</string>
     <string name="armor_section">Armor section</string>
+    <string name="crafting_stations_section">Crafting Stations section</string>
+    <string name="crafting_stations">Crafting Stations</string>
 </resources>

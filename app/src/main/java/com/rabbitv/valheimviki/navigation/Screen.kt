@@ -41,6 +41,9 @@ sealed class Screen() {
 	data object MeadList : Screen()
 
 	@Serializable
+	data object CraftingObjectsList : Screen()
+
+	@Serializable
 	data object ToolList : Screen()
 
 	@Serializable
