@@ -6,28 +6,38 @@ import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.staggeredgrid.LazyHorizontalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -38,47 +48,52 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.composables.icons.lucide.Clock2
+import com.composables.icons.lucide.ClockArrowDown
 import com.composables.icons.lucide.CookingPot
-import com.composables.icons.lucide.Heart
-import com.composables.icons.lucide.Info
+import com.composables.icons.lucide.FlaskRound
 import com.composables.icons.lucide.Layers2
 import com.composables.icons.lucide.Lucide
-import com.composables.icons.lucide.Wand
-import com.composables.icons.lucide.Weight
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 import com.rabbitv.valheimviki.domain.model.food.Food
-import com.rabbitv.valheimviki.domain.model.food.FoodSubCategory
 import com.rabbitv.valheimviki.domain.model.mead.Mead
+import com.rabbitv.valheimviki.domain.model.mead.MeadSubCategory
 import com.rabbitv.valheimviki.domain.repository.Droppable
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCard
-import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCardPainter
+import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerWithHeaderData
 import com.rabbitv.valheimviki.presentation.components.images.SmallFramedImage
-import com.rabbitv.valheimviki.presentation.detail.creature.components.horizontal_pager.DroppedItemsSection
-import com.rabbitv.valheimviki.presentation.detail.food.DarkGlassStatCard
-import com.rabbitv.valheimviki.presentation.detail.food.DarkGlassStatCardPainter
+import com.rabbitv.valheimviki.presentation.components.section_header.SectionHeader
+import com.rabbitv.valheimviki.presentation.detail.creature.components.horizontal_pager.DropItemCard
 import com.rabbitv.valheimviki.presentation.detail.food.model.RecipeFoodData
 import com.rabbitv.valheimviki.presentation.detail.food.model.RecipeMaterialData
 import com.rabbitv.valheimviki.presentation.detail.mead.model.MeadDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.mead.model.RecipeMeadData
 import com.rabbitv.valheimviki.presentation.detail.mead.viewmodel.MeadDetailViewModel
+import com.rabbitv.valheimviki.presentation.modifiers.carouselEffect
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
+import com.rabbitv.valheimviki.ui.theme.DarkWood
 import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
+import com.rabbitv.valheimviki.ui.theme.LightDark
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
@@ -87,7 +102,7 @@ import com.rabbitv.valheimviki.utils.FakeData
 @Composable
 fun MeadDetailScreen(
 	onBack: () -> Unit,
-	category: FoodSubCategory,
+	category: MeadSubCategory,
 	viewModel: MeadDetailViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -106,34 +121,24 @@ fun MeadDetailScreen(
 fun MeadDetailContent(
 	uiState: MeadDetailUiState,
 	onBack: () -> Unit,
-	category: FoodSubCategory
+	category: MeadSubCategory
 ) {
-	val healingPainter = painterResource(R.drawable.heart_plus)
-	val staminaPainter = painterResource(R.drawable.runing)
-
-
 	val isStatInfoExpanded1 = remember { mutableStateOf(false) }
 	val isStatInfoExpanded2 = remember { mutableStateOf(false) }
 	val isStatInfoExpanded3 = remember { mutableStateOf(false) }
-	val isStatInfoExpanded4 = remember { mutableStateOf(false) }
-	val isStatInfoExpanded5 = remember { mutableStateOf(false) }
-	val isStatInfoExpanded6 = remember { mutableStateOf(false) }
-	val isStatInfoExpanded7 = remember { mutableStateOf(false) }
-	val isStatInfoExpanded8 = remember { mutableStateOf(false) }
 	val backButtonVisibleState = remember { mutableStateOf(false) }
 	val scrollState = rememberScrollState()
-	var previousScrollValue by remember { mutableIntStateOf(0) }
-
+	val previousScrollValue = remember { mutableIntStateOf(0) }
 	LaunchedEffect(scrollState.value) {
 		val currentScroll = scrollState.value
 
 		when {
 			currentScroll == 0 -> backButtonVisibleState.value = true
-			currentScroll < previousScrollValue -> backButtonVisibleState.value = true
-			currentScroll > previousScrollValue -> backButtonVisibleState.value = false
+			currentScroll < previousScrollValue.intValue  -> backButtonVisibleState.value = true
+			currentScroll > previousScrollValue.intValue  -> backButtonVisibleState.value = false
 		}
 
-		previousScrollValue = currentScroll
+		previousScrollValue.intValue = currentScroll
 	}
 	val recipeItems: List<Droppable> = uiState.materialsForRecipe + uiState.foodForRecipe
 	val isExpandable = remember { mutableStateOf(false) }
@@ -147,6 +152,7 @@ fun MeadDetailContent(
 			else -> true
 		}
 	}
+
 	Image(
 		painter = painterResource(R.drawable.main_background),
 		contentDescription = "bg",
@@ -185,169 +191,129 @@ fun MeadDetailContent(
 						style = MaterialTheme.typography.displayMedium,
 						textAlign = TextAlign.Center
 					)
-					DetailExpandableText(
-						modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-						text = mead.description,
-						isExpanded = isExpandable
-					)
+					mead.description?.let {
+						DetailExpandableText(
+							modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+							text = it,
+							isExpanded = isExpandable
+						)
+					}
+					if (recipeItems.isNotEmpty()) {
+						SlavicDivider()
+
+						Box(
+							modifier = Modifier
+								.fillMaxWidth()
+								.wrapContentHeight()
+								.padding(horizontal = BODY_CONTENT_PADDING.dp)
+						) {
+							SectionHeader(
+								data = HorizontalPagerWithHeaderData(
+									title = "Recipe",
+									subTitle = "Ingredients required to craft this item",
+									icon = if (category == MeadSubCategory.MEAD_BASE) Lucide.CookingPot else Lucide.FlaskRound,
+									iconRotationDegrees = 0f,
+									contentScale = ContentScale.Crop,
+									starLevelIndex = 0,
+								),
+								modifier = Modifier,
+							)
+						}
+
+						Spacer(modifier = Modifier.padding(6.dp))
+
+						Column(
+							modifier = Modifier
+								.fillMaxWidth()
+								.padding(horizontal = BODY_CONTENT_PADDING.dp),
+							verticalArrangement = Arrangement.spacedBy(BODY_CONTENT_PADDING.dp)
+						) {
+							recipeItems.chunked(2).forEach { rowItems ->
+								Row(
+									modifier = Modifier.fillMaxWidth(),
+									horizontalArrangement = Arrangement.spacedBy(BODY_CONTENT_PADDING.dp)
+								) {
+									rowItems.forEach { item ->
+										Box(
+											modifier = Modifier.weight(1f)
+										) {
+											RecipeItemCard(item = item)
+										}
+									}
+									if (rowItems.size == 1) {
+										Spacer(modifier = Modifier.weight(1f))
+									}
+								}
+							}
+						}
+					}
+
 					Column(
 						modifier = Modifier
 							.fillMaxWidth()
 							.padding(horizontal = BODY_CONTENT_PADDING.dp),
 						verticalArrangement = Arrangement.spacedBy(BODY_CONTENT_PADDING.dp)
 					) {
-
 						SlavicDivider()
-						if (shouldShowValue(mead.health)) {
-							DarkGlassStatCard(
-								Lucide.Heart,
-								"Health",
-								mead.health.toString(),
-								expand = { isStatInfoExpanded1.value = !isStatInfoExpanded1.value },
-								isExpanded = isStatInfoExpanded1.value
-							)
-							AnimatedVisibility(isStatInfoExpanded1.value) {
-								Text(
-									text = "The amount of health points this food adds to your health bar. Health regenerates at 1% per second when above 25% HP. Maximum health is crucial for effective shield use as it directly affects your stagger resistance capacity.",
-									modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-									style = MaterialTheme.typography.bodyLarge
-								)
-							}
-						}
-						if (shouldShowValue(mead.healing)) {
-							DarkGlassStatCardPainter(
-								healingPainter,
-								"Healing",
-								mead.healing.toString(),
-								expand = { isStatInfoExpanded2.value = !isStatInfoExpanded2.value },
-								isExpanded = isStatInfoExpanded2.value
-							)
-							AnimatedVisibility(isStatInfoExpanded2.value) {
-								Text(
-									text = "The rate of health regeneration in HP per second while this food effect is active. This healing occurs continuously throughout the food's duration.",
-									modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-									style = MaterialTheme.typography.bodyLarge
-								)
-							}
-						}
-						if (shouldShowValue(mead.stamina)) {
-							DarkGlassStatCardPainter(
-								staminaPainter,
-								"Stamina",
-								mead.stamina.toString(),
-								expand = { isStatInfoExpanded3.value = !isStatInfoExpanded3.value },
-								isExpanded = isStatInfoExpanded3.value
-							)
-							AnimatedVisibility(isStatInfoExpanded3.value) {
-								Text(
-									text = "The amount of stamina points this food adds to your stamina bar. Stamina is used for running, jumping, attacking, and blocking. Higher stamina allows for longer combat engagements and exploration.",
-									modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-									style = MaterialTheme.typography.bodyLarge
-								)
-							}
-						}
 						if (shouldShowValue(mead.duration)) {
 							DarkGlassStatCard(
 								Lucide.Clock2,
 								"Duration",
 								"${mead.duration.toString()} min",
-								expand = { isStatInfoExpanded4.value = !isStatInfoExpanded4.value },
-								isExpanded = isStatInfoExpanded4.value
+								expand = { isStatInfoExpanded2.value = !isStatInfoExpanded2.value },
+								isExpanded = isStatInfoExpanded2.value
 							)
-							AnimatedVisibility(isStatInfoExpanded4.value) {
+							AnimatedVisibility(isStatInfoExpanded2.value) {
 								Text(
-									text = "How long this food's effects remain active after consumption. The timer begins immediately upon eating and cannot be paused or extended.",
+									text = "How long this potion's effects remain active after consumption. The timer begins immediately upon eating and cannot be paused or extended.",
 									modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
 									style = MaterialTheme.typography.bodyLarge
 								)
 							}
 						}
-						if (shouldShowValue(mead.eitr)) {
+						if (shouldShowValue(mead.cooldown)) {
 							DarkGlassStatCard(
-								Lucide.Wand,
-								"Eitr",
-								mead.eitr.toString(),
-								expand = { isStatInfoExpanded5.value = !isStatInfoExpanded5.value },
-								isExpanded = isStatInfoExpanded5.value
+								Lucide.ClockArrowDown,
+								"Cooldown",
+								mead.cooldown.toString(),
+								expand = { isStatInfoExpanded3.value = !isStatInfoExpanded3.value },
+								isExpanded = isStatInfoExpanded3.value
 							)
-							AnimatedVisibility(isStatInfoExpanded5.value) {
+							AnimatedVisibility(isStatInfoExpanded3.value) {
 								Text(
-									text = "The amount of eitr (magic energy) this food provides. Eitr is required for casting magic spells and using staffs. Only certain foods provide this mystical resource.",
+									text = "The cooldown is the time you must wait before consuming another potion or mead of the same type. It prevents immediate re-use and encourages strategic planning in combat or exploration.",
 									modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
 									style = MaterialTheme.typography.bodyLarge
 								)
 							}
 						}
-						if (shouldShowValue(mead.weight)) {
-							DarkGlassStatCard(
-								Lucide.Weight,
-								"Weight",
-								mead.weight.toString(),
-								expand = { isStatInfoExpanded6.value = !isStatInfoExpanded6.value },
-								isExpanded = isStatInfoExpanded6.value
-							)
-							AnimatedVisibility(isStatInfoExpanded6.value) {
-								Text(
-									text = "The weight of one unit of this food in your inventory. Total weight affects movement speed when overencumbered.",
-									modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-									style = MaterialTheme.typography.bodyLarge
-								)
-							}
-						}
-						if (shouldShowValue(food.forkType)) {
-							DarkGlassStatCard(
-								Lucide.Info,
-								"Fork Type",
-								mead.forkType.toString(),
-								expand = { isStatInfoExpanded7.value = !isStatInfoExpanded7.value },
-								isExpanded = isStatInfoExpanded7.value
-							)
-							AnimatedVisibility(isStatInfoExpanded7.value) {
-								Text(
-									text = "The fork icon color indicates this food's primary benefit: Red fork for health-focused foods, yellow fork for stamina-focused foods, blue fork for eitr-focused foods, and white fork for balanced foods that provide equal benefits to multiple stats.",
-									modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-									style = MaterialTheme.typography.bodyLarge
-								)
-							}
-						}
-						if (shouldShowValue(mead.stackSize)) {
+						if (shouldShowValue(mead.recipeOutput)) {
 							DarkGlassStatCard(
 								Lucide.Layers2,
-								"Stack Size",
-								mead.stackSize.toString(),
-								expand = { isStatInfoExpanded8.value = !isStatInfoExpanded8.value },
-								isExpanded = isStatInfoExpanded8.value
+								"Stack size",
+								mead.recipeOutput.toString(),
+								expand = { isStatInfoExpanded1.value = !isStatInfoExpanded1.value },
+								isExpanded = isStatInfoExpanded1.value
 							)
-							AnimatedVisibility(isStatInfoExpanded8.value) {
+							AnimatedVisibility(isStatInfoExpanded1.value) {
 								Text(
-									text = "The maximum number of this food item that can be stored in a single inventory slot. Higher stack sizes save valuable inventory space during long expeditions.",
+									text = "The amount of meads produced by fermenting the mead base for two in-game days.",
 									modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
 									style = MaterialTheme.typography.bodyLarge
 								)
 							}
 						}
-
 					}
 					uiState.craftingCookingStation?.let { craftingStation ->
 						SlavicDivider()
 						CardImageWithTopLabel(
 							itemData = craftingStation,
-							subTitle = if (category == FoodSubCategory.UNCOOKED_FOOD) "Cook at Station to Consume" else "Requires Cooking Station",
+							subTitle = if (category == MeadSubCategory.MEAD_BASE) "Requires cooking station" else "Requires fermenting station",
 							contentScale = ContentScale.FillBounds,
 							painter = painterResource(R.drawable.food_bg)
 						)
 					}
 
-					if (recipeItems.isNotEmpty()) {
-						SlavicDivider()
-						DroppedItemsSection(
-							icon = Lucide.CookingPot,
-							list = recipeItems,
-							starLevel = 0,
-							title = "RECIPE",
-							subTitle = "Ingredients required to craft this item",
-						)
-					}
 				}
 			}
 			AnimatedVisibility(
@@ -379,6 +345,61 @@ fun MeadDetailContent(
 
 
 
+@Composable
+fun RecipeItemCard(item: Droppable) {
+	Card(
+		modifier = Modifier
+			.fillMaxWidth()
+			.height(150.dp)
+			.shadow(
+				elevation = 8.dp,
+				shape = CardDefaults.shape,
+				clip = false,
+				ambientColor = Color.White.copy(alpha = 0.1f),
+				spotColor = Color.White.copy(alpha = 0.25f)
+			),
+		colors = CardDefaults.cardColors(containerColor = LightDark),
+		border = BorderStroke(2.dp, DarkWood)
+	) {
+		Column(
+			modifier = Modifier
+				.fillMaxSize()
+				.padding(8.dp),
+			verticalArrangement = Arrangement.Top,
+			horizontalAlignment = Alignment.CenterHorizontally
+		) {
+			AsyncImage(
+				modifier = Modifier.size(83.dp),
+				model = ImageRequest.Builder(LocalContext.current)
+					.data(item.itemDrop.imageUrl)
+					.crossfade(true)
+					.build(),
+				contentDescription = "Drop item",
+				contentScale = ContentScale.Crop
+			)
+			Column(
+				modifier = Modifier
+					.fillMaxWidth()
+					.padding(2.dp),
+				horizontalAlignment = Alignment.CenterHorizontally
+			) {
+				Text(
+					text = item.itemDrop.name,
+					maxLines = 1,
+					overflow = TextOverflow.Ellipsis,
+					color = PrimaryWhite,
+					style = MaterialTheme.typography.bodyLarge,
+				)
+				Text(
+					text = "x${item.quantityList[0]}",
+					color = PrimaryWhite,
+					style = MaterialTheme.typography.bodyLarge,
+				)
+			}
+		}
+	}
+}
+
 
 
 @RequiresApi(Build.VERSION_CODES.S)
@@ -392,10 +413,10 @@ fun PreviewMeadDetailContentCooked() {
 		subCategory = "Mead",
 		name = "Tasty Mead",
 		description = "Increases stamina regeneration but reduces health regeneration.",
-		recipeOutput = "TastyMead",
+		recipeOutput = "6",
 		effect = "Stamina Regen +300%, Health Regen -50%",
-		duration = "10m",
-		cooldown = "2m",
+		duration = "10:00",
+		cooldown = "02:00",
 		order = 1
 	)
 
@@ -489,7 +510,7 @@ fun PreviewMeadDetailContentCooked() {
 				error = null
 			),
 			onBack = {},
-			category = FoodSubCategory.COOKED_FOOD,
+			category = MeadSubCategory.MEAD_BASE,
 		)
 	}
 
