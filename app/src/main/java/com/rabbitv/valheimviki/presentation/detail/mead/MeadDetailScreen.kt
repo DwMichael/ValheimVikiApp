@@ -2,6 +2,7 @@ package com.rabbitv.valheimviki.presentation.detail.mead
 
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -11,24 +12,14 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.foundation.lazy.staggeredgrid.LazyHorizontalStaggeredGrid
-import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -44,6 +35,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -83,13 +75,12 @@ import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.Dark
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerWithHeaderData
 import com.rabbitv.valheimviki.presentation.components.images.SmallFramedImage
 import com.rabbitv.valheimviki.presentation.components.section_header.SectionHeader
-import com.rabbitv.valheimviki.presentation.detail.creature.components.horizontal_pager.DropItemCard
+import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.food.model.RecipeFoodData
 import com.rabbitv.valheimviki.presentation.detail.food.model.RecipeMaterialData
 import com.rabbitv.valheimviki.presentation.detail.mead.model.MeadDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.mead.model.RecipeMeadData
 import com.rabbitv.valheimviki.presentation.detail.mead.viewmodel.MeadDetailViewModel
-import com.rabbitv.valheimviki.presentation.modifiers.carouselEffect
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.DarkWood
 import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
@@ -126,21 +117,27 @@ fun MeadDetailContent(
 	val isStatInfoExpanded1 = remember { mutableStateOf(false) }
 	val isStatInfoExpanded2 = remember { mutableStateOf(false) }
 	val isStatInfoExpanded3 = remember { mutableStateOf(false) }
-	val backButtonVisibleState = remember { mutableStateOf(false) }
 	val scrollState = rememberScrollState()
 	val previousScrollValue = remember { mutableIntStateOf(0) }
-	LaunchedEffect(scrollState.value) {
-		val currentScroll = scrollState.value
-
-		when {
-			currentScroll == 0 -> backButtonVisibleState.value = true
-			currentScroll < previousScrollValue.intValue  -> backButtonVisibleState.value = true
-			currentScroll > previousScrollValue.intValue  -> backButtonVisibleState.value = false
+	val craftingStationPainter = painterResource(R.drawable.food_bg)
+	val backButtonVisibleState by remember {
+		derivedStateOf {
+			val currentScroll = scrollState.value
+			val previous = previousScrollValue.intValue
+			val isVisible = when {
+				currentScroll == 0 -> true
+				currentScroll < previous -> true
+				currentScroll > previous -> false
+				else -> true
+			}
+			previousScrollValue.intValue = currentScroll
+			isVisible
 		}
-
-		previousScrollValue.intValue = currentScroll
 	}
+
 	val recipeItems: List<Droppable> = uiState.materialsForRecipe + uiState.foodForRecipe + uiState.meadForRecipe
+	val showRecipeSection = recipeItems.isNotEmpty()
+
 	val isExpandable = remember { mutableStateOf(false) }
 	fun shouldShowValue(value: Any?): Boolean {
 		return when (value) {
@@ -152,6 +149,11 @@ fun MeadDetailContent(
 			else -> true
 		}
 	}
+
+	val mead = uiState.mead
+	val showStatsSection = mead != null && (shouldShowValue(mead.duration) || shouldShowValue(mead.cooldown) || shouldShowValue(mead.recipeOutput))
+
+	val showCraftingStationSection = uiState.craftingCookingStation != null
 
 	Image(
 		painter = painterResource(R.drawable.main_background),
@@ -170,7 +172,6 @@ fun MeadDetailContent(
 				.fillMaxSize()
 				.padding(innerPadding)
 		) {
-
 			uiState.mead?.let { mead ->
 				Column(
 					modifier = Modifier
@@ -191,16 +192,15 @@ fun MeadDetailContent(
 						style = MaterialTheme.typography.displayMedium,
 						textAlign = TextAlign.Center
 					)
+					SlavicDivider()
 					mead.description?.let {
 						DetailExpandableText(
-							modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
 							text = it,
 							isExpanded = isExpandable
 						)
 					}
-					if (recipeItems.isNotEmpty()) {
-						SlavicDivider()
-
+					if (showRecipeSection) {
+						TridentsDividedRow()
 						Box(
 							modifier = Modifier
 								.fillMaxWidth()
@@ -247,78 +247,84 @@ fun MeadDetailContent(
 							}
 						}
 					}
-
-					Column(
-						modifier = Modifier
-							.fillMaxWidth()
-							.padding(horizontal = BODY_CONTENT_PADDING.dp),
-						verticalArrangement = Arrangement.spacedBy(BODY_CONTENT_PADDING.dp)
-					) {
-
-						if (shouldShowValue(mead.duration)) {
+					if (showStatsSection) {
+						TridentsDividedRow("Stats")
+						Column(
+							modifier = Modifier
+								.fillMaxWidth()
+								.padding(horizontal = BODY_CONTENT_PADDING.dp),
+							verticalArrangement = Arrangement.spacedBy(BODY_CONTENT_PADDING.dp)
+						) {
+							if(shouldShowValue(mead.duration)) {
+								DarkGlassStatCard(
+									Lucide.Clock2,
+									"Duration",
+									"${mead.duration.toString()} min",
+									expand = { isStatInfoExpanded2.value = !isStatInfoExpanded2.value },
+									isExpanded = isStatInfoExpanded2.value
+								)
+								AnimatedVisibility(isStatInfoExpanded2.value) {
+									Text(
+										text = "How long this potion's effects remain active after consumption. The timer begins immediately upon eating and cannot be paused or extended.",
+										modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+										style = MaterialTheme.typography.bodyLarge
+									)
+								}
+							}
+							if(shouldShowValue(mead.cooldown)) {
+								DarkGlassStatCard(
+									Lucide.ClockArrowDown,
+									"Cooldown",
+									mead.cooldown.toString(),
+									expand = { isStatInfoExpanded3.value = !isStatInfoExpanded3.value },
+									isExpanded = isStatInfoExpanded3.value
+								)
+								AnimatedVisibility(isStatInfoExpanded3.value) {
+									Text(
+										text = "The cooldown is the time you must wait before consuming another potion or mead of the same type. It prevents immediate re-use and encourages strategic planning in combat or exploration.",
+										modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+										style = MaterialTheme.typography.bodyLarge
+									)
+								}
+							}
+							if(shouldShowValue(mead.recipeOutput)) {
+								DarkGlassStatCard(
+									Lucide.Layers2,
+									"Stack size",
+									mead.recipeOutput.toString(),
+									expand = { isStatInfoExpanded1.value = !isStatInfoExpanded1.value },
+									isExpanded = isStatInfoExpanded1.value
+								)
+								AnimatedVisibility(isStatInfoExpanded1.value) {
+									Text(
+										text = "The amount of meads produced by fermenting the mead base for two in-game days.",
+										modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+										style = MaterialTheme.typography.bodyLarge
+									)
+								}
+							}
+						}
+					}
+					if (showCraftingStationSection) {
+						if (showStatsSection || showRecipeSection) {
 							SlavicDivider()
-							DarkGlassStatCard(
-								Lucide.Clock2,
-								"Duration",
-								"${mead.duration.toString()} min",
-								expand = { isStatInfoExpanded2.value = !isStatInfoExpanded2.value },
-								isExpanded = isStatInfoExpanded2.value
-							)
-							AnimatedVisibility(isStatInfoExpanded2.value) {
-								Text(
-									text = "How long this potion's effects remain active after consumption. The timer begins immediately upon eating and cannot be paused or extended.",
-									modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-									style = MaterialTheme.typography.bodyLarge
-								)
-							}
 						}
-						if (shouldShowValue(mead.cooldown)) {
-							DarkGlassStatCard(
-								Lucide.ClockArrowDown,
-								"Cooldown",
-								mead.cooldown.toString(),
-								expand = { isStatInfoExpanded3.value = !isStatInfoExpanded3.value },
-								isExpanded = isStatInfoExpanded3.value
-							)
-							AnimatedVisibility(isStatInfoExpanded3.value) {
-								Text(
-									text = "The cooldown is the time you must wait before consuming another potion or mead of the same type. It prevents immediate re-use and encourages strategic planning in combat or exploration.",
-									modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-									style = MaterialTheme.typography.bodyLarge
-								)
-							}
-						}
-						if (shouldShowValue(mead.recipeOutput)) {
-							DarkGlassStatCard(
-								Lucide.Layers2,
-								"Stack size",
-								mead.recipeOutput.toString(),
-								expand = { isStatInfoExpanded1.value = !isStatInfoExpanded1.value },
-								isExpanded = isStatInfoExpanded1.value
-							)
-							AnimatedVisibility(isStatInfoExpanded1.value) {
-								Text(
-									text = "The amount of meads produced by fermenting the mead base for two in-game days.",
-									modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-									style = MaterialTheme.typography.bodyLarge
-								)
-							}
-						}
-					}
-					uiState.craftingCookingStation?.let { craftingStation ->
-						SlavicDivider()
-						CardImageWithTopLabel(
-							itemData = craftingStation,
-							subTitle = if (category == MeadSubCategory.MEAD_BASE) "Requires cooking station" else "Requires fermenting station",
-							contentScale = ContentScale.FillBounds,
-							painter = painterResource(R.drawable.food_bg)
-						)
-					}
 
+
+
+						uiState.craftingCookingStation?.let { craftingStation ->
+							CardImageWithTopLabel(
+								itemData = craftingStation,
+								subTitle = if (category == MeadSubCategory.MEAD_BASE) "Requires cooking station" else "Requires fermenting station",
+								contentScale = ContentScale.FillBounds,
+								painter = craftingStationPainter // Użyj zapamiętanej instancji
+							)
+						}
+					}
 				}
 			}
 			AnimatedVisibility(
-				visible = backButtonVisibleState.value,
+				visible = backButtonVisibleState,
 				enter = fadeIn(),
 				exit = fadeOut(),
 				modifier = Modifier

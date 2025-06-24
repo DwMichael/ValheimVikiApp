@@ -48,7 +48,7 @@ fun DetailExpandableText(
 
     Box(
         modifier = modifier
-            .padding(BODY_CONTENT_PADDING.dp)
+            .padding()
             .clickable(clickable) {
                 isExpanded.value = !isExpanded.value
             }

@@ -41,7 +41,6 @@ import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import kotlinx.coroutines.launch
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FoodListScreen(
     onItemClick: (String, FoodSubCategory) -> Unit,

@@ -796,4 +796,5 @@ fun NavDestination.shouldShowTopBar(): Boolean {
 	).any { route.contains(it, ignoreCase = true) }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 val LocalSharedTransitionScope = compositionLocalOf<SharedTransitionScope?> { null }
