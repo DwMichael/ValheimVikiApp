@@ -14,6 +14,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
@@ -24,10 +25,10 @@ import com.rabbitv.valheimviki.ui.theme.Shapes
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
 @Composable
-fun SmallFramedImage(imageUrl: String) {
+fun FramedImage(imageUrl: String, size: Dp = 150.dp) {
 	Box(
 		Modifier
-			.size(150.dp)
+			.size(size)
 			.border(1.dp, BlackBrownBorder, Shapes.large)
 	)
 	{
@@ -59,7 +60,7 @@ fun SmallFramedImage(imageUrl: String) {
 @Composable
 fun PreviewFoodImage() {
 	ValheimVikiAppTheme {
-		SmallFramedImage("")
+		FramedImage("")
 	}
 
 }

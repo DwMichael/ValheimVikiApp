@@ -2,7 +2,6 @@ package com.rabbitv.valheimviki.presentation.detail.mead
 
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -34,7 +33,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -73,7 +71,7 @@ import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCard
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerWithHeaderData
-import com.rabbitv.valheimviki.presentation.components.images.SmallFramedImage
+import com.rabbitv.valheimviki.presentation.components.images.FramedImage
 import com.rabbitv.valheimviki.presentation.components.section_header.SectionHeader
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.food.model.RecipeFoodData
@@ -135,7 +133,8 @@ fun MeadDetailContent(
 		}
 	}
 
-	val recipeItems: List<Droppable> = uiState.materialsForRecipe + uiState.foodForRecipe + uiState.meadForRecipe
+	val recipeItems: List<Droppable> =
+		uiState.materialsForRecipe + uiState.foodForRecipe + uiState.meadForRecipe
 	val showRecipeSection = recipeItems.isNotEmpty()
 
 	val isExpandable = remember { mutableStateOf(false) }
@@ -151,7 +150,10 @@ fun MeadDetailContent(
 	}
 
 	val mead = uiState.mead
-	val showStatsSection = mead != null && (shouldShowValue(mead.duration) || shouldShowValue(mead.cooldown) || shouldShowValue(mead.recipeOutput))
+	val showStatsSection =
+		mead != null && (shouldShowValue(mead.duration) || shouldShowValue(mead.cooldown) || shouldShowValue(
+			mead.recipeOutput
+		))
 
 	val showCraftingStationSection = uiState.craftingCookingStation != null
 
@@ -185,7 +187,7 @@ fun MeadDetailContent(
 					verticalArrangement = Arrangement.Top,
 
 					) {
-					SmallFramedImage(mead.imageUrl)
+					FramedImage(mead.imageUrl)
 					Text(
 						mead.name,
 						modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
@@ -193,11 +195,15 @@ fun MeadDetailContent(
 						textAlign = TextAlign.Center
 					)
 					SlavicDivider()
-					mead.description?.let {
-						DetailExpandableText(
-							text = it,
-							isExpanded = isExpandable
-						)
+					if (mead.description != null) {
+
+						Box(modifier = Modifier.padding(BODY_CONTENT_PADDING.dp)) {
+							DetailExpandableText(
+
+								text = mead.description,
+								isExpanded = isExpandable
+							)
+						}
 					}
 					if (showRecipeSection) {
 						TridentsDividedRow()
@@ -231,7 +237,9 @@ fun MeadDetailContent(
 							recipeItems.chunked(2).forEach { rowItems ->
 								Row(
 									modifier = Modifier.fillMaxWidth(),
-									horizontalArrangement = Arrangement.spacedBy(BODY_CONTENT_PADDING.dp)
+									horizontalArrangement = Arrangement.spacedBy(
+										BODY_CONTENT_PADDING.dp
+									)
 								) {
 									rowItems.forEach { item ->
 										Box(
@@ -255,12 +263,14 @@ fun MeadDetailContent(
 								.padding(horizontal = BODY_CONTENT_PADDING.dp),
 							verticalArrangement = Arrangement.spacedBy(BODY_CONTENT_PADDING.dp)
 						) {
-							if(shouldShowValue(mead.duration)) {
+							if (shouldShowValue(mead.duration)) {
 								DarkGlassStatCard(
 									Lucide.Clock2,
 									"Duration",
 									"${mead.duration.toString()} min",
-									expand = { isStatInfoExpanded2.value = !isStatInfoExpanded2.value },
+									expand = {
+										isStatInfoExpanded2.value = !isStatInfoExpanded2.value
+									},
 									isExpanded = isStatInfoExpanded2.value
 								)
 								AnimatedVisibility(isStatInfoExpanded2.value) {
@@ -271,12 +281,14 @@ fun MeadDetailContent(
 									)
 								}
 							}
-							if(shouldShowValue(mead.cooldown)) {
+							if (shouldShowValue(mead.cooldown)) {
 								DarkGlassStatCard(
 									Lucide.ClockArrowDown,
 									"Cooldown",
 									mead.cooldown.toString(),
-									expand = { isStatInfoExpanded3.value = !isStatInfoExpanded3.value },
+									expand = {
+										isStatInfoExpanded3.value = !isStatInfoExpanded3.value
+									},
 									isExpanded = isStatInfoExpanded3.value
 								)
 								AnimatedVisibility(isStatInfoExpanded3.value) {
@@ -287,12 +299,14 @@ fun MeadDetailContent(
 									)
 								}
 							}
-							if(shouldShowValue(mead.recipeOutput)) {
+							if (shouldShowValue(mead.recipeOutput)) {
 								DarkGlassStatCard(
 									Lucide.Layers2,
 									"Stack size",
 									mead.recipeOutput.toString(),
-									expand = { isStatInfoExpanded1.value = !isStatInfoExpanded1.value },
+									expand = {
+										isStatInfoExpanded1.value = !isStatInfoExpanded1.value
+									},
 									isExpanded = isStatInfoExpanded1.value
 								)
 								AnimatedVisibility(isStatInfoExpanded1.value) {
@@ -351,7 +365,6 @@ fun MeadDetailContent(
 }
 
 
-
 @Composable
 fun RecipeItemCard(item: Droppable) {
 	Card(
@@ -406,7 +419,6 @@ fun RecipeItemCard(item: Droppable) {
 		}
 	}
 }
-
 
 
 @RequiresApi(Build.VERSION_CODES.S)

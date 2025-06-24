@@ -292,8 +292,8 @@ class DataRefetchUseCase @Inject constructor(
 						meads.size == 41 &&
 						itemTools.size == 14 &&
 						buildingMaterials.size == 248 &&
-						craftingObjects.size == 46 &&
-						relations.size == 1395
+						craftingObjects.size == 45 &&
+						relations.size == 1396
 				)
 	}
 }

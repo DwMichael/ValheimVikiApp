@@ -31,6 +31,7 @@ object Constants {
 	const val ARMOR_KEY = "armorId"
 	const val FOOD_KEY = "foodId"
 	const val MEAD_KEY = "meadId"
+	const val CRAFTING_KEY = "craftingId"
 	const val FOOD_CATEGORY_KEY = "foodCategory"
 
 	//Creature Order map

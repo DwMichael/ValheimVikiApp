@@ -6,7 +6,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,27 +33,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil3.compose.AsyncImage
-import coil3.request.ImageRequest
-import coil3.request.crossfade
 import com.composables.icons.lucide.Clock2
 import com.composables.icons.lucide.CookingPot
 import com.composables.icons.lucide.Heart
 import com.composables.icons.lucide.Info
 import com.composables.icons.lucide.Layers2
 import com.composables.icons.lucide.Lucide
-import com.composables.icons.lucide.Utensils
 import com.composables.icons.lucide.Wand
 import com.composables.icons.lucide.Weight
 import com.rabbitv.valheimviki.R
@@ -67,17 +59,15 @@ import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCard
 import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCardPainter
-import com.rabbitv.valheimviki.presentation.components.images.SmallFramedImage
+import com.rabbitv.valheimviki.presentation.components.images.FramedImage
 import com.rabbitv.valheimviki.presentation.detail.creature.components.horizontal_pager.DroppedItemsSection
 import com.rabbitv.valheimviki.presentation.detail.food.model.FoodDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.food.model.RecipeFoodData
 import com.rabbitv.valheimviki.presentation.detail.food.model.RecipeMaterialData
 import com.rabbitv.valheimviki.presentation.detail.food.viewmodel.FoodDetailViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
-import com.rabbitv.valheimviki.ui.theme.BlackBrownBorder
 import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
-import com.rabbitv.valheimviki.ui.theme.Shapes
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
 
@@ -176,7 +166,7 @@ fun FoodDetailContent(
 					verticalArrangement = Arrangement.Top,
 
 					) {
-					SmallFramedImage(food.imageUrl)
+					FramedImage(food.imageUrl)
 					Text(
 						food.name,
 						modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
