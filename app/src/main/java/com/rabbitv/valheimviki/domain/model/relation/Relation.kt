@@ -9,16 +9,17 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Relation(
 
-    @PrimaryKey(autoGenerate = false)
-    @SerializedName("id") val id: String,
-    @SerializedName("mainItemId") val mainItemId: String,
-    @SerializedName("relationItemId") val relatedItemId: String,
-    @SerializedName("quantity") val quantity: Int? = null,
-    @SerializedName("quantity2star") val quantity2star: Int? = null,
-    @SerializedName("quantity3star") val quantity3star: Int? = null,
-    @SerializedName("quantity4star") val quantity4star: Int? = null,
-    @SerializedName("chance1star") val chance1star: Int? = null,
-    @SerializedName("chance2star") val chance2star: Int? = null,
-    @SerializedName("chance3star") val chance3star: Int? = null
+	@PrimaryKey(autoGenerate = false)
+	@SerializedName("id") val id: String,
+	@SerializedName("mainItemId") val mainItemId: String,
+	@SerializedName("relationItemId") val relatedItemId: String,
+	@SerializedName("quantity") val quantity: Int? = null,
+	@SerializedName("relationtype") val relationType: String? = null,
+	@SerializedName("quantity2star") val quantity2star: Int? = null,
+	@SerializedName("quantity3star") val quantity3star: Int? = null,
+	@SerializedName("quantity4star") val quantity4star: Int? = null,
+	@SerializedName("chance1star") val chance1star: Int? = null,
+	@SerializedName("chance2star") val chance2star: Int? = null,
+	@SerializedName("chance3star") val chance3star: Int? = null
 
 )

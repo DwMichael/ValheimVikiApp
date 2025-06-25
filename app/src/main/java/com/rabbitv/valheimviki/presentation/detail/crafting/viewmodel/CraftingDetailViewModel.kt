@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 import com.rabbitv.valheimviki.domain.model.presentation.DroppableType
 import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
+import com.rabbitv.valheimviki.domain.model.relation.RelationType
 import com.rabbitv.valheimviki.domain.use_cases.armor.ArmorUseCases
 import com.rabbitv.valheimviki.domain.use_cases.building_material.BuildMaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.CraftingObjectUseCases
@@ -51,6 +52,8 @@ class CraftingDetailViewModel @Inject constructor(
 	private val _craftingUpgraderObjects = MutableStateFlow<List<CraftingProducts>>(emptyList())
 	private val _craftingFoodProducts = MutableStateFlow<List<CraftingProducts>>(emptyList())
 	private val _craftingMeadProducts = MutableStateFlow<List<CraftingProducts>>(emptyList())
+	private val _craftingMaterialToBuild = MutableStateFlow<List<CraftingProducts>>(emptyList())
+	private val _craftingMaterialRequired = MutableStateFlow<List<CraftingProducts>>(emptyList())
 	private val _craftingMaterialProducts = MutableStateFlow<List<CraftingProducts>>(emptyList())
 	private val _craftingWeaponProducts = MutableStateFlow<List<CraftingProducts>>(emptyList())
 	private val _craftingArmorProducts = MutableStateFlow<List<CraftingProducts>>(emptyList())
@@ -67,6 +70,8 @@ class CraftingDetailViewModel @Inject constructor(
 		_craftingFoodProducts,
 		_craftingMeadProducts,
 		_craftingMaterialProducts,
+		_craftingMaterialToBuild,
+		_craftingMaterialRequired,
 		_craftingWeaponProducts,
 		_craftingArmorProducts,
 		_craftingToolProducts,
@@ -80,12 +85,14 @@ class CraftingDetailViewModel @Inject constructor(
 			craftingFoodProducts = values[2] as List<CraftingProducts>,
 			craftingMeadProducts = values[3] as List<CraftingProducts>,
 			craftingMaterialProducts = values[4] as List<CraftingProducts>,
-			craftingWeaponProducts = values[5] as List<CraftingProducts>,
-			craftingArmorProducts = values[6] as List<CraftingProducts>,
-			craftingToolProducts = values[7] as List<CraftingProducts>,
-			craftingBuildingMaterialProducts = values[8] as List<CraftingProducts>,
-			isLoading = values[9] as Boolean,
-			error = values[10] as String?
+			craftingMaterialToBuild = values[5] as List<CraftingProducts>,
+			craftingMaterialRequired = values[6] as List<CraftingProducts>,
+			craftingWeaponProducts = values[7] as List<CraftingProducts>,
+			craftingArmorProducts = values[8] as List<CraftingProducts>,
+			craftingToolProducts = values[9] as List<CraftingProducts>,
+			craftingBuildingMaterialProducts = values[10] as List<CraftingProducts>,
+			isLoading = values[11] as Boolean,
+			error = values[12] as String?
 		)
 	}.stateIn(
 		scope = viewModelScope,
@@ -177,24 +184,42 @@ class CraftingDetailViewModel @Inject constructor(
 			}
 			val materialDeferred = async {
 				val materials = _materialUseCase.getMaterialsByIds(relatedIds).first()
-
-				val tempList = mutableListOf<CraftingProducts>()
 				val relatedItemsMap = relationObjects.associateBy { it.id }
+
+
+				val producedMaterials = mutableListOf<CraftingProducts>()
+				val requiredMaterials = mutableListOf<CraftingProducts>()
+				val buildMaterials = mutableListOf<CraftingProducts>()
+
 				materials.forEach { material ->
 					val relatedItem = relatedItemsMap[material.id]
-					val quantityList = listOf(
-						relatedItem?.quantity,
+					val quantityList = listOf(relatedItem?.quantity)
+
+					val craftingProduct = CraftingProducts(
+						itemDrop = material,
+						quantityList = quantityList,
+						chanceStarList = emptyList(),
+						droppableType = DroppableType.MATERIAL,
 					)
-					tempList.add(
-						CraftingProducts(
-							itemDrop = material,
-							quantityList = quantityList,
-							chanceStarList = emptyList(),
-							droppableType = DroppableType.MATERIAL,
-						)
-					)
+
+					when (relatedItem?.relationType) {
+						RelationType.PRODUCES.name, null -> {
+							producedMaterials.add(craftingProduct)
+						}
+
+						RelationType.REQUIRES.name -> {
+							requiredMaterials.add(craftingProduct)
+						}
+
+						RelationType.TO_BUILD.name -> {
+							buildMaterials.add(craftingProduct)
+						}
+					}
 				}
-				_craftingMaterialProducts.value = tempList
+
+				_craftingMaterialProducts.value = producedMaterials  // PRODUCES or null
+				_craftingMaterialRequired.value = requiredMaterials  // REQUIRES
+				_craftingMaterialToBuild.value = buildMaterials      // TO_BUILD
 			}
 			val armorDeferred = async {
 				val armors = _armorUseCase.getArmorsByIdsUseCase(relatedIds).first()

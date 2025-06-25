@@ -20,6 +20,7 @@ interface RelationDao {
             WHEN relatedItemId = :queryId THEN mainItemId
         END AS id,
         quantity,
+		relationType,
         quantity2star,
         quantity3star,
         quantity4star,
@@ -37,6 +38,7 @@ interface RelationDao {
     SELECT
         relatedItemId AS id,
         quantity,
+		relationType,
         quantity2star,
         quantity3star,
         quantity4star,

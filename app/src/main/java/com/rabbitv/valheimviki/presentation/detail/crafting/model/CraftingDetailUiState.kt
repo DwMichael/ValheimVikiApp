@@ -7,6 +7,8 @@ data class CraftingDetailUiState(
 	val craftingUpgraderObjects: List<CraftingProducts> = emptyList(),
 	val craftingFoodProducts: List<CraftingProducts> = emptyList(),
 	val craftingMeadProducts: List<CraftingProducts> = emptyList(),
+	val craftingMaterialToBuild: List<CraftingProducts> = emptyList(),
+	val craftingMaterialRequired: List<CraftingProducts> = emptyList(),
 	val craftingMaterialProducts: List<CraftingProducts> = emptyList(),
 	val craftingWeaponProducts: List<CraftingProducts> = emptyList(),
 	val craftingArmorProducts: List<CraftingProducts> = emptyList(),
