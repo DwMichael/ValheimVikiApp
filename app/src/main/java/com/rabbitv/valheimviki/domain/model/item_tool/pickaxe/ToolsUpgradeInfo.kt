@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Pickaxe(
+data class ToolsUpgradeInfo(
 	@SerializedName("Pierce") val pierceDamage: Int?,
 	@SerializedName("Pickaxe") val pickaxeDamage: Int?,
 	@SerializedName("Quality") val quality: Int?,
