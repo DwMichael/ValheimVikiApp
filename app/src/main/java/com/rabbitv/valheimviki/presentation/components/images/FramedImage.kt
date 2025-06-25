@@ -25,7 +25,7 @@ import com.rabbitv.valheimviki.ui.theme.Shapes
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
 @Composable
-fun FramedImage(imageUrl: String, size: Dp = 150.dp) {
+fun FramedImage(imageUrl: String, size: Dp = 150.dp, contentScale: ContentScale = ContentScale.FillBounds) {
 	Box(
 		Modifier
 			.size(size)
@@ -50,7 +50,7 @@ fun FramedImage(imageUrl: String, size: Dp = 150.dp) {
 				.build(),
 			contentDescription = "Food Image",
 			error = if (LocalInspectionMode.current) painterResource(R.drawable.testweapon) else null,
-			contentScale = ContentScale.FillBounds,
+			contentScale = contentScale,
 		)
 
 	}

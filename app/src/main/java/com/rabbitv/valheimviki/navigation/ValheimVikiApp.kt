@@ -82,6 +82,8 @@ import com.rabbitv.valheimviki.presentation.creatures.mini_bosses.MiniBossScreen
 import com.rabbitv.valheimviki.presentation.creatures.mob_list.MobListScreen
 import com.rabbitv.valheimviki.presentation.detail.armor.ArmorDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.biome.BiomeDetailScreen
+import com.rabbitv.valheimviki.presentation.detail.crafting.CraftingDetailContent
+import com.rabbitv.valheimviki.presentation.detail.crafting.CraftingDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.creature.aggressive_screen.AggressiveCreatureDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.creature.main_boss_screen.MainBossDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.creature.mini_boss_screen.MiniBossDetailScreen
@@ -374,8 +376,10 @@ fun ValheimNavGraph(
 		composable<Screen.CraftingObjectsList> {
 			CraftingListScreen(
 				modifier = Modifier.padding(10.dp),
-				onItemClick = { _, _ ->
-					// TODO: Implement navigation
+				onItemClick = { craftingObjectId, _ ->
+					valheimVikiNavController.navigate(
+						Screen.CraftingObjectDetail(craftingObjectId = craftingObjectId)
+					)
 				},
 				paddingValues = innerPadding,
 			)
@@ -622,6 +626,13 @@ fun ValheimNavGraph(
 			val args = backStackEntry.toRoute<Screen.MeadDetail>()
 			MeadDetailScreen(
 				category = args.meadCategory,
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+			)
+		}
+		composable<Screen.CraftingObjectDetail> {
+			CraftingDetailScreen(
 				onBack = {
 					valheimVikiNavController.popBackStack()
 				},

@@ -80,10 +80,7 @@ fun BiomeDetailScreen(
 }
 
 
-@OptIn(
-    ExperimentalSharedTransitionApi::class,
-    ExperimentalAnimationApi::class
-)
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun BiomeDetailContent(
     onBack: () -> Unit,

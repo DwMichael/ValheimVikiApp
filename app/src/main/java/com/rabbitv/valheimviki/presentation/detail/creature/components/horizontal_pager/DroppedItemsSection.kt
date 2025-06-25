@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -38,6 +39,7 @@ import com.rabbitv.valheimviki.domain.repository.ItemData
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerWithHeader
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerWithHeaderData
 import com.rabbitv.valheimviki.presentation.modifiers.carouselEffect
+import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.DarkWood
 import com.rabbitv.valheimviki.ui.theme.LightDark
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
@@ -90,9 +92,11 @@ fun DropItemCard(
 	starLevel: Int,
 	modifier: Modifier = Modifier
 ) {
+	val quantity :Int? = quantityList[starLevel]
 	Card(
 		modifier = modifier
-			.size(280.dp)
+			.fillMaxWidth()
+			.wrapContentHeight()
 			.shadow(
 				elevation = 8.dp,
 				shape = CardDefaults.shape,
@@ -105,8 +109,8 @@ fun DropItemCard(
 	) {
 		Row(
 			modifier = Modifier
-				.fillMaxSize()
-				.padding(8.dp),
+				.fillMaxWidth()
+				.padding(BODY_CONTENT_PADDING.dp),
 			verticalAlignment = Alignment.CenterVertically
 		) {
 			AsyncImage(
@@ -121,7 +125,7 @@ fun DropItemCard(
 			Column(
 				modifier = Modifier
 					.fillMaxWidth()
-					.padding(2.dp)
+					.padding(start=10.dp)
 			) {
 				Text(
 					text = itemData.name.uppercase(),
@@ -130,11 +134,13 @@ fun DropItemCard(
 					color = PrimaryWhite,
 					style = MaterialTheme.typography.bodyLarge,
 				)
-				Text(
-					text = "x${quantityList[starLevel]}",
-					color = PrimaryWhite,
-					style = MaterialTheme.typography.bodyLarge,
-				)
+				if (quantity != null) {
+					Text(
+						text = "x${quantityList[starLevel]}",
+						color = PrimaryWhite,
+						style = MaterialTheme.typography.bodyLarge,
+					)
+				}
 				chanceStarList.getOrNull(starLevel)?.let { chance ->
 					Text(
 						text = "DROP CHANCE: $chance%",

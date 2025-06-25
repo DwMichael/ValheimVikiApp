@@ -321,7 +321,7 @@ fun FoodDetailContent(
 						CardImageWithTopLabel(
 							itemData = craftingStation,
 							subTitle = if (category == FoodSubCategory.UNCOOKED_FOOD) "Cook at Station to Consume" else "Requires Cooking Station",
-							contentScale = ContentScale.FillBounds,
+							contentScale = ContentScale.Fit,
 							painter = painterResource(R.drawable.food_bg)
 						)
 					}

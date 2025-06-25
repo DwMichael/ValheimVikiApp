@@ -123,6 +123,7 @@ fun MeadDetailContent(
 
 	val recipeItems: List<Droppable> =
 		uiState.materialsForRecipe + uiState.foodForRecipe + uiState.meadForRecipe
+
 	val showRecipeSection = recipeItems.isNotEmpty()
 
 	val isExpandable = remember { mutableStateOf(false) }
@@ -144,9 +145,10 @@ fun MeadDetailContent(
 		))
 
 	val showCraftingStationSection = uiState.craftingCookingStation != null
+	val painterBackgroundImage = painterResource(R.drawable.main_background)
 
 	Image(
-		painter = painterResource(R.drawable.main_background),
+		painter = painterBackgroundImage,
 		contentDescription = "bg",
 		contentScale = ContentScale.FillBounds,
 		modifier = Modifier.fillMaxSize()
@@ -187,7 +189,6 @@ fun MeadDetailContent(
 
 						Box(modifier = Modifier.padding(BODY_CONTENT_PADDING.dp)) {
 							DetailExpandableText(
-
 								text = mead.description,
 								isExpanded = isExpandable
 							)
@@ -291,7 +292,7 @@ fun MeadDetailContent(
 							CardImageWithTopLabel(
 								itemData = craftingStation,
 								subTitle = if (category == MeadSubCategory.MEAD_BASE) "Requires cooking station" else "Requires fermenting station",
-								contentScale = ContentScale.FillBounds,
+								contentScale = ContentScale.Fit,
 								painter = craftingStationPainter
 							)
 						}

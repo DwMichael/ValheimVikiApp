@@ -125,4 +125,7 @@ sealed class Screen() {
 		val meadId: String,
 		val meadCategory: MeadSubCategory
 	) : Screen()
+
+	@Serializable
+	data class CraftingObjectDetail(val craftingObjectId: String, ) : Screen()
 }

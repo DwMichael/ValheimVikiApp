@@ -15,8 +15,8 @@ import com.rabbitv.valheimviki.domain.use_cases.mead.MeadUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.domain.use_cases.tool.ToolUseCases
 import com.rabbitv.valheimviki.domain.use_cases.weapon.WeaponUseCases
+import com.rabbitv.valheimviki.presentation.detail.crafting.model.CraftingDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.crafting.model.CraftingProducts
-import com.rabbitv.valheimviki.presentation.detail.crafting.model.CraftingUiState
 import com.rabbitv.valheimviki.utils.Constants.CRAFTING_KEY
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -48,6 +48,7 @@ class CraftingDetailViewModel @Inject constructor(
 
 	private val _craftingObjectId: String = checkNotNull(_savedStateHandle[CRAFTING_KEY])
 	private val _craftingObject = MutableStateFlow<CraftingObject?>(null)
+	private val _craftingUpgraderObjects = MutableStateFlow<List<CraftingProducts>>(emptyList())
 	private val _craftingFoodProducts = MutableStateFlow<List<CraftingProducts>>(emptyList())
 	private val _craftingMeadProducts = MutableStateFlow<List<CraftingProducts>>(emptyList())
 	private val _craftingMaterialProducts = MutableStateFlow<List<CraftingProducts>>(emptyList())
@@ -60,8 +61,9 @@ class CraftingDetailViewModel @Inject constructor(
 	private val _isLoading = MutableStateFlow<Boolean>(false)
 	private val _error = MutableStateFlow<String?>(null)
 
-	val uiState: StateFlow<CraftingUiState> = combine(
+	val uiState: StateFlow<CraftingDetailUiState> = combine(
 		_craftingObject,
+		_craftingUpgraderObjects,
 		_craftingFoodProducts,
 		_craftingMeadProducts,
 		_craftingMaterialProducts,
@@ -72,22 +74,23 @@ class CraftingDetailViewModel @Inject constructor(
 		_isLoading,
 		_error
 	) { values ->
-		CraftingUiState(
+		CraftingDetailUiState(
 			craftingObject = values[0] as CraftingObject?,
-			craftingFoodProducts = values[1] as List<CraftingProducts>,
-			craftingMeadProducts = values[2] as List<CraftingProducts>,
-			craftingMaterialProducts = values[3] as List<CraftingProducts>,
-			craftingWeaponProducts = values[4] as List<CraftingProducts>,
-			craftingArmorProducts = values[5] as List<CraftingProducts>,
-			craftingToolProducts = values[6] as List<CraftingProducts>,
-			craftingBuildingMaterialProducts = values[7] as List<CraftingProducts>,
-			isLoading = values[8] as Boolean,
-			error = values[9] as String?
+			craftingUpgraderObjects = values[1] as List<CraftingProducts>,
+			craftingFoodProducts = values[2] as List<CraftingProducts>,
+			craftingMeadProducts = values[3] as List<CraftingProducts>,
+			craftingMaterialProducts = values[4] as List<CraftingProducts>,
+			craftingWeaponProducts = values[5] as List<CraftingProducts>,
+			craftingArmorProducts = values[6] as List<CraftingProducts>,
+			craftingToolProducts = values[7] as List<CraftingProducts>,
+			craftingBuildingMaterialProducts = values[8] as List<CraftingProducts>,
+			isLoading = values[9] as Boolean,
+			error = values[10] as String?
 		)
 	}.stateIn(
 		scope = viewModelScope,
 		started = SharingStarted.WhileSubscribed(5000),
-		initialValue = CraftingUiState()
+		initialValue = CraftingDetailUiState()
 	)
 
 	init {
@@ -100,10 +103,34 @@ class CraftingDetailViewModel @Inject constructor(
 			_craftingObject.value =
 				_craftingObjectUseCases.getCraftingObjectById(_craftingObjectId).first()
 			val relationObjects: List<RelatedItem> = async {
-				_relationUseCase.getRelatedIdsForUseCase(_craftingObjectId).first()
+				_relationUseCase.getRelatedIdsUseCase(_craftingObjectId).first()
 			}.await()
 
 			val relatedIds: List<String> = relationObjects.map { it.id }
+
+
+			val craftingUpgraderObjectsDeferred = async {
+				val craftingObjects =
+					_craftingObjectUseCases.getCraftingObjectsByIds(relatedIds).first()
+
+				val tempList = mutableListOf<CraftingProducts>()
+				val relatedItemsMap = relationObjects.associateBy { it.id }
+				craftingObjects.forEach { craftingObject ->
+					val relatedItem = relatedItemsMap[craftingObject.id]
+					val quantityList = listOf(
+						relatedItem?.quantity,
+					)
+					tempList.add(
+						CraftingProducts(
+							itemDrop = craftingObject,
+							quantityList = quantityList,
+							chanceStarList = emptyList(),
+							droppableType = DroppableType.CRAFTING_OBJECT,
+						)
+					)
+				}
+				_craftingUpgraderObjects.value = tempList
+			}
 
 
 			val foodDeferred = async {
@@ -256,6 +283,7 @@ class CraftingDetailViewModel @Inject constructor(
 				_craftingBuildingMaterialProducts.value = tempList
 			}
 			awaitAll(
+				craftingUpgraderObjectsDeferred,
 				foodDeferred,
 				meadDeferred,
 				materialDeferred,
