@@ -6,16 +6,13 @@ import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -24,8 +21,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
@@ -40,20 +35,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil3.compose.AsyncImage
-import coil3.request.ImageRequest
-import coil3.request.crossfade
 import com.composables.icons.lucide.Clock2
 import com.composables.icons.lucide.ClockArrowDown
 import com.composables.icons.lucide.CookingPot
@@ -70,6 +59,7 @@ import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCard
+import com.rabbitv.valheimviki.presentation.components.grid.custom_column_grid.CustomColumnGrid
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerWithHeaderData
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
 import com.rabbitv.valheimviki.presentation.components.section_header.SectionHeader
@@ -80,9 +70,7 @@ import com.rabbitv.valheimviki.presentation.detail.mead.model.MeadDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.mead.model.RecipeMeadData
 import com.rabbitv.valheimviki.presentation.detail.mead.viewmodel.MeadDetailViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
-import com.rabbitv.valheimviki.ui.theme.DarkWood
 import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
-import com.rabbitv.valheimviki.ui.theme.LightDark
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
@@ -227,33 +215,7 @@ fun MeadDetailContent(
 						}
 
 						Spacer(modifier = Modifier.padding(6.dp))
-
-						Column(
-							modifier = Modifier
-								.fillMaxWidth()
-								.padding(horizontal = BODY_CONTENT_PADDING.dp),
-							verticalArrangement = Arrangement.spacedBy(BODY_CONTENT_PADDING.dp)
-						) {
-							recipeItems.chunked(2).forEach { rowItems ->
-								Row(
-									modifier = Modifier.fillMaxWidth(),
-									horizontalArrangement = Arrangement.spacedBy(
-										BODY_CONTENT_PADDING.dp
-									)
-								) {
-									rowItems.forEach { item ->
-										Box(
-											modifier = Modifier.weight(1f)
-										) {
-											RecipeItemCard(item = item)
-										}
-									}
-									if (rowItems.size == 1) {
-										Spacer(modifier = Modifier.weight(1f))
-									}
-								}
-							}
-						}
+						CustomColumnGrid(recipeItems)
 					}
 					if (showStatsSection) {
 						TridentsDividedRow("Stats")
@@ -359,62 +321,6 @@ fun MeadDetailContent(
 						tint = Color.White
 					)
 				}
-			}
-		}
-	}
-}
-
-
-@Composable
-fun RecipeItemCard(item: Droppable) {
-	Card(
-		modifier = Modifier
-			.fillMaxWidth()
-			.height(150.dp)
-			.shadow(
-				elevation = 8.dp,
-				shape = CardDefaults.shape,
-				clip = false,
-				ambientColor = Color.White.copy(alpha = 0.1f),
-				spotColor = Color.White.copy(alpha = 0.25f)
-			),
-		colors = CardDefaults.cardColors(containerColor = LightDark),
-		border = BorderStroke(2.dp, DarkWood)
-	) {
-		Column(
-			modifier = Modifier
-				.fillMaxSize()
-				.padding(8.dp),
-			verticalArrangement = Arrangement.Top,
-			horizontalAlignment = Alignment.CenterHorizontally
-		) {
-			AsyncImage(
-				modifier = Modifier.size(83.dp),
-				model = ImageRequest.Builder(LocalContext.current)
-					.data(item.itemDrop.imageUrl)
-					.crossfade(true)
-					.build(),
-				contentDescription = "Drop item",
-				contentScale = ContentScale.Crop
-			)
-			Column(
-				modifier = Modifier
-					.fillMaxWidth()
-					.padding(2.dp),
-				horizontalAlignment = Alignment.CenterHorizontally
-			) {
-				Text(
-					text = item.itemDrop.name,
-					maxLines = 1,
-					overflow = TextOverflow.Ellipsis,
-					color = PrimaryWhite,
-					style = MaterialTheme.typography.bodyLarge,
-				)
-				Text(
-					text = "x${item.quantityList[0]}",
-					color = PrimaryWhite,
-					style = MaterialTheme.typography.bodyLarge,
-				)
 			}
 		}
 	}
