@@ -281,19 +281,18 @@ fun MeadDetailContent(
 							}
 						}
 					}
+
 					if (showCraftingStationSection) {
 						if (showStatsSection || showRecipeSection) {
 							SlavicDivider()
 						}
-
-
 
 						uiState.craftingCookingStation?.let { craftingStation ->
 							CardImageWithTopLabel(
 								itemData = craftingStation,
 								subTitle = if (category == MeadSubCategory.MEAD_BASE) "Requires cooking station" else "Requires fermenting station",
 								contentScale = ContentScale.FillBounds,
-								painter = craftingStationPainter // Użyj zapamiętanej instancji
+								painter = craftingStationPainter
 							)
 						}
 					}
