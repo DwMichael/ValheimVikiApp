@@ -5,9 +5,10 @@ import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 
 interface ArmorRepository {
-    suspend fun fetchArmor(lang: String): Response<List<Armor>>
-    fun getLocalArmors(): Flow<List<Armor>>
-    fun getArmorById(id:String): Flow<Armor?>
-    fun getArmorsBySubCategory(subCategory: String): Flow<List<Armor>>
-    suspend fun insertArmors(armors: List<Armor>)
+	suspend fun fetchArmor(lang: String): Response<List<Armor>>
+	fun getLocalArmors(): Flow<List<Armor>>
+	fun getArmorById(id: String): Flow<Armor?>
+	fun getArmorsByIds(ids: List<String>): Flow<List<Armor>>
+	fun getArmorsBySubCategory(subCategory: String): Flow<List<Armor>>
+	suspend fun insertArmors(armors: List<Armor>)
 }

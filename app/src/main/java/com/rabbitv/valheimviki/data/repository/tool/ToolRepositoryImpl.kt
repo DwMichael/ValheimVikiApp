@@ -2,6 +2,7 @@ package com.rabbitv.valheimviki.data.repository.tool
 
 import com.rabbitv.valheimviki.data.local.dao.ToolDao
 import com.rabbitv.valheimviki.data.remote.api.ApiToolService
+import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 import com.rabbitv.valheimviki.domain.model.item_tool.GameTool
 import com.rabbitv.valheimviki.domain.repository.ToolRepository
 import kotlinx.coroutines.flow.Flow
@@ -14,6 +15,14 @@ class ToolRepositoryImpl @Inject constructor(
 ) : ToolRepository {
 	override suspend fun fetchTools(language: String): Response<List<GameTool>> {
 		return apiService.fetchTools(language)
+	}
+
+	override fun getToolById(id: String): Flow<List<CraftingObject>> {
+		return toolDao.getToolById(id)
+	}
+
+	override fun getToolsByIds(ids: List<String>): Flow<List<CraftingObject>> {
+		return toolDao.getToolsByIds(ids)
 	}
 
 	override fun getLocalTools(): Flow<List<GameTool>> {

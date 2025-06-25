@@ -9,23 +9,27 @@ import retrofit2.Response
 import javax.inject.Inject
 
 class WeaponRepositoryImplementation @Inject constructor(
-    private val apiService: ApiWeaponService,
-    private val weaponDao: WeaponDao
+	private val apiService: ApiWeaponService,
+	private val weaponDao: WeaponDao
 ) : WeaponRepository {
-    override suspend fun fetchWeapons(lang: String): Response<List<Weapon>> {
-        return apiService.fetchWeapons(lang)
-    }
+	override suspend fun fetchWeapons(lang: String): Response<List<Weapon>> {
+		return apiService.fetchWeapons(lang)
+	}
 
-    override fun getLocalWeapons(): Flow<List<Weapon>> {
-        return weaponDao.getLocalWeapons()
-    }
+	override fun getLocalWeapons(): Flow<List<Weapon>> {
+		return weaponDao.getLocalWeapons()
+	}
 
-    override fun getWeaponById(id: String): Flow<Weapon?> {
-        return weaponDao.getWeaponById(id)
-    }
+	override fun getWeaponsByIds(ids: List<String>): Flow<List<Weapon>> {
+		return weaponDao.getWeaponsByIds(ids)
+	}
 
-    override suspend fun insertWeapons(weapons: List<Weapon>) {
-        check(weapons.isNotEmpty()) { "Weapons list cannot be empty , cannot insert ${weapons.size} weapons" }
-        weaponDao.insertWeapons(weapons)
-    }
+	override fun getWeaponById(id: String): Flow<Weapon?> {
+		return weaponDao.getWeaponById(id)
+	}
+
+	override suspend fun insertWeapons(weapons: List<Weapon>) {
+		check(weapons.isNotEmpty()) { "Weapons list cannot be empty , cannot insert ${weapons.size} weapons" }
+		weaponDao.insertWeapons(weapons)
+	}
 }

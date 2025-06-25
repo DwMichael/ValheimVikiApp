@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 import com.rabbitv.valheimviki.domain.model.item_tool.GameTool
 
 
@@ -17,6 +18,12 @@ interface ToolDao {
 
 	@Query("SELECT * FROM Tools where subCategory = :subCategory")
 	fun getToolsBySubCategory(subCategory: String): Flow<List<GameTool>>
+
+	@Query("SELECT * FROM Tools WHERE id = :id")
+	fun getToolById(id: String): Flow<List<CraftingObject>>
+
+	@Query("SELECT * FROM Tools WHERE id IN (:ids)")
+	fun getToolsByIds(ids: List<String>): Flow<List<CraftingObject>>
 
 	@Insert(onConflict = OnConflictStrategy.REPLACE)
 	fun insertTools(Tools: List<GameTool>)

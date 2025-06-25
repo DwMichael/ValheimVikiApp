@@ -9,27 +9,31 @@ import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 
 class ArmorRepositoryImpl @Inject constructor(
-    private val apiService: ApiArmorService,
-    private val armorDao: ArmorDao
+	private val apiService: ApiArmorService,
+	private val armorDao: ArmorDao
 ) : ArmorRepository {
-    override suspend fun fetchArmor(lang: String): Response<List<Armor>> {
-        return apiService.fetchArmor(lang)
-    }
+	override suspend fun fetchArmor(lang: String): Response<List<Armor>> {
+		return apiService.fetchArmor(lang)
+	}
 
-    override fun getLocalArmors(): Flow<List<Armor>> {
-        return armorDao.getLocalArmors()
-    }
+	override fun getLocalArmors(): Flow<List<Armor>> {
+		return armorDao.getLocalArmors()
+	}
 
-    override fun getArmorById(id:String): Flow<Armor?> {
-        return armorDao.getArmorById(id)
-    }
+	override fun getArmorById(id: String): Flow<Armor?> {
+		return armorDao.getArmorById(id)
+	}
 
-    override fun getArmorsBySubCategory(subCategory: String): Flow<List<Armor>> {
-        return armorDao.getArmorsBySubCategory(subCategory)
-    }
+	override fun getArmorsByIds(ids: List<String>): Flow<List<Armor>> {
+		return armorDao.getArmorsByIds(ids)
+	}
 
-    override suspend fun insertArmors(armors: List<Armor>) {
-        check(armors.isNotEmpty()) { "Armors list cannot be empty , cannot insert ${armors.size} armors" }
-        return armorDao.insertArmors(armors)
-    }
+	override fun getArmorsBySubCategory(subCategory: String): Flow<List<Armor>> {
+		return armorDao.getArmorsBySubCategory(subCategory)
+	}
+
+	override suspend fun insertArmors(armors: List<Armor>) {
+		check(armors.isNotEmpty()) { "Armors list cannot be empty , cannot insert ${armors.size} armors" }
+		return armorDao.insertArmors(armors)
+	}
 }

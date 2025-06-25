@@ -63,6 +63,7 @@ import com.rabbitv.valheimviki.domain.repository.TreeRepository
 import com.rabbitv.valheimviki.domain.repository.WeaponRepository
 import com.rabbitv.valheimviki.domain.use_cases.armor.ArmorUseCases
 import com.rabbitv.valheimviki.domain.use_cases.armor.get_armor_by_id.GetArmorByIdUseCase
+import com.rabbitv.valheimviki.domain.use_cases.armor.get_armors_by_ids.GetArmorsByIdsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.armor.get_armors_by_sub_category_use_case.GetArmorsBySubCategoryUseCase
 import com.rabbitv.valheimviki.domain.use_cases.armor.get_local_armors_use_case.GetLocalArmorsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
@@ -76,6 +77,7 @@ import com.rabbitv.valheimviki.domain.use_cases.building_material.get_building_m
 import com.rabbitv.valheimviki.domain.use_cases.building_material.get_local_building_materials.GetLocalBuildMaterialsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.connection.NetworkConnectivityObserver
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.CraftingObjectUseCases
+import com.rabbitv.valheimviki.domain.use_cases.crafting_object.get_crafting_object_by_id.GetCraftingObjectByIdUseCase
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.get_crafting_object_by_ids.GetCraftingObjectByIdsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.get_crafting_object_by_sub_category_use_case.GetCraftingObjectsBySubCategoryUseCase
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.get_crafting_objects_by_ids.GetCraftingObjectsByIdsUseCase
@@ -131,6 +133,8 @@ import com.rabbitv.valheimviki.domain.use_cases.relation.get_local_relations.Get
 import com.rabbitv.valheimviki.domain.use_cases.relation.get_related_ids_for.GetRelatedIdsForUseCase
 import com.rabbitv.valheimviki.domain.use_cases.tool.ToolUseCases
 import com.rabbitv.valheimviki.domain.use_cases.tool.get_local_tools_use_case.GetLocalToolsUseCase
+import com.rabbitv.valheimviki.domain.use_cases.tool.get_tool_by_id.GetToolByIdUseCase
+import com.rabbitv.valheimviki.domain.use_cases.tool.get_tools_by_ids.GetToolsByIdsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.tool.get_tools_by_sub_category_use_case.GetToolsBySubCategoryUseCase
 import com.rabbitv.valheimviki.domain.use_cases.tree.TreeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.tree.get_local_trees.GetLocalTreesUseCase
@@ -139,6 +143,7 @@ import com.rabbitv.valheimviki.domain.use_cases.tree.get_trees_by_ids.GetTreesBy
 import com.rabbitv.valheimviki.domain.use_cases.weapon.WeaponUseCases
 import com.rabbitv.valheimviki.domain.use_cases.weapon.get_local_weapons_use_case.GetLocalWeaponsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.weapon.get_weapon_by_id_use_case.GetWeaponByIdUseCase
+import com.rabbitv.valheimviki.domain.use_cases.weapon.get_weapons_by_ids.GetWeaponsByIdsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.weapon.get_weapons_by_sub_category_use_case.GetWeaponsBySubCategoryUseCase
 import com.rabbitv.valheimviki.domain.use_cases.weapon.get_weapons_by_sub_type_use_case.GetWeaponsBySubTypeUseCase
 import dagger.Module
@@ -460,7 +465,8 @@ object RepositoryModule {
 			getLocalWeaponsUseCase = GetLocalWeaponsUseCase(weaponRepository),
 			getWeaponsBySubCategoryUseCase = GetWeaponsBySubCategoryUseCase(),
 			getWeaponsBySubTypeUseCase = GetWeaponsBySubTypeUseCase(),
-			getWeaponByIdUseCase = GetWeaponByIdUseCase(weaponRepository)
+			getWeaponByIdUseCase = GetWeaponByIdUseCase(weaponRepository),
+			getWeaponsByIdsUseCase = GetWeaponsByIdsUseCase(weaponRepository)
 		)
 	}
 
@@ -470,7 +476,8 @@ object RepositoryModule {
 		return ArmorUseCases(
 			getLocalArmorsUseCase = GetLocalArmorsUseCase(armorRepository),
 			getArmorByIdUseCase = GetArmorByIdUseCase(armorRepository),
-			getArmorsBySubCategoryUseCase = GetArmorsBySubCategoryUseCase()
+			getArmorsBySubCategoryUseCase = GetArmorsBySubCategoryUseCase(),
+			getArmorsByIdsUseCase = GetArmorsByIdsUseCase(armorRepository)
 		)
 	}
 
@@ -491,6 +498,8 @@ object RepositoryModule {
 	fun provideToolUseCases(toolRepository: ToolRepository): ToolUseCases {
 		return ToolUseCases(
 			getLocalToolsUseCase = GetLocalToolsUseCase(toolRepository),
+			getToolsByIdsUseCase = GetToolsByIdsUseCase(toolRepository),
+			getToolByIdUseCase = GetToolByIdUseCase(toolRepository),
 			getToolsBySubCategoryUseCase = GetToolsBySubCategoryUseCase()
 		)
 	}
@@ -515,6 +524,7 @@ object RepositoryModule {
 	@Singleton
 	fun provideCraftingObjectUseCases(craftingObjectRepository: CraftingObjectRepository): CraftingObjectUseCases {
 		return CraftingObjectUseCases(
+			getCraftingObjectById = GetCraftingObjectByIdUseCase(craftingObjectRepository),
 			getCraftingObjectByIds = GetCraftingObjectByIdsUseCase(craftingObjectRepository),
 			getCraftingObjectsByIds = GetCraftingObjectsByIdsUseCase(craftingObjectRepository),
 			getLocalCraftingObjectsUseCase = GetLocalCraftingObjectsUseCase(craftingObjectRepository),

@@ -5,10 +5,11 @@ import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 
 interface CraftingObjectRepository {
-    suspend fun fetchCraftingObject(lang: String): Response<List<CraftingObject>>
-    fun getLocalCraftingObjects(): Flow<List<CraftingObject>>
-    fun getCraftingObjectByIds(ids: List<String>): Flow<CraftingObject?>
-    fun getCraftingObjectsByIds(ids: List<String>): Flow<List<CraftingObject>>
-    fun getCraftingObjectsBySubCategory(subCategory: String): Flow<List<CraftingObject>>
-    suspend fun insertCraftingObjects(craftingObjects: List<CraftingObject>)
+	suspend fun fetchCraftingObject(lang: String): Response<List<CraftingObject>>
+	fun getLocalCraftingObjects(): Flow<List<CraftingObject>>
+	fun getCraftingObjectByIds(ids: List<String>): Flow<CraftingObject?>
+	fun getCraftingObjectById(id: String): Flow<CraftingObject?>
+	fun getCraftingObjectsByIds(ids: List<String>): Flow<List<CraftingObject>>
+	fun getCraftingObjectsBySubCategory(subCategory: String): Flow<List<CraftingObject>>
+	suspend fun insertCraftingObjects(craftingObjects: List<CraftingObject>)
 }
