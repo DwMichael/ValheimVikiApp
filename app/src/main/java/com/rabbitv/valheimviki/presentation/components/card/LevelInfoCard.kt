@@ -93,8 +93,9 @@ fun LevelInfoCard(
     upgradeStats:List<GridLevelInfo> = emptyList(),
     materialsForUpgrade:List<MaterialUpgrade> = emptyList(),
     foodForUpgrade:List<FoodAsMaterialUpgrade> = emptyList(),
-    visibleContent : MutableState<Boolean> = remember{ mutableStateOf(false)}
+    visibleContent : MutableState<Boolean> = remember{ mutableStateOf(false)},
 ) {
+
     val filteredList = upgradeStats
         .filter { (it.power ?: 0) > 0 }
 

@@ -88,6 +88,7 @@ import com.rabbitv.valheimviki.presentation.detail.creature.npc.NpcDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.creature.passive_screen.PassiveCreatureDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.food.FoodDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.mead.MeadDetailScreen
+import com.rabbitv.valheimviki.presentation.detail.tool.ToolDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.weapon.WeaponDetailScreen
 import com.rabbitv.valheimviki.presentation.food.FoodListScreen
 import com.rabbitv.valheimviki.presentation.home.MainAppBar
@@ -383,8 +384,11 @@ fun ValheimNavGraph(
 		composable<Screen.ToolList> {
 			ToolListScreen(
 				modifier = Modifier.padding(10.dp),
-				onItemClick = { _, _ ->
-					// TODO: Implement navigation
+				onItemClick = { toolId, _ ->
+					valheimVikiNavController.navigate(
+						Screen.ToolDetail(toolId = toolId)
+					)
+
 				},
 				paddingValues = innerPadding,
 			)
@@ -628,6 +632,13 @@ fun ValheimNavGraph(
 		}
 		composable<Screen.CraftingObjectDetail> {
 			CraftingDetailScreen(
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+			)
+		}
+		composable<Screen.ToolDetail> {
+			ToolDetailScreen(
 				onBack = {
 					valheimVikiNavController.popBackStack()
 				},

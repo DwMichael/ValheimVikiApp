@@ -128,4 +128,7 @@ sealed class Screen() {
 
 	@Serializable
 	data class CraftingObjectDetail(val craftingObjectId: String) : Screen()
+
+	@Serializable
+	data class ToolDetail(val toolId: String) : Screen()
 }

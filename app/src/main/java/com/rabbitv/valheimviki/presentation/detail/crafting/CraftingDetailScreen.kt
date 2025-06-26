@@ -190,7 +190,12 @@ fun CraftingDetailContent(
 							}
 
 							Spacer(modifier = Modifier.padding(6.dp))
-							CustomColumnGrid(uiState.craftingMaterialToBuild)
+							CustomColumnGrid(
+								list = uiState.craftingMaterialToBuild,
+								getImageUrl = { it.itemDrop.imageUrl },
+								getName = { it.itemDrop.name },
+								getQuantity = { it.quantityList[0] },
+							)
 						}
 					}
 					item {
@@ -243,7 +248,13 @@ fun CraftingDetailContent(
 							}
 
 							Spacer(modifier = Modifier.padding(6.dp))
-							CustomColumnGrid(uiState.craftingUpgraderObjects)
+							CustomColumnGrid(
+								list = uiState.craftingUpgraderObjects,
+								getImageUrl = { it.itemDrop.imageUrl },
+								getName = { it.itemDrop.name },
+								getQuantity = { it.quantityList[0] },
+
+								)
 						}
 					}
 					item {

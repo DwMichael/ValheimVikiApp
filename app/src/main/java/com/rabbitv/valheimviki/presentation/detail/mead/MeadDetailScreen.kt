@@ -216,7 +216,12 @@ fun MeadDetailContent(
 						}
 
 						Spacer(modifier = Modifier.padding(6.dp))
-						CustomColumnGrid(recipeItems)
+						CustomColumnGrid(
+							list = recipeItems,
+							getImageUrl = {it.itemDrop.imageUrl},
+							getName = {it.itemDrop.name},
+							getQuantity = {it.quantityList[0]},
+						)
 					}
 					if (showStatsSection) {
 						TridentsDividedRow("Stats")

@@ -48,7 +48,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ToolListScreen(
-	onItemClick: (String, ToolSubCategory) -> Unit,
+	onItemClick: (String, _: Int) -> Unit,
 	modifier: Modifier,
 	paddingValues: PaddingValues,
 	viewModel: ToolListViewModel = hiltViewModel()
@@ -64,9 +64,9 @@ fun ToolListScreen(
 	Surface(
 		color = Color.Transparent,
 		modifier = Modifier
-            .testTag("FoodListSurface")
-            .fillMaxSize()
-            .padding(paddingValues)
+			.testTag("FoodListSurface")
+			.fillMaxSize()
+			.padding(paddingValues)
 	) {
 		Box(modifier = Modifier.fillMaxSize()) {
 			Column(
@@ -97,7 +97,7 @@ fun ToolListScreen(
 
 						is UiCategoryState.Success -> ListContent(
 							items = state.list,
-							clickToNavigate = { s, i -> {} },
+							clickToNavigate = onItemClick,
 							lazyListState = lazyListState,
 							subCategoryNumber = 0,
 							imageScale = ContentScale.Fit,
@@ -115,8 +115,8 @@ fun ToolListScreen(
 					}
 				},
 				modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(BODY_CONTENT_PADDING.dp)
+					.align(Alignment.BottomEnd)
+					.padding(BODY_CONTENT_PADDING.dp)
 			)
 		}
 	}

@@ -8,7 +8,7 @@ import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.model.data_refetch_result.DataRefetchResult
 import com.rabbitv.valheimviki.domain.model.food.Food
-import com.rabbitv.valheimviki.domain.model.item_tool.GameTool
+import com.rabbitv.valheimviki.domain.model.item_tool.ItemTool
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.mead.Mead
 import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
@@ -274,7 +274,7 @@ class DataRefetchUseCase @Inject constructor(
 		val weapons = results[7] as List<Weapon>
 		val armors = results[8] as List<Armor>
 		val meads = results[9] as List<Mead>
-		val itemTools = results[10] as List<GameTool>
+		val itemTools = results[10] as List<ItemTool>
 		val buildingMaterials = results[11] as List<BuildingMaterial>
 		val craftingObjects = results[12] as List<CraftingObject>
 		val relations = results[13] as List<Relation>
@@ -282,18 +282,18 @@ class DataRefetchUseCase @Inject constructor(
 		return@coroutineScope (
 				biomes.size == 9 &&
 						creatures.size == 83 &&
-						oreDeposits.size == 9 &&
-						materials.size == 271 &&
+						oreDeposits.size == 15 &&
+						materials.size == 272 &&
 						pointsOfInterest.size == 51 &&
 						trees.size == 8 &&
 						food.size == 84 &&
-						weapons.size == 100 &&
+						weapons.size == 99 &&
 						armors.size == 51 &&
 						meads.size == 41 &&
 						itemTools.size == 14 &&
 						buildingMaterials.size == 248 &&
 						craftingObjects.size == 45 &&
-						relations.size == 1579
+						relations.size == 1643
 				)
 	}
 }

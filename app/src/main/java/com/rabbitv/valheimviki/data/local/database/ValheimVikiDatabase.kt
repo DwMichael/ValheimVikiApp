@@ -27,7 +27,7 @@ import com.rabbitv.valheimviki.domain.model.building_material.BuildingMaterial
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.model.food.Food
-import com.rabbitv.valheimviki.domain.model.item_tool.GameTool
+import com.rabbitv.valheimviki.domain.model.item_tool.ItemTool
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.mead.Mead
 import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
@@ -41,9 +41,9 @@ import com.rabbitv.valheimviki.domain.model.weapon.Weapon
 		Relation::class, OreDeposit::class,
 		Material::class, PointOfInterest::class,
 		Tree::class, Food::class, Weapon::class,
-		Armor::class, Mead::class, GameTool::class,
+		Armor::class, Mead::class, ItemTool::class,
 		BuildingMaterial::class, CraftingObject::class],
-	version = 22,
+	version = 23,
 	exportSchema = false
 )
 @TypeConverters(Converters::class)

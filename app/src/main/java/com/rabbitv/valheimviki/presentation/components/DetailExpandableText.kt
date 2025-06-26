@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.DEFAULT_MINIMUM_TEXT_LINE
@@ -40,6 +41,7 @@ fun DetailExpandableText(
     showLessText: String = " show less",
     showLessStyle: SpanStyle = showMoreStyle,
     textAlign: TextAlign? = null,
+    boxPadding: Dp = 0.dp,
     isExpanded: MutableState<Boolean> = remember { mutableStateOf(false) },
 ) {
 
@@ -48,7 +50,7 @@ fun DetailExpandableText(
 
     Box(
         modifier = modifier
-            .padding()
+            .padding(boxPadding)
             .clickable(clickable) {
                 isExpanded.value = !isExpanded.value
             }

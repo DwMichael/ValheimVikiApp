@@ -23,13 +23,12 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
-import com.rabbitv.valheimviki.domain.repository.Droppable
 import com.rabbitv.valheimviki.ui.theme.DarkWood
 import com.rabbitv.valheimviki.ui.theme.LightDark
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 
 @Composable
-fun RecipeItemCard(item: Droppable) {
+fun CustomItemCard(imageUrl: String, name: String, quantity: Int?) {
 	Card(
 		modifier = Modifier
 			.fillMaxWidth()
@@ -56,7 +55,7 @@ fun RecipeItemCard(item: Droppable) {
 					.fillMaxWidth()
 					.height(83.dp),
 				model = ImageRequest.Builder(LocalContext.current)
-					.data(item.itemDrop.imageUrl)
+					.data(imageUrl)
 					.crossfade(true)
 					.build(),
 				contentDescription = "Drop item",
@@ -69,17 +68,19 @@ fun RecipeItemCard(item: Droppable) {
 				horizontalAlignment = Alignment.CenterHorizontally
 			) {
 				Text(
-					text = item.itemDrop.name,
+					text = name,
 					maxLines = 1,
 					overflow = TextOverflow.Ellipsis,
 					color = PrimaryWhite,
 					style = MaterialTheme.typography.bodyLarge,
 				)
-				Text(
-					text = "x${item.quantityList[0]}",
-					color = PrimaryWhite,
-					style = MaterialTheme.typography.bodyLarge,
-				)
+				if (quantity != null) {
+					Text(
+						text = "x${quantity}",
+						color = PrimaryWhite,
+						style = MaterialTheme.typography.bodyLarge,
+					)
+				}
 			}
 		}
 	}

@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.domain.model.item_tool.pickaxe
+package com.rabbitv.valheimviki.domain.model.item_tool.tool_upgrade_info
 
 import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.Serializable
