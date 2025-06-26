@@ -38,6 +38,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -45,9 +47,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.composables.icons.lucide.Hammer
 import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.Pickaxe
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
-import com.rabbitv.valheimviki.domain.model.food.Food
 import com.rabbitv.valheimviki.domain.model.item_tool.ItemTool
 import com.rabbitv.valheimviki.domain.model.material.MaterialUpgrade
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
@@ -55,6 +57,8 @@ import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.card.LevelInfoCard
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.grid.custom_column_grid.CustomColumnGrid
+import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData
+import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerWithHeaderData
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
 import com.rabbitv.valheimviki.presentation.components.section_header.SectionHeader
@@ -91,6 +95,13 @@ fun ToolDetailContent(
 	onBack: () -> Unit,
 ) {
 
+	val oreDepositData = HorizontalPagerData(
+		title = "Ore Deposits",
+		subTitle = "Ore Deposits that can be mine with this pickaxe",
+		icon = Lucide.Pickaxe,
+		iconRotationDegrees = -85f,
+		itemContentScale = ContentScale.Crop
+	)
 	val scrollState = rememberScrollState()
 	val previousScrollValue = remember { mutableIntStateOf(0) }
 	val craftingStationPainter = painterResource(R.drawable.food_bg)
@@ -227,6 +238,34 @@ fun ToolDetailContent(
 							painter = craftingStationPainter
 						)
 					}
+					if (!uiState.tool.howToUse.isNullOrEmpty() && uiState.tool.howToUse != "null") {
+						TridentsDividedRow()
+						Text(
+							modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+							text = AnnotatedString.fromHtml(
+								uiState.tool.howToUse,
+							),
+							style = MaterialTheme.typography.bodyLarge
+						)
+					}
+					if (!uiState.tool.generalInfo.isNullOrEmpty() && uiState.tool.generalInfo != "null") {
+						TridentsDividedRow()
+						Text(
+							modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+							text = AnnotatedString.fromHtml(
+								uiState.tool.generalInfo,
+							),
+							style = MaterialTheme.typography.bodyLarge
+						)
+					}
+					if (uiState.relatedOreDeposits.isNotEmpty()) {
+						SlavicDivider()
+						HorizontalPagerSection(
+							list = uiState.relatedOreDeposits,
+							data = oreDepositData,
+						)
+					}
+
 				}
 			}
 			AnimatedVisibility(
@@ -271,23 +310,6 @@ fun PreviewToolDetailContentCooked() {
 		order = 1
 	)
 
-	val fakeFood = Food(
-		id = "serpent_stew",
-		imageUrl = "https://example.com/images/serpent_stew.png",
-		category = "Food",
-		subCategory = "Cooked",
-		name = "Serpent Stew",
-		description = "A rich stew made from serpent meat. Greatly increases health and stamina.",
-		order = 1,
-		eitr = 0,
-		health = 80,
-		weight = 1.0,
-		healing = 4,
-		stamina = 26,
-		duration = "1600:00",
-		forkType = "Blue",
-		stackSize = 10
-	)
 	val fakeMaterial = FakeData.generateFakeMaterials()[0]
 
 

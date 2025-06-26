@@ -7,9 +7,11 @@ import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 import com.rabbitv.valheimviki.domain.model.item_tool.ItemTool
 import com.rabbitv.valheimviki.domain.model.material.MaterialUpgrade
+import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
 import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.CraftingObjectUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
+import com.rabbitv.valheimviki.domain.use_cases.ore_deposit.OreDepositUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.domain.use_cases.tool.ToolUseCases
 import com.rabbitv.valheimviki.presentation.detail.tool.model.ToolDetailUiState
@@ -27,17 +29,20 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@Suppress("UNCHECKED_CAST")
 @HiltViewModel
 class ToolDetailViewModel @Inject constructor(
 	private val toolUseCases: ToolUseCases,
 	private val craftingObjectUseCases: CraftingObjectUseCases,
 	private val materialUseCases: MaterialUseCases,
 	private val relationUseCases: RelationUseCases,
+	private val oreDepositUseCases: OreDepositUseCases,
 	private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 	private val _toolId: String = checkNotNull(savedStateHandle[TOOl_KEY])
 	private val _tool = MutableStateFlow<ItemTool?>(null)
 	private val _relatedCraftingObject = MutableStateFlow<CraftingObject?>(null)
+	private val _relatedOreDeposits = MutableStateFlow<List<OreDeposit>>(emptyList())
 	private val _relatedMaterials = MutableStateFlow<List<MaterialUpgrade>>(emptyList())
 	private val _isLoading: MutableStateFlow<Boolean> = MutableStateFlow(true)
 	private val _error: MutableStateFlow<String?> = MutableStateFlow(null)
@@ -47,15 +52,17 @@ class ToolDetailViewModel @Inject constructor(
 		_tool,
 		_relatedCraftingObject,
 		_relatedMaterials,
+		_relatedOreDeposits,
 		_isLoading,
 		_error
-	) { tool, relatedCraftingObject, relatedMaterials, isLoading, error ->
+	) { values ->
 		ToolDetailUiState(
-			tool = tool,
-			relatedCraftingStation = relatedCraftingObject,
-			relatedMaterials = relatedMaterials,
-			isLoading = isLoading,
-			error = error
+			tool = values[0] as ItemTool,
+			relatedCraftingStation = values[1] as CraftingObject?,
+			relatedMaterials = values[2] as List<MaterialUpgrade>,
+			relatedOreDeposits = values[3] as List<OreDeposit>,
+			isLoading = values[4] as Boolean,
+			error = values[5] as String?
 		)
 	}.stateIn(
 		scope = viewModelScope,
@@ -96,8 +103,10 @@ class ToolDetailViewModel @Inject constructor(
 					val relatedItemsMap = relatedObjects.associateBy { it.id }
 					materials.forEach { material ->
 						val relatedItem = relatedItemsMap[material.id]
-						val quantityList = listOf(
+						val quantityList = listOf<Int?>(
 							relatedItem?.quantity,
+							relatedItem?.quantity2star,
+							relatedItem?.quantity3star
 						)
 						tempList.add(
 							MaterialUpgrade(
@@ -109,9 +118,16 @@ class ToolDetailViewModel @Inject constructor(
 					_relatedMaterials.value = tempList
 				}
 
+				val oreDepositDeferred = async {
+					_relatedOreDeposits.value =
+						oreDepositUseCases.getOreDepositsByIdsUseCase(relatedIds).first()
+							.sortedBy { it.order }
+				}
+
 				awaitAll(
 					craftingDeferred,
-					materialsDeferred
+					materialsDeferred,
+					oreDepositDeferred
 				)
 
 			} catch (e: Exception) {
