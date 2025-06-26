@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.tree.Tree
+import com.rabbitv.valheimviki.domain.model.weapon.Weapon
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
@@ -44,6 +45,7 @@ class TreeDetailScreenViewModel @Inject constructor(
 	private val _tree = MutableStateFlow<Tree?>(null)
 	private val _relatedBiomes = MutableStateFlow<List<Biome>>(emptyList())
 	private val _relatedMaterials = MutableStateFlow<List<Material>>(emptyList())
+	private val _relatedAxes = MutableStateFlow<List<Weapon>>(emptyList())
 	private val _isLoading = MutableStateFlow(true)
 	private val _error = MutableStateFlow<String?>(null)
 
@@ -51,15 +53,17 @@ class TreeDetailScreenViewModel @Inject constructor(
 		_tree,
 		_relatedBiomes,
 		_relatedMaterials,
+		_relatedAxes,
 		_isLoading,
 		_error
-	) { tree, biomes, materials, isLoading, error ->
+	) { values ->
 		TreeDetailUiState(
-			tree = tree,
-			relatedBiomes = biomes,
-			relatedMaterials = materials,
-			isLoading = isLoading,
-			error = error
+			tree = values[0] as Tree,
+			relatedBiomes = values[1] as List<Biome>,
+			relatedMaterials = values[2] as List<Material>,
+			relatedAxes = values[3] as List<Weapon>,
+			isLoading = values[4] as Boolean,
+			error = values[5] as String?
 		)
 	}.stateIn(
 		scope = viewModelScope,
@@ -92,43 +96,20 @@ class TreeDetailScreenViewModel @Inject constructor(
 				}
 
 				launch {
-					try {
-						_relatedOreDeposits.value =
-							oreDepositUseCases.getOreDepositsByIdsUseCase(relatedIds).first()
-
-					} catch (e: Exception) {
-						Log.e("Ore deposits fetch error treeDetailViewModel", e.message.toString())
-					}
+					_relatedMaterials.value =
+						materialUseCases.getMaterialsByIds(relatedIds).first()
 				}
 				launch {
-					try {
-						_relatedMaterials.value =
-							materialUseCases.getMaterialsByIds(relatedIds).first()
-					} catch (e: Exception) {
-						Log.e("Materials fetch error treeDetailViewModel", e.message.toString())
-					}
+					_relatedMaterials.value =
+						materialUseCases.getMaterialsByIds(relatedIds).first()
+
 				}
 
+				launch {
+					_relatedAxes.value =
+						weaponUseCase.getWeaponsByIdsUseCase(relatedIds).first()
+				}
 
-				launch {
-					try {
-						_relatedPointOfInterest.value =
-							pointOfInterestUseCases.getPointsOfInterestByIdsUseCase(relatedIds)
-								.first()
-					} catch (e: Exception) {
-						Log.e(
-							"PointOfInterest fetch error treeDetailViewModel",
-							e.message.toString()
-						)
-					}
-				}
-				launch {
-					try {
-						_relatedTrees.value = treeUseCases.getTreesByIdsUseCase(relatedIds).first()
-					} catch (e: Exception) {
-						Log.e("Trees fetch error treeDetailViewModel", e.message.toString())
-					}
-				}
 				_isLoading.value = false
 			} catch (e: Exception) {
 				Log.e("General fetch error treeDetailViewModel", e.message.toString())
