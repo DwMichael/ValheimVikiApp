@@ -3,7 +3,7 @@ package com.rabbitv.valheimviki.data.local.converter
 import androidx.room.TypeConverter
 import com.rabbitv.valheimviki.domain.model.armor.UpgradeArmorInfo
 import com.rabbitv.valheimviki.domain.model.creature.aggresive.LevelCreatureData
-import com.rabbitv.valheimviki.domain.model.item_tool.pickaxe.ToolsUpgradeInfo
+import com.rabbitv.valheimviki.domain.model.item_tool.tool_upgrade_info.ToolsUpgradeInfo
 import com.rabbitv.valheimviki.domain.model.weapon.UpgradeInfo
 import kotlinx.serialization.json.Json
 
