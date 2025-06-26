@@ -38,7 +38,7 @@ class TreeDetailScreenViewModel @Inject constructor(
 	private val biomeUseCases: BiomeUseCases,
 	private val relationsUseCase: RelationUseCases,
 	private val materialUseCases: MaterialUseCases,
-	private val weaponUseCloneable: WeaponUseCases
+	private val weaponUseCase: WeaponUseCases
 ) : ViewModel() {
 	private val _treeId: String = checkNotNull(savedStateHandle[TREE_KEY])
 	private val _tree = MutableStateFlow<Tree?>(null)
@@ -87,12 +87,8 @@ class TreeDetailScreenViewModel @Inject constructor(
 
 
 				launch {
-					try {
-						_relatedBiomes.value =
-							biomeUseCases.get(relatedIds).first()
-					} catch (e: Exception) {
-						Log.e("Creatures fetch error treeDetailViewModel", e.message.toString())
-					}
+					_relatedBiomes.value =
+						biomeUseCases.getBiomesByIdsUseCase(relatedIds).first()
 				}
 
 				launch {

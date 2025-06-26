@@ -9,24 +9,28 @@ import retrofit2.Response
 import javax.inject.Inject
 
 class BiomeRepositoryImpl @Inject constructor(
-    private val apiService: ApiBiomeService,
-    private val biomeDao: BiomeDao,
+	private val apiService: ApiBiomeService,
+	private val biomeDao: BiomeDao,
 ) : BiomeRepository {
 
-    override fun getLocalBiomes(): Flow<List<Biome>> {
-        return biomeDao.getAllBiomes()
-    }
+	override fun getLocalBiomes(): Flow<List<Biome>> {
+		return biomeDao.getAllBiomes()
+	}
 
-    override fun getBiomeById(biomeId: String): Flow<Biome?> {
-        return biomeDao.getBiomeById(biomeId)
-    }
+	override fun getBiomesByIds(ids: List<String>): Flow<List<Biome>> {
+		return biomeDao.getBiomesByIds(ids)
+	}
 
-    override suspend fun fetchBiomes(lang: String): Response<List<Biome>> {
-        return apiService.fetchBiomes(lang)
-    }
+	override fun getBiomeById(biomeId: String): Flow<Biome?> {
+		return biomeDao.getBiomeById(biomeId)
+	}
 
-    override suspend fun storeBiomes(biomes: List<Biome>) {
-        check(biomes.isNotEmpty()) { "Biome list cannot be empty , cannot insert ${biomes.size} biomes" }
-        biomeDao.insertAllBiomes(biomes)
-    }
+	override suspend fun fetchBiomes(lang: String): Response<List<Biome>> {
+		return apiService.fetchBiomes(lang)
+	}
+
+	override suspend fun storeBiomes(biomes: List<Biome>) {
+		check(biomes.isNotEmpty()) { "Biome list cannot be empty , cannot insert ${biomes.size} biomes" }
+		biomeDao.insertAllBiomes(biomes)
+	}
 }

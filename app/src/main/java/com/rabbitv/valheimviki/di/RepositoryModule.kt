@@ -68,6 +68,7 @@ import com.rabbitv.valheimviki.domain.use_cases.armor.get_armors_by_sub_category
 import com.rabbitv.valheimviki.domain.use_cases.armor.get_local_armors_use_case.GetLocalArmorsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.biome.get_biome_by_id.GetBiomeByIdUseCase
+import com.rabbitv.valheimviki.domain.use_cases.biome.get_biomes_by_ids.GetBiomesByIdsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.biome.get_local_biomes.GetLocalBiomesUseCase
 import com.rabbitv.valheimviki.domain.use_cases.building_material.BuildMaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.building_material.get_building_material_by_id.GetBuildMaterialByIdUseCase
@@ -343,6 +344,7 @@ object RepositoryModule {
 	fun provideBiomeUseCases(biomeRepository: BiomeRepository): BiomeUseCases {
 		return BiomeUseCases(
 			getLocalBiomesUseCase = GetLocalBiomesUseCase(biomeRepository),
+			getBiomesByIdsUseCase = GetBiomesByIdsUseCase(biomeRepository),
 			getBiomeByIdUseCase = GetBiomeByIdUseCase(biomeRepository),
 		)
 	}
