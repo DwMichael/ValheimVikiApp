@@ -41,16 +41,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.composables.icons.lucide.BookOpenCheck
 import com.composables.icons.lucide.Cuboid
 import com.composables.icons.lucide.FlaskRound
 import com.composables.icons.lucide.Gavel
 import com.composables.icons.lucide.House
 import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.ScrollText
 import com.composables.icons.lucide.Shield
 import com.composables.icons.lucide.Swords
 import com.composables.icons.lucide.TrendingUp
 import com.composables.icons.lucide.Utensils
 import com.rabbitv.valheimviki.R
+import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingSubCategory
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.grid.custom_column_grid.CustomColumnGrid
@@ -66,6 +69,8 @@ import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
+
+//TODO OPTIMALIZE IT
 
 @Composable
 fun CraftingDetailScreen(
@@ -163,7 +168,7 @@ fun CraftingDetailContent(
 						}
 					}
 					item {
-						if (uiState.craftingUpgraderObjects.isNotEmpty()) {
+						if (uiState.craftingMaterialToBuild.isNotEmpty()) {
 							TridentsDividedRow()
 							Box(
 								modifier = Modifier
@@ -173,15 +178,68 @@ fun CraftingDetailContent(
 							) {
 								SectionHeader(
 									data = HorizontalPagerWithHeaderData(
-										title = "Upgrades",
-										subTitle = "Improve crafting stations by building structures nearby. Higher levels unlock new recipes and allow stronger item upgrades.",
-										icon = Lucide.TrendingUp,
+										title = "Construction Requirements",
+										subTitle = "Components needed to build this station.",
+										icon = Lucide.ScrollText,
 										iconRotationDegrees = 0f,
 										contentScale = ContentScale.Crop,
 										starLevelIndex = 0,
 									),
 									modifier = Modifier,
 								)
+							}
+
+							Spacer(modifier = Modifier.padding(6.dp))
+							CustomColumnGrid(uiState.craftingMaterialToBuild)
+						}
+					}
+					item {
+						if (uiState.craftingUpgraderObjects.isNotEmpty()) {
+							TridentsDividedRow()
+							Box(
+								modifier = Modifier
+									.fillMaxWidth()
+									.wrapContentHeight()
+									.padding(horizontal = BODY_CONTENT_PADDING.dp)
+							) {
+								when (uiState.craftingObject.subCategory) {
+									CraftingSubCategory.CRAFTING_UPGRADER.toString() -> SectionHeader(
+										data = HorizontalPagerWithHeaderData(
+											title = "Affected Crafting Station",
+											subTitle = "This is the station that this item upgrades.",
+											icon = Lucide.TrendingUp,
+											iconRotationDegrees = 0f,
+											contentScale = ContentScale.Crop,
+											starLevelIndex = 0,
+										),
+										modifier = Modifier,
+									)
+
+									CraftingSubCategory.CRAFTING_UPGRADER_FOOD.toString() -> SectionHeader(
+										data = HorizontalPagerWithHeaderData(
+											title = "Affected Food Station",
+											subTitle = "The food station improved by this item.",
+											icon = Lucide.TrendingUp,
+											iconRotationDegrees = 0f,
+											contentScale = ContentScale.Crop,
+											starLevelIndex = 0,
+										),
+										modifier = Modifier,
+									)
+
+									else -> SectionHeader(
+										data = HorizontalPagerWithHeaderData(
+											title = "Upgrades",
+											subTitle = "Improve crafting stations by building structures nearby. Higher levels unlock new recipes and allow stronger item upgrades.",
+											icon = Lucide.TrendingUp,
+											iconRotationDegrees = 0f,
+											contentScale = ContentScale.Crop,
+											starLevelIndex = 0,
+										),
+										modifier = Modifier,
+									)
+								}
+
 							}
 
 							Spacer(modifier = Modifier.padding(6.dp))
@@ -197,6 +255,18 @@ fun CraftingDetailContent(
 								starLevel = 0,
 								title = "Food Items",
 								subTitle = "Food items that can be created at this crafting station",
+							)
+						}
+					}
+					item {
+						if (uiState.craftingMeadProducts.isNotEmpty()) {
+							TridentsDividedRow()
+							DroppedItemsSection(
+								list = uiState.craftingMeadProducts,
+								icon = Lucide.BookOpenCheck,
+								starLevel = 0,
+								title = "Crafting Ingredients",
+								subTitle = "Materials this station consumes to produce items.",
 							)
 						}
 					}
@@ -243,7 +313,7 @@ fun CraftingDetailContent(
 								list = uiState.craftingMaterialProducts,
 								icon = Lucide.Cuboid,
 								starLevel = 0,
-								title = "Materials Items",
+								title = "Craftable Items",
 								subTitle = "Materials items that can be created at this crafting station",
 							)
 						}
