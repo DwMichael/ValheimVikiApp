@@ -3,7 +3,7 @@ package com.rabbitv.valheimviki.presentation.tool.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rabbitv.valheimviki.domain.model.item_tool.GameTool
+import com.rabbitv.valheimviki.domain.model.item_tool.ItemTool
 import com.rabbitv.valheimviki.domain.model.item_tool.ToolSubCategory
 import com.rabbitv.valheimviki.domain.model.ui_state.category_state.UiCategoryState
 import com.rabbitv.valheimviki.domain.repository.NetworkConnectivity
@@ -29,7 +29,7 @@ class ToolListViewModel @Inject constructor(
 	private val _selectedChip =
 		MutableStateFlow<ToolSubCategory?>(null)
 
-	private val _gameTool: StateFlow<List<GameTool>> =
+	private val _itemTool: StateFlow<List<ItemTool>> =
 		combine(
 			toolUseCases.getLocalToolsUseCase(),
 			_selectedChip,
@@ -41,8 +41,8 @@ class ToolListViewModel @Inject constructor(
 			.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5000), emptyList())
 
 
-	val uiState: StateFlow<UiCategoryState<ToolSubCategory?, GameTool>> = combine(
-		_gameTool,
+	val uiState: StateFlow<UiCategoryState<ToolSubCategory?, ItemTool>> = combine(
+		_itemTool,
 		_selectedChip,
 		connectivityObserver.isConnected.stateIn(
 			scope = viewModelScope,
