@@ -131,4 +131,7 @@ sealed class Screen() {
 
 	@Serializable
 	data class ToolDetail(val toolId: String) : Screen()
+
+	@Serializable
+	data class TreeDetail(val treeId: String) : Screen()
 }
