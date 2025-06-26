@@ -25,9 +25,6 @@ import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -86,13 +83,12 @@ fun NavigationDrawer(
 	scope: CoroutineScope,
 	childNavController: NavHostController,
 	items: List<DrawerItem>,
-	selectedItem: MutableState<DrawerItem>,
+	selectedItem: DrawerItem,
 	isDetailScreen: Boolean,
 	isTransitionActive: Boolean,
-	currentRoute: String?,
+	onItemSelected: (DrawerItem) -> Unit,
 	content: @Composable () -> Unit,
-
-	) {
+) {
 	ModalNavigationDrawer(
 		modifier = modifier
 			.fillMaxSize()
@@ -172,14 +168,10 @@ fun NavigationDrawer(
 									fontSize = 16.sp,
 								)
 							},
-							selected = (item == selectedItem.value),
+							selected = (item == selectedItem),
 							onClick = {
-								val isCurrentScreen = currentRoute?.contains(
-									item.screenName,
-									ignoreCase = true
-								) == true
-								if (!isCurrentScreen) {
-									selectedItem.value = item
+								if (item != selectedItem) {
+									onItemSelected(item)
 									childNavController.navigate(item.screen) {
 										popUpTo(childNavController.graph.findStartDestination().id) {
 											saveState = true
@@ -324,7 +316,7 @@ private fun PreviewNavigationDrawer() {
 			screen = Screen.PointOfInterest
 		)
 	)
-	val isAnimationRunning: MutableState<Boolean> = remember { mutableStateOf(false) }
+
 	ValheimVikiAppTheme {
 		NavigationDrawer(
 			modifier = Modifier,
@@ -332,11 +324,11 @@ private fun PreviewNavigationDrawer() {
 			scope = rememberCoroutineScope(),
 			childNavController = rememberNavController(),
 			items = items,
-			selectedItem = remember { mutableStateOf(items[0]) },
+			selectedItem = items[0],
 			content = {},
 			isDetailScreen = false,
-			currentRoute = "",
-			isTransitionActive = true,
+			isTransitionActive = false,
+			onItemSelected = {}
 		)
 	}
 }

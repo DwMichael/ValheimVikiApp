@@ -28,12 +28,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -82,7 +80,6 @@ import com.rabbitv.valheimviki.presentation.creatures.mini_bosses.MiniBossScreen
 import com.rabbitv.valheimviki.presentation.creatures.mob_list.MobListScreen
 import com.rabbitv.valheimviki.presentation.detail.armor.ArmorDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.biome.BiomeDetailScreen
-import com.rabbitv.valheimviki.presentation.detail.crafting.CraftingDetailContent
 import com.rabbitv.valheimviki.presentation.detail.crafting.CraftingDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.creature.aggressive_screen.AggressiveCreatureDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.creature.main_boss_screen.MainBossDetailScreen
@@ -125,6 +122,7 @@ fun ValheimVikiApp() {
 	}
 }
 
+
 @RequiresApi(Build.VERSION_CODES.S)
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -136,27 +134,21 @@ fun MainContainer(
 	val scope = rememberCoroutineScope()
 
 	val drawerItems: List<DrawerItem> = rememberDrawerItems()
-	val selectedItem = remember { mutableStateOf(drawerItems.first()) }
-
 	val currentBackStackEntry by valheimVikiNavController.currentBackStackEntryAsState()
-	val currentRoute = currentBackStackEntry?.destination?.route
+	val currentDestination = currentBackStackEntry?.destination
 
-	BackHandler {
-		if (drawerState.isOpen) {
-			scope.launch {
-				drawerState.close()
-			}
+
+	val selectedItem by remember(currentDestination) {
+		derivedStateOf {
+			currentDestination?.route?.let { route ->
+				findSelectedDrawerItem(route, drawerItems)
+			} ?: drawerItems.first()
 		}
 	}
 
-	LaunchedEffect(currentRoute) {
-		if (currentRoute != null) {
-			val match = drawerItems.firstOrNull { item ->
-				val screenName = item.screen::class.simpleName ?: ""
-				val matches = currentRoute.contains(screenName, ignoreCase = true)
-				matches
-			}
-			selectedItem.value = match ?: drawerItems.first()
+	BackHandler(enabled = drawerState.isOpen) {
+		scope.launch {
+			drawerState.close()
 		}
 	}
 
@@ -181,7 +173,9 @@ fun MainContainer(
 		items = drawerItems,
 		selectedItem = selectedItem,
 		isDetailScreen = showTopAppBar,
-		currentRoute = currentRoute,
+		onItemSelected = { item ->
+
+		},
 		isTransitionActive = running,
 	) {
 		Scaffold(
@@ -219,6 +213,7 @@ fun MainContainer(
 		}
 	}
 }
+
 
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
@@ -820,14 +815,31 @@ fun rememberDrawerItems(): List<DrawerItem> {
 	}
 }
 
+private fun findSelectedDrawerItem(
+	currentRoute: String,
+	drawerItems: List<DrawerItem>
+): DrawerItem {
+	val allMatches = drawerItems.filter { item ->
+		val screenName = item.screen::class.simpleName ?: ""
+		screenName.isNotEmpty() && currentRoute.contains(screenName, ignoreCase = true)
+	}
+
+	return allMatches.maxByOrNull { item ->
+		(item.screen::class.simpleName ?: "").length
+	} ?: drawerItems.first()
+}
+
 fun NavDestination.shouldShowTopBar(): Boolean {
 	val route = this.route ?: return false
-	return listOf(
+	val mainScreens = listOf(
 		"BiomeList", "BossList", "MiniBossList", "MobList",
-		"WeaponList", "ArmorList", "FoodList", "MeadList","CraftingObjectsList" ,"ToolList",
-		"MaterialCategory", "BuildingMaterialCategory",
-		"OreDeposit", "Tree", "PointOfInterest"
-	).any { route.contains(it, ignoreCase = true) }
+		"WeaponList", "ArmorList", "FoodList", "MeadList",
+		"CraftingObjectsList", "ToolList", "MaterialCategory",
+		"BuildingMaterialCategory", "OreDeposit", "Tree", "PointOfInterest"
+	)
+	return mainScreens.any { screenName ->
+		route.contains(screenName, ignoreCase = true)
+	}
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)
