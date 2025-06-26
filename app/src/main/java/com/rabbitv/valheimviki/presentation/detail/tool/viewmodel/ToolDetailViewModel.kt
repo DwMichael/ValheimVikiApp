@@ -5,11 +5,13 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
+import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.model.item_tool.ItemTool
 import com.rabbitv.valheimviki.domain.model.material.MaterialUpgrade
 import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
 import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.CraftingObjectUseCases
+import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.ore_deposit.OreDepositUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
@@ -37,6 +39,7 @@ class ToolDetailViewModel @Inject constructor(
 	private val materialUseCases: MaterialUseCases,
 	private val relationUseCases: RelationUseCases,
 	private val oreDepositUseCases: OreDepositUseCases,
+	private val creatureUseCases: CreatureUseCases,
 	private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 	private val _toolId: String = checkNotNull(savedStateHandle[TOOl_KEY])
@@ -44,6 +47,7 @@ class ToolDetailViewModel @Inject constructor(
 	private val _relatedCraftingObject = MutableStateFlow<CraftingObject?>(null)
 	private val _relatedOreDeposits = MutableStateFlow<List<OreDeposit>>(emptyList())
 	private val _relatedMaterials = MutableStateFlow<List<MaterialUpgrade>>(emptyList())
+	private val _relatedNpc = MutableStateFlow<Creature?>(null)
 	private val _isLoading: MutableStateFlow<Boolean> = MutableStateFlow(true)
 	private val _error: MutableStateFlow<String?> = MutableStateFlow(null)
 
@@ -53,6 +57,7 @@ class ToolDetailViewModel @Inject constructor(
 		_relatedCraftingObject,
 		_relatedMaterials,
 		_relatedOreDeposits,
+		_relatedNpc,
 		_isLoading,
 		_error
 	) { values ->
@@ -61,8 +66,9 @@ class ToolDetailViewModel @Inject constructor(
 			relatedCraftingStation = values[1] as CraftingObject?,
 			relatedMaterials = values[2] as List<MaterialUpgrade>,
 			relatedOreDeposits = values[3] as List<OreDeposit>,
-			isLoading = values[4] as Boolean,
-			error = values[5] as String?
+			relatedNpc = values[4] as Creature?,
+			isLoading = values[5] as Boolean,
+			error = values[6] as String?
 		)
 	}.stateIn(
 		scope = viewModelScope,
@@ -124,10 +130,20 @@ class ToolDetailViewModel @Inject constructor(
 							.sortedBy { it.order }
 				}
 
+				val npcDeferred =
+					async {//FOr now there is only one npc that sell specific item but if there will be more change it
+						val npc =
+							creatureUseCases.getCreaturesByIds(relatedIds).first()
+						if (npc.isNotEmpty()) {
+							_relatedNpc.value = npc[0]
+						}
+					}
+
 				awaitAll(
 					craftingDeferred,
 					materialsDeferred,
-					oreDepositDeferred
+					oreDepositDeferred,
+					npcDeferred
 				)
 
 			} catch (e: Exception) {

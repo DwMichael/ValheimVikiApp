@@ -265,6 +265,15 @@ fun ToolDetailContent(
 							data = oreDepositData,
 						)
 					}
+					if (uiState.relatedNpc != null) {
+						SlavicDivider()
+						CardImageWithTopLabel(
+							itemData = uiState.relatedNpc,
+							subTitle = "Npc that sell this item",
+							contentScale = ContentScale.Crop,
+							painter = craftingStationPainter
+						)
+					}
 
 				}
 			}
