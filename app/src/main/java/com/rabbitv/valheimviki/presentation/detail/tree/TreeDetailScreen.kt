@@ -46,6 +46,7 @@ import coil3.compose.rememberAsyncImagePainter
 import com.composables.icons.lucide.Axe
 import com.composables.icons.lucide.Gem
 import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.Utensils
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
@@ -59,6 +60,7 @@ import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDet
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.biome.model.BiomeDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
+import com.rabbitv.valheimviki.presentation.detail.creature.components.horizontal_pager.DroppedItemsSection
 import com.rabbitv.valheimviki.presentation.detail.tree.model.TreeDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.tree.viewmodel.TreeDetailScreenViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
@@ -179,7 +181,7 @@ fun TreeDetailContent(
 							title = uiState.tree.name
 						)
 
-						DetailExpandableText(text = uiState.tree.description.toString())
+						DetailExpandableText(text = uiState.tree.description.toString(), boxPadding = BODY_CONTENT_PADDING.dp)
 						if (uiState.relatedBiomes.isNotEmpty()) {
 							SlavicDivider()
 							Text(
@@ -224,9 +226,12 @@ fun TreeDetailContent(
 
 						if (uiState.relatedMaterials.isNotEmpty()) {
 							TridentsDividedRow()
-							HorizontalPagerSection(
+							DroppedItemsSection(
 								list = uiState.relatedMaterials,
-								data = materialData
+								icon = Lucide.Gem,
+								starLevel = 0,
+								title = "Materials",
+								subTitle = "Unique drops are obtained by cutting this tree.",
 							)
 						}
 						Box(modifier = Modifier.size(45.dp))

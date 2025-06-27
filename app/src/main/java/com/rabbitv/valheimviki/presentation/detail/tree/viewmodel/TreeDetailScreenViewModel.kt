@@ -7,7 +7,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.model.biome.Biome
-import com.rabbitv.valheimviki.domain.model.material.Material
+import com.rabbitv.valheimviki.domain.model.material.MaterialDrop
+import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
 import com.rabbitv.valheimviki.domain.model.tree.Tree
 import com.rabbitv.valheimviki.domain.model.weapon.Weapon
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
@@ -44,7 +45,7 @@ class TreeDetailScreenViewModel @Inject constructor(
 	private val _treeId: String = checkNotNull(savedStateHandle[TREE_KEY])
 	private val _tree = MutableStateFlow<Tree?>(null)
 	private val _relatedBiomes = MutableStateFlow<List<Biome>>(emptyList())
-	private val _relatedMaterials = MutableStateFlow<List<Material>>(emptyList())
+	private val _relatedMaterials = MutableStateFlow<List<MaterialDrop>>(emptyList())
 	private val _relatedAxes = MutableStateFlow<List<Weapon>>(emptyList())
 	private val _isLoading = MutableStateFlow(true)
 	private val _error = MutableStateFlow<String?>(null)
@@ -60,7 +61,7 @@ class TreeDetailScreenViewModel @Inject constructor(
 		TreeDetailUiState(
 			tree = values[0] as Tree,
 			relatedBiomes = values[1] as List<Biome>,
-			relatedMaterials = values[2] as List<Material>,
+			relatedMaterials = values[2] as List<MaterialDrop>,
 			relatedAxes = values[3] as List<Weapon>,
 			isLoading = values[4] as Boolean,
 			error = values[5] as String?
@@ -82,32 +83,51 @@ class TreeDetailScreenViewModel @Inject constructor(
 			try {
 				_tree.value = treeUseCases.getTreeByIdUseCase(_treeId).firstOrNull()
 
-				val relatedIds: List<String> = async {
+				val relatedObjects: List<RelatedItem> = async {
 					relationsUseCase.getRelatedIdsUseCase(_treeId)
 						.first()
-						.map { it.id }
 				}.await()
+
+				val relatedIds = relatedObjects.map { it.id }
 
 
 
 				launch {
 					_relatedBiomes.value =
 						biomeUseCases.getBiomesByIdsUseCase(relatedIds).first()
+							.sortedBy { it.order }
 				}
 
 				launch {
-					_relatedMaterials.value =
-						materialUseCases.getMaterialsByIds(relatedIds).first()
-				}
-				launch {
-					_relatedMaterials.value =
-						materialUseCases.getMaterialsByIds(relatedIds).first()
 
+					val materials = materialUseCases.getMaterialsByIds(relatedIds).first()
+					val tempList = mutableListOf<MaterialDrop>()
+
+					val relatedItemsMap = relatedObjects.associateBy { it.id }
+					for (material in materials) {
+						val relatedItem = relatedItemsMap[material.id]
+						val quantityList = listOf<Int?>(
+							relatedItem?.quantity,
+						)
+						val chanceStarList = listOf(
+							relatedItem?.chance1star,
+						)
+						tempList.add(
+							MaterialDrop(
+								itemDrop = material,
+								quantityList = quantityList,
+								chanceStarList = chanceStarList
+							)
+						)
+					}
+
+					_relatedMaterials.value = tempList
 				}
 
 				launch {
 					_relatedAxes.value =
 						weaponUseCase.getWeaponsByIdsUseCase(relatedIds).first()
+							.sortedBy { it.order }
 				}
 
 				_isLoading.value = false
