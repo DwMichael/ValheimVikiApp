@@ -6,16 +6,22 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.Creature
+import com.rabbitv.valheimviki.domain.model.food.Food
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.material.MaterialDrop
 import com.rabbitv.valheimviki.domain.model.material.MaterialSubCategory
+import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
 import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
+import com.rabbitv.valheimviki.domain.model.weapon.Weapon
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
+import com.rabbitv.valheimviki.domain.use_cases.food.FoodUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
+import com.rabbitv.valheimviki.domain.use_cases.ore_deposit.OreDepositUseCases
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.PointOfInterestUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
+import com.rabbitv.valheimviki.domain.use_cases.weapon.WeaponUseCases
 import com.rabbitv.valheimviki.presentation.detail.point_of_interest.model.PointOfInterestUiState
 import com.rabbitv.valheimviki.utils.Constants.POINT_OF_INTEREST_KEY
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -38,6 +44,9 @@ class PointOfInterestViewModel @Inject constructor(
 	private val _creatureUseCases: CreatureUseCases,
 	private val _materialUseCases: MaterialUseCases,
 	private val _relationUseCases: RelationUseCases,
+	private val _weaponUseCases: WeaponUseCases,
+	private val _foodUseCases: FoodUseCases,
+	private val _oreDepositUseCase: OreDepositUseCases,
 	val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -46,6 +55,10 @@ class PointOfInterestViewModel @Inject constructor(
 	private val _relatedBiomes = MutableStateFlow<List<Biome>>(emptyList())
 	private val _relatedCreatures = MutableStateFlow<List<Creature>>(emptyList())
 	private val _relatedOfferings = MutableStateFlow<List<Material>>(emptyList())
+
+	private val _relatedWeapons = MutableStateFlow<List<Weapon>>(emptyList())
+	private val _relatedFoods = MutableStateFlow<List<Food>>(emptyList())
+	private val _relatedOreDeposits = MutableStateFlow<List<OreDeposit>>(emptyList())
 	private val _relatedMaterialDrops = MutableStateFlow<List<MaterialDrop>>(emptyList())
 	private val _isLoading = MutableStateFlow<Boolean>(false)
 	private val _error = MutableStateFlow<String?>(null)
@@ -55,6 +68,9 @@ class PointOfInterestViewModel @Inject constructor(
 		_pointOfInterest,
 		_relatedBiomes,
 		_relatedCreatures,
+		_relatedWeapons,
+		_relatedFoods,
+		_relatedOreDeposits,
 		_relatedOfferings,
 		_relatedMaterialDrops,
 		_isLoading,
@@ -64,10 +80,13 @@ class PointOfInterestViewModel @Inject constructor(
 			pointOfInterest = values[0] as PointOfInterest?,
 			relatedBiomes = values[1] as List<Biome>,
 			relatedCreatures = values[2] as List<Creature>,
-			relatedOfferings = values[3] as List<Material>,
-			relatedMaterialDrops = values[4] as List<MaterialDrop>,
-			isLoading = values[5] as Boolean,
-			error = values[6] as String?
+			relatedWeapons = values[3] as List<Weapon>,
+			relatedFoods = values[4] as List<Food>,
+			relatedOreDeposits = values[5] as List<OreDeposit>,
+			relatedOfferings = values[6] as List<Material>,
+			relatedMaterialDrops = values[7] as List<MaterialDrop>,
+			isLoading = values[8] as Boolean,
+			error = values[9] as String?
 		)
 
 	}.stateIn(
@@ -129,10 +148,20 @@ class PointOfInterestViewModel @Inject constructor(
 							)
 						)
 					}
-
 					_relatedMaterialDrops.value = tempList
+				}
 
-
+				launch {
+					_relatedWeapons.value =
+						_weaponUseCases.getWeaponsByIdsUseCase(relatedIds).first()
+				}
+				launch {
+					_relatedFoods.value =
+						_foodUseCases.getFoodListByIdsUseCase(relatedIds).first()
+				}
+				launch {
+					_relatedOreDeposits.value =
+						_oreDepositUseCase.getOreDepositsByIdsUseCase(relatedIds).first()
 				}
 			}
 			_isLoading.value = false

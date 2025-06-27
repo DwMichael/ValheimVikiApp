@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -28,9 +30,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.rememberAsyncImagePainter
 import com.composables.icons.lucide.Gem
-import com.composables.icons.lucide.Goal
 import com.composables.icons.lucide.HandCoins
 import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.Skull
+import com.composables.icons.lucide.Swords
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
@@ -53,15 +56,11 @@ fun PointOfInterestDetailScreen(
 	onBack: () -> Unit,
 	viewModel: PointOfInterestViewModel = hiltViewModel()
 ) {
-
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-
 	PointOfInterestDetailContent(
 		onBack = onBack,
 		uiState = uiState
 	)
-
 }
 
 
@@ -79,10 +78,17 @@ fun PointOfInterestDetailContent(
 		iconRotationDegrees = 0f,
 		itemContentScale = ContentScale.Crop
 	)
-	val itemsToFind = HorizontalPagerData(
-		title = "Items",
-		subTitle = "Items that can be found in this place",
-		icon = Lucide.Goal,
+	val weaponsData = HorizontalPagerData(
+		title = "Weapons",
+		subTitle = "Weapons that can be found in this place",
+		icon = Lucide.Swords,
+		iconRotationDegrees = 0f,
+		itemContentScale = ContentScale.Crop
+	)
+	val creatureData = HorizontalPagerData(
+		title = "Creatures",
+		subTitle = "Creatures that can be found in this place",
+		icon = Lucide.Skull,
 		iconRotationDegrees = 0f,
 		itemContentScale = ContentScale.Crop
 	)
@@ -97,7 +103,8 @@ fun PointOfInterestDetailContent(
 			modifier = Modifier
 				.testTag("PointOfInterestDetailScreen")
 				.fillMaxSize()
-				.padding(innerPadding),
+				.padding(innerPadding)
+				.verticalScroll(rememberScrollState()),
 			verticalArrangement = Arrangement.Top,
 			horizontalAlignment = Alignment.Start,
 		) {
@@ -161,8 +168,23 @@ fun PointOfInterestDetailContent(
 						subTitle = "Unique drops are obtained in this place"
 					)
 				}
-				Box(modifier = Modifier.size(45.dp))
+				if (uiState.relatedWeapons.isNotEmpty()) {
+					TridentsDividedRow()
+					HorizontalPagerSection(
+						list = uiState.relatedWeapons,
+						data = weaponsData,
+					)
+				}
+				if (uiState.relatedCreatures.isNotEmpty()) {
+					TridentsDividedRow()
+					HorizontalPagerSection(
+						list = uiState.relatedCreatures,
+						data = creatureData,
+					)
+				}
+
 			}
+			Box(modifier = Modifier.size(45.dp))
 		}
 	}
 }
