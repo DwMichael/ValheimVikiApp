@@ -7,7 +7,10 @@ import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.model.material.Material
+import com.rabbitv.valheimviki.domain.model.material.MaterialDrop
+import com.rabbitv.valheimviki.domain.model.material.MaterialSubCategory
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
+import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
@@ -42,7 +45,8 @@ class PointOfInterestViewModel @Inject constructor(
 	private val _pointOfInterest = MutableStateFlow<PointOfInterest?>(null)
 	private val _relatedBiomes = MutableStateFlow<List<Biome>>(emptyList())
 	private val _relatedCreatures = MutableStateFlow<List<Creature>>(emptyList())
-	private val _relatedMaterials = MutableStateFlow<List<Material>>(emptyList())
+	private val _relatedOfferings = MutableStateFlow<List<Material>>(emptyList())
+	private val _relatedMaterialDrops = MutableStateFlow<List<MaterialDrop>>(emptyList())
 	private val _isLoading = MutableStateFlow<Boolean>(false)
 	private val _error = MutableStateFlow<String?>(null)
 
@@ -51,7 +55,8 @@ class PointOfInterestViewModel @Inject constructor(
 		_pointOfInterest,
 		_relatedBiomes,
 		_relatedCreatures,
-		_relatedMaterials,
+		_relatedOfferings,
+		_relatedMaterialDrops,
 		_isLoading,
 		_error
 	) { values ->
@@ -59,9 +64,10 @@ class PointOfInterestViewModel @Inject constructor(
 			pointOfInterest = values[0] as PointOfInterest?,
 			relatedBiomes = values[1] as List<Biome>,
 			relatedCreatures = values[2] as List<Creature>,
-			relatedMaterials = values[3] as List<Material>,
-			isLoading = values[4] as Boolean,
-			error = values[5] as String?
+			relatedOfferings = values[3] as List<Material>,
+			relatedMaterialDrops = values[4] as List<MaterialDrop>,
+			isLoading = values[5] as Boolean,
+			error = values[6] as String?
 		)
 
 	}.stateIn(
@@ -82,9 +88,12 @@ class PointOfInterestViewModel @Inject constructor(
 					_pointOfInterestUseCases.getPointOfInterestByIdUseCase(_pointOfInterestId)
 						.first()
 
-				val relatedIds: List<String> = async {
-					_relationUseCases.getRelatedIdsUseCase(_pointOfInterestId).first().map { it.id }
+				val relatedObjects: List<RelatedItem> = async {
+					_relationUseCases.getRelatedIdsUseCase(_pointOfInterestId)
+						.first()
 				}.await()
+
+				val relatedIds = relatedObjects.map { it.id }
 
 				launch {
 					_relatedBiomes.value = _biomeUseCases.getBiomesByIdsUseCase(relatedIds).first()
@@ -93,9 +102,37 @@ class PointOfInterestViewModel @Inject constructor(
 					_relatedCreatures.value =
 						_creatureUseCases.getCreaturesByIds(relatedIds).first()
 				}
+
 				launch {
-					_relatedMaterials.value =
+					val allRematedMaterials =
 						_materialUseCases.getMaterialsByIds(relatedIds).first()
+
+					val tempList = mutableListOf<MaterialDrop>()
+					_relatedOfferings.value =
+						allRematedMaterials.filter { it.subCategory == MaterialSubCategory.FORSAKEN_ALTAR_OFFERING.toString() }
+					val restOfMaterials =
+						allRematedMaterials.filter { it.subCategory != MaterialSubCategory.FORSAKEN_ALTAR_OFFERING.toString() }
+					val relatedItemsMap = relatedObjects.associateBy { it.id }
+					for (material in restOfMaterials) {
+						val relatedItem = relatedItemsMap[material.id]
+						val quantityList = listOf<Int?>(
+							relatedItem?.quantity,
+						)
+						val chanceStarList = listOf(
+							relatedItem?.chance1star,
+						)
+						tempList.add(
+							MaterialDrop(
+								itemDrop = material,
+								quantityList = quantityList,
+								chanceStarList = chanceStarList
+							)
+						)
+					}
+
+					_relatedMaterialDrops.value = tempList
+
+
 				}
 			}
 			_isLoading.value = false
