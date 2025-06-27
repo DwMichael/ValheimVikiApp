@@ -99,6 +99,7 @@ fun TreeDetailContent(
 ) {
 	val isRunning by remember { derivedStateOf { animatedVisibilityScope.transition.isRunning } }
 	val scrollState = rememberScrollState()
+	val mainPainter = painterResource(id = R.drawable.main_background)
 	val axesData = HorizontalPagerData(
 		title = "Axes",
 		subTitle = "List of axes that can cut this tree",
@@ -107,13 +108,6 @@ fun TreeDetailContent(
 		itemContentScale = ContentScale.Crop
 	)
 
-	val materialData = HorizontalPagerData(
-		title = "Materials",
-		subTitle = "Unique drops are obtained by cutting this tree.",
-		icon = Lucide.Gem,
-		iconRotationDegrees = 0f,
-		itemContentScale = ContentScale.Crop,
-	)
 
 	Scaffold(
 		content = { padding ->
@@ -158,7 +152,7 @@ fun TreeDetailContent(
 					}
 				} else if (uiState.tree != null) {
 					Image(
-						painter = painterResource(id = R.drawable.main_background),
+						painter = mainPainter,
 						contentDescription = "BackgroundImage",
 						contentScale = ContentScale.Crop,
 						modifier = Modifier.fillMaxSize(),

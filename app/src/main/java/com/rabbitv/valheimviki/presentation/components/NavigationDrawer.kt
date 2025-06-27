@@ -313,7 +313,7 @@ private fun PreviewNavigationDrawer() {
 			icon = Lucide.MapPinned,
 			label = "Points Of Interest",
 			contentDescription = "Points Of Interest section",
-			screen = Screen.PointOfInterest
+			screen = Screen.PointOfInterestList
 		)
 	)
 

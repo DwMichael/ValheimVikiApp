@@ -65,7 +65,7 @@ sealed class Screen() {
 	data object TreeGrid : Screen()
 
 	@Serializable
-	data object PointOfInterest : Screen()
+	data object PointOfInterestList : Screen()
 
 	//graphs
 	@Serializable
@@ -134,4 +134,7 @@ sealed class Screen() {
 
 	@Serializable
 	data class TreeDetail(val treeId: String) : Screen()
+
+	@Serializable
+	data class PointOfInterestDetail(val pointOfInterestId: String) : Screen()
 }

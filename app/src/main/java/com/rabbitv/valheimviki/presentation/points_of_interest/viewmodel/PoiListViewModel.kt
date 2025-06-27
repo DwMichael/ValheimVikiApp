@@ -22,64 +22,65 @@ import kotlinx.coroutines.flow.stateIn
 
 @HiltViewModel
 class PoiListViewModel @Inject constructor(
-    private val pointOfInterestUseCases: PointOfInterestUseCases,
-    private val connectivityObserver: NetworkConnectivity,
+	private val pointOfInterestUseCases: PointOfInterestUseCases,
+	private val connectivityObserver: NetworkConnectivity,
 ) : ViewModel() {
-    private val _selectedSubCategory =
-        MutableStateFlow<PointOfInterestSubCategory>(PointOfInterestSubCategory.FORSAKEN_ALTAR)
+	private val _selectedSubCategory =
+		MutableStateFlow<PointOfInterestSubCategory>(PointOfInterestSubCategory.FORSAKEN_ALTAR)
 
-    private val _poiList: StateFlow<List<PointOfInterest>> =
-        combine(
-            pointOfInterestUseCases.getLocalPointOfInterestUseCase(),
-            _selectedSubCategory,
-        ) { all, category ->
-            all.filter { it.subCategory == category.toString() }
-        }.flowOn(Dispatchers.Default)
-            .stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5000), emptyList())
+	private val _poiList: StateFlow<List<PointOfInterest>> =
+		combine(
+			pointOfInterestUseCases.getLocalPointOfInterestUseCase(),
+			_selectedSubCategory,
+		) { all, category ->
+			all.filter { it.subCategory == category.toString() }
+				.sortedBy { it.order }
+		}.flowOn(Dispatchers.Default)
+			.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5000), emptyList())
 
-    val uiState: StateFlow<UiCategoryState<PointOfInterestSubCategory, PointOfInterest>> = combine(
-        _poiList,
-        _selectedSubCategory,
-        connectivityObserver.isConnected.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = false
-        ),
-    ) { poiList, subCategory, isConnected ->
-        if (isConnected) {
-            if (poiList.isNotEmpty()) {
-                UiCategoryState.Success(subCategory, poiList)
-            } else {
-                UiCategoryState.Loading(subCategory)
-            }
-        } else {
-            if (poiList.isNotEmpty()) {
-                UiCategoryState.Success(subCategory, poiList)
-            } else {
-                UiCategoryState.Error(
-                    subCategory,
-                    "No internet connection and no local data available. Try to connect to the internet again.",
-                )
-            }
-        }
-       
-    }.onStart {
-        emit(UiCategoryState.Loading(_selectedSubCategory.value))
-    }.catch { e ->
-        Log.e("PointOfInterestListVM", "Error in uiState flow", e)
-        emit(
-            UiCategoryState.Error(
-                _selectedSubCategory.value,
-                e.message ?: "An unknown error occurred"
-            )
-        )
-    }.stateIn(
-        viewModelScope,
-        SharingStarted.Companion.WhileSubscribed(5000),
-        UiCategoryState.Loading(_selectedSubCategory.value)
-    )
+	val uiState: StateFlow<UiCategoryState<PointOfInterestSubCategory, PointOfInterest>> = combine(
+		_poiList,
+		_selectedSubCategory,
+		connectivityObserver.isConnected.stateIn(
+			scope = viewModelScope,
+			started = SharingStarted.WhileSubscribed(5000),
+			initialValue = false
+		),
+	) { poiList, subCategory, isConnected ->
+		if (isConnected) {
+			if (poiList.isNotEmpty()) {
+				UiCategoryState.Success(subCategory, poiList)
+			} else {
+				UiCategoryState.Loading(subCategory)
+			}
+		} else {
+			if (poiList.isNotEmpty()) {
+				UiCategoryState.Success(subCategory, poiList)
+			} else {
+				UiCategoryState.Error(
+					subCategory,
+					"No internet connection and no local data available. Try to connect to the internet again.",
+				)
+			}
+		}
 
-    fun onCategorySelected(cat: PointOfInterestSubCategory) {
-        _selectedSubCategory.value = cat
-    }
+	}.onStart {
+		emit(UiCategoryState.Loading(_selectedSubCategory.value))
+	}.catch { e ->
+		Log.e("PointOfInterestListVM", "Error in uiState flow", e)
+		emit(
+			UiCategoryState.Error(
+				_selectedSubCategory.value,
+				e.message ?: "An unknown error occurred"
+			)
+		)
+	}.stateIn(
+		viewModelScope,
+		SharingStarted.Companion.WhileSubscribed(5000),
+		UiCategoryState.Loading(_selectedSubCategory.value)
+	)
+
+	fun onCategorySelected(cat: PointOfInterestSubCategory) {
+		_selectedSubCategory.value = cat
+	}
 }

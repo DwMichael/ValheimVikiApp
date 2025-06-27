@@ -88,6 +88,7 @@ import com.rabbitv.valheimviki.presentation.detail.creature.npc.NpcDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.creature.passive_screen.PassiveCreatureDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.food.FoodDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.mead.MeadDetailScreen
+import com.rabbitv.valheimviki.presentation.detail.point_of_interest.PointOfInterestDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.tool.ToolDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.tree.TreeDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.weapon.WeaponDetailScreen
@@ -511,13 +512,20 @@ fun ValheimNavGraph(
 			)
 		}
 
-		composable<Screen.PointOfInterest> {
+		composable<Screen.PointOfInterestList> {
 			PoiListScreen(
 				modifier = Modifier.padding(10.dp),
-				onItemClick = { _, _ -> {} },
+				onItemClick = { pointOfInterestId, _ ->
+					valheimVikiNavController.navigate(
+						Screen.PointOfInterestDetail(pointOfInterestId = pointOfInterestId)
+					)
+
+				},
 				paddingValues = innerPadding,
 			)
 		}
+
+
 		//Detail Screens
 		composable<Screen.BiomeDetail>(
 			enterTransition = { enterTransition() },
@@ -630,6 +638,13 @@ fun ValheimNavGraph(
 					valheimVikiNavController.popBackStack()
 				},
 				animatedVisibilityScope = this@composable,
+			)
+		}
+		composable<Screen.PointOfInterestDetail> {
+			PointOfInterestDetailScreen(
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
 			)
 		}
 	}
@@ -808,7 +823,7 @@ fun rememberDrawerItems(): List<DrawerItem> {
 				icon = mapPinnedIcon,
 				label = poiLabel,
 				contentDescription = poiDesc,
-				screen = Screen.PointOfInterest
+				screen = Screen.PointOfInterestList
 			)
 		)
 	}
@@ -834,7 +849,7 @@ fun NavDestination.shouldShowTopBar(): Boolean {
 		"BiomeList", "BossList", "MiniBossList", "MobList",
 		"WeaponList", "ArmorList", "FoodList", "MeadList",
 		"CraftingObjectsList", "ToolList", "MaterialCategory",
-		"BuildingMaterialCategory", "OreDeposit", "TreeGrid", "PointOfInterest"
+		"BuildingMaterialCategory", "OreDeposit", "TreeGrid", "PointOfInterestList"
 	)
 	return mainScreens.any { screenName ->
 		route.contains(screenName, ignoreCase = true)
