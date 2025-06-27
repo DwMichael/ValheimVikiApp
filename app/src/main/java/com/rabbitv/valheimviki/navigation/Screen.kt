@@ -62,7 +62,7 @@ sealed class Screen() {
 	data object OreDeposit : Screen()
 
 	@Serializable
-	data object Tree : Screen()
+	data object TreeGrid : Screen()
 
 	@Serializable
 	data object PointOfInterest : Screen()

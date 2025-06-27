@@ -307,7 +307,7 @@ private fun PreviewNavigationDrawer() {
 			icon = Lucide.Trees,
 			label = "Trees",
 			contentDescription = "Trees section",
-			screen = Screen.Tree
+			screen = Screen.TreeGrid
 		),
 		DrawerItem(
 			icon = Lucide.MapPinned,
