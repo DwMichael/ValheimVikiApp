@@ -10,13 +10,16 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface BiomeDao {
-    @Query("SELECT * FROM biomes")
-    fun getAllBiomes(): Flow<List<Biome>>
+	@Query("SELECT * FROM biomes")
+	fun getAllBiomes(): Flow<List<Biome>>
 
-    @Query("SELECT * FROM biomes WHERE id = :id")
-    fun getBiomeById(id: String): Flow<Biome?>
+	@Query("SELECT * FROM biomes where id IN (:ids)")
+	fun getBiomesByIds(ids: List<String>): Flow<List<Biome>>
+
+	@Query("SELECT * FROM biomes WHERE id = :id")
+	fun getBiomeById(id: String): Flow<Biome?>
 
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAllBiomes(biomes: List<Biome>)
+	@Insert(onConflict = OnConflictStrategy.REPLACE)
+	suspend fun insertAllBiomes(biomes: List<Biome>)
 }

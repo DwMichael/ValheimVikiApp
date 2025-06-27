@@ -62,7 +62,7 @@ sealed class Screen() {
 	data object OreDeposit : Screen()
 
 	@Serializable
-	data object Tree : Screen()
+	data object TreeGrid : Screen()
 
 	@Serializable
 	data object PointOfInterest : Screen()
@@ -131,4 +131,7 @@ sealed class Screen() {
 
 	@Serializable
 	data class ToolDetail(val toolId: String) : Screen()
+
+	@Serializable
+	data class TreeDetail(val treeId: String) : Screen()
 }

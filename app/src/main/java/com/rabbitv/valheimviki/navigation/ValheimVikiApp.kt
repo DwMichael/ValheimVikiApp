@@ -89,6 +89,7 @@ import com.rabbitv.valheimviki.presentation.detail.creature.passive_screen.Passi
 import com.rabbitv.valheimviki.presentation.detail.food.FoodDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.mead.MeadDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.tool.ToolDetailScreen
+import com.rabbitv.valheimviki.presentation.detail.tree.TreeDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.weapon.WeaponDetailScreen
 import com.rabbitv.valheimviki.presentation.food.FoodListScreen
 import com.rabbitv.valheimviki.presentation.home.MainAppBar
@@ -224,6 +225,25 @@ fun ValheimNavGraph(
 ) {
 	val lastClickTime = remember { mutableLongStateOf(0L) }
 	val clickDebounceMillis = 500
+
+	val enterTransition = {
+		fadeIn(
+			animationSpec = tween(
+				durationMillis = 300,
+				delayMillis = 50
+			)
+		) + slideInVertically(
+			initialOffsetY = { fullHeight -> fullHeight / 4 },
+			animationSpec = tween(
+				durationMillis = 400,
+				delayMillis = 0,
+				easing = EaseOutCubic
+			)
+		)
+	}
+	val popExitTransition = {
+		fadeOut(animationSpec = tween(durationMillis = 50))
+	}
 
 	NavHost(
 		navController = valheimVikiNavController,
@@ -472,11 +492,19 @@ fun ValheimNavGraph(
 			)
 		}
 
-		composable<Screen.Tree> {
+		composable<Screen.TreeGrid> {
 			TreeScreen(
 				modifier = Modifier.padding(10.dp),
-				onItemClick = { _ ->
-					// TODO: Implement navigation
+				onItemClick = { treeId ->
+					val currentTime = System.currentTimeMillis()
+					if (currentTime - lastClickTime.longValue > clickDebounceMillis) {
+						lastClickTime.longValue = currentTime
+						valheimVikiNavController.navigate(
+							Screen.TreeDetail(treeId = treeId)
+						) {
+							launchSingleTop = true
+						}
+					}
 				},
 				paddingValues = innerPadding,
 				animatedVisibilityScope = this@composable
@@ -492,24 +520,8 @@ fun ValheimNavGraph(
 		}
 		//Detail Screens
 		composable<Screen.BiomeDetail>(
-			enterTransition = {
-				fadeIn(
-					animationSpec = tween(
-						durationMillis = 300,
-						delayMillis = 50
-					)
-				) + slideInVertically(
-					initialOffsetY = { fullHeight -> fullHeight / 4 },
-					animationSpec = tween(
-						durationMillis = 400,
-						delayMillis = 0,
-						easing = EaseOutCubic
-					)
-				)
-			},
-			popExitTransition = {
-				fadeOut(animationSpec = tween(durationMillis = 50))
-			}
+			enterTransition = { enterTransition() },
+			popExitTransition = { popExitTransition() }
 		) {
 			val animatedContentScope = this
 			BiomeDetailScreen(
@@ -518,24 +530,8 @@ fun ValheimNavGraph(
 			)
 		}
 		composable<Screen.MainBossDetail>(
-			enterTransition = {
-				fadeIn(
-					animationSpec = tween(
-						durationMillis = 300,
-						delayMillis = 50
-					)
-				) + slideInVertically(
-					initialOffsetY = { fullHeight -> fullHeight / 4 },
-					animationSpec = tween(
-						durationMillis = 400,
-						delayMillis = 0,
-						easing = EaseOutCubic
-					)
-				)
-			},
-			popExitTransition = {
-				fadeOut(animationSpec = tween(durationMillis = 50))
-			},
+			enterTransition = { enterTransition() },
+			popExitTransition = { popExitTransition() }
 		) {
 			MainBossDetailScreen(
 				onBack = {
@@ -545,26 +541,10 @@ fun ValheimNavGraph(
 			)
 		}
 		composable<Screen.MiniBossDetail>(
-			enterTransition = {
-				fadeIn(
-					animationSpec = tween(
-						durationMillis = 300,
-						delayMillis = 50
-					)
-				) + slideInVertically(
-					initialOffsetY = { fullHeight -> fullHeight / 4 },
-					animationSpec = tween(
-						durationMillis = 400,
-						delayMillis = 0,
-						easing = EaseOutCubic
-					)
-				)
-			},
-			popExitTransition = {
-				fadeOut(animationSpec = tween(durationMillis = 50))
-			},
+			enterTransition = { enterTransition() },
+			popExitTransition = { popExitTransition() }
 
-			) {
+		) {
 			MiniBossDetailScreen(
 				onBack = {
 					valheimVikiNavController.popBackStack()
@@ -642,6 +622,14 @@ fun ValheimNavGraph(
 				onBack = {
 					valheimVikiNavController.popBackStack()
 				},
+			)
+		}
+		composable<Screen.TreeDetail> {
+			TreeDetailScreen(
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+				animatedVisibilityScope = this@composable,
 			)
 		}
 	}
@@ -813,7 +801,7 @@ fun rememberDrawerItems(): List<DrawerItem> {
 				icon = treesIcon,
 				label = treesLabel,
 				contentDescription = treesDesc,
-				screen = Screen.Tree
+				screen = Screen.TreeGrid
 			),
 			// Points of Interest
 			DrawerItem(
@@ -846,7 +834,7 @@ fun NavDestination.shouldShowTopBar(): Boolean {
 		"BiomeList", "BossList", "MiniBossList", "MobList",
 		"WeaponList", "ArmorList", "FoodList", "MeadList",
 		"CraftingObjectsList", "ToolList", "MaterialCategory",
-		"BuildingMaterialCategory", "OreDeposit", "Tree", "PointOfInterest"
+		"BuildingMaterialCategory", "OreDeposit", "TreeGrid", "PointOfInterest"
 	)
 	return mainScreens.any { screenName ->
 		route.contains(screenName, ignoreCase = true)
