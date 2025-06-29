@@ -61,18 +61,18 @@ fun CardImageWithTopLabel(
     subTitle: String? = null,
     textStyle: TextStyle = MaterialTheme.typography.titleLarge,
     contentScale: ContentScale =  ContentScale.Crop,
-    painter:Painter = painterResource(id = R.drawable.bg_crafting)
+    painter: Painter? = painterResource(id = R.drawable.bg_crafting)
 ) {
     Card(
         modifier = modifier
             .padding(BODY_CONTENT_PADDING.dp)
             .height(300.dp)
             .clip(RoundedCornerShape(DETAIL_ITEM_SHAPE_PADDING))
-            .shadow(
+            .border(1.dp,YellowDTBorder,RoundedCornerShape(DETAIL_ITEM_SHAPE_PADDING) ).shadow(
                 elevation = 8.dp,
                 shape = RoundedCornerShape(8.dp),
                 spotColor = Color.Black.copy(alpha = 0.25f)
-            ).border(1.dp,YellowDTBorder,RoundedCornerShape(DETAIL_ITEM_SHAPE_PADDING) ),
+            ),
         colors = CardDefaults.cardColors(
             containerColor = Color.Transparent,
             contentColor = Color.Transparent,
@@ -123,12 +123,14 @@ fun CardImageWithTopLabel(
                 }
             }
             Box(modifier = Modifier.fillMaxSize().background(Color.Transparent)) {
-                Image(
+                painter?.let {
+                    Image(
                         modifier = Modifier.fillMaxSize(),
-                        painter = painter,
+                        painter = it,
                         contentDescription = "Bg_image",
                         contentScale = ContentScale.Crop
                     )
+                }
                 AsyncImage(
                     modifier = Modifier.fillMaxSize(),
                     model = ImageRequest.Builder(LocalContext.current)

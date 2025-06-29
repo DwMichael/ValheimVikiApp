@@ -36,6 +36,18 @@ object Constants {
 	const val TREE_KEY = "treeId"
 	const val POINT_OF_INTEREST_KEY = "pointOfInterestId"
 	const val ORE_DEPOSIT_KEY = "oreDepositId"
+
+	const val BOSS_DROP_KEY = "bossDropId"
+	const val CRAFTED_MATERIAL_KEY = "craftedMaterialId"
+	const val GENERAL_MATERIAL_KEY = "generalMaterialId"
+	const val METAL_MATERIAL_KEY = "metalMaterialId"
+	const val MINI_BOSS_DROP_KEY = "miniBossDropId"
+	const val MOB_DROP_KEY = "mobDropId"
+	const val OFFERINGS_MATERIAL_KEY = "offeringsMaterialId"
+	const val SEED_MATERIAL_KEY = "seedMaterialId"
+	const val SHOP_MATERIAL_KEY = "shopMaterialId"
+	const val VALUABLE_MATERIAL_KEY = "valuableMaterialId"
+
 	const val FOOD_CATEGORY_KEY = "foodCategory"
 
 	//Creature Order map
