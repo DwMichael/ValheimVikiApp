@@ -203,7 +203,7 @@ class CraftingDetailViewModel @Inject constructor(
 					)
 
 					when (relatedItem?.relationType) {
-						RelationType.PRODUCES.name, null -> {
+						RelationType.PRODUCES.name -> {
 							producedMaterials.add(craftingProduct)
 						}
 

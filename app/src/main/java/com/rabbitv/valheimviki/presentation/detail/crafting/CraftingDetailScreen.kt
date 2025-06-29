@@ -47,6 +47,7 @@ import com.composables.icons.lucide.FlaskRound
 import com.composables.icons.lucide.Gavel
 import com.composables.icons.lucide.House
 import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.OctagonAlert
 import com.composables.icons.lucide.ScrollText
 import com.composables.icons.lucide.Shield
 import com.composables.icons.lucide.Swords
@@ -326,6 +327,18 @@ fun CraftingDetailContent(
 								starLevel = 0,
 								title = "Craftable Items",
 								subTitle = "Materials items that can be created at this crafting station",
+							)
+						}
+					}
+					item {
+						if (uiState.craftingMaterialRequired.isNotEmpty()) {
+							TridentsDividedRow()
+							DroppedItemsSection(
+								list = uiState.craftingMaterialRequired,
+								icon = Lucide.OctagonAlert,
+								starLevel = 0,
+								title = "Fuel Requirements",
+								subTitle = "This station needs at least one of the resources listed below to function",
 							)
 						}
 					}
