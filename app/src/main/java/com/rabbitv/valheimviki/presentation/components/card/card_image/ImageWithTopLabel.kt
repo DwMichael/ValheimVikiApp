@@ -142,6 +142,7 @@ fun PreviewBiomeImageHeaderSection50() {
         ImageWithTopLabel(
             errorPainter = painterResource(R.drawable.neck),
             itemData = fakeMainBoss,
+            subTitle = "UUUU"
         )
     }
 }

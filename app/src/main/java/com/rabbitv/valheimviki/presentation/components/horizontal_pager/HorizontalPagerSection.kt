@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -81,7 +82,7 @@ fun HorizontalPagerSection(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(240.dp)
+            .heightIn(min = 210.dp, max = 240.dp)
             .padding(
                 start = BODY_CONTENT_PADDING.dp,
                 end = BODY_CONTENT_PADDING.dp,
@@ -125,7 +126,9 @@ fun HorizontalHeader(
     modifier: Modifier = Modifier,
     data: HorizontalPagerData,
 ) {
-    Column(horizontalAlignment = Alignment.Start) {
+    Column(
+        modifier= Modifier.wrapContentHeight(),
+        horizontalAlignment = Alignment.Start) {
         Row(
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically
@@ -142,11 +145,13 @@ fun HorizontalHeader(
                 style = MaterialTheme.typography.titleLarge,
             )
         }
-        Spacer(modifier = Modifier.padding(6.dp))
-        Text(
-            data.subTitle,
-            style = MaterialTheme.typography.titleMedium,
-        )
+        if(data.subTitle.isNotBlank()) {
+            Spacer(modifier = Modifier.padding(6.dp))
+            Text(
+                data.subTitle,
+                style = MaterialTheme.typography.titleMedium,
+            )
+        }
     }
 }
 
