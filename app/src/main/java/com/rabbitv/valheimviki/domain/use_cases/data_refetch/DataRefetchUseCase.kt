@@ -282,7 +282,7 @@ class DataRefetchUseCase @Inject constructor(
 		return@coroutineScope (
 				biomes.size == 9 &&
 						creatures.size == 83 &&
-						oreDeposits.size == 15 &&
+						oreDeposits.size == 14 &&
 						materials.size == 273 &&
 						pointsOfInterest.size == 45 &&
 						trees.size == 8 &&
@@ -293,7 +293,7 @@ class DataRefetchUseCase @Inject constructor(
 						itemTools.size == 14 &&
 						buildingMaterials.size == 248 &&
 						craftingObjects.size == 46 &&
-						relations.size == 1901
+						relations.size == 1932
 				)
 	}
 }
