@@ -59,7 +59,7 @@ sealed class Screen() {
 	data object BuildingMaterialList : Screen()
 
 	@Serializable
-	data object OreDeposit : Screen()
+	data object OreDepositList : Screen()
 
 	@Serializable
 	data object TreeGrid : Screen()
@@ -137,4 +137,22 @@ sealed class Screen() {
 
 	@Serializable
 	data class PointOfInterestDetail(val pointOfInterestId: String) : Screen()
+
+	@Serializable
+	data class OreDepositDetail(val oreDepositId: String) : Screen()
+
+
+	//Materials Details Screens
+	@Serializable
+	data class BossDropDetail(val bossDropId: String) : Screen()
+
+	@Serializable
+	data class CraftedMaterialDetail(val craftedMaterialId: String) : Screen()
+
+	@Serializable
+	data class GeneralMaterialDetail(val generalMaterialId: String) : Screen()
+
+	@Serializable
+	data class MetalMaterialDetail(val metalMaterialId: String) : Screen()
+
 }

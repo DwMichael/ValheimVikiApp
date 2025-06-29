@@ -301,7 +301,7 @@ private fun PreviewNavigationDrawer() {
 			icon = Lucide.Pickaxe,
 			label = "Ore Deposits",
 			contentDescription = "Ore Deposits section",
-			screen = Screen.OreDeposit
+			screen = Screen.OreDepositList
 		),
 		DrawerItem(
 			icon = Lucide.Trees,
