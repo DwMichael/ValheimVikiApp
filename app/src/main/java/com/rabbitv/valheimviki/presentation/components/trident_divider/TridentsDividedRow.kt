@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -20,7 +21,8 @@ import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
 @Composable
 fun TridentsDividedRow(
-    text:String? = null
+    text:String? = null,
+    textStyle: TextStyle = MaterialTheme.typography.headlineMedium,
 ) {
     val padding = if(text != null) 8.dp else 0.dp
     Row(
@@ -42,7 +44,7 @@ fun TridentsDividedRow(
                     .weight(2.6f, fill = false),
                 text = text,
                 textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.headlineMedium,
+                style = textStyle,
                 maxLines = 1,
                 overflow = TextOverflow.Visible
             )

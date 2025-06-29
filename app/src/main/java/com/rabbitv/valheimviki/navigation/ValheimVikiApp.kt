@@ -5,6 +5,7 @@
 package com.rabbitv.valheimviki.navigation
 
 import android.os.Build
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
@@ -66,6 +67,7 @@ import com.composables.icons.lucide.Utensils
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.creature.CreatureSubCategory
 import com.rabbitv.valheimviki.domain.model.food.FoodSubCategory
+import com.rabbitv.valheimviki.domain.model.material.MaterialSubCategory
 import com.rabbitv.valheimviki.domain.model.mead.MeadSubCategory
 import com.rabbitv.valheimviki.presentation.armor.ArmorListScreen
 import com.rabbitv.valheimviki.presentation.biome.BiomeScreen
@@ -87,7 +89,12 @@ import com.rabbitv.valheimviki.presentation.detail.creature.mini_boss_screen.Min
 import com.rabbitv.valheimviki.presentation.detail.creature.npc.NpcDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.creature.passive_screen.PassiveCreatureDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.food.FoodDetailScreen
+import com.rabbitv.valheimviki.presentation.detail.material.boss_drop.BossDropDetailScreen
+import com.rabbitv.valheimviki.presentation.detail.material.crafted.CraftedMaterialDetailScreen
+import com.rabbitv.valheimviki.presentation.detail.material.general.GeneralMaterialDetailScreen
+import com.rabbitv.valheimviki.presentation.detail.material.metal.MetalMaterialDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.mead.MeadDetailScreen
+import com.rabbitv.valheimviki.presentation.detail.ore_deposit.OreDepositDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.point_of_interest.PointOfInterestDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.tool.ToolDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.tree.TreeDetailScreen
@@ -439,7 +446,34 @@ fun ValheimNavGraph(
 				}
 				val vm = hiltViewModel<MaterialListViewModel>(parentEntry)
 				MaterialListScreen(
-					onItemClick = { _, _ -> {} },
+					onItemClick = { itemId, itemCategory: MaterialSubCategory ->
+						Log.e("SUBCATEGORY AFTER CLICK:", "$itemCategory")
+						when (itemCategory) {
+							MaterialSubCategory.BOSS_DROP -> valheimVikiNavController.navigate(
+								Screen.BossDropDetail(bossDropId = itemId)
+							)
+
+							MaterialSubCategory.MINI_BOSS_DROP -> TODO()
+							MaterialSubCategory.CREATURE_DROP -> TODO()
+							MaterialSubCategory.FORSAKEN_ALTAR_OFFERING -> TODO()
+							MaterialSubCategory.CRAFTED -> valheimVikiNavController.navigate(
+								Screen.CraftedMaterialDetail(craftedMaterialId = itemId)
+							)
+
+							MaterialSubCategory.METAL -> valheimVikiNavController.navigate(
+								Screen.MetalMaterialDetail(metalMaterialId = itemId)
+							)
+
+							MaterialSubCategory.MISCELLANEOUS -> valheimVikiNavController.navigate(
+								Screen.GeneralMaterialDetail(generalMaterialId = itemId)
+							)
+
+							MaterialSubCategory.GEMSTONE -> TODO()
+							MaterialSubCategory.SEED -> TODO()
+							MaterialSubCategory.SHOP -> TODO()
+							MaterialSubCategory.VALUABLE -> TODO()
+						}
+					},
 					onBackClick = {
 						valheimVikiNavController.popBackStack()
 					},
@@ -482,11 +516,19 @@ fun ValheimNavGraph(
 			}
 		}
 
-		composable<Screen.OreDeposit> {
+		composable<Screen.OreDepositList> {
 			OreDepositScreen(
 				modifier = Modifier.padding(10.dp),
-				onItemClick = { _ ->
-					// TODO: Implement navigation
+				onItemClick = { oreDepositId ->
+					val currentTime = System.currentTimeMillis()
+					if (currentTime - lastClickTime.longValue > clickDebounceMillis) {
+						lastClickTime.longValue = currentTime
+						valheimVikiNavController.navigate(
+							Screen.OreDepositDetail(oreDepositId = oreDepositId)
+						) {
+							launchSingleTop = true
+						}
+					}
 				},
 				paddingValues = innerPadding,
 				animatedVisibilityScope = this@composable
@@ -632,6 +674,14 @@ fun ValheimNavGraph(
 				},
 			)
 		}
+		composable<Screen.OreDepositDetail> {
+			OreDepositDetailScreen(
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+				animatedVisibilityScope = this@composable,
+			)
+		}
 		composable<Screen.TreeDetail> {
 			TreeDetailScreen(
 				onBack = {
@@ -640,8 +690,39 @@ fun ValheimNavGraph(
 				animatedVisibilityScope = this@composable,
 			)
 		}
+
 		composable<Screen.PointOfInterestDetail> {
 			PointOfInterestDetailScreen(
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+			)
+		}
+
+		composable<Screen.BossDropDetail> {
+			BossDropDetailScreen(
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+			)
+		}
+
+		composable<Screen.CraftedMaterialDetail> {
+			CraftedMaterialDetailScreen(
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+			)
+		}
+		composable<Screen.GeneralMaterialDetail> {
+			GeneralMaterialDetailScreen(
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+			)
+		}
+		composable<Screen.MetalMaterialDetail> {
+			MetalMaterialDetailScreen(
 				onBack = {
 					valheimVikiNavController.popBackStack()
 				},
@@ -809,7 +890,7 @@ fun rememberDrawerItems(): List<DrawerItem> {
 				icon = pickaxeIcon,
 				label = oreLabel,
 				contentDescription = oreDesc,
-				screen = Screen.OreDeposit
+				screen = Screen.OreDepositList
 			),
 			// Trees
 			DrawerItem(
@@ -849,7 +930,7 @@ fun NavDestination.shouldShowTopBar(): Boolean {
 		"BiomeList", "BossList", "MiniBossList", "MobList",
 		"WeaponList", "ArmorList", "FoodList", "MeadList",
 		"CraftingObjectsList", "ToolList", "MaterialCategory",
-		"BuildingMaterialCategory", "OreDeposit", "TreeGrid", "PointOfInterestList"
+		"BuildingMaterialCategory", "OreDepositList", "TreeGrid", "PointOfInterestList"
 	)
 	return mainScreens.any { screenName ->
 		route.contains(screenName, ignoreCase = true)
