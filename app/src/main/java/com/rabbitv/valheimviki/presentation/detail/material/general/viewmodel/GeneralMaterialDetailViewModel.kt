@@ -82,10 +82,10 @@ class GeneralMaterialDetailViewModel @Inject constructor(
 	)
 
 	init {
-		loadBossDropData()
+		loadGeneralDropData()
 	}
 
-	internal fun loadBossDropData() {
+	internal fun loadGeneralDropData() {
 
 		viewModelScope.launch(Dispatchers.IO) {
 			try {
