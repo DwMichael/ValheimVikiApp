@@ -46,7 +46,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.rememberAsyncImagePainter
-import com.composables.icons.lucide.Gem
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.MapPinned
 import com.composables.icons.lucide.Pickaxe
@@ -66,8 +65,6 @@ import com.rabbitv.valheimviki.presentation.components.section_header.SectionHea
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.OverlayLabel
-import com.rabbitv.valheimviki.presentation.detail.material.general.model.GeneralMaterialUiState
-import com.rabbitv.valheimviki.presentation.detail.material.general.viewmodel.GeneralMaterialDetailViewModel
 import com.rabbitv.valheimviki.presentation.detail.material.metal.model.MetalMaterialUiState
 import com.rabbitv.valheimviki.presentation.detail.material.metal.viewmodel.MetalMaterialDetailViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
@@ -130,7 +127,7 @@ fun MetalMaterialDetailContent(
 	val oreDepositData = HorizontalPagerData(
 		title = "Ore Deposit",
 		subTitle = "Ore from witch you can mine this resource",
-		icon =  Lucide.Pickaxe,
+		icon = Lucide.Pickaxe,
 		iconRotationDegrees = 0f,
 		itemContentScale = ContentScale.Crop,
 	)
@@ -317,7 +314,7 @@ fun PreviewToolDetailContentCooked() {
 
 
 	ValheimVikiAppTheme {
-		MetalMaterialDetailContent (
+		MetalMaterialDetailContent(
 			uiState = MetalMaterialUiState(
 				material = FakeData.generateFakeMaterials()[0],
 				isLoading = false,

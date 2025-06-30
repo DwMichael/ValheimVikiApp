@@ -87,10 +87,10 @@ class MetalMaterialDetailViewModel @Inject constructor(
 	)
 
 	init {
-		loadBossDropData()
+		loadMetalDropData()
 	}
 
-	internal fun loadBossDropData() {
+	internal fun loadMetalDropData() {
 
 		viewModelScope.launch(Dispatchers.IO) {
 			try {
