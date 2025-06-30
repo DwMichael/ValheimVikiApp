@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rabbitv.valheimviki.ui.theme.Shapes
@@ -43,12 +44,13 @@ fun BaseDarkGlassStatCard(
 	value: String,
 	modifier: Modifier = Modifier,
 	expand: () -> Unit,
-	isExpanded: Boolean
+	isExpanded: Boolean,
+	height: Dp = 60.dp
 ) {
 	Box(
 		modifier = modifier
 			.fillMaxWidth()
-			.height(60.dp)
+			.height(height)
 			.clip(Shapes.large)
 			.background(
 				Color.Black.copy(alpha = 0.3f)
