@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Utensils
@@ -24,6 +25,7 @@ fun DarkGlassStatCard(
 	modifier: Modifier = Modifier,
 	expand: () -> Unit,
 	isExpanded: Boolean,
+	baseDarkGlassStatCardHeight: Dp = 60.dp
 ) {
 	BaseDarkGlassStatCard(
 		iconContent = {
@@ -38,7 +40,8 @@ fun DarkGlassStatCard(
 		value = value,
 		modifier = modifier.clickable { expand() },
 		expand = expand,
-		isExpanded = isExpanded
+		isExpanded = isExpanded,
+		height =baseDarkGlassStatCardHeight,
 	)
 }
 
