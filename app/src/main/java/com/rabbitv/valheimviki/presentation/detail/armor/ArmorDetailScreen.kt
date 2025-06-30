@@ -119,7 +119,7 @@ fun ArmorDetailContent(
                     CardImageWithTopLabel(
                         itemData = craftingStation,
                         subTitle = "Crafting Station Needed to Make This Item",
-                        contentScale = ContentScale.FillBounds,
+                        contentScale = ContentScale.Fit,
                     )
                 }
                 TridentsDividedRow()
