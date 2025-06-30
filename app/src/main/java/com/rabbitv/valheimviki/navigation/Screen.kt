@@ -155,4 +155,24 @@ sealed class Screen() {
 	@Serializable
 	data class MetalMaterialDetail(val metalMaterialId: String) : Screen()
 
+	@Serializable
+	data class MiniBossDropDetail(val miniBossDropId: String) : Screen()
+
+	@Serializable
+	data class MobDropDetail(val mobDropId: String) : Screen()
+
+	@Serializable
+	data class OfferingsDetail(val offeringsMaterialId: String) : Screen()
+
+	@Serializable
+	data class GemstoneDetail(val gemstoneId: String) : Screen()
+
+	@Serializable
+	data class SeedDetail(val seedMaterialId: String) : Screen()
+
+	@Serializable
+	data class ShopMaterialDetail(val shopMaterialId: String) : Screen()
+
+	@Serializable
+	data class ValuableDetail(val valuableMaterialId: String) : Screen()
 }

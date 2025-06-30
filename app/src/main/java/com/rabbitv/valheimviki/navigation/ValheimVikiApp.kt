@@ -5,7 +5,6 @@
 package com.rabbitv.valheimviki.navigation
 
 import android.os.Build
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
@@ -91,8 +90,15 @@ import com.rabbitv.valheimviki.presentation.detail.creature.passive_screen.Passi
 import com.rabbitv.valheimviki.presentation.detail.food.FoodDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.material.boss_drop.BossDropDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.material.crafted.CraftedMaterialDetailScreen
+import com.rabbitv.valheimviki.presentation.detail.material.gemstones.GemstoneDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.material.general.GeneralMaterialDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.material.metal.MetalMaterialDetailScreen
+import com.rabbitv.valheimviki.presentation.detail.material.mini_boss_drop.MiniBossDropDetailScreen
+import com.rabbitv.valheimviki.presentation.detail.material.mob_drop.MobDropDetailScreen
+import com.rabbitv.valheimviki.presentation.detail.material.offerings.OfferingsDetailScreen
+import com.rabbitv.valheimviki.presentation.detail.material.seeds.SeedMaterialDetailScreen
+import com.rabbitv.valheimviki.presentation.detail.material.shop.ShopMaterialDetailScreen
+import com.rabbitv.valheimviki.presentation.detail.material.valuable.ValuableMaterialDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.mead.MeadDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.ore_deposit.OreDepositDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.point_of_interest.PointOfInterestDetailScreen
@@ -447,15 +453,24 @@ fun ValheimNavGraph(
 				val vm = hiltViewModel<MaterialListViewModel>(parentEntry)
 				MaterialListScreen(
 					onItemClick = { itemId, itemCategory: MaterialSubCategory ->
-						Log.e("SUBCATEGORY AFTER CLICK:", "$itemCategory")
+
 						when (itemCategory) {
 							MaterialSubCategory.BOSS_DROP -> valheimVikiNavController.navigate(
 								Screen.BossDropDetail(bossDropId = itemId)
 							)
 
-							MaterialSubCategory.MINI_BOSS_DROP -> TODO()
-							MaterialSubCategory.CREATURE_DROP -> TODO()
-							MaterialSubCategory.FORSAKEN_ALTAR_OFFERING -> TODO()
+							MaterialSubCategory.MINI_BOSS_DROP -> valheimVikiNavController.navigate(
+								Screen.MiniBossDropDetail(miniBossDropId = itemId)
+							)
+
+							MaterialSubCategory.CREATURE_DROP -> valheimVikiNavController.navigate(
+								Screen.MobDropDetail(mobDropId = itemId)
+							)
+
+							MaterialSubCategory.FORSAKEN_ALTAR_OFFERING -> valheimVikiNavController.navigate(
+								Screen.OfferingsDetail(offeringsMaterialId = itemId)
+							)
+
 							MaterialSubCategory.CRAFTED -> valheimVikiNavController.navigate(
 								Screen.CraftedMaterialDetail(craftedMaterialId = itemId)
 							)
@@ -468,10 +483,21 @@ fun ValheimNavGraph(
 								Screen.GeneralMaterialDetail(generalMaterialId = itemId)
 							)
 
-							MaterialSubCategory.GEMSTONE -> TODO()
-							MaterialSubCategory.SEED -> TODO()
-							MaterialSubCategory.SHOP -> TODO()
-							MaterialSubCategory.VALUABLE -> TODO()
+							MaterialSubCategory.GEMSTONE -> valheimVikiNavController.navigate(
+								Screen.GemstoneDetail(gemstoneId = itemId)
+							)
+
+							MaterialSubCategory.SEED -> valheimVikiNavController.navigate(
+								Screen.SeedDetail(seedMaterialId = itemId)
+							)
+
+							MaterialSubCategory.SHOP -> valheimVikiNavController.navigate(
+								Screen.ShopMaterialDetail(shopMaterialId = itemId)
+							)
+
+							MaterialSubCategory.VALUABLE ->  valheimVikiNavController.navigate(
+								Screen.ValuableDetail(valuableMaterialId = itemId)
+							)
 						}
 					},
 					onBackClick = {
@@ -723,6 +749,56 @@ fun ValheimNavGraph(
 		}
 		composable<Screen.MetalMaterialDetail> {
 			MetalMaterialDetailScreen(
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+			)
+		}
+		composable<Screen.MiniBossDropDetail> {
+			MiniBossDropDetailScreen(
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+			)
+		}
+		composable<Screen.MobDropDetail> {
+			MobDropDetailScreen(
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+			)
+		}
+		composable<Screen.OfferingsDetail> {
+			OfferingsDetailScreen(
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+			)
+		}
+		composable<Screen.GemstoneDetail> {
+			GemstoneDetailScreen(
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+			)
+		}
+
+		composable<Screen.SeedDetail> {
+			SeedMaterialDetailScreen(
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+			)
+		}
+		composable<Screen.ShopMaterialDetail> {
+			ShopMaterialDetailScreen(
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+			)
+		}
+		composable<Screen.ValuableDetail> {
+			ValuableMaterialDetailScreen(
 				onBack = {
 					valheimVikiNavController.popBackStack()
 				},

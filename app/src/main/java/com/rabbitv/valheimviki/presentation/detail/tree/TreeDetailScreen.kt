@@ -46,10 +46,8 @@ import coil3.compose.rememberAsyncImagePainter
 import com.composables.icons.lucide.Axe
 import com.composables.icons.lucide.Gem
 import com.composables.icons.lucide.Lucide
-import com.composables.icons.lucide.Utensils
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.biome.Biome
-import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
 import com.rabbitv.valheimviki.domain.model.tree.Tree
 import com.rabbitv.valheimviki.navigation.LocalSharedTransitionScope
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
@@ -58,7 +56,6 @@ import com.rabbitv.valheimviki.presentation.components.horizontal_pager.Horizont
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDetailImageAnimated
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
-import com.rabbitv.valheimviki.presentation.detail.biome.model.BiomeDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
 import com.rabbitv.valheimviki.presentation.detail.creature.components.horizontal_pager.DroppedItemsSection
 import com.rabbitv.valheimviki.presentation.detail.tree.model.TreeDetailUiState
@@ -144,8 +141,8 @@ fun TreeDetailContent(
 				if (isLoading) {
 					Box(
 						modifier = Modifier
-                            .fillMaxSize()
-                            .padding(padding),
+							.fillMaxSize()
+							.padding(padding),
 						contentAlignment = Alignment.Center
 					) {
 						Box(modifier = Modifier.size(45.dp))
@@ -159,10 +156,10 @@ fun TreeDetailContent(
 					)
 					Column(
 						modifier = Modifier
-                            .testTag("BiomeDetailScreen")
-                            .fillMaxSize()
-                            .padding(padding)
-                            .verticalScroll(scrollState, enabled = !isRunning),
+							.testTag("BiomeDetailScreen")
+							.fillMaxSize()
+							.padding(padding)
+							.verticalScroll(scrollState, enabled = !isRunning),
 						verticalArrangement = Arrangement.Top,
 						horizontalAlignment = Alignment.Start,
 					) {
@@ -175,7 +172,10 @@ fun TreeDetailContent(
 							title = uiState.tree.name
 						)
 
-						DetailExpandableText(text = uiState.tree.description.toString(), boxPadding = BODY_CONTENT_PADDING.dp)
+						DetailExpandableText(
+							text = uiState.tree.description.toString(),
+							boxPadding = BODY_CONTENT_PADDING.dp
+						)
 						if (uiState.relatedBiomes.isNotEmpty()) {
 							SlavicDivider()
 							Text(
@@ -192,9 +192,9 @@ fun TreeDetailContent(
 									content = {
 										Box(
 											modifier = Modifier
-                                                .fillMaxSize()
-                                                .wrapContentHeight(Alignment.CenterVertically)
-                                                .wrapContentWidth(Alignment.CenterHorizontally)
+												.fillMaxSize()
+												.wrapContentHeight(Alignment.CenterVertically)
+												.wrapContentWidth(Alignment.CenterHorizontally)
 										) {
 											Text(
 												biome.name.uppercase(),
@@ -233,8 +233,8 @@ fun TreeDetailContent(
 				} else {
 					Box(
 						Modifier
-                            .fillMaxSize()
-                            .padding(padding)
+							.fillMaxSize()
+							.padding(padding)
 					)
 				}
 			}
@@ -256,7 +256,7 @@ fun PreviewBiomeDetailContent() {
 	)
 
 	val biomes = listOf(
-		fakeBiome,fakeBiome
+		fakeBiome, fakeBiome
 	)
 	val uiState = TreeDetailUiState(
 		tree = Tree(
@@ -280,7 +280,7 @@ fun PreviewBiomeDetailContent() {
 					onBack = { },
 					sharedTransitionScope = this@SharedTransitionLayout,
 					animatedVisibilityScope = this,
-					uiState =uiState
+					uiState = uiState
 				)
 			}
 		}

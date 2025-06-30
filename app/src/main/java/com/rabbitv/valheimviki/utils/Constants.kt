@@ -44,6 +44,7 @@ object Constants {
 	const val MINI_BOSS_DROP_KEY = "miniBossDropId"
 	const val MOB_DROP_KEY = "mobDropId"
 	const val OFFERINGS_MATERIAL_KEY = "offeringsMaterialId"
+	const val POINT_OF_INTEREST_MATERIAL_KEY = "gemstoneId"
 	const val SEED_MATERIAL_KEY = "seedMaterialId"
 	const val SHOP_MATERIAL_KEY = "shopMaterialId"
 	const val VALUABLE_MATERIAL_KEY = "valuableMaterialId"
