@@ -62,10 +62,10 @@ class CraftedMaterialDetailViewModel @Inject constructor(
 	)
 
 	init {
-		loadBossDropData()
+		loadCraftedMaterialDropData()
 	}
 
-	internal fun loadBossDropData() {
+	internal fun loadCraftedMaterialDropData() {
 
 		viewModelScope.launch(Dispatchers.IO) {
 			try {
