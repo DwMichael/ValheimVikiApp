@@ -49,7 +49,7 @@ object Constants {
 	const val SHOP_MATERIAL_KEY = "shopMaterialId"
 	const val VALUABLE_MATERIAL_KEY = "valuableMaterialId"
 
-	const val FOOD_CATEGORY_KEY = "foodCategory"
+	const val BUILDING_MATERIAL_DETAIL_KEY = "buildingMaterialId"
 
 	//Creature Order map
 	val CreatureSubCategory_ORDER_MAP = mapOf(

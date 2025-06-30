@@ -175,4 +175,8 @@ sealed class Screen() {
 
 	@Serializable
 	data class ValuableDetail(val valuableMaterialId: String) : Screen()
+
+	//BuildingDetail
+	@Serializable
+	data class BuildingMaterialDetail(val buildingMaterialId: String) : Screen()
 }

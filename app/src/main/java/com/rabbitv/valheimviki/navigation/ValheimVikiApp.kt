@@ -81,6 +81,7 @@ import com.rabbitv.valheimviki.presentation.creatures.mini_bosses.MiniBossScreen
 import com.rabbitv.valheimviki.presentation.creatures.mob_list.MobListScreen
 import com.rabbitv.valheimviki.presentation.detail.armor.ArmorDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.biome.BiomeDetailScreen
+import com.rabbitv.valheimviki.presentation.detail.building_material.BuildingMaterialDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.crafting.CraftingDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.creature.aggressive_screen.AggressiveCreatureDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.creature.main_boss_screen.MainBossDetailScreen
@@ -495,7 +496,7 @@ fun ValheimNavGraph(
 								Screen.ShopMaterialDetail(shopMaterialId = itemId)
 							)
 
-							MaterialSubCategory.VALUABLE ->  valheimVikiNavController.navigate(
+							MaterialSubCategory.VALUABLE -> valheimVikiNavController.navigate(
 								Screen.ValuableDetail(valuableMaterialId = itemId)
 							)
 						}
@@ -533,7 +534,11 @@ fun ValheimNavGraph(
 				}
 				val vm = hiltViewModel<BuildingMaterialListViewModel>(parentEntry)
 				BuildingMaterialListScreen(
-					onItemClick = { _, _ -> {} },
+					onItemClick = { buildingMaterialId, _ ->
+						valheimVikiNavController.navigate(
+							Screen.BuildingMaterialDetail(buildingMaterialId = buildingMaterialId)
+						)
+					},
 					onBackClick = {
 						valheimVikiNavController.popBackStack()
 					},
@@ -799,6 +804,13 @@ fun ValheimNavGraph(
 		}
 		composable<Screen.ValuableDetail> {
 			ValuableMaterialDetailScreen(
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+			)
+		}
+		composable<Screen.BuildingMaterialDetail> {
+			BuildingMaterialDetailScreen(
 				onBack = {
 					valheimVikiNavController.popBackStack()
 				},
