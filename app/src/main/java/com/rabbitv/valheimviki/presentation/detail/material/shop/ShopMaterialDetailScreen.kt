@@ -150,7 +150,7 @@ fun ShopMaterialDetailContent(
 						CardImageWithTopLabel(
 							itemData = npc,
 							subTitle = "NPC whom you can sell this item",
-							contentScale = ContentScale.Fit,
+							contentScale = ContentScale.FillBounds,
 						)
 					}
 				}
