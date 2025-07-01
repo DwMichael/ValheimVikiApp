@@ -43,6 +43,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.composables.icons.lucide.Gavel
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.MapPinned
+import com.composables.icons.lucide.Rabbit
+import com.composables.icons.lucide.ShoppingBag
 import com.composables.icons.lucide.Trees
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
@@ -103,17 +105,17 @@ fun ValuableMaterialDetailContent(
 	val isExpandable = remember { mutableStateOf(false) }
 	val painterBackgroundImage = painterResource(R.drawable.main_background)
 
-	val toolsData = HorizontalPagerData(
-		title = "Tools",
-		subTitle = "Tools needed to plant this seed",
-		icon = Lucide.Gavel,
+	val creatureData = HorizontalPagerData(
+		title = "Creatures",
+		subTitle = "From those creatures this item drop",
+		icon = Lucide.Rabbit,
 		iconRotationDegrees = 0f,
 		itemContentScale = ContentScale.Crop
 	)
-	val treesData = HorizontalPagerData(
-		title = "Trees",
-		subTitle = "Trees from witch this seed drop",
-		icon = Lucide.Trees,
+	val npcData = HorizontalPagerData(
+		title = "Npc",
+		subTitle = "Those Npcs buy this item from you",
+		icon = Lucide.ShoppingBag,
 		iconRotationDegrees = 0f,
 		itemContentScale = ContentScale.Crop
 	)
@@ -179,12 +181,18 @@ fun ValuableMaterialDetailContent(
 							data = pointsOfInterestData,
 						)
 					}
-					uiState.npc?.let { npc ->
+					if(uiState.creatures.isNotEmpty()){
 						TridentsDividedRow()
-						CardImageWithTopLabel(
-							itemData = npc,
-							subTitle = "Npc that buy from you this item",
-							contentScale = ContentScale.Fit,
+						HorizontalPagerSection(
+							list = uiState.creatures,
+							data = creatureData,
+						)
+					}
+					if(uiState.npc.isNotEmpty()){
+						TridentsDividedRow()
+						HorizontalPagerSection(
+							list = uiState.npc,
+							data = npcData,
 						)
 					}
 				}

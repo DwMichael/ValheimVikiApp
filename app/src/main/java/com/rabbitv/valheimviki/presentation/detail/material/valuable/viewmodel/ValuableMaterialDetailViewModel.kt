@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.data.mappers.creatures.toNPC
+import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.model.creature.CreatureSubCategory
 import com.rabbitv.valheimviki.domain.model.creature.npc.NPC
 import com.rabbitv.valheimviki.domain.model.material.Material
@@ -40,7 +41,8 @@ class ValuableMaterialDetailViewModel @Inject constructor(
 	private val _materialId: String = checkNotNull(savedStateHandle[VALUABLE_MATERIAL_KEY])
 	private val _material = MutableStateFlow<Material?>(null)
 	private val _pointsOfInterest = MutableStateFlow<List<PointOfInterest>>(emptyList())
-	private val _npc = MutableStateFlow<NPC?>(null)
+	private val _npc = MutableStateFlow<List<NPC>>(emptyList())
+	private val _creatures = MutableStateFlow<List<Creature>>(emptyList())
 	private val _isLoading = MutableStateFlow<Boolean>(false)
 	private val _error = MutableStateFlow<String?>(null)
 
@@ -48,15 +50,17 @@ class ValuableMaterialDetailViewModel @Inject constructor(
 		_material,
 		_pointsOfInterest,
 		_npc,
+		_creatures,
 		_isLoading,
 		_error
-	) { material, pointsOfInterest, npc, isLoading, error ->
+	) { values ->
 		ValuableMaterialUiState(
-			material = material,
-			pointsOfInterest = pointsOfInterest,
-			npc = npc,
-			isLoading = isLoading,
-			error = error
+			material = values[0] as Material?,
+			pointsOfInterest = values[1] as List<PointOfInterest>,
+			npc = values[2] as List<NPC>,
+			creatures = values[3] as List<Creature>,
+			isLoading = values[4] as Boolean,
+			error = values[5] as String?,
 		)
 
 	}.stateIn(
@@ -97,16 +101,18 @@ class ValuableMaterialDetailViewModel @Inject constructor(
 					).first()
 				}
 
-				val npcDeferred = async {
-					creatureUseCases.getCreatureByRelationAndSubCategory(
-						relationIds,
-						CreatureSubCategory.NPC
-					).first()?.toNPC()
+
+				val creaturesDeferred = async {
+					creatureUseCases.getCreaturesByIds(relationIds).first()
 				}
+
 
 				_pointsOfInterest.value = pointOfInterestDeferred.await()
 					.filter { it.subCategory == PointOfInterestSubCategory.STRUCTURE.toString() }
-				_npc.value = npcDeferred.await()
+				_npc.value = creaturesDeferred.await()
+					.filter { it.subCategory == CreatureSubCategory.NPC.toString() }.toNPC()
+				_creatures.value = creaturesDeferred.await()
+					.filter { it.subCategory != CreatureSubCategory.NPC.toString() }
 
 
 			} catch (e: Exception) {
