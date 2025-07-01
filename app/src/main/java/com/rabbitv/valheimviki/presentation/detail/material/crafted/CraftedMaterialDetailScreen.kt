@@ -43,7 +43,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.composables.icons.lucide.Anvil
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.ScrollText
 import com.rabbitv.valheimviki.R
@@ -51,7 +50,6 @@ import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.grid.custom_column_grid.CustomColumnGrid
-import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerWithHeaderData
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
 import com.rabbitv.valheimviki.presentation.components.section_header.SectionHeader
@@ -103,13 +101,6 @@ fun CraftedMaterialDetailContent(
 			isVisible
 		}
 	}
-	val materialData = HorizontalPagerData(
-		title = "Crafting Stations",
-		subTitle = "",
-		icon = Lucide.Anvil,
-		iconRotationDegrees = 0f,
-		itemContentScale = ContentScale.Crop,
-	)
 	val isExpandable = remember { mutableStateOf(false) }
 	val painterBackgroundImage = painterResource(R.drawable.main_background)
 

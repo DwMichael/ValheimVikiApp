@@ -111,6 +111,7 @@ fun ArmorDetailContent(
                         text = it,
                         collapsedMaxLine = 3,
                         isExpanded = isExpandable,
+                        boxPadding = BODY_CONTENT_PADDING.dp
                     )
                 }
 
