@@ -184,9 +184,9 @@ fun MetalMaterialDetailContent(
 							boxPadding = BODY_CONTENT_PADDING.dp,
 							isExpanded = isExpandable
 						)
-						SlavicDivider()
 					}
 					uiState.biomes.forEach { biome ->
+						TridentsDividedRow()
 						CardWithOverlayLabel(
 							painter = rememberAsyncImagePainter(biome.imageUrl),
 							content = {
@@ -213,7 +213,7 @@ fun MetalMaterialDetailContent(
 
 							}
 						)
-						SlavicDivider()
+
 					}
 					if (uiState.pointOfInterests.isNotEmpty()) {
 						TridentsDividedRow()

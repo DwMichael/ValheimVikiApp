@@ -143,7 +143,6 @@ class MetalMaterialDetailViewModel @Inject constructor(
 				}
 				val materialsDeferred = async {
 					val materials = materialUseCases.getMaterialsByIds(relationToBuildIds).first()
-
 					val tempList = mutableListOf<MaterialToCraft>()
 					val relatedItemsMap = relationObjects.associateBy { it.id }
 					materials.forEach { material ->
