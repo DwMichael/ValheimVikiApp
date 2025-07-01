@@ -9,25 +9,34 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CreatureDao {
-    @Query("SELECT * FROM creatures WHERE category='CREATURE' ")
-    fun getLocalCreatures(): Flow<List<Creature>>
+	@Query("SELECT * FROM creatures WHERE category='CREATURE' ")
+	fun getLocalCreatures(): Flow<List<Creature>>
 
-    @Query("SELECT * FROM creatures WHERE category='CREATURE' AND subCategory = :subCategory ")
-    fun getCreaturesBySubCategory(subCategory:String): Flow<List<Creature>>
+	@Query("SELECT * FROM creatures WHERE category='CREATURE' AND subCategory = :subCategory ")
+	fun getCreaturesBySubCategory(subCategory: String): Flow<List<Creature>>
 
-    @Query("SELECT * FROM creatures WHERE category='CREATURE' AND subCategory = :subCategory AND id = :creatureId")
-    fun getCreatureByIdAndSubCategory(creatureId: String, subCategory:String): Flow<Creature?>
+	@Query("SELECT * FROM creatures WHERE category='CREATURE' AND subCategory = :subCategory AND id = :creatureId")
+	fun getCreatureByIdAndSubCategory(creatureId: String, subCategory: String): Flow<Creature?>
 
-    @Query("SELECT * FROM creatures WHERE category='CREATURE' AND subCategory = :subCategory AND id IN(:creatureIds)")
-    fun getCreatureByRelationAndSubCategory(creatureIds: List<String>, subCategory:String): Flow<Creature?>
+	@Query("SELECT * FROM creatures WHERE category='CREATURE' AND subCategory = :subCategory AND id IN(:creatureIds)")
+	fun getCreatureByRelationAndSubCategory(
+		creatureIds: List<String>,
+		subCategory: String
+	): Flow<Creature?>
 
-    @Query("SELECT * FROM creatures WHERE category='CREATURE' AND id = :creatureId")
-    fun getCreatureById(creatureId: String): Flow<Creature?>
+	@Query("SELECT * FROM creatures WHERE category='CREATURE' AND subCategory = :subCategory AND id IN(:creatureIds)")
+	fun getCreaturesByRelationAndSubCategory(
+		creatureIds: List<String>,
+		subCategory: String
+	): Flow<List<Creature>>
 
-    @Query("SELECT * FROM creatures WHERE category='CREATURE' AND subCategory != 'BOSS' AND id IN (:ids)")
-    fun getCreaturesByIds(ids: List<String>): Flow<List<Creature>>
+	@Query("SELECT * FROM creatures WHERE category='CREATURE' AND id = :creatureId")
+	fun getCreatureById(creatureId: String): Flow<Creature?>
+
+	@Query("SELECT * FROM creatures WHERE category='CREATURE' AND subCategory != 'BOSS' AND id IN (:ids)")
+	fun getCreaturesByIds(ids: List<String>): Flow<List<Creature>>
 
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertCreatures(creatures: List<Creature>)
+	@Insert(onConflict = OnConflictStrategy.REPLACE)
+	suspend fun insertCreatures(creatures: List<Creature>)
 }

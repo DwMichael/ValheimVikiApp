@@ -6,6 +6,7 @@ import com.rabbitv.valheimviki.domain.use_cases.creature.get_creature_by_id_and_
 import com.rabbitv.valheimviki.domain.use_cases.creature.get_creature_by_relation_and_sub_category.GetCreatureByRelationAndSubCategory
 import com.rabbitv.valheimviki.domain.use_cases.creature.get_creature_by_subcategory.GetCreatureBySubCategoryUseCase
 import com.rabbitv.valheimviki.domain.use_cases.creature.get_creatures_by_ids.GetCreaturesByIdsUseCase
+import com.rabbitv.valheimviki.domain.use_cases.creature.get_creatures_by_relation_and_sub_category.GetCreaturesByRelationAndSubCategory
 import com.rabbitv.valheimviki.domain.use_cases.creature.get_local_creatures.GetLocalCreaturesUseCase
 import com.rabbitv.valheimviki.domain.use_cases.creature.get_main_bosses.GetMainBossesUseCase
 import com.rabbitv.valheimviki.domain.use_cases.creature.get_mini_bosses.GetMiniBossesUseCase
@@ -13,15 +14,16 @@ import com.rabbitv.valheimviki.domain.use_cases.creature.get_npcs.GetNPCsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.creature.get_passive_creatures.GetPassiveCreature
 
 data class CreatureUseCases(
-    val getCreaturesByIds: GetCreaturesByIdsUseCase,
-    val getCreatureById: GetCreatureByIdUseCase,
-    val getCreaturesBySubCategory: GetCreatureBySubCategoryUseCase,
-    val getCreatureByIdAndSubCategoryUseCase: GetCreatureByIdAndSubCategoryUseCase,
-    val getCreatureByRelationAndSubCategory: GetCreatureByRelationAndSubCategory,
-    val getMainBossesUseCase: GetMainBossesUseCase,
-    val getMiniBossesUseCase: GetMiniBossesUseCase,
-    val getAggressiveCreatures: GetAggressiveCreatures,
-    val getPassiveCreature: GetPassiveCreature,
-    val getNPCsUseCase: GetNPCsUseCase,
-    val getLocalCreaturesUseCase: GetLocalCreaturesUseCase,
+	val getCreaturesByIds: GetCreaturesByIdsUseCase,
+	val getCreatureById: GetCreatureByIdUseCase,
+	val getCreaturesBySubCategory: GetCreatureBySubCategoryUseCase,
+	val getCreatureByIdAndSubCategoryUseCase: GetCreatureByIdAndSubCategoryUseCase,
+	val getCreatureByRelationAndSubCategory: GetCreatureByRelationAndSubCategory,
+	val getCreaturesByRelationAndSubCategory: GetCreaturesByRelationAndSubCategory,
+	val getMainBossesUseCase: GetMainBossesUseCase,
+	val getMiniBossesUseCase: GetMiniBossesUseCase,
+	val getAggressiveCreatures: GetAggressiveCreatures,
+	val getPassiveCreature: GetPassiveCreature,
+	val getNPCsUseCase: GetNPCsUseCase,
+	val getLocalCreaturesUseCase: GetLocalCreaturesUseCase,
 )

@@ -9,47 +9,53 @@ import retrofit2.Response
 import javax.inject.Inject
 
 class CreatureRepositoryImpl @Inject constructor(
-    private val apiService: ApiCreatureService,
-    private val creatureDao: CreatureDao
+	private val apiService: ApiCreatureService,
+	private val creatureDao: CreatureDao
 ) : CreatureRepository {
 
 
+	override fun getLocalCreatures(): Flow<List<Creature>> {
+		return creatureDao.getLocalCreatures()
+	}
 
-    override fun getLocalCreatures(): Flow<List<Creature>> {
-        return creatureDao.getLocalCreatures()
-    }
+	override fun getCreaturesBySubCategory(subCategory: String): Flow<List<Creature>> {
+		return creatureDao.getCreaturesBySubCategory(subCategory)
+	}
 
-    override fun getCreaturesBySubCategory(subCategory: String): Flow<List<Creature>> {
-        return creatureDao.getCreaturesBySubCategory(subCategory)
-    }
+	override fun getCreatureByIdAndSubCategory(id: String, subCategory: String): Flow<Creature?> {
+		return creatureDao.getCreatureByIdAndSubCategory(id, subCategory)
+	}
 
-    override fun getCreatureByIdAndSubCategory(id: String, subCategory: String): Flow<Creature?> {
-        return creatureDao.getCreatureByIdAndSubCategory(id, subCategory)
-    }
+	override fun getCreatureByRelationAndSubCategory(
+		creaturesIds: List<String>,
+		subCategory: String
+	): Flow<Creature?> {
+		return creatureDao.getCreatureByRelationAndSubCategory(creaturesIds, subCategory)
+	}
 
-    override fun getCreatureByRelationAndSubCategory(
-        creaturesIds: List<String>,
-        subCategory: String
-    ): Flow<Creature?> {
-        return creatureDao.getCreatureByRelationAndSubCategory(creaturesIds, subCategory)
-    }
+	override fun getCreaturesByIds(ids: List<String>): Flow<List<Creature>> {
+		return creatureDao.getCreaturesByIds(ids)
+	}
 
-    override fun getCreaturesByIds(ids: List<String>): Flow<List<Creature>> {
-        return creatureDao.getCreaturesByIds(ids)
-    }
+	override fun getCreatureById(id: String): Flow<Creature?> {
+		return creatureDao.getCreatureById(id)
+	}
 
-    override fun getCreatureById(id: String): Flow<Creature?> {
-        return creatureDao.getCreatureById(id)
-    }
+	override fun getCreaturesByRelationAndSubCategory(
+		ids: List<String>,
+		subCategory: String
+	): Flow<List<Creature>> {
+		return creatureDao.getCreaturesByRelationAndSubCategory(ids, subCategory)
+	}
 
-    override suspend fun insertCreatures(creatures: List<Creature>) {
-        check(creatures.isNotEmpty()){"Creature list cannot be empty , cannot insert ${creatures.size} creatures"}
-        creatureDao.insertCreatures(creatures)
-    }
+	override suspend fun insertCreatures(creatures: List<Creature>) {
+		check(creatures.isNotEmpty()) { "Creature list cannot be empty , cannot insert ${creatures.size} creatures" }
+		creatureDao.insertCreatures(creatures)
+	}
 
-    override suspend fun fetchCreatures(lang: String): Response<List<Creature>> {
-            return apiService.fetchCreatures(lang)
-    }
+	override suspend fun fetchCreatures(lang: String): Response<List<Creature>> {
+		return apiService.fetchCreatures(lang)
+	}
 
 
 }
