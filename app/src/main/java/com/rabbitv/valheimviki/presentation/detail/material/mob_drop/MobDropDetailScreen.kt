@@ -2,6 +2,7 @@ package com.rabbitv.valheimviki.presentation.detail.material.mob_drop
 
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -133,7 +134,6 @@ fun MobDropDetailContent(
 		contentScale = ContentScale.FillBounds,
 		modifier = Modifier.fillMaxSize()
 	)
-
 	Scaffold(
 		modifier = Modifier.fillMaxSize(),
 		containerColor = Color.Transparent,
@@ -145,6 +145,7 @@ fun MobDropDetailContent(
 				.padding(innerPadding)
 		) {
 			uiState.material?.let { material ->
+				Log.e("ID", "ID: ${material.id}")
 				Column(
 					modifier = Modifier
 						.fillMaxSize()
@@ -172,9 +173,10 @@ fun MobDropDetailContent(
 							boxPadding = BODY_CONTENT_PADDING.dp,
 							isExpanded = isExpandable
 						)
-						SlavicDivider()
+
 					}
 					if (uiState.aggressive.isNotEmpty()) {
+						TridentsDividedRow()
 						HorizontalPagerSection(
 							list = uiState.aggressive,
 							data = aggressiveCreatureData,

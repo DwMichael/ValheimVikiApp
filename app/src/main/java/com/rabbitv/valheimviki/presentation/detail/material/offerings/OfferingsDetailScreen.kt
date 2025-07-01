@@ -44,7 +44,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.composables.icons.lucide.Cat
 import com.composables.icons.lucide.Flame
 import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.MapPinned
 import com.composables.icons.lucide.PawPrint
+import com.composables.icons.lucide.Skull
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.data.mappers.creatures.toAggressiveCreatures
 import com.rabbitv.valheimviki.data.mappers.creatures.toPassiveCreatures
@@ -111,7 +113,7 @@ fun OfferingsDetailContent(
 	val aggressiveCreatureData = HorizontalPagerData(
 		title = "Aggressive Creatures",
 		subTitle = "Creatures from witch this material drop",
-		icon = Lucide.Cat,
+		icon = Lucide.Skull,
 		iconRotationDegrees = 0f,
 		itemContentScale = ContentScale.Crop
 	)
@@ -119,14 +121,14 @@ fun OfferingsDetailContent(
 		title = "Passive Creatures",
 		subTitle = "Creatures from witch this material drop",
 		icon = Lucide.PawPrint,
-		iconRotationDegrees = -85f,
+		iconRotationDegrees = 0f,
 		itemContentScale = ContentScale.Crop
 	)
 	val pointsOfInterestData = HorizontalPagerData(
 		title = "Points of interest",
 		subTitle = "Poi where you can find this item",
-		icon = Lucide.PawPrint,
-		iconRotationDegrees = -85f,
+		icon = Lucide.MapPinned,
+		iconRotationDegrees = 0f,
 		itemContentScale = ContentScale.Crop
 	)
 
@@ -134,7 +136,7 @@ fun OfferingsDetailContent(
 		title = "Altar",
 		subTitle = "Altar where you can summon boss with this item",
 		icon = Lucide.Flame,
-		iconRotationDegrees = -85f,
+		iconRotationDegrees = 0f,
 		itemContentScale = ContentScale.Crop
 	)
 
@@ -184,9 +186,10 @@ fun OfferingsDetailContent(
 							boxPadding = BODY_CONTENT_PADDING.dp,
 							isExpanded = isExpandable
 						)
-						SlavicDivider()
+
 					}
 					if (uiState.aggressive.isNotEmpty()) {
+						TridentsDividedRow()
 						HorizontalPagerSection(
 							list = uiState.aggressive,
 							data = aggressiveCreatureData,

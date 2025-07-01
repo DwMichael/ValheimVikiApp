@@ -8,6 +8,7 @@ import com.rabbitv.valheimviki.domain.mapper.CreatureFactory
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.passive.PassiveCreature
 import com.rabbitv.valheimviki.domain.model.material.MaterialDrop
+import com.rabbitv.valheimviki.domain.model.material.MaterialSubCategory
 import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
@@ -96,6 +97,7 @@ class PassiveCreatureDetailScreenViewModel @Inject constructor(
 					async {
 						try {
 							val materials = materialUseCases.getMaterialsByIds(relatedIds).first()
+								.filter { it.subCategory != MaterialSubCategory.FORSAKEN_ALTAR_OFFERING.toString() }
 							val tempList = mutableListOf<MaterialDrop>()
 
 							val relatedItemsMap = relatedObjects.associateBy { it.id }

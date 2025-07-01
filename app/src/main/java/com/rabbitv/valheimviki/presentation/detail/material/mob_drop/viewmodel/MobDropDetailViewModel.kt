@@ -29,6 +29,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
+@Suppress("UNCHECKED_CAST")
 @HiltViewModel
 class MobDropDetailViewModel @Inject constructor(
 	private val materialUseCases: MaterialUseCases,
