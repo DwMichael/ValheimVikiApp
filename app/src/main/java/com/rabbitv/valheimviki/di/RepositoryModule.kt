@@ -90,6 +90,7 @@ import com.rabbitv.valheimviki.domain.use_cases.creature.get_creature_by_id_and_
 import com.rabbitv.valheimviki.domain.use_cases.creature.get_creature_by_relation_and_sub_category.GetCreatureByRelationAndSubCategory
 import com.rabbitv.valheimviki.domain.use_cases.creature.get_creature_by_subcategory.GetCreatureBySubCategoryUseCase
 import com.rabbitv.valheimviki.domain.use_cases.creature.get_creatures_by_ids.GetCreaturesByIdsUseCase
+import com.rabbitv.valheimviki.domain.use_cases.creature.get_creatures_by_relation_and_sub_category.GetCreaturesByRelationAndSubCategory
 import com.rabbitv.valheimviki.domain.use_cases.creature.get_local_creatures.GetLocalCreaturesUseCase
 import com.rabbitv.valheimviki.domain.use_cases.creature.get_main_bosses.GetMainBossesUseCase
 import com.rabbitv.valheimviki.domain.use_cases.creature.get_mini_bosses.GetMiniBossesUseCase
@@ -370,6 +371,9 @@ object RepositoryModule {
 				creatureRepository
 			),
 			getCreaturesBySubCategory = GetCreatureBySubCategoryUseCase(creatureRepository),
+			getCreaturesByRelationAndSubCategory = GetCreaturesByRelationAndSubCategory(
+				creatureRepository
+			),
 		)
 	}
 
