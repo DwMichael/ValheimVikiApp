@@ -4,13 +4,17 @@ package com.rabbitv.valheimviki.presentation.detail.material.seeds
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -37,6 +41,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -44,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.rememberAsyncImagePainter
+import com.composables.icons.lucide.Gauge
 import com.composables.icons.lucide.Gavel
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.MapPinned
@@ -52,6 +59,7 @@ import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
+import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCard
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
@@ -104,7 +112,8 @@ fun SeedMaterialDetailContent(
 			isVisible
 		}
 	}
-
+	val isStatInfoExpanded1 = remember { mutableStateOf(false) }
+	val isStatInfoExpanded2 = remember { mutableStateOf(false) }
 	val isExpandable = remember { mutableStateOf(false) }
 	val painterBackgroundImage = painterResource(R.drawable.main_background)
 
@@ -177,13 +186,6 @@ fun SeedMaterialDetailContent(
 						)
 
 					}
-					if (uiState.trees.isNotEmpty()) {
-						SlavicDivider()
-						HorizontalPagerSection(
-							list = uiState.trees,
-							data = treesData,
-						)
-					}
 					if (uiState.biomes.isNotEmpty()) {
 						SlavicDivider()
 						Text(
@@ -216,6 +218,60 @@ fun SeedMaterialDetailContent(
 							)
 						}
 					}
+					if (uiState.material.growthTime != null) {
+						TridentsDividedRow()
+						DarkGlassStatCard(
+							Lucide.Gauge,
+							"Growth Time",
+							uiState.material.growthTime,
+							expand = { isStatInfoExpanded1.value = !isStatInfoExpanded1.value },
+							isExpanded = isStatInfoExpanded1.value,
+						)
+						AnimatedVisibility(
+							visible = isStatInfoExpanded1.value,
+							enter = expandVertically() + fadeIn(),
+							exit = shrinkVertically() + fadeOut()
+						) {
+							Text(
+								text = AnnotatedString.fromHtml("Time needed for plant to fully grow."),
+								modifier = Modifier
+									.padding(BODY_CONTENT_PADDING.dp)
+									.fillMaxWidth(),
+								style = MaterialTheme.typography.bodyLarge
+							)
+						}
+					}
+					if (uiState.material.needCultivatorGround != null) {
+						Spacer(modifier = Modifier.padding(BODY_CONTENT_PADDING.dp))
+						DarkGlassStatCard(
+							Lucide.Gauge,
+							"Need Cultivator?",
+							uiState.material.needCultivatorGround,
+							expand = { isStatInfoExpanded2.value = !isStatInfoExpanded2.value },
+							isExpanded = isStatInfoExpanded2.value,
+						)
+						AnimatedVisibility(
+							visible = isStatInfoExpanded2.value,
+							enter = expandVertically() + fadeIn(),
+							exit = shrinkVertically() + fadeOut()
+						) {
+							Text(
+								text = AnnotatedString.fromHtml("Information if seeds need cultivator to be planted"),
+								modifier = Modifier
+									.padding(BODY_CONTENT_PADDING.dp)
+									.fillMaxWidth(),
+								style = MaterialTheme.typography.bodyLarge
+							)
+						}
+					}
+					if (uiState.trees.isNotEmpty()) {
+						SlavicDivider()
+						HorizontalPagerSection(
+							list = uiState.trees,
+							data = treesData,
+						)
+					}
+
 					if (uiState.pointsOfInterest.isNotEmpty()) {
 						TridentsDividedRow()
 						HorizontalPagerSection(
@@ -268,7 +324,6 @@ fun SeedMaterialDetailContent(
 }
 
 
-
 @RequiresApi(Build.VERSION_CODES.S)
 @Preview("ToolDetailContentPreview", showBackground = true)
 @Composable
@@ -276,11 +331,11 @@ fun PreviewToolDetailContentCooked() {
 
 
 	ValheimVikiAppTheme {
-		SeedMaterialDetailContent (
+		SeedMaterialDetailContent(
 			uiState = SeedUiState(),
 			onBack = {},
 
-		)
+			)
 	}
 
 }
