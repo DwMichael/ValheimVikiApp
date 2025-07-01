@@ -35,6 +35,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -46,6 +48,7 @@ import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.card.card_image.ImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
+import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.material.boss_drop.model.BossDropUiState
 import com.rabbitv.valheimviki.presentation.detail.material.boss_drop.viewmodel.BossDropDetailViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
@@ -79,7 +82,7 @@ fun BossDropDetailContent(
 
 	val scrollState = rememberScrollState()
 	val previousScrollValue = remember { mutableIntStateOf(0) }
-	val craftingStationPainter = painterResource(R.drawable.ic_placeholder)
+
 	val backButtonVisibleState by remember {
 		derivedStateOf {
 			val currentScroll = scrollState.value
@@ -99,7 +102,7 @@ fun BossDropDetailContent(
 
 
 	val painterBackgroundImage = painterResource(R.drawable.main_background)
-
+	val htmlFormattedText =
 	Image(
 		painter = painterBackgroundImage,
 		contentDescription = "bg",
@@ -145,12 +148,27 @@ fun BossDropDetailContent(
 							boxPadding = BODY_CONTENT_PADDING.dp,
 							isExpanded = isExpandable
 						)
-						SlavicDivider()
+
+					}
+					material.usage?.let {
+						TridentsDividedRow("Usage")
+						Text(
+							text = remember(it) {
+								AnnotatedString.fromHtml(it)
+							},
+							modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+							style = MaterialTheme.typography.bodyLarge,
+						)
 					}
 
-
-
 					if (uiState.boss != null) {
+						TridentsDividedRow("Power")
+						Text(
+							text = uiState.boss.forsakenPower,
+							modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+							style = MaterialTheme.typography.bodyLarge,
+						)
+						TridentsDividedRow()
 						ImageWithTopLabel(
 							itemData = uiState.boss,
 							subTitle = "Boss from witch this item drop",
