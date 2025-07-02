@@ -25,12 +25,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -108,21 +107,24 @@ fun FoodDetailContent(
 	val isStatInfoExpanded6 = remember { mutableStateOf(false) }
 	val isStatInfoExpanded7 = remember { mutableStateOf(false) }
 	val isStatInfoExpanded8 = remember { mutableStateOf(false) }
-	val backButtonVisibleState = remember { mutableStateOf(false) }
+
 	val scrollState = rememberScrollState()
-	var previousScrollValue by remember { mutableIntStateOf(0) }
-
-	LaunchedEffect(scrollState.value) {
-		val currentScroll = scrollState.value
-
-		when {
-			currentScroll == 0 -> backButtonVisibleState.value = true
-			currentScroll < previousScrollValue -> backButtonVisibleState.value = true
-			currentScroll > previousScrollValue -> backButtonVisibleState.value = false
+	val previousScrollValue = remember { mutableIntStateOf(0) }
+	val backButtonVisibleState by remember {
+		derivedStateOf {
+			val currentScroll = scrollState.value
+			val previous = previousScrollValue.intValue
+			val isVisible = when {
+				currentScroll == 0 -> true
+				currentScroll < previous -> true
+				currentScroll > previous -> false
+				else -> true
+			}
+			previousScrollValue.intValue = currentScroll
+			isVisible
 		}
-
-		previousScrollValue = currentScroll
 	}
+
 	val recipeItems: List<Droppable> = uiState.materialsForRecipe + uiState.foodForRecipe
 	val isExpandable = remember { mutableStateOf(false) }
 	fun shouldShowValue(value: Any?): Boolean {
@@ -339,7 +341,7 @@ fun FoodDetailContent(
 				}
 			}
 			AnimatedVisibility(
-				visible = backButtonVisibleState.value,
+				visible = backButtonVisibleState,
 				enter = fadeIn(),
 				exit = fadeOut(),
 				modifier = Modifier
@@ -364,18 +366,6 @@ fun FoodDetailContent(
 		}
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 @RequiresApi(Build.VERSION_CODES.S)
