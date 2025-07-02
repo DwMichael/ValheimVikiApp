@@ -19,55 +19,55 @@ import com.rabbitv.valheimviki.presentation.components.grid.grid_category.GridCa
 
 
 enum class BuildingMaterialSegmentOption(
-    override val image: Int,
-    override val icon: ImageVector,
-    override val label: String,
-    override val value: BuildingMaterialSubCategory
+	override val image: Int,
+	override val icon: ImageVector,
+	override val label: String,
+	override val value: BuildingMaterialSubCategory
 ) : GridCategoryOption<BuildingMaterialSubCategory> {
-    WOOD(R.drawable.wood, Lucide.Trees, "WOOD", BuildingMaterialSubCategory.WOOD),
-    CORE_WOOD(
-        R.drawable.core_wood,
-        Lucide.Layers,
-        "CORE WOOD",
-        BuildingMaterialSubCategory.CORE_WOOD
-    ),
-    RESOURCE(
-        R.drawable.resources,
-        Lucide.Package,
-        "RESOURCES",
-        BuildingMaterialSubCategory.RESOURCE
-    ),
-    STONE_AND_METAL(
-        R.drawable.stone_and_metals,
-        Lucide.Hammer,
-        "BLOCKS",
-        BuildingMaterialSubCategory.STONE_AND_METAL
-    ),
-    LIGHT_SOURCE(
-        R.drawable.light_source,
-        Lucide.Lamp,
-        "LIGHTS",
-        BuildingMaterialSubCategory.LIGHT_SOURCE
-    ),
-    TRANSPORT(
-        R.drawable.transport,
-        Lucide.Truck,
-        "TRANSPORTS",
-        BuildingMaterialSubCategory.TRANSPORT
-    ),
-    FURNITURE(
-        R.drawable.furniture,
-        Lucide.Armchair,
-        "FURNITURE",
-        BuildingMaterialSubCategory.FURNITURE
-    ),
-    DECORATIVE(
-        R.drawable.decorative,
-        Lucide.Star,
-        "DECOR",
-        BuildingMaterialSubCategory.DECORATIVE
-    ),
-    ROOF(R.drawable.roof, Lucide.House, "ROOFS", BuildingMaterialSubCategory.ROOF),
-    DEFENSE(R.drawable.defense, Lucide.Shield, "DEFENSE", BuildingMaterialSubCategory.DEFENSE),
-    SIEGE(R.drawable.siege, Lucide.Crosshair, "SIEGE", BuildingMaterialSubCategory.SIEGE),
+	WOOD(R.drawable.wood, Lucide.Trees, "WOOD", BuildingMaterialSubCategory.WOOD),
+	CORE_WOOD(
+		R.drawable.core_wood,
+		Lucide.Layers,
+		"CORE WOOD",
+		BuildingMaterialSubCategory.CORE_WOOD
+	),
+	RESOURCE(
+		R.drawable.resources,
+		Lucide.Package,
+		"RESOURCES",
+		BuildingMaterialSubCategory.RESOURCE
+	),
+	STONE_AND_METAL(
+		R.drawable.stone_and_metals,
+		Lucide.Hammer,
+		"STONE & METAL",
+		BuildingMaterialSubCategory.STONE_AND_METAL
+	),
+	LIGHT_SOURCE(
+		R.drawable.light_source,
+		Lucide.Lamp,
+		"LIGHTS",
+		BuildingMaterialSubCategory.LIGHT_SOURCE
+	),
+	TRANSPORT(
+		R.drawable.transport,
+		Lucide.Truck,
+		"TRANSPORTS",
+		BuildingMaterialSubCategory.TRANSPORT
+	),
+	FURNITURE(
+		R.drawable.furniture,
+		Lucide.Armchair,
+		"FURNITURE",
+		BuildingMaterialSubCategory.FURNITURE
+	),
+	DECORATIVE(
+		R.drawable.decorative,
+		Lucide.Star,
+		"DECOR",
+		BuildingMaterialSubCategory.DECORATIVE
+	),
+	ROOF(R.drawable.roof, Lucide.House, "ROOFS", BuildingMaterialSubCategory.ROOF),
+	DEFENSE(R.drawable.defense, Lucide.Shield, "DEFENSE", BuildingMaterialSubCategory.DEFENSE),
+	SIEGE(R.drawable.siege, Lucide.Crosshair, "SIEGE", BuildingMaterialSubCategory.SIEGE),
 }

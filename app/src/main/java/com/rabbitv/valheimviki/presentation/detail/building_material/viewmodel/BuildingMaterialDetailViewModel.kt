@@ -6,13 +6,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.model.building_material.BuildingMaterial
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
-import com.rabbitv.valheimviki.domain.model.material.Material
+import com.rabbitv.valheimviki.domain.model.presentation.DroppableType
 import com.rabbitv.valheimviki.domain.model.relation.RelationType
 import com.rabbitv.valheimviki.domain.use_cases.building_material.BuildMaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.CraftingObjectUseCases
+import com.rabbitv.valheimviki.domain.use_cases.food.FoodUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.presentation.detail.building_material.model.BuildingMaterialUiState
+import com.rabbitv.valheimviki.presentation.detail.building_material.model.RequiredFood
+import com.rabbitv.valheimviki.presentation.detail.building_material.model.RequiredMaterial
 import com.rabbitv.valheimviki.utils.Constants.BUILDING_MATERIAL_DETAIL_KEY
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -32,6 +35,7 @@ class BuildingMaterialDetailViewModel @Inject constructor(
 	private val buildingMaterialUseCases: BuildMaterialUseCases,
 	private val materialUseCases: MaterialUseCases,
 	private val craftingUseCases: CraftingObjectUseCases,
+	private val foodUseCases: FoodUseCases,//TODO ADD new list of food needed for specific item to be constructed
 	private val relationUseCases: RelationUseCases,
 	savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
@@ -39,7 +43,8 @@ class BuildingMaterialDetailViewModel @Inject constructor(
 	private val _buildingMaterialId: String =
 		checkNotNull(savedStateHandle[BUILDING_MATERIAL_DETAIL_KEY])
 	private val _buildingMaterial = MutableStateFlow<BuildingMaterial?>(null)
-	private val _materials = MutableStateFlow<List<Material>>(emptyList())
+	private val _materials = MutableStateFlow<List<RequiredMaterial>>(emptyList())
+	private val _foods = MutableStateFlow<List<RequiredFood>>(emptyList())
 	private val _requiredCraftingStation = MutableStateFlow<List<CraftingObject>>(emptyList())
 	private val _isLoading = MutableStateFlow<Boolean>(false)
 	private val _error = MutableStateFlow<String?>(null)
@@ -47,16 +52,18 @@ class BuildingMaterialDetailViewModel @Inject constructor(
 	val uiState = combine(
 		_buildingMaterial,
 		_materials,
+		_foods,
 		_requiredCraftingStation,
 		_isLoading,
 		_error
-	) { buildingMaterial, materials, requiredCraftingStation, isLoading, error ->
+	) { values ->
 		BuildingMaterialUiState(
-			buildingMaterial = buildingMaterial,
-			materials = materials,
-			craftingStation = requiredCraftingStation,
-			isLoading = isLoading,
-			error = error
+			buildingMaterial = values[0] as BuildingMaterial?,
+			materials = values[1] as List<RequiredMaterial>,
+			foods = values[2] as List<RequiredFood>,
+			craftingStation = values[3] as List<CraftingObject>,
+			isLoading = values[4] as Boolean,
+			error = values[5] as String?,
 		)
 	}.stateIn(
 		viewModelScope,
@@ -103,13 +110,66 @@ class BuildingMaterialDetailViewModel @Inject constructor(
 				}
 
 				val materialsDeferred = async {
-					materialUseCases.getMaterialsByIds(relationsIds).first()
+					val materials = materialUseCases.getMaterialsByIds(relationsIds).first()
+					val tempList = mutableListOf<RequiredMaterial>()
+
+					val relatedItemsMap = relationObjects.associateBy { it.id }
+					for (material in materials) {
+						val relatedItem = relatedItemsMap[material.id]
+						val quantityList = listOf<Int?>(
+							relatedItem?.quantity,
+							relatedItem?.quantity2star,
+							relatedItem?.quantity3star
+						)
+						val chanceStarList = listOf<Int?>(
+							relatedItem?.chance1star,
+							relatedItem?.chance2star,
+							relatedItem?.chance3star
+						)
+						tempList.add(
+							RequiredMaterial(
+								itemDrop = material,
+								quantityList = quantityList,
+								chanceStarList = chanceStarList,
+								droppableType = DroppableType.MATERIAL,
+							)
+						)
+					}
+					tempList
+				}
+				val foodDeferred = async {
+					val food = foodUseCases.getFoodListByIdsUseCase(relationsIds).first()
+					val tempList = mutableListOf<RequiredFood>()
+
+					val relatedItemsMap = relationObjects.associateBy { it.id }
+					for (meal in food) {
+						val relatedItem = relatedItemsMap[meal.id]
+						val quantityList = listOf<Int?>(
+							relatedItem?.quantity,
+							relatedItem?.quantity2star,
+							relatedItem?.quantity3star
+						)
+						val chanceStarList = listOf<Int?>(
+							relatedItem?.chance1star,
+							relatedItem?.chance2star,
+							relatedItem?.chance3star
+						)
+						tempList.add(
+							RequiredFood(
+								itemDrop = meal,
+								quantityList = quantityList,
+								chanceStarList = chanceStarList,
+								droppableType = DroppableType.MATERIAL,
+							)
+						)
+
+					}
+					tempList
 				}
 
 
-
-
 				_materials.value = materialsDeferred.await()
+				_foods.value = foodDeferred.await()
 				_requiredCraftingStation.value = requiredCraftingStationDeferred.await()
 
 			} catch (e: Exception) {

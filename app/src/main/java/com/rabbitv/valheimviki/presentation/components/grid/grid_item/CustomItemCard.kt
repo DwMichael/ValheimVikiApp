@@ -28,10 +28,11 @@ import com.rabbitv.valheimviki.ui.theme.LightDark
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 
 @Composable
-fun CustomItemCard(imageUrl: String, name: String, quantity: Int?) {
+fun CustomItemCard(fillWidth: Float = 1.0f, imageUrl: String, name: String, quantity: Int?) {
+
 	Card(
 		modifier = Modifier
-			.fillMaxWidth()
+			.fillMaxWidth(fillWidth)
 			.height(150.dp)
 			.shadow(
 				elevation = 8.dp,
@@ -45,8 +46,7 @@ fun CustomItemCard(imageUrl: String, name: String, quantity: Int?) {
 	) {
 		Column(
 			modifier = Modifier
-				.fillMaxSize()
-				.padding(8.dp),
+				.fillMaxSize(),
 			verticalArrangement = Arrangement.Top,
 			horizontalAlignment = Alignment.CenterHorizontally
 		) {
