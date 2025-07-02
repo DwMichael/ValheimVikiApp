@@ -12,26 +12,18 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
@@ -46,21 +38,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil3.compose.AsyncImage
-import coil3.request.ImageRequest
-import coil3.request.crossfade
 import com.composables.icons.lucide.Gauge
 import com.composables.icons.lucide.Lucide
 import com.rabbitv.valheimviki.R
@@ -68,15 +54,13 @@ import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCard
+import com.rabbitv.valheimviki.presentation.components.grid.grid_item.CustomItemCard
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
-import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.building_material.model.BuildingMaterialUiState
 import com.rabbitv.valheimviki.presentation.detail.building_material.viewmodel.BuildingMaterialDetailViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
-import com.rabbitv.valheimviki.ui.theme.SMALL_PADDING
-import com.rabbitv.valheimviki.ui.theme.YellowDT
 
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
@@ -164,17 +148,19 @@ fun BuildingMaterialDetailContent(
 						style = MaterialTheme.typography.displayMedium,
 						textAlign = TextAlign.Center
 					)
-					SlavicDivider()
+
 
 					if (!buildingMaterial.description.isBlank()) {
+						SlavicDivider()
 						DetailExpandableText(
 							text = buildingMaterial.description,
 							boxPadding = BODY_CONTENT_PADDING.dp,
 							isExpanded = isExpandable
 						)
-						SlavicDivider()
+
 					}
 					if (uiState.buildingMaterial.comfortLevel != null) {
+						SlavicDivider()
 						DarkGlassStatCard(
 							Lucide.Gauge,
 							"Comfort Level",
@@ -197,7 +183,7 @@ fun BuildingMaterialDetailContent(
 						}
 					}
 					if (uiState.craftingStation.isNotEmpty()) {
-						TridentsDividedRow()
+						SlavicDivider()
 						uiState.craftingStation.forEach { craftingStation ->
 							CardImageWithTopLabel(
 								itemData = craftingStation,
@@ -207,72 +193,32 @@ fun BuildingMaterialDetailContent(
 							Spacer(modifier = Modifier.padding(BODY_CONTENT_PADDING.dp))
 						}
 					}
-
-					LazyVerticalGrid(
-						modifier = Modifier
-							.height(400.dp)
-							.fillMaxWidth(),
-						state = rememberLazyGridState(),
-						columns = GridCells.Fixed(2),
-						horizontalArrangement = Arrangement.spacedBy(BODY_CONTENT_PADDING.dp),
-						verticalArrangement = Arrangement.spacedBy(BODY_CONTENT_PADDING.dp),
-						contentPadding = PaddingValues(bottom = 70.dp),
-					) {
-						items(uiState.materials) { item ->
-							ElevatedCard(
-								onClick = {},
-								modifier = Modifier
-									.fillMaxWidth()
-									.height(150.dp),
-								shape = RoundedCornerShape(SMALL_PADDING),
-								colors = CardDefaults.cardColors(
-									containerColor = YellowDT
-								),
-								elevation = CardDefaults.elevatedCardElevation(2.dp)
-							) {
-								Column(
-									modifier = Modifier
-										.fillMaxSize(),
-									verticalArrangement = Arrangement.Top,
-									horizontalAlignment = Alignment.CenterHorizontally
-								) {
-									AsyncImage(
-										modifier = Modifier
-											.fillMaxWidth()
-											.height(160.dp)
-											.clip(RoundedCornerShape(SMALL_PADDING)),
-										model = ImageRequest.Builder(context = LocalContext.current)
-											.data(item.imageUrl)
-											.crossfade(true)
-											.build(),
-										error = painterResource(R.drawable.ic_placeholder),
-										placeholder = painterResource(R.drawable.ic_placeholder),
-										contentDescription = stringResource(R.string.item_grid_image),
-										contentScale = ContentScale.Crop,
-									)
-									Row(
-										modifier = Modifier
-											.fillMaxWidth()
-											.wrapContentHeight()
-											.padding(
-												8.dp
-											),
-
-										) {
-
-										Text(
-											text = item.name.uppercase(),
-											maxLines = 2,
-											textAlign = TextAlign.Start,
-											color = PrimaryWhite,
-											style = MaterialTheme.typography.titleMedium
-										)
-										Spacer(Modifier.size(8.dp))
-									}
-
-								}
+					if (uiState.materials.isNotEmpty() || uiState.foods.isNotEmpty()) {
+						FlowRow(
+							modifier = Modifier
+								.wrapContentHeight()
+								.fillMaxWidth()
+								.padding(BODY_CONTENT_PADDING.dp),
+							maxItemsInEachRow = 2,
+							horizontalArrangement = Arrangement.SpaceBetween,
+							verticalArrangement = Arrangement.spacedBy(BODY_CONTENT_PADDING.dp),
+						) {
+							for (material in uiState.materials) {
+								CustomItemCard(
+									fillWidth = 0.45f,
+									imageUrl = material.itemDrop.imageUrl,
+									name = material.itemDrop.name,
+									quantity = material.quantityList.firstOrNull()
+								)
 							}
-
+							for (food in uiState.foods) {
+								CustomItemCard(
+									fillWidth = 0.45f,
+									imageUrl = food.itemDrop.imageUrl,
+									name = food.itemDrop.name,
+									quantity = food.quantityList.firstOrNull()
+								)
+							}
 						}
 					}
 				}
