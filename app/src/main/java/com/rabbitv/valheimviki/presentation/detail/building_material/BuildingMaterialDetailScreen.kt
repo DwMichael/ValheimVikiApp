@@ -25,6 +25,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -194,6 +195,23 @@ fun BuildingMaterialDetailContent(
 						}
 					}
 					if (uiState.materials.isNotEmpty() || uiState.foods.isNotEmpty()) {
+						SlavicDivider()
+						Text(
+							"Required Materials",
+							style = MaterialTheme.typography.headlineMedium,
+							modifier = Modifier.padding(
+								top = BODY_CONTENT_PADDING.dp,
+								start = BODY_CONTENT_PADDING.dp,
+								end = BODY_CONTENT_PADDING.dp
+							)
+						)
+						HorizontalDivider(
+							modifier = Modifier
+								.fillMaxWidth(0.8f)
+								.padding(BODY_CONTENT_PADDING.dp),
+							thickness = 1.dp,
+							color = Color.White
+						)
 						FlowRow(
 							modifier = Modifier
 								.wrapContentHeight()
