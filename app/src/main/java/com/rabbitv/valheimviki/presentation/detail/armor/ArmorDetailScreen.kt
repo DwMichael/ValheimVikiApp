@@ -28,9 +28,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -51,6 +49,7 @@ import com.rabbitv.valheimviki.domain.model.armor.UpgradeArmorInfo
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.card.LevelInfoCard
 import com.rabbitv.valheimviki.presentation.components.card.RequiredMaterialColumn
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
@@ -89,21 +88,6 @@ fun ArmorDetailContent(
 
 	val isExpandable = remember { mutableStateOf(false) }
 	val scrollState = rememberScrollState()
-	val previousScrollValue = remember { mutableIntStateOf(0) }
-	val backButtonVisibleState by remember {
-		derivedStateOf {
-			val currentScroll = scrollState.value
-			val previous = previousScrollValue.intValue
-			val isVisible = when {
-				currentScroll == 0 -> true
-				currentScroll < previous -> true
-				currentScroll > previous -> false
-				else -> true
-			}
-			previousScrollValue.intValue = currentScroll
-			isVisible
-		}
-	}
 	val painterBackgroundImage = painterResource(R.drawable.main_background)
 
 	Image(
@@ -120,17 +104,17 @@ fun ArmorDetailContent(
 		uiState.armor?.let { armor ->
 			Box(
 				modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
+					.fillMaxSize()
+					.padding(innerPadding)
 			) {
 				Column(
 					modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(scrollState)
-                        .padding(
-                            top = 20.dp,
-                            bottom = 70.dp
-                        ),
+						.fillMaxSize()
+						.verticalScroll(scrollState)
+						.padding(
+							top = 20.dp,
+							bottom = 70.dp
+						),
 					horizontalAlignment = Alignment.CenterHorizontally,
 					verticalArrangement = Arrangement.Top,
 				) {
@@ -212,29 +196,12 @@ fun ArmorDetailContent(
 						}
 					}
 				}
-				AnimatedVisibility(
-					visible = backButtonVisibleState,
-					enter = fadeIn(),
-					exit = fadeOut(),
-					modifier = Modifier
-                        .align(Alignment.TopStart)
-                        .padding(16.dp)
-				) {
-					FilledIconButton(
-						onClick = onBack,
-						shape = RoundedCornerShape(12.dp),
-						colors = IconButtonDefaults.filledIconButtonColors(
-							containerColor = ForestGreen10Dark,
-						),
-						modifier = Modifier.size(56.dp)
-					) {
-						Icon(
-							Icons.AutoMirrored.Rounded.ArrowBack,
-							contentDescription = "Back",
-							tint = Color.White
-						)
-					}
-				}
+				AnimatedBackButton(
+					modifier = Modifier.align(Alignment.TopStart)
+						.padding(16.dp),
+					scrollState = scrollState,
+					onBack = onBack
+				)
 			}
 
 		}
@@ -249,18 +216,18 @@ fun InfoSection(
 ) {
 	Column(
 		modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = BODY_CONTENT_PADDING.dp, vertical = 8.dp)
-            .border(
-                width = 1.dp,
-                color = YellowDTBorder,
-                shape = RoundedCornerShape(8.dp)
-            )
-            .background(
-                color = ForestGreen20Dark,
-                shape = RoundedCornerShape(8.dp)
-            )
-            .padding(horizontal = 16.dp, vertical = 12.dp)
+			.fillMaxWidth()
+			.padding(horizontal = BODY_CONTENT_PADDING.dp, vertical = 8.dp)
+			.border(
+				width = 1.dp,
+				color = YellowDTBorder,
+				shape = RoundedCornerShape(8.dp)
+			)
+			.background(
+				color = ForestGreen20Dark,
+				shape = RoundedCornerShape(8.dp)
+			)
+			.padding(horizontal = 16.dp, vertical = 12.dp)
 	) {
 		Text(
 			text = title,
