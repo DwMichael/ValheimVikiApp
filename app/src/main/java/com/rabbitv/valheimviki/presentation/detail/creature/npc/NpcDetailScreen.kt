@@ -79,7 +79,8 @@ import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
 import com.rabbitv.valheimviki.utils.FakeData.fakeNpcDetailUiState
 import com.rabbitv.valheimviki.utils.valid
-
+import androidx.compose.runtime.getValue
+import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 
 @Composable
 fun NpcDetailScreen(
@@ -104,6 +105,7 @@ fun NpcDetailContent(
     val isExpandable = remember { mutableStateOf(false) }
     val isExpandableLocation = remember { mutableStateOf(false) }
     val isExpandableBiography = remember { mutableStateOf(false) }
+    val scrollState = rememberScrollState()
     val headersShopTable = listOf<String>(
         "Name", "Icon", "Cost",
     )
@@ -137,156 +139,164 @@ fun NpcDetailContent(
     }
     Scaffold { padding ->
         uiState.npc?.let {
-            Column(
+            Box(
                 modifier = Modifier
-                    .testTag("NpcDetailScreen")
                     .fillMaxSize()
                     .padding(padding)
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.Top,
-                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                MainDetailImage(
-                    onBack = onBack,
-                    imageUrl = it.imageUrl.toString(),
-                    name = it.name,
-                    textAlign = TextAlign.Center
-                )
-                DetailExpandableText(
-                    text = it.description,
-                    collapsedMaxLine = 3,
-                    isExpanded = isExpandable
-                )
-                TridentsDividedRow(text = "NPC DETAIL")
-                if (uiState.biome != null) {
-                    CardWithOverlayLabel(
-                        painter = rememberAsyncImagePainter(uiState.biome.imageUrl),
-                        content = {
-                            Row {
-                                Box(
-                                    modifier = Modifier.fillMaxHeight()
-                                ) {
-                                    OverlayLabel(
-                                        icon = Lucide.TreePine,
-                                        label = " PRIMARY SPAWN",
+                Column(
+                    modifier = Modifier.verticalScroll(scrollState),
+                    verticalArrangement = Arrangement.Top,
+                    horizontalAlignment = Alignment.Start,
+                ) {
+                    MainDetailImage(
+                        imageUrl = it.imageUrl.toString(),
+                        name = it.name,
+                        textAlign = TextAlign.Center
+                    )
+                    DetailExpandableText(
+                        text = it.description,
+                        collapsedMaxLine = 3,
+                        isExpanded = isExpandable
+                    )
+                    TridentsDividedRow(text = "NPC DETAIL")
+                    if (uiState.biome != null) {
+                        CardWithOverlayLabel(
+                            painter = rememberAsyncImagePainter(uiState.biome.imageUrl),
+                            content = {
+                                Row {
+                                    Box(
+                                        modifier = Modifier.fillMaxHeight()
+                                    ) {
+                                        OverlayLabel(
+                                            icon = Lucide.TreePine,
+                                            label = " PRIMARY SPAWN",
+                                        )
+                                    }
+                                    Text(
+                                        uiState.biome.name.uppercase(),
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        modifier = Modifier
+                                            .align(Alignment.CenterVertically)
+                                            .fillMaxWidth()
+                                            .padding(8.dp),
+                                        color = Color.White,
+                                        textAlign = TextAlign.Center
                                     )
                                 }
-                                Text(
-                                    uiState.biome.name.uppercase(),
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    modifier = Modifier
-                                        .align(Alignment.CenterVertically)
-                                        .fillMaxWidth()
-                                        .padding(8.dp),
-                                    color = Color.White,
-                                    textAlign = TextAlign.Center
-                                )
-                            }
 
+                            }
+                        )
+                    }
+                    if (it.location.isNotBlank()) {
+                        Text(
+                            "Location",
+                            style = MaterialTheme.typography.titleLarge,
+                            modifier = Modifier
+                                .align(Alignment.Start)
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                            color = Color.White,
+                            textAlign = TextAlign.Start
+                        )
+                        DetailExpandableText(
+                            text = it.location,
+                            collapsedMaxLine = 3,
+                            isExpanded = isExpandableLocation
+                        )
+                    }
+                    if (it.biography.isNotBlank()) {
+                        TridentsDividedRow()
+                        Text(
+                            "Biography",
+                            style = MaterialTheme.typography.titleLarge,
+                            modifier = Modifier
+                                .align(Alignment.Start)
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                            color = Color.White,
+                            textAlign = TextAlign.Start
+                        )
+                        DetailExpandableText(
+                            text = it.biography,
+                            collapsedMaxLine = 3,
+                            isExpanded = isExpandableBiography
+                        )
+                    }
+                    if (uiState.npc.name == "Hildir" && uiState.chestsLocation.isNotEmpty() && uiState.hildirChests.isNotEmpty()) {
+                        SlavicDivider()
+                        TridentsDividedRow(text = "QUESTS")
+                        HildirQuestSection(
+                            chestsLocations = uiState.chestsLocation,
+                            chestList = uiState.hildirChests
+                        )
+                    }
+                    if (uiState.shopItems.isNotEmpty()) {
+                        TridentsDividedRow(text = "TRAIDING")
+                        Row(
+                            modifier = Modifier
+                                .padding(
+                                    top = BODY_CONTENT_PADDING.dp,
+                                    start = BODY_CONTENT_PADDING.dp,
+                                    end = BODY_CONTENT_PADDING.dp
+                                ),
+                            horizontalArrangement = Arrangement.Start,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.money_bag_24px),
+                                tint = Color.White,
+                                contentDescription = "Rectangle section Icon",
+                            )
+                            Spacer(modifier = Modifier.width(11.dp))
+                            Text(
+                                text = "Sells",
+                                style = MaterialTheme.typography.titleLarge,
+                            )
                         }
-                    )
-                }
-                if (it.location.isNotBlank()) {
-                    Text(
-                        "Location",
-                        style = MaterialTheme.typography.titleLarge,
-                        modifier = Modifier
-                            .align(Alignment.Start)
-                            .fillMaxWidth()
-                            .padding(8.dp),
-                        color = Color.White,
-                        textAlign = TextAlign.Start
-                    )
-                    DetailExpandableText(
-                        text = it.location,
-                        collapsedMaxLine = 3,
-                        isExpanded = isExpandableLocation
-                    )
-                }
-                if (it.biography.isNotBlank()) {
-                    TridentsDividedRow()
-                    Text(
-                        "Biography",
-                        style = MaterialTheme.typography.titleLarge,
-                        modifier = Modifier
-                            .align(Alignment.Start)
-                            .fillMaxWidth()
-                            .padding(8.dp),
-                        color = Color.White,
-                        textAlign = TextAlign.Start
-                    )
-                    DetailExpandableText(
-                        text = it.biography,
-                        collapsedMaxLine = 3,
-                        isExpanded = isExpandableBiography
-                    )
-                }
-                if (uiState.npc.name == "Hildir" && uiState.chestsLocation.isNotEmpty() && uiState.hildirChests.isNotEmpty()) {
-                    SlavicDivider()
-                    TridentsDividedRow(text = "QUESTS")
-                    HildirQuestSection(
-                        chestsLocations = uiState.chestsLocation,
-                        chestList = uiState.hildirChests
-                    )
-                }
-                if (uiState.shopItems.isNotEmpty()) {
-                    TridentsDividedRow(text = "TRAIDING")
-                    Row(
-                        modifier = Modifier
-                            .padding(
+                        ShopItemsTable(
+                            uiState.shopItems,
+                            headers = headersShopTable,
+                            modifier = sideBorder,
+                        )
+                    }
+                    if (uiState.shopSellItems.isNotEmpty()) {
+                        Row(
+                            modifier = Modifier.padding(
                                 top = BODY_CONTENT_PADDING.dp,
                                 start = BODY_CONTENT_PADDING.dp,
                                 end = BODY_CONTENT_PADDING.dp
                             ),
-                        horizontalArrangement = Arrangement.Start,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.money_bag_24px),
-                            tint = Color.White,
-                            contentDescription = "Rectangle section Icon",
-                        )
-                        Spacer(modifier = Modifier.width(11.dp))
-                        Text(
-                            text = "Sells",
-                            style = MaterialTheme.typography.titleLarge,
-                        )
-                    }
-                    ShopItemsTable(
-                        uiState.shopItems,
-                        headers = headersShopTable,
-                        modifier = sideBorder,
-                    )
-                }
-                if (uiState.shopSellItems.isNotEmpty()) {
-                    Row(
-                        modifier = Modifier.padding(
-                            top = BODY_CONTENT_PADDING.dp,
-                            start = BODY_CONTENT_PADDING.dp,
-                            end = BODY_CONTENT_PADDING.dp
-                        ),
-                        horizontalArrangement = Arrangement.Start,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.paid_24px),
-                            tint = Color.White,
-                            contentDescription = "Rectangle section Icon",
-                        )
-                        Spacer(modifier = Modifier.width(11.dp))
-                        Text(
-                            text = "Buys",
-                            style = MaterialTheme.typography.titleLarge,
+                            horizontalArrangement = Arrangement.Start,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.paid_24px),
+                                tint = Color.White,
+                                contentDescription = "Rectangle section Icon",
+                            )
+                            Spacer(modifier = Modifier.width(11.dp))
+                            Text(
+                                text = "Buys",
+                                style = MaterialTheme.typography.titleLarge,
+                            )
+                        }
+                        SellItemsTable(
+                            uiState.shopSellItems,
+                            headers = headersSellTable,
+                            modifier = sideBorder
                         )
                     }
-                    SellItemsTable(
-                        uiState.shopSellItems,
-                        headers = headersSellTable,
-                        modifier = sideBorder
-                    )
+                    SlavicDivider()
+                    Box(modifier = Modifier.size(45.dp))
                 }
-                SlavicDivider()
-                Box(modifier = Modifier.size(45.dp))
+                AnimatedBackButton(
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(16.dp),
+                    scrollState = scrollState,
+                    onBack = onBack
+                )
             }
         }
     }
