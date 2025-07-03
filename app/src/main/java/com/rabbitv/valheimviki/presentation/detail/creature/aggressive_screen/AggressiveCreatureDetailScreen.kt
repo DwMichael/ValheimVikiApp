@@ -53,6 +53,8 @@ import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.material.MaterialDrop
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
+import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDetailImage
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.creature.aggressive_screen.model.AggressiveCreatureDetailUiState
@@ -103,116 +105,131 @@ fun AggressiveCreatureDetailContent(
 					.fillMaxWidth(),
 				beyondViewportPageCount = aggressiveCreature.levels.size,
 			) { pageIndex ->
-				Column(
-					modifier = Modifier.verticalScroll(sharedScrollState),
-					verticalArrangement = Arrangement.Center,
-				) {
-					MainDetailImage(
-						onBack = onBack,
-						imageUrl = aggressiveCreature.levels[pageIndex].image.toString(),
-						name = aggressiveCreature.name,
-						textAlign = TextAlign.Center
-					)
-					PageIndicator(pagerState)
-					StarLevelRow(
-						levelsNumber = aggressiveCreature.levels.size,
-						pageIndex = pageIndex,
-						paddingValues = PaddingValues(BODY_CONTENT_PADDING.dp),
-						onClick = {
-							coroutineScope.launch {
-								pagerState.animateScrollToPage(it)
-							}
-						}
-					)
-					HorizontalDivider(
-						modifier = Modifier
-							.fillMaxWidth()
-							.padding(BODY_CONTENT_PADDING.dp),
-						thickness = 1.dp,
-						color = PrimaryWhite
-					)
-					DetailExpandableText(
-						text = aggressiveCreature.description,
-						collapsedMaxLine = 3,
-						isExpanded = isExpandable
-					)
-
-					TridentsDividedRow(text = "DETAILS")
-					uiState.biome?.let {
-						Text(
-							modifier = Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp),
-							text = "PRIMARY SPAWN",
-							textAlign = TextAlign.Left,
-							style = MaterialTheme.typography.titleSmall,
-							maxLines = 1,
-							overflow = TextOverflow.Visible
+				
+				Box(
+					modifier = Modifier
+						.fillMaxSize()
+						.padding(padding)
+				)  {
+					Column(
+						modifier = Modifier.verticalScroll(sharedScrollState),
+						verticalArrangement = Arrangement.Top,
+						horizontalAlignment = Alignment.Start,
+					) {
+						MainDetailImage(
+							imageUrl = aggressiveCreature.levels[pageIndex].image.toString(),
+							name = aggressiveCreature.name,
+							textAlign = TextAlign.Center
 						)
-						CardWithOverlayLabel(
-							painter = rememberAsyncImagePainter(uiState.biome.imageUrl),
-							content = {
-								Box(
-									modifier = Modifier
-										.fillMaxSize()
-										.wrapContentHeight(Alignment.CenterVertically)
-										.wrapContentWidth(Alignment.CenterHorizontally)
-								) {
-									Text(
-										it.name.uppercase(),
-										style = MaterialTheme.typography.bodyLarge,
-										modifier = Modifier,
-										color = Color.White,
-										textAlign = TextAlign.Center
-									)
+						PageIndicator(pagerState)
+						StarLevelRow(
+							levelsNumber = aggressiveCreature.levels.size,
+							pageIndex = pageIndex,
+							paddingValues = PaddingValues(BODY_CONTENT_PADDING.dp),
+							onClick = {
+								coroutineScope.launch {
+									pagerState.animateScrollToPage(it)
 								}
 							}
 						)
-					}
-					if (uiState.materialDrops.isNotEmpty()) {
+						HorizontalDivider(
+							modifier = Modifier
+								.fillMaxWidth()
+								.padding(BODY_CONTENT_PADDING.dp),
+							thickness = 1.dp,
+							color = PrimaryWhite
+						)
+						DetailExpandableText(
+							text = aggressiveCreature.description,
+							collapsedMaxLine = 3,
+							isExpanded = isExpandable
+						)
+
+						TridentsDividedRow(text = "DETAILS")
+						uiState.biome?.let {
+							Text(
+								modifier = Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp),
+								text = "PRIMARY SPAWN",
+								textAlign = TextAlign.Left,
+								style = MaterialTheme.typography.titleSmall,
+								maxLines = 1,
+								overflow = TextOverflow.Visible
+							)
+							CardWithOverlayLabel(
+								painter = rememberAsyncImagePainter(uiState.biome.imageUrl),
+								content = {
+									Box(
+										modifier = Modifier
+											.fillMaxSize()
+											.wrapContentHeight(Alignment.CenterVertically)
+											.wrapContentWidth(Alignment.CenterHorizontally)
+									) {
+										Text(
+											it.name.uppercase(),
+											style = MaterialTheme.typography.bodyLarge,
+											modifier = Modifier,
+											color = Color.White,
+											textAlign = TextAlign.Center
+										)
+									}
+								}
+							)
+						}
+						if (uiState.materialDrops.isNotEmpty()) {
+							SlavicDivider()
+							DroppedItemsSection(
+								list = uiState.materialDrops,
+								starLevel = pageIndex,
+								title = "Drop Items",
+								subTitle = "Materials that drop from creature after defeating",
+							)
+						}
+
+						if (uiState.foodDrops.isNotEmpty()) {
+							SlavicDivider()
+							DroppedItemsSection(
+								list = uiState.foodDrops,
+								icon = Lucide.Beef,
+								starLevel = pageIndex,
+								title = "Food Drops",
+								subTitle = "Food items that drop from creature and can be instanly eaten",
+							)
+						}
+
+						TridentsDividedRow(text = "BOSS STATS")
+						Box(
+							modifier = Modifier.padding(horizontal = 10.dp)
+						)
+						{
+							CardStatDetails(
+								title = stringResource(R.string.baseHp),
+								text = uiState.aggressiveCreature.levels[pageIndex].baseHp.toString(),
+								icon = Icons.Outlined.Favorite,
+								iconColor = Color.Red,
+								styleTextFirst = MaterialTheme.typography.labelSmall,
+								styleTextSecond = MaterialTheme.typography.bodyLarge,
+								iconSize = 36.dp
+							)
+						}
+
+
+						StatsFlowRow(
+							baseDamage = uiState.aggressiveCreature.levels[pageIndex].baseDamage,
+							weakness = uiState.aggressiveCreature.weakness,
+							resistance = uiState.aggressiveCreature.resistance,
+							abilities = uiState.aggressiveCreature.abilities,
+						)
 						SlavicDivider()
-						DroppedItemsSection(
-							list = uiState.materialDrops,
-							starLevel = pageIndex,
-							title = "Drop Items",
-							subTitle = "Materials that drop from creature after defeating",
-						)
+						Box(modifier = Modifier.size(45.dp))
 					}
-
-					if (uiState.foodDrops.isNotEmpty()) {
-						SlavicDivider()
-						DroppedItemsSection(
-							list = uiState.foodDrops,
-							icon = Lucide.Beef,
-							starLevel = pageIndex,
-							title = "Food Drops",
-							subTitle = "Food items that drop from creature and can be instanly eaten",
+					AnimatedBackButton(
+							modifier = Modifier
+								.align(Alignment.TopStart)
+								.padding(16.dp),
+							scrollState = sharedScrollState,
+							onBack = onBack
 						)
-					}
 
-					TridentsDividedRow(text = "BOSS STATS")
-					Box(
-						modifier = Modifier.padding(horizontal = 10.dp)
-					)
-					{
-						CardStatDetails(
-							title = stringResource(R.string.baseHp),
-							text = uiState.aggressiveCreature.levels[pageIndex].baseHp.toString(),
-							icon = Icons.Outlined.Favorite,
-							iconColor = Color.Red,
-							styleTextFirst = MaterialTheme.typography.labelSmall,
-							styleTextSecond = MaterialTheme.typography.bodyLarge,
-							iconSize = 36.dp
-						)
-					}
-
-
-					StatsFlowRow(
-						baseDamage = uiState.aggressiveCreature.levels[pageIndex].baseDamage,
-						weakness = uiState.aggressiveCreature.weakness,
-						resistance = uiState.aggressiveCreature.resistance,
-						abilities = uiState.aggressiveCreature.abilities,
-					)
-					SlavicDivider()
-					Box(modifier = Modifier.size(45.dp))
 				}
 			}
 		}
