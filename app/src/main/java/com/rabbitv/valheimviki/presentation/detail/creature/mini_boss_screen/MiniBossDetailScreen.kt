@@ -137,8 +137,8 @@ fun MiniBossContent(
 				if (isLoading) {
 					Box(
 						modifier = Modifier
-                            .fillMaxSize()
-                            .padding(padding),
+							.fillMaxSize()
+							.padding(padding),
 						contentAlignment = Alignment.Center
 					) {
 						Box(modifier = Modifier.size(45.dp))
@@ -152,14 +152,14 @@ fun MiniBossContent(
 					)
 					Box(
 						modifier = Modifier
-                            .fillMaxSize()
-                            .padding(padding)
+							.fillMaxSize()
+							.padding(padding)
 					) {
 						Column(
 							modifier = Modifier
-                                .testTag("MiniBossDetailScreen")
-                                .fillMaxSize()
-                                .verticalScroll(scrollState, enabled = !isRunning),
+								.testTag("MiniBossDetailScreen")
+								.fillMaxSize()
+								.verticalScroll(scrollState, enabled = !isRunning),
 							verticalArrangement = Arrangement.Top,
 							horizontalAlignment = Alignment.Start,
 						) {
@@ -187,9 +187,9 @@ fun MiniBossContent(
 									content = {
 										Box(
 											modifier = Modifier
-                                                .fillMaxSize()
-                                                .wrapContentHeight(Alignment.CenterVertically)
-                                                .wrapContentWidth(Alignment.CenterHorizontally)
+												.fillMaxSize()
+												.wrapContentHeight(Alignment.CenterVertically)
+												.wrapContentWidth(Alignment.CenterHorizontally)
 										) {
 											Text(
 												it.name.uppercase(),
@@ -251,8 +251,8 @@ fun MiniBossContent(
 						if (!isRunning) {
 							AnimatedBackButton(
 								modifier = Modifier
-                                    .align(Alignment.TopStart)
-                                    .padding(16.dp),
+									.align(Alignment.TopStart)
+									.padding(16.dp),
 								scrollState = scrollState,
 								onBack = onBack,
 							)
