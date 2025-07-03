@@ -27,14 +27,14 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
-import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
-import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
+import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.card.LevelInfoCard
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
-import com.rabbitv.valheimviki.presentation.components.dividers.trident_divider.TridentsDividedRow
+import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.weapon.model.WeaponUiState
 import com.rabbitv.valheimviki.presentation.detail.weapon.viewmodel.WeaponDetailViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
@@ -74,17 +74,17 @@ fun WeaponDetailContent(
 		uiState.weapon?.let { weapon ->
 			Box(
 				modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
+					.fillMaxSize()
+					.padding(innerPadding)
 			) {
 				Column(
 					modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(scrollState)
-                        .padding(
-                            top = 20.dp,
-                            bottom = 70.dp
-                        ),
+						.fillMaxSize()
+						.verticalScroll(scrollState)
+						.padding(
+							top = 20.dp,
+							bottom = 70.dp
+						),
 					horizontalAlignment = Alignment.CenterHorizontally,
 					verticalArrangement = Arrangement.Top,
 				) {
@@ -143,8 +143,8 @@ fun WeaponDetailContent(
 				}
 				AnimatedBackButton(
 					modifier = Modifier
-                        .align(Alignment.TopStart)
-                        .padding(16.dp),
+						.align(Alignment.TopStart)
+						.padding(16.dp),
 					scrollState = scrollState,
 					onBack = onBack
 				)

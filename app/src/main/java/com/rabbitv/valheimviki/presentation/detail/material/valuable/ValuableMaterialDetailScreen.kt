@@ -32,14 +32,14 @@ import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.MapPinned
 import com.composables.icons.lucide.Rabbit
 import com.composables.icons.lucide.ShoppingBag
-import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
-import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
+import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
-import com.rabbitv.valheimviki.presentation.components.dividers.trident_divider.TridentsDividedRow
+import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.material.valuable.model.ValuableMaterialUiState
 import com.rabbitv.valheimviki.presentation.detail.material.valuable.viewmodel.ValuableMaterialDetailViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
@@ -71,21 +71,6 @@ fun ValuableMaterialDetailContent(
 
 	val scrollState = rememberScrollState()
 	val previousScrollValue = remember { mutableIntStateOf(0) }
-
-	val backButtonVisibleState by remember {
-		derivedStateOf {
-			val currentScroll = scrollState.value
-			val previous = previousScrollValue.intValue
-			val isVisible = when {
-				currentScroll == 0 -> true
-				currentScroll < previous -> true
-				currentScroll > previous -> false
-				else -> true
-			}
-			previousScrollValue.intValue = currentScroll
-			isVisible
-		}
-	}
 
 	val isExpandable = remember { mutableStateOf(false) }
 
@@ -159,14 +144,14 @@ fun ValuableMaterialDetailContent(
 							data = pointsOfInterestData,
 						)
 					}
-					if(uiState.creatures.isNotEmpty()){
+					if (uiState.creatures.isNotEmpty()) {
 						TridentsDividedRow()
 						HorizontalPagerSection(
 							list = uiState.creatures,
 							data = creatureData,
 						)
 					}
-					if(uiState.npc.isNotEmpty()){
+					if (uiState.npc.isNotEmpty()) {
 						TridentsDividedRow()
 						HorizontalPagerSection(
 							list = uiState.npc,

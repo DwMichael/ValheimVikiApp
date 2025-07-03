@@ -139,10 +139,10 @@ fun ToolDetailContent(
 						boxPadding = BODY_CONTENT_PADDING.dp,
 						isExpanded = isExpandable
 					)
-					SlavicDivider()
+
 
 					if (uiState.relatedMaterials.isNotEmpty() && uiState.tool.upgradeInfoList.isNullOrEmpty()) {
-
+						SlavicDivider()
 						Box(
 							modifier = Modifier
 								.fillMaxWidth()
@@ -175,6 +175,7 @@ fun ToolDetailContent(
 						}
 					}
 					if (!tool.upgradeInfoList.isNullOrEmpty()) {
+						SlavicDivider()
 						Text(
 							"Upgrade Information",
 							modifier = Modifier.padding(
