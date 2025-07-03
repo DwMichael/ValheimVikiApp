@@ -84,8 +84,8 @@ dependencies {
 	///IF SOMETHING AGAIN WILL TURN OFF BC OF LIBRARIES THEN USE DOES UNDER WITH NEWER VERSION
 
 	implementation(libs.okhttp)
-	implementation("com.squareup.retrofit2:retrofit:3.0.0")
-	implementation("com.squareup.retrofit2:converter-gson:3.0.0")
+	implementation(libs.retrofit)
+	implementation(libs.converter.gson)
 	implementation("androidx.core:core-splashscreen:1.0.1")
 	implementation("androidx.navigation:navigation-compose:2.9.0")
 	androidTestImplementation("androidx.navigation:navigation-testing:2.9.0")
@@ -95,8 +95,7 @@ dependencies {
 	ksp("com.google.dagger:hilt-android-compiler:2.56.2")
 	implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
-	
-	implementation("androidx.constraintlayout:constraintlayout:2.2.1")
+	implementation("androidx.appcompat:appcompat:1.7.1")
 	implementation("com.composables:icons-lucide:1.1.0")
 
 
