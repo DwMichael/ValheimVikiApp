@@ -58,6 +58,7 @@ import com.rabbitv.valheimviki.domain.repository.Droppable
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
+import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCard
 import com.rabbitv.valheimviki.presentation.components.flow_row.flow_as_grid.TwoColumnGrid
@@ -293,7 +294,6 @@ fun MeadDetailContent(
 						if (showStatsSection || showRecipeSection) {
 							SlavicDivider()
 						}
-
 						CardImageWithTopLabel(
 							itemData = uiState.craftingCookingStation,
 							subTitle = if (category == MeadSubCategory.MEAD_BASE) "Requires cooking station" else "Requires fermenting station",
@@ -303,29 +303,13 @@ fun MeadDetailContent(
 					}
 				}
 			}
-			AnimatedVisibility(
-				visible = backButtonVisibleState,
-				enter = fadeIn(),
-				exit = fadeOut(),
+			AnimatedBackButton(
 				modifier = Modifier
 					.align(Alignment.TopStart)
-					.padding(16.dp)
-			) {
-				FilledIconButton(
-					onClick = onBack,
-					shape = RoundedCornerShape(12.dp),
-					colors = IconButtonDefaults.filledIconButtonColors(
-						containerColor = ForestGreen10Dark,
-					),
-					modifier = Modifier.size(56.dp)
-				) {
-					Icon(
-						Icons.AutoMirrored.Rounded.ArrowBack,
-						contentDescription = "Back",
-						tint = Color.White
-					)
-				}
-			}
+					.padding(16.dp),
+				scrollState = scrollState,
+				onBack = onBack
+			)
 		}
 	}
 }
