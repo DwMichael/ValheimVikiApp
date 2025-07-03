@@ -52,6 +52,8 @@ import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
 import com.rabbitv.valheimviki.navigation.LocalSharedTransitionScope
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
+import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDetailImageAnimated
@@ -93,7 +95,6 @@ fun OreDepositDetailContent(
 ) {
 	val isRunning by remember { derivedStateOf { animatedVisibilityScope.transition.isRunning } }
 	val scrollState = rememberScrollState()
-	val mainPainter = painterResource(id = R.drawable.main_background)
 	val pickaxesData = HorizontalPagerData(
 		title = "Pickaxes",
 		subTitle = "List of pickaxes that can mine this ore out",
@@ -149,93 +150,101 @@ fun OreDepositDetailContent(
 					Box(modifier = Modifier.size(45.dp))
 				}
 			} else if (uiState.oreDeposit != null) {
-				Image(
-					painter = mainPainter,
-					contentDescription = "BackgroundImage",
-					contentScale = ContentScale.Crop,
-					modifier = Modifier.fillMaxSize(),
-				)
-				Column(
+				BgImage()
+				Box(
 					modifier = Modifier
-						.testTag("BiomeDetailScreen")
 						.fillMaxSize()
 						.padding(padding)
-						.verticalScroll(scrollState, enabled = !isRunning),
-					verticalArrangement = Arrangement.Top,
-					horizontalAlignment = Alignment.Start,
 				) {
-					MainDetailImageAnimated(
-						onBack = onBack,
-						sharedTransitionScope = sharedTransitionScope,
-						animatedVisibilityScope = animatedVisibilityScope,
-						id = uiState.oreDeposit.id,
-						imageUrl = uiState.oreDeposit.imageUrl,
-						title = uiState.oreDeposit.name
-					)
-
-					DetailExpandableText(
-						text = uiState.oreDeposit.description.toString(),
-						boxPadding = BODY_CONTENT_PADDING.dp
-					)
-					if (uiState.relatedBiomes.isNotEmpty()) {
-						SlavicDivider()
-						Text(
-							modifier = Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp),
-							text = "PRIMARY SPAWNS",
-							textAlign = TextAlign.Left,
-							style = MaterialTheme.typography.titleSmall,
-							maxLines = 1,
-							overflow = TextOverflow.Visible
+					Column(
+						modifier = Modifier
+							.testTag("OreDepositDetailScreen")
+							.fillMaxSize()
+							.verticalScroll(scrollState, enabled = !isRunning),
+						verticalArrangement = Arrangement.Top,
+						horizontalAlignment = Alignment.Start,
+					) {
+						MainDetailImageAnimated(
+							sharedTransitionScope = sharedTransitionScope,
+							animatedVisibilityScope = animatedVisibilityScope,
+							id = uiState.oreDeposit.id,
+							imageUrl = uiState.oreDeposit.imageUrl,
+							title = uiState.oreDeposit.name
 						)
-						uiState.relatedBiomes.forEach { biome ->
-							CardWithOverlayLabel(
-								painter = rememberAsyncImagePainter(biome.imageUrl),
-								content = {
-									Box(
-										modifier = Modifier
-											.fillMaxSize()
-											.wrapContentHeight(Alignment.CenterVertically)
-											.wrapContentWidth(Alignment.CenterHorizontally)
-									) {
-										Text(
-											biome.name.uppercase(),
-											style = MaterialTheme.typography.bodyLarge,
-											modifier = Modifier,
-											color = Color.White,
-											textAlign = TextAlign.Center
-										)
-									}
-								}
+
+						DetailExpandableText(
+							text = uiState.oreDeposit.description.toString(),
+							boxPadding = BODY_CONTENT_PADDING.dp
+						)
+						if (uiState.relatedBiomes.isNotEmpty()) {
+							SlavicDivider()
+							Text(
+								modifier = Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp),
+								text = "PRIMARY SPAWNS",
+								textAlign = TextAlign.Left,
+								style = MaterialTheme.typography.titleSmall,
+								maxLines = 1,
+								overflow = TextOverflow.Visible
 							)
+							uiState.relatedBiomes.forEach { biome ->
+								CardWithOverlayLabel(
+									painter = rememberAsyncImagePainter(biome.imageUrl),
+									content = {
+										Box(
+											modifier = Modifier
+												.fillMaxSize()
+												.wrapContentHeight(Alignment.CenterVertically)
+												.wrapContentWidth(Alignment.CenterHorizontally)
+										) {
+											Text(
+												biome.name.uppercase(),
+												style = MaterialTheme.typography.bodyLarge,
+												modifier = Modifier,
+												color = Color.White,
+												textAlign = TextAlign.Center
+											)
+										}
+									}
+								)
+							}
+
 						}
 
+						if (uiState.relatedTools.isNotEmpty()) {
+							TridentsDividedRow()
+							HorizontalPagerSection(
+								list = uiState.relatedTools,
+								data = pickaxesData,
+							)
+						}
+						if (uiState.craftingStation.isNotEmpty()) {
+							TridentsDividedRow()
+							HorizontalPagerSection(
+								list = uiState.craftingStation,
+								data = craftingObjectData,
+							)
+						}
+						if (uiState.relatedMaterials.isNotEmpty()) {
+							TridentsDividedRow()
+							DroppedItemsSection(
+								list = uiState.relatedMaterials,
+								icon = Lucide.Gem,
+								starLevel = 0,
+								title = "Materials",
+								subTitle = "Unique drops are obtained by mining this ore",
+							)
+						}
+						Box(modifier = Modifier.size(45.dp))
 					}
-
-					if (uiState.relatedTools.isNotEmpty()) {
-						TridentsDividedRow()
-						HorizontalPagerSection(
-							list = uiState.relatedTools,
-							data = pickaxesData,
+					if(!isRunning) {
+						AnimatedBackButton(
+							modifier = Modifier
+								.align(Alignment.TopStart)
+								.padding(16.dp),
+							scrollState = scrollState,
+							onBack = onBack,
 						)
 					}
-					if (uiState.craftingStation.isNotEmpty()) {
-						TridentsDividedRow()
-						HorizontalPagerSection(
-							list = uiState.craftingStation,
-							data = craftingObjectData,
-						)
-					}
-					if (uiState.relatedMaterials.isNotEmpty()) {
-						TridentsDividedRow()
-						DroppedItemsSection(
-							list = uiState.relatedMaterials,
-							icon = Lucide.Gem,
-							starLevel = 0,
-							title = "Materials",
-							subTitle = "Unique drops are obtained by mining this ore",
-						)
-					}
-					Box(modifier = Modifier.size(45.dp))
 				}
 			} else {
 				Box(
