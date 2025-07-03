@@ -138,8 +138,8 @@ fun NpcDetailContent(
 		uiState.npc?.let {
 			Box(
 				modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
+					.fillMaxSize()
+					.padding(padding)
 			) {
 				Column(
 					modifier = Modifier.verticalScroll(scrollState),
@@ -174,9 +174,9 @@ fun NpcDetailContent(
 										uiState.biome.name.uppercase(),
 										style = MaterialTheme.typography.bodyLarge,
 										modifier = Modifier
-                                            .align(Alignment.CenterVertically)
-                                            .fillMaxWidth()
-                                            .padding(8.dp),
+											.align(Alignment.CenterVertically)
+											.fillMaxWidth()
+											.padding(8.dp),
 										color = Color.White,
 										textAlign = TextAlign.Center
 									)
@@ -190,9 +190,9 @@ fun NpcDetailContent(
 							"Location",
 							style = MaterialTheme.typography.titleLarge,
 							modifier = Modifier
-                                .align(Alignment.Start)
-                                .fillMaxWidth()
-                                .padding(8.dp),
+								.align(Alignment.Start)
+								.fillMaxWidth()
+								.padding(8.dp),
 							color = Color.White,
 							textAlign = TextAlign.Start
 						)
@@ -208,9 +208,9 @@ fun NpcDetailContent(
 							"Biography",
 							style = MaterialTheme.typography.titleLarge,
 							modifier = Modifier
-                                .align(Alignment.Start)
-                                .fillMaxWidth()
-                                .padding(8.dp),
+								.align(Alignment.Start)
+								.fillMaxWidth()
+								.padding(8.dp),
 							color = Color.White,
 							textAlign = TextAlign.Start
 						)
@@ -289,8 +289,8 @@ fun NpcDetailContent(
 				}
 				AnimatedBackButton(
 					modifier = Modifier
-                        .align(Alignment.TopStart)
-                        .padding(16.dp),
+						.align(Alignment.TopStart)
+						.padding(16.dp),
 					scrollState = scrollState,
 					onBack = onBack
 				)
@@ -308,9 +308,9 @@ fun HildirQuestSection(
 
 	Column(
 		modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .padding(BODY_CONTENT_PADDING.dp)
+			.fillMaxWidth()
+			.wrapContentHeight()
+			.padding(BODY_CONTENT_PADDING.dp)
 	) {
 		Text(
 			text = stringResource(R.string.hildir_text_first),
@@ -320,9 +320,9 @@ fun HildirQuestSection(
 		Row(
 			horizontalArrangement = Arrangement.SpaceBetween,
 			modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .horizontalScroll(rememberScrollState())
+				.fillMaxWidth()
+				.wrapContentHeight()
+				.horizontalScroll(rememberScrollState())
 		) {
 			chestsLocations.forEach { pointOfInterest ->
 				CardItemData(pointOfInterest)
@@ -353,9 +353,9 @@ fun HildirQuestSection(
 		Spacer(modifier = Modifier.padding(10.dp))
 		Row(
 			modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .horizontalScroll(rememberScrollState())
+				.fillMaxWidth()
+				.wrapContentHeight()
+				.horizontalScroll(rememberScrollState())
 		) {
 			chestList.forEach { chests ->
 				CardItemData(chests)
@@ -382,21 +382,21 @@ fun CardItemData(
 ) {
 	Card(
 		Modifier
-            .size(150.dp)
-            .shadow(
-                elevation = 8.dp,
-                shape = RoundedCornerShape(8.dp),
-                spotColor = Color.White.copy(alpha = 0.25f)
-            )
-            .padding(8.dp)
+			.size(150.dp)
+			.shadow(
+				elevation = 8.dp,
+				shape = RoundedCornerShape(8.dp),
+				spotColor = Color.White.copy(alpha = 0.25f)
+			)
+			.padding(8.dp)
 	) {
 		Box(
 			modifier = Modifier.wrapContentHeight()
 		) {
 			AsyncImage(
 				modifier = Modifier
-                    .fillMaxSize()
-                    .background(DarkGrey),
+					.fillMaxSize()
+					.background(DarkGrey),
 				model = ImageRequest.Builder(LocalContext.current)
 					.data(pointOfInterest.imageUrl)
 					.crossfade(true)
@@ -406,18 +406,18 @@ fun CardItemData(
 			)
 			Surface(
 				modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .fillMaxHeight(0.2f)
-                    .fillMaxWidth(),
+					.align(Alignment.BottomStart)
+					.fillMaxHeight(0.2f)
+					.fillMaxWidth(),
 				tonalElevation = 0.dp,
 				color = Color.Black.copy(alpha = ContentAlpha.medium),
 			) {
 
 				Text(
 					modifier = Modifier
-                        .padding
-                            (horizontal = 5.dp)
-                        .wrapContentHeight(align = Alignment.CenterVertically),
+						.padding
+							(horizontal = 5.dp)
+						.wrapContentHeight(align = Alignment.CenterVertically),
 					text = pointOfInterest.name,
 					maxLines = 1,
 					overflow = TextOverflow.Ellipsis,
@@ -438,18 +438,18 @@ fun SellItemsTable(
 ) {
 	Column(
 		modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .padding(BODY_CONTENT_PADDING.dp),
+			.fillMaxWidth()
+			.wrapContentHeight()
+			.padding(BODY_CONTENT_PADDING.dp),
 	) {
 		TableHeader(headers, textAlign = TextAlign.Start)
 		itemList.forEach {
 			Row(
 				modifier = Modifier
-                    .fillMaxWidth()
-                    .height(IntrinsicSize.Min)
-                    .then(modifier)
-                    .padding(8.dp),
+					.fillMaxWidth()
+					.height(IntrinsicSize.Min)
+					.then(modifier)
+					.padding(8.dp),
 				verticalAlignment = Alignment.CenterVertically,
 			) {
 				Text(
@@ -459,8 +459,8 @@ fun SellItemsTable(
 				)
 				Box(
 					modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth(),
+						.weight(1f)
+						.fillMaxWidth(),
 					contentAlignment = Alignment.Center
 				) {
 					AsyncImage(
@@ -505,18 +505,18 @@ fun ShopItemsTable(
 
 	Column(
 		modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .padding(BODY_CONTENT_PADDING.dp),
+			.fillMaxWidth()
+			.wrapContentHeight()
+			.padding(BODY_CONTENT_PADDING.dp),
 	) {
 		TableHeader(headers)
 		itemList.forEach {
 			Column(
 				modifier = Modifier
-                    .fillMaxWidth()
-                    .height(IntrinsicSize.Min)
-                    .then(modifier)
-                    .padding(8.dp),
+					.fillMaxWidth()
+					.height(IntrinsicSize.Min)
+					.then(modifier)
+					.padding(8.dp),
 			) {
 				Row(
 					modifier = Modifier
@@ -530,8 +530,8 @@ fun ShopItemsTable(
 					)
 					Box(
 						modifier = Modifier
-                            .weight(1f)
-                            .fillMaxWidth(),
+							.weight(1f)
+							.fillMaxWidth(),
 						contentAlignment = Alignment.Center
 					) {
 						AsyncImage(
@@ -591,40 +591,40 @@ fun TableHeader(
 ) {
 	Row(
 		modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .drawBehind {
-                val strokeWidth = 2.dp.toPx()
-                //TOP BORDER
-                drawLine(
-                    color = DarkWood,
-                    start = Offset(0f, 0f),
-                    end = Offset(size.width, 0f),
-                    strokeWidth = strokeWidth
-                )
-                //BOTTOM BORDER
-                drawLine(
-                    color = DarkWood,
-                    start = Offset(0f, size.height),
-                    end = Offset(size.width, size.height),
-                    strokeWidth = strokeWidth
-                )
-                ///LEFT BORDER
-                drawLine(
-                    color = DarkWood,
-                    start = Offset(0f, 0f),
-                    end = Offset(0f, size.height),
-                    strokeWidth = strokeWidth
-                )
-                //RIGHT BORDER
-                drawLine(
-                    color = DarkWood,
-                    start = Offset(size.width, 0f),
-                    end = Offset(size.width, size.height),
-                    strokeWidth = strokeWidth
-                )
-            }
-            .padding(start = 8.dp)
+			.fillMaxWidth()
+			.wrapContentHeight()
+			.drawBehind {
+				val strokeWidth = 2.dp.toPx()
+				//TOP BORDER
+				drawLine(
+					color = DarkWood,
+					start = Offset(0f, 0f),
+					end = Offset(size.width, 0f),
+					strokeWidth = strokeWidth
+				)
+				//BOTTOM BORDER
+				drawLine(
+					color = DarkWood,
+					start = Offset(0f, size.height),
+					end = Offset(size.width, size.height),
+					strokeWidth = strokeWidth
+				)
+				///LEFT BORDER
+				drawLine(
+					color = DarkWood,
+					start = Offset(0f, 0f),
+					end = Offset(0f, size.height),
+					strokeWidth = strokeWidth
+				)
+				//RIGHT BORDER
+				drawLine(
+					color = DarkWood,
+					start = Offset(size.width, 0f),
+					end = Offset(size.width, size.height),
+					strokeWidth = strokeWidth
+				)
+			}
+			.padding(start = 8.dp)
 	) {
 		headers.forEach {
 			Text(
