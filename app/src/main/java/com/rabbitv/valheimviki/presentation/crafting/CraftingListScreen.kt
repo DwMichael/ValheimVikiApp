@@ -33,6 +33,7 @@ import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingSubCategory
 import com.rabbitv.valheimviki.domain.model.ui_state.category_state.UiCategoryState
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.ListContent
+
 import com.rabbitv.valheimviki.presentation.components.chip.ChipData
 import com.rabbitv.valheimviki.presentation.components.chip.CustomElevatedFilterChip
 import com.rabbitv.valheimviki.presentation.components.chip.SearchFilterBar
@@ -127,7 +128,8 @@ fun ArmorListDisplay(
 		when (val state = craftingObjectListUiState) {
 			is UiCategoryState.Error<CraftingSubCategory?> -> EmptyScreen(errorMessage = state.message.toString())
 			is UiCategoryState.Loading<CraftingSubCategory?> -> ShimmerListEffect()
-			is UiCategoryState.Success<CraftingSubCategory?, CraftingObject> -> ListContent(
+			is UiCategoryState.Success<CraftingSubCategory?, CraftingObject> ->
+				ListContent(
 				items = state.list,
 				clickToNavigate = onItemClick,
 				lazyListState = lazyListState,
