@@ -52,7 +52,6 @@ import com.rabbitv.valheimviki.utils.FakeData.generateFakeMaterials
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun MainDetailImageAnimated(
-    onBack: () -> Unit = {},
     id: String,
     imageUrl: String,
     title: String,
@@ -60,10 +59,6 @@ fun MainDetailImageAnimated(
     animatedVisibilityScope: AnimatedVisibilityScope,
     textAlign: TextAlign = TextAlign.Center,
 ) {
-    val isRunning by remember { derivedStateOf { animatedVisibilityScope.transition.isRunning } }
-    BackHandler(enabled = isRunning) {
-    }
-    Box(modifier = Modifier.fillMaxSize()) {
         with(sharedTransitionScope) {
             val imageState = rememberSharedContentState("image-$id")
             val surfaceState = rememberSharedContentState("surface-$id")
@@ -86,7 +81,7 @@ fun MainDetailImageAnimated(
                             .data(imageUrl)
                             .placeholderMemoryCacheKey("image--$id")
                             .memoryCacheKey("image--$id")
-                            .crossfade(!isRunning)
+                            .crossfade(false)
                             .build(),
                         contentDescription = stringResource(R.string.item_grid_image),
                         contentScale = ContentScale.Crop,
@@ -118,36 +113,11 @@ fun MainDetailImageAnimated(
                                     animatedVisibilityScope, placeHolderSize = animatedSize,
                                 )
                                 .wrapContentHeight(Alignment.CenterVertically)
-
                         )
                     }
                 }
             }
-        }
 
-        AnimatedVisibility(
-            visible = !isRunning,
-            enter = fadeIn(),
-            exit = fadeOut(),
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(16.dp)
-        ) {
-            FilledIconButton(
-                onClick = onBack,
-                shape = RoundedCornerShape(12.dp),
-                colors = IconButtonDefaults.filledIconButtonColors(
-                    containerColor = ForestGreen10Dark,
-                ),
-                modifier = Modifier.size(56.dp)
-            ) {
-                Icon(
-                    Icons.AutoMirrored.Rounded.ArrowBack,
-                    contentDescription = "Back",
-                    tint = Color.White
-                )
-            }
-        }
     }
 }
 
@@ -160,7 +130,6 @@ fun PreviewMainDetailImageAnimated() {
             AnimatedVisibility(true) {
                 val itemsData = generateFakeMaterials()
                 MainDetailImageAnimated(
-                    onBack = {},
 
 
                     sharedTransitionScope = this@SharedTransitionLayout,
