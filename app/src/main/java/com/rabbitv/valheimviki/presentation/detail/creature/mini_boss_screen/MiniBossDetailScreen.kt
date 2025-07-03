@@ -51,6 +51,7 @@ import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.navigation.LocalSharedTransitionScope
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDetailImageAnimated
@@ -66,188 +67,201 @@ import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun MiniBossDetailScreen(
-    onBack: () -> Unit,
-    viewModel: MiniBossDetailScreenViewModel = hiltViewModel(),
-    animatedVisibilityScope: AnimatedVisibilityScope,
+	onBack: () -> Unit,
+	viewModel: MiniBossDetailScreenViewModel = hiltViewModel(),
+	animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
-    val miniBossUiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val sharedTransitionScope = LocalSharedTransitionScope.current
-        ?: throw IllegalStateException("No Scope found")
+	val miniBossUiState by viewModel.uiState.collectAsStateWithLifecycle()
+	val sharedTransitionScope = LocalSharedTransitionScope.current
+		?: throw IllegalStateException("No Scope found")
 
-    MiniBossContent(
-        onBack = onBack,
-        miniBossUiSate = miniBossUiState,
-        sharedTransitionScope = sharedTransitionScope,
-        animatedVisibilityScope = animatedVisibilityScope
-    )
+	MiniBossContent(
+		onBack = onBack,
+		miniBossUiSate = miniBossUiState,
+		sharedTransitionScope = sharedTransitionScope,
+		animatedVisibilityScope = animatedVisibilityScope
+	)
 }
 
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun MiniBossContent(
-    miniBossUiSate: MiniBossDetailUiState,
-    onBack: () -> Unit,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedVisibilityScope: AnimatedVisibilityScope
+	miniBossUiSate: MiniBossDetailUiState,
+	onBack: () -> Unit,
+	sharedTransitionScope: SharedTransitionScope,
+	animatedVisibilityScope: AnimatedVisibilityScope
 ) {
-    val isRunning by remember { derivedStateOf { animatedVisibilityScope.transition.isRunning } }
-    val scrollState = rememberScrollState()
-    val dropItemData = HorizontalPagerData(
-        title = "Drop Items",
-        subTitle = "Items that drop from boss after defeating him",
-        icon = Lucide.Trophy,
-        iconRotationDegrees = 0f,
-        itemContentScale = ContentScale.Crop,
-    )
+	val isRunning by remember { derivedStateOf { animatedVisibilityScope.transition.isRunning } }
+	val scrollState = rememberScrollState()
+	val dropItemData = HorizontalPagerData(
+		title = "Drop Items",
+		subTitle = "Items that drop from boss after defeating him",
+		icon = Lucide.Trophy,
+		iconRotationDegrees = 0f,
+		itemContentScale = ContentScale.Crop,
+	)
 
-    Scaffold(
-        content = { padding ->
-            AnimatedContent(
-                targetState = miniBossUiSate.isLoading,
-                modifier = Modifier.fillMaxSize(),
-                transitionSpec = {
-                    if (targetState == false && initialState == true) {
-                        fadeIn(
-                            animationSpec = tween(
-                                durationMillis = 650,
-                                delayMillis = 0
-                            )
-                        ) + slideInVertically(
-                            initialOffsetY = { height -> height / 25 },
-                            animationSpec = tween(
-                                durationMillis = 650,
-                                delayMillis = 0,
-                                easing = EaseOutCubic
-                            )
-                        ) togetherWith
-                                fadeOut(
-                                    animationSpec = tween(
-                                        durationMillis = 200
-                                    )
-                                )
-                    } else {
-                        fadeIn(animationSpec = tween(durationMillis = 300)) togetherWith
-                                fadeOut(animationSpec = tween(durationMillis = 300))
-                    }
-                },
-                label = "LoadingStateTransition"
-            ) { isLoading ->
-                if (isLoading) {
-                    Box(
-                        modifier = Modifier
+	Scaffold(
+		content = { padding ->
+			AnimatedContent(
+				targetState = miniBossUiSate.isLoading,
+				modifier = Modifier.fillMaxSize(),
+				transitionSpec = {
+					if (targetState == false && initialState == true) {
+						fadeIn(
+							animationSpec = tween(
+								durationMillis = 650,
+								delayMillis = 0
+							)
+						) + slideInVertically(
+							initialOffsetY = { height -> height / 25 },
+							animationSpec = tween(
+								durationMillis = 650,
+								delayMillis = 0,
+								easing = EaseOutCubic
+							)
+						) togetherWith
+								fadeOut(
+									animationSpec = tween(
+										durationMillis = 200
+									)
+								)
+					} else {
+						fadeIn(animationSpec = tween(durationMillis = 300)) togetherWith
+								fadeOut(animationSpec = tween(durationMillis = 300))
+					}
+				},
+				label = "LoadingStateTransition"
+			) { isLoading ->
+				if (isLoading) {
+					Box(
+						modifier = Modifier
                             .fillMaxSize()
                             .padding(padding),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Box(modifier = Modifier.size(45.dp))
-                    }
-                } else if (miniBossUiSate.miniBoss != null) {
-                    Image(
-                        painter = painterResource(id = R.drawable.main_background),
-                        contentDescription = "BackgroundImage",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxSize(),
-                    )
-                    Column(
-                        modifier = Modifier
-                            .testTag("BiomeDetailScreen")
+						contentAlignment = Alignment.Center
+					) {
+						Box(modifier = Modifier.size(45.dp))
+					}
+				} else if (miniBossUiSate.miniBoss != null) {
+					Image(
+						painter = painterResource(id = R.drawable.main_background),
+						contentDescription = "BackgroundImage",
+						contentScale = ContentScale.Crop,
+						modifier = Modifier.fillMaxSize(),
+					)
+					Box(
+						modifier = Modifier
                             .fillMaxSize()
                             .padding(padding)
-                            .verticalScroll(scrollState, enabled = !isRunning),
-                        verticalArrangement = Arrangement.Top,
-                        horizontalAlignment = Alignment.Start,
-                    ) {
-                        MainDetailImageAnimated(
-                            onBack = onBack,
-                            sharedTransitionScope = sharedTransitionScope,
-                            animatedVisibilityScope = animatedVisibilityScope,
-                            textAlign = TextAlign.Center,
-                            id = miniBossUiSate.miniBoss.id,
-                            imageUrl = miniBossUiSate.miniBoss.imageUrl,
-                            title = miniBossUiSate.miniBoss.name
-                        )
-                        DetailExpandableText(text = miniBossUiSate.miniBoss.description.toString())
-                        TridentsDividedRow(text = "BOSS DETAIL")
-                        miniBossUiSate.primarySpawn?.let {
-                            Text(
-                                modifier = Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp),
-                                text = "PRIMARY SPAWN",
-                                textAlign = TextAlign.Left,
-                                style = MaterialTheme.typography.titleSmall,
-                                maxLines = 1,
-                                overflow = TextOverflow.Visible
-                            )
-                            CardWithOverlayLabel(
-                                painter = rememberAsyncImagePainter(miniBossUiSate.primarySpawn.imageUrl),
-                                content = {
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxSize()
-                                            .wrapContentHeight(Alignment.CenterVertically)
-                                            .wrapContentWidth(Alignment.CenterHorizontally)
-                                    ) {
-                                        Text(
-                                            it.name.uppercase(),
-                                            style = MaterialTheme.typography.bodyLarge,
-                                            modifier = Modifier,
-                                            color = Color.White,
-                                            textAlign = TextAlign.Center
-                                        )
-                                    }
-                                }
-                            )
-                        }
-                        if (miniBossUiSate.dropItems.isNotEmpty()) {
-                            SlavicDivider()
-                            HorizontalPagerSection(
-                                list = miniBossUiSate.dropItems,
-                                data = dropItemData
-                            )
-                        }
-                        if (miniBossUiSate.dropItems.isEmpty() && miniBossUiSate.primarySpawn == null) {
-                            Row(modifier = Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp))
-                            {
-                                Spacer(Modifier.weight(1f))
-                                Text(
-                                    "Connect to Internet to fetch boss detail data",
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    modifier = Modifier.weight(2f),
-                                    color = Color.White,
-                                    textAlign = TextAlign.Center
-                                )
-                                Spacer(Modifier.weight(1f))
-                            }
+					) {
+						Column(
+							modifier = Modifier
+                                .testTag("MiniBossDetailScreen")
+                                .fillMaxSize()
+                                .verticalScroll(scrollState, enabled = !isRunning),
+							verticalArrangement = Arrangement.Top,
+							horizontalAlignment = Alignment.Start,
+						) {
+							MainDetailImageAnimated(
+								sharedTransitionScope = sharedTransitionScope,
+								animatedVisibilityScope = animatedVisibilityScope,
+								textAlign = TextAlign.Center,
+								id = miniBossUiSate.miniBoss.id,
+								imageUrl = miniBossUiSate.miniBoss.imageUrl,
+								title = miniBossUiSate.miniBoss.name
+							)
+							DetailExpandableText(text = miniBossUiSate.miniBoss.description.toString())
+							TridentsDividedRow(text = "BOSS DETAIL")
+							miniBossUiSate.primarySpawn?.let {
+								Text(
+									modifier = Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp),
+									text = "PRIMARY SPAWN",
+									textAlign = TextAlign.Left,
+									style = MaterialTheme.typography.titleSmall,
+									maxLines = 1,
+									overflow = TextOverflow.Visible
+								)
+								CardWithOverlayLabel(
+									painter = rememberAsyncImagePainter(miniBossUiSate.primarySpawn.imageUrl),
+									content = {
+										Box(
+											modifier = Modifier
+                                                .fillMaxSize()
+                                                .wrapContentHeight(Alignment.CenterVertically)
+                                                .wrapContentWidth(Alignment.CenterHorizontally)
+										) {
+											Text(
+												it.name.uppercase(),
+												style = MaterialTheme.typography.bodyLarge,
+												modifier = Modifier,
+												color = Color.White,
+												textAlign = TextAlign.Center
+											)
+										}
+									}
+								)
+							}
+							if (miniBossUiSate.dropItems.isNotEmpty()) {
+								SlavicDivider()
+								HorizontalPagerSection(
+									list = miniBossUiSate.dropItems,
+									data = dropItemData
+								)
+							}
+							if (miniBossUiSate.dropItems.isEmpty() && miniBossUiSate.primarySpawn == null) {
+								Row(modifier = Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp))
+								{
+									Spacer(Modifier.weight(1f))
+									Text(
+										"Connect to Internet to fetch boss detail data",
+										style = MaterialTheme.typography.bodyLarge,
+										modifier = Modifier.weight(2f),
+										color = Color.White,
+										textAlign = TextAlign.Center
+									)
+									Spacer(Modifier.weight(1f))
+								}
 
-                        }
-                        TridentsDividedRow(text = "BOSS STATS")
-                        Box(
-                            modifier = Modifier.padding(horizontal = 10.dp)
-                        )
-                        {
-                            CardStatDetails(
-                                title = stringResource(R.string.baseHp),
-                                text = miniBossUiSate.miniBoss.baseHP.toString(),
-                                icon = Icons.Outlined.Favorite,
-                                iconColor = Color.Red,
-                                styleTextFirst = MaterialTheme.typography.labelSmall,
-                                styleTextSecond = MaterialTheme.typography.bodyLarge,
-                                iconSize = 36.dp
-                            )
-                        }
-                        StatsFlowRow(
-                            baseDamage = miniBossUiSate.miniBoss.baseDamage,
-                            weakness = miniBossUiSate.miniBoss.weakness,
-                            resistance = miniBossUiSate.miniBoss.resistance,
-                            collapseImmune = miniBossUiSate.miniBoss.collapseImmune,
-                        )
-                        SlavicDivider()
-                        Box(modifier = Modifier.size(45.dp))
-                    }
-                }
-            }
+							}
+							TridentsDividedRow(text = "BOSS STATS")
+							Box(
+								modifier = Modifier.padding(horizontal = 10.dp)
+							)
+							{
+								CardStatDetails(
+									title = stringResource(R.string.baseHp),
+									text = miniBossUiSate.miniBoss.baseHP.toString(),
+									icon = Icons.Outlined.Favorite,
+									iconColor = Color.Red,
+									styleTextFirst = MaterialTheme.typography.labelSmall,
+									styleTextSecond = MaterialTheme.typography.bodyLarge,
+									iconSize = 36.dp
+								)
+							}
+							StatsFlowRow(
+								baseDamage = miniBossUiSate.miniBoss.baseDamage,
+								weakness = miniBossUiSate.miniBoss.weakness,
+								resistance = miniBossUiSate.miniBoss.resistance,
+								collapseImmune = miniBossUiSate.miniBoss.collapseImmune,
+							)
+							SlavicDivider()
+							Box(modifier = Modifier.size(45.dp))
+						}
+						if (!isRunning) {
+							AnimatedBackButton(
+								modifier = Modifier
+                                    .align(Alignment.TopStart)
+                                    .padding(16.dp),
+								scrollState = scrollState,
+								onBack = onBack,
+							)
+						}
+					}
+				}
+			}
 
-        }
-    )
+		}
+	)
 }
 
