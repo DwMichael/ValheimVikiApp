@@ -53,7 +53,6 @@ import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.material.MaterialDrop
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
-import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDetailImage
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
@@ -105,12 +104,12 @@ fun AggressiveCreatureDetailContent(
 					.fillMaxWidth(),
 				beyondViewportPageCount = aggressiveCreature.levels.size,
 			) { pageIndex ->
-				
+
 				Box(
 					modifier = Modifier
 						.fillMaxSize()
 						.padding(padding)
-				)  {
+				) {
 					Column(
 						modifier = Modifier.verticalScroll(sharedScrollState),
 						verticalArrangement = Arrangement.Top,
@@ -223,11 +222,11 @@ fun AggressiveCreatureDetailContent(
 						Box(modifier = Modifier.size(45.dp))
 					}
 					AnimatedBackButton(
-							modifier = Modifier
-								.align(Alignment.TopStart)
-								.padding(16.dp),
-							scrollState = sharedScrollState,
-							onBack = onBack
+						modifier = Modifier
+							.align(Alignment.TopStart)
+							.padding(16.dp),
+						scrollState = sharedScrollState,
+						onBack = onBack
 					)
 				}
 			}
