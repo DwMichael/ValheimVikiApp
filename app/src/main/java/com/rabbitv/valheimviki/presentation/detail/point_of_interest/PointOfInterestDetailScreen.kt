@@ -38,6 +38,8 @@ import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
+import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDetailImage
@@ -69,7 +71,7 @@ fun PointOfInterestDetailContent(
 	onBack: () -> Unit,
 	uiState: PointOfInterestUiState,
 ) {
-	val mainPainter = painterResource(R.drawable.main_background)
+	val scrollState = rememberScrollState()
 
 	val altarOfferings = HorizontalPagerData(
 		title = "Offerings",
@@ -93,98 +95,108 @@ fun PointOfInterestDetailContent(
 		itemContentScale = ContentScale.Crop
 	)
 	Scaffold { innerPadding ->
-		Image(
-			painter = mainPainter,
-			contentDescription = "BackgroundImage",
-			contentScale = ContentScale.Crop,
-			modifier = Modifier.fillMaxSize(),
-		)
-		Column(
+
+		BgImage()
+		Box(
 			modifier = Modifier
-				.testTag("PointOfInterestDetailScreen")
 				.fillMaxSize()
 				.padding(innerPadding)
-				.verticalScroll(rememberScrollState()),
-			verticalArrangement = Arrangement.Top,
-			horizontalAlignment = Alignment.Start,
 		) {
-			uiState.pointOfInterest?.let { pOfIn ->
-				MainDetailImage(
-					onBack = onBack,
-					imageUrl = pOfIn.imageUrl,
-					name = pOfIn.name,
-					textAlign = TextAlign.Center,
-				)
-				SlavicDivider()
-				DetailExpandableText(text = pOfIn.description, boxPadding = BODY_CONTENT_PADDING.dp)
-				if (uiState.relatedBiomes.isNotEmpty()) {
-					TridentsDividedRow()
-					Text(
-						modifier = Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp),
-						text = "PRIMARY SPAWNS",
-						textAlign = TextAlign.Left,
-						style = MaterialTheme.typography.titleSmall,
-						maxLines = 1,
-						overflow = TextOverflow.Visible
+			Column(
+				modifier = Modifier
+					.testTag("TreeDetailScreen")
+					.fillMaxSize()
+					.verticalScroll(scrollState),
+				verticalArrangement = Arrangement.Top,
+				horizontalAlignment = Alignment.Start,
+			) {
+				uiState.pointOfInterest?.let { pOfIn ->
+					MainDetailImage(
+						imageUrl = pOfIn.imageUrl,
+						name = pOfIn.name,
+						textAlign = TextAlign.Center,
 					)
-					uiState.relatedBiomes.forEach { biome ->
-						CardWithOverlayLabel(
-							painter = rememberAsyncImagePainter(biome.imageUrl),
-							content = {
-								Box(
-									modifier = Modifier
-										.fillMaxSize()
-										.wrapContentHeight(Alignment.CenterVertically)
-										.wrapContentWidth(Alignment.CenterHorizontally)
-								) {
-									Text(
-										biome.name.uppercase(),
-										style = MaterialTheme.typography.bodyLarge,
-										modifier = Modifier,
-										color = Color.White,
-										textAlign = TextAlign.Center
-									)
+					SlavicDivider()
+					DetailExpandableText(
+						text = pOfIn.description,
+						boxPadding = BODY_CONTENT_PADDING.dp
+					)
+					if (uiState.relatedBiomes.isNotEmpty()) {
+						TridentsDividedRow()
+						Text(
+							modifier = Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp),
+							text = "PRIMARY SPAWNS",
+							textAlign = TextAlign.Left,
+							style = MaterialTheme.typography.titleSmall,
+							maxLines = 1,
+							overflow = TextOverflow.Visible
+						)
+						uiState.relatedBiomes.forEach { biome ->
+							CardWithOverlayLabel(
+								painter = rememberAsyncImagePainter(biome.imageUrl),
+								content = {
+									Box(
+										modifier = Modifier
+											.fillMaxSize()
+											.wrapContentHeight(Alignment.CenterVertically)
+											.wrapContentWidth(Alignment.CenterHorizontally)
+									) {
+										Text(
+											biome.name.uppercase(),
+											style = MaterialTheme.typography.bodyLarge,
+											modifier = Modifier,
+											color = Color.White,
+											textAlign = TextAlign.Center
+										)
+									}
 								}
-							}
+							)
+						}
+					}
+
+					if (uiState.relatedOfferings.isNotEmpty()) {
+						TridentsDividedRow()
+						HorizontalPagerSection(
+							list = uiState.relatedOfferings,
+							data = altarOfferings,
 						)
 					}
-				}
 
-				if (uiState.relatedOfferings.isNotEmpty()) {
-					TridentsDividedRow()
-					HorizontalPagerSection(
-						list = uiState.relatedOfferings,
-						data = altarOfferings,
-					)
-				}
+					if (uiState.relatedMaterialDrops.isNotEmpty()) {
+						TridentsDividedRow()
+						DroppedItemsSection(
+							list = uiState.relatedMaterialDrops,
+							icon = Lucide.Gem,
+							starLevel = 0,
+							title = "Materials",
+							subTitle = "Unique drops are obtained in this place"
+						)
+					}
+					if (uiState.relatedWeapons.isNotEmpty()) {
+						TridentsDividedRow()
+						HorizontalPagerSection(
+							list = uiState.relatedWeapons,
+							data = weaponsData,
+						)
+					}
+					if (uiState.relatedCreatures.isNotEmpty()) {
+						TridentsDividedRow()
+						HorizontalPagerSection(
+							list = uiState.relatedCreatures,
+							data = creatureData,
+						)
+					}
 
-				if (uiState.relatedMaterialDrops.isNotEmpty()) {
-					TridentsDividedRow()
-					DroppedItemsSection(
-						list = uiState.relatedMaterialDrops,
-						icon = Lucide.Gem,
-						starLevel = 0,
-						title = "Materials",
-						subTitle = "Unique drops are obtained in this place"
-					)
 				}
-				if (uiState.relatedWeapons.isNotEmpty()) {
-					TridentsDividedRow()
-					HorizontalPagerSection(
-						list = uiState.relatedWeapons,
-						data = weaponsData,
-					)
-				}
-				if (uiState.relatedCreatures.isNotEmpty()) {
-					TridentsDividedRow()
-					HorizontalPagerSection(
-						list = uiState.relatedCreatures,
-						data = creatureData,
-					)
-				}
-
+				Box(modifier = Modifier.size(45.dp))
 			}
-			Box(modifier = Modifier.size(45.dp))
+			AnimatedBackButton(
+				modifier = Modifier
+					.align(Alignment.TopStart)
+					.padding(16.dp),
+				scrollState = scrollState,
+				onBack = onBack,
+			)
 		}
 	}
 }
