@@ -34,188 +34,185 @@ import com.rabbitv.valheimviki.presentation.components.ListContent
 import com.rabbitv.valheimviki.presentation.components.chip.ChipData
 import com.rabbitv.valheimviki.presentation.components.chip.CustomElevatedFilterChip
 import com.rabbitv.valheimviki.presentation.components.chip.SearchFilterBar
-import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerGridEffect
 import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerListEffect
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
-import kotlinx.coroutines.FlowPreview
 
 
 class ArmorChip(
-    override val option: ArmorSubCategory,
-    override val icon: ImageVector,
-    override val label: String
+	override val option: ArmorSubCategory,
+	override val icon: ImageVector,
+	override val label: String
 ) : ChipData<ArmorSubCategory>
 
 @Composable
 fun ArmorListScreen(
-    modifier: Modifier = Modifier,
-    onItemClick: (armorId :String, _:Int) -> Unit,
-    paddingValues: PaddingValues,
-    viewModel: ArmorListViewModel = hiltViewModel()
+	modifier: Modifier = Modifier,
+	onItemClick: (armorId: String, _: Int) -> Unit,
+	paddingValues: PaddingValues,
+	viewModel: ArmorListViewModel = hiltViewModel()
 ) {
-    val weaponListUiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val onChipSelected = { chip: ArmorSubCategory? -> viewModel.onChipSelected(chip) }
-    ArmorListStateRenderer(
-        armorListUiState = weaponListUiState,
-        onChipSelected = onChipSelected,
-        paddingValues = paddingValues,
-        modifier = modifier,
-        onItemClick = onItemClick
-    )
+	val weaponListUiState by viewModel.uiState.collectAsStateWithLifecycle()
+	val onChipSelected = { chip: ArmorSubCategory? -> viewModel.onChipSelected(chip) }
+	ArmorListStateRenderer(
+		armorListUiState = weaponListUiState,
+		onChipSelected = onChipSelected,
+		paddingValues = paddingValues,
+		modifier = modifier,
+		onItemClick = onItemClick
+	)
 
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ArmorListStateRenderer(
-    armorListUiState: UiCategoryState<ArmorSubCategory?, Armor>,
-    onChipSelected: (ArmorSubCategory?) -> Unit,
-    paddingValues: PaddingValues,
-    modifier: Modifier,
-    onItemClick:(armorId :String, _:Int) -> Unit,
+	armorListUiState: UiCategoryState<ArmorSubCategory?, Armor>,
+	onChipSelected: (ArmorSubCategory?) -> Unit,
+	paddingValues: PaddingValues,
+	modifier: Modifier,
+	onItemClick: (armorId: String, _: Int) -> Unit,
 ) {
-    Surface(
-        color = Color.Transparent,
-        modifier = Modifier
+	Surface(
+		color = Color.Transparent,
+		modifier = Modifier
             .testTag("WeaponListSurface")
             .fillMaxSize()
             .padding(paddingValues)
             .then(modifier)
-    ) {
+	) {
 
-        ArmorListDisplay(
-            armorListUiState = armorListUiState,
-            onChipSelected = onChipSelected,
-            onItemClick = onItemClick
-        )
-    }
+		ArmorListDisplay(
+			armorListUiState = armorListUiState,
+			onChipSelected = onChipSelected,
+			onItemClick = onItemClick
+		)
+	}
 }
-
 
 
 @Composable
 fun ArmorListDisplay(
-    armorListUiState: UiCategoryState<ArmorSubCategory?, Armor>,
-    onChipSelected: (ArmorSubCategory?) -> Unit,
-    onItemClick: (armorId: String, _: Int) -> Unit
+	armorListUiState: UiCategoryState<ArmorSubCategory?, Armor>,
+	onChipSelected: (ArmorSubCategory?) -> Unit,
+	onItemClick: (armorId: String, _: Int) -> Unit
 ) {
 
 
-    val lazyListState = rememberLazyListState()
+	val lazyListState = rememberLazyListState()
 
 
 
 
-    Column(
-        horizontalAlignment = Alignment.Start
-    ) {
-        SearchFilterBar(
-            chips = getChipsForCategory(),
-            selectedOption = armorListUiState.selectedCategory,
-            onSelectedChange = { _, subCategory ->
-                if (armorListUiState.selectedCategory == subCategory) {
-                    onChipSelected(null)
-                } else {
-                    onChipSelected(subCategory)
-                }
-            },
-            modifier = Modifier,
-        )
-        Spacer(Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp, vertical = 5.dp))
-        when (val state = armorListUiState) {
-            is UiCategoryState.Error<ArmorSubCategory?> -> EmptyScreen(errorMessage = state.message.toString())
-            is UiCategoryState.Loading<ArmorSubCategory?> -> ShimmerListEffect()
-            is UiCategoryState.Success<ArmorSubCategory?, Armor> -> ListContent(
-                items = state.list,
-                clickToNavigate = onItemClick,
-                lazyListState = lazyListState,
-                subCategoryNumber = 0,
-                imageScale = ContentScale.Fit,
-                horizontalPadding = 0.dp
-            )
-        }
-    }
+	Column(
+		horizontalAlignment = Alignment.Start
+	) {
+		SearchFilterBar(
+			chips = getChipsForCategory(),
+			selectedOption = armorListUiState.selectedCategory,
+			onSelectedChange = { _, subCategory ->
+				if (armorListUiState.selectedCategory == subCategory) {
+					onChipSelected(null)
+				} else {
+					onChipSelected(subCategory)
+				}
+			},
+			modifier = Modifier,
+		)
+		Spacer(Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp, vertical = 5.dp))
+		when (val state = armorListUiState) {
+			is UiCategoryState.Error<ArmorSubCategory?> -> EmptyScreen(errorMessage = state.message.toString())
+			is UiCategoryState.Loading<ArmorSubCategory?> -> ShimmerListEffect()
+			is UiCategoryState.Success<ArmorSubCategory?, Armor> -> ListContent(
+				items = state.list,
+				clickToNavigate = onItemClick,
+				lazyListState = lazyListState,
+				subCategoryNumber = 0,
+				imageScale = ContentScale.Fit,
+				horizontalPadding = 0.dp
+			)
+		}
+	}
 }
 
 
 @Composable
 private fun getChipsForCategory(): List<ArmorChip> {
-    return listOf(
-        ArmorChip(
-            ArmorSubCategory.CAPE,
-            ImageVector.vectorResource(id = R.drawable.cape),
-            "Capes"
-        ),
-        ArmorChip(
-            ArmorSubCategory.CHEST_ARMOR,
-            ImageVector.vectorResource(id = R.drawable.chest_armor),
-            "Chests Armor"
-        ),
-        ArmorChip(
-            ArmorSubCategory.LEG_ARMOR,
-            ImageVector.vectorResource(id = R.drawable.leg_armor),
-            "Legs Armor"
-        ),
-        ArmorChip(
-            ArmorSubCategory.ACCESSORIES,
-            Lucide.Blend,
-            "Accessories"
-        ),
-        ArmorChip(
-            ArmorSubCategory.HELMET,
-            ImageVector.vectorResource(id = R.drawable.helmet),
-            "Helmet"
-        ),
-    )
+	return listOf(
+		ArmorChip(
+			ArmorSubCategory.CAPE,
+			ImageVector.vectorResource(id = R.drawable.cape),
+			"Capes"
+		),
+		ArmorChip(
+			ArmorSubCategory.CHEST_ARMOR,
+			ImageVector.vectorResource(id = R.drawable.chest_armor),
+			"Chests Armor"
+		),
+		ArmorChip(
+			ArmorSubCategory.LEG_ARMOR,
+			ImageVector.vectorResource(id = R.drawable.leg_armor),
+			"Legs Armor"
+		),
+		ArmorChip(
+			ArmorSubCategory.ACCESSORIES,
+			Lucide.Blend,
+			"Accessories"
+		),
+		ArmorChip(
+			ArmorSubCategory.HELMET,
+			ImageVector.vectorResource(id = R.drawable.helmet),
+			"Helmet"
+		),
+	)
 }
 
 
 @Preview("SingleChoiceChipPreview")
 @Composable
 fun PreviewSingleChoiceChip() {
-    ValheimVikiAppTheme {
-        SearchFilterBar(
-            onSelectedChange = { i, s -> {} },
-            modifier = Modifier,
-            selectedOption = ArmorSubCategory.CAPE,
-            chips = getChipsForCategory()
-        )
-    }
+	ValheimVikiAppTheme {
+		SearchFilterBar(
+			onSelectedChange = { i, s -> {} },
+			modifier = Modifier,
+			selectedOption = ArmorSubCategory.CAPE,
+			chips = getChipsForCategory()
+		)
+	}
 }
 
 
 @Preview("CustomElevatedFilterChipSelectedPreview")
 @Composable
 fun PreviewCustomElevatedFilterChipSelected() {
-    ValheimVikiAppTheme {
-        CustomElevatedFilterChip(
+	ValheimVikiAppTheme {
+		CustomElevatedFilterChip(
 
-            index = 0,
-            selectedChipIndex = 0,
-            onSelectedChange = { i, s -> {} },
-            label = "Axes",
-            icon = Lucide.Axe,
-            option = ArmorSubCategory.CAPE,
-        )
-    }
+			index = 0,
+			selectedChipIndex = 0,
+			onSelectedChange = { i, s -> {} },
+			label = "Axes",
+			icon = Lucide.Axe,
+			option = ArmorSubCategory.CAPE,
+		)
+	}
 
 }
 
 @Preview("CustomElevatedFilterChipNotSelectedPreview")
 @Composable
 fun PreviewCustomElevatedFilterChipNotSelected() {
-    ValheimVikiAppTheme {
-        CustomElevatedFilterChip(
-            index = 1,
-            selectedChipIndex = 0,
-            onSelectedChange = { i, s -> {} },
-            label = "Axes",
-            icon = Lucide.Axe,
-            option = ArmorSubCategory.CAPE,
-        )
-    }
+	ValheimVikiAppTheme {
+		CustomElevatedFilterChip(
+			index = 1,
+			selectedChipIndex = 0,
+			onSelectedChange = { i, s -> {} },
+			label = "Axes",
+			icon = Lucide.Axe,
+			option = ArmorSubCategory.CAPE,
+		)
+	}
 
 }
 
@@ -223,18 +220,18 @@ fun PreviewCustomElevatedFilterChipNotSelected() {
 @Preview(name = "WeaponListStateRendererPreview")
 @Composable
 fun PreviewWeaponListStateRenderer() {
-    ValheimVikiAppTheme {
-        ArmorListStateRenderer(
-            armorListUiState = UiCategoryState.Success(
-                selectedCategory = ArmorSubCategory.CAPE,
-                list = FakeData.fakeArmorList()
-            ),
-            paddingValues = PaddingValues(),
-            modifier = Modifier,
-            onChipSelected = {},
-            onItemClick = {_,_ -> {}}
-        )
-    }
+	ValheimVikiAppTheme {
+		ArmorListStateRenderer(
+			armorListUiState = UiCategoryState.Success(
+				selectedCategory = ArmorSubCategory.CAPE,
+				list = FakeData.fakeArmorList()
+			),
+			paddingValues = PaddingValues(),
+			modifier = Modifier,
+			onChipSelected = {},
+			onItemClick = { _, _ -> {} }
+		)
+	}
 }
 
 
