@@ -90,7 +90,7 @@ dependencies {
 	implementation("androidx.core:core-splashscreen:1.0.1")
 	implementation("androidx.navigation:navigation-compose:2.9.0")
 	androidTestImplementation("androidx.navigation:navigation-testing:2.9.0")
-	implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
+	implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
 	implementation("com.google.dagger:hilt-android:2.56.2")
 //    ksp("com.google.dagger:hilt-compiler:2.56.1")
 	ksp("com.google.dagger:hilt-android-compiler:2.56.2")
@@ -101,7 +101,7 @@ dependencies {
 	implementation("com.composables:icons-lucide:1.1.0")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
 
-	implementation("androidx.work:work-runtime-ktx:2.10.1")
+	implementation("androidx.work:work-runtime-ktx:2.10.2")
 	androidTestImplementation("androidx.work:work-testing:2.10.1")
 
 	implementation("io.coil-kt.coil3:coil-compose:3.2.0")
