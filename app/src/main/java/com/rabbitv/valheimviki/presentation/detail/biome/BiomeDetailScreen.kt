@@ -162,8 +162,8 @@ fun BiomeDetailContent(
 				if (isLoading) {
 					Box(
 						modifier = Modifier
-                            .fillMaxSize()
-                            .padding(padding),
+							.fillMaxSize()
+							.padding(padding),
 						contentAlignment = Alignment.Center
 					) {
 						Box(modifier = Modifier.size(45.dp))
@@ -172,14 +172,14 @@ fun BiomeDetailContent(
 					BgImage()
 					Box(
 						modifier = Modifier
-                            .fillMaxSize()
-                            .padding(padding)
+							.fillMaxSize()
+							.padding(padding)
 					) {
 						Column(
 							modifier = Modifier
-                                .testTag("BiomeDetailScreen")
-                                .fillMaxSize()
-                                .verticalScroll(scrollState, enabled = !isRunning),
+								.testTag("BiomeDetailScreen")
+								.fillMaxSize()
+								.verticalScroll(scrollState, enabled = !isRunning),
 							verticalArrangement = Arrangement.Top,
 							horizontalAlignment = Alignment.Start,
 						) {
@@ -240,21 +240,21 @@ fun BiomeDetailContent(
 							}
 							Box(modifier = Modifier.size(45.dp))
 						}
-                        if(!isRunning) {
-                            AnimatedBackButton(
-                                modifier = Modifier
-                                    .align(Alignment.TopStart)
-                                    .padding(16.dp),
-                                scrollState = scrollState,
-                                onBack = onBack,
-                            )
-                        }
+						if (!isRunning) {
+							AnimatedBackButton(
+								modifier = Modifier
+									.align(Alignment.TopStart)
+									.padding(16.dp),
+								scrollState = scrollState,
+								onBack = onBack,
+							)
+						}
 					}
 				} else {
 					Box(
 						Modifier
-                            .fillMaxSize()
-                            .padding(padding)
+							.fillMaxSize()
+							.padding(padding)
 					)
 				}
 			}

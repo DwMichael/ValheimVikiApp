@@ -81,21 +81,6 @@ fun BuildingMaterialDetailContent(
 	val scrollState = rememberScrollState()
 	val previousScrollValue = remember { mutableIntStateOf(0) }
 
-	val backButtonVisibleState by remember {
-		derivedStateOf {
-			val currentScroll = scrollState.value
-			val previous = previousScrollValue.intValue
-			val isVisible = when {
-				currentScroll == 0 -> true
-				currentScroll < previous -> true
-				currentScroll > previous -> false
-				else -> true
-			}
-			previousScrollValue.intValue = currentScroll
-			isVisible
-		}
-	}
-
 	val isStatInfoExpanded1 = remember { mutableStateOf(false) }
 	val isExpandable = remember { mutableStateOf(false) }
 	val painterBackgroundImage = painterResource(R.drawable.main_background)
