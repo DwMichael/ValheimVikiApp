@@ -55,6 +55,7 @@ import com.rabbitv.valheimviki.domain.model.food.FoodSubCategory
 import com.rabbitv.valheimviki.domain.repository.Droppable
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCard
 import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCardPainter
@@ -137,13 +138,7 @@ fun FoodDetailContent(
 			else -> true
 		}
 	}
-	Image(
-		painter = painterResource(R.drawable.main_background),
-		contentDescription = "bg",
-		contentScale = ContentScale.FillBounds,
-		modifier = Modifier.fillMaxSize()
-	)
-
+	BgImage()
 	Scaffold(
 		modifier = Modifier.fillMaxSize(),
 		containerColor = Color.Transparent,
@@ -186,9 +181,8 @@ fun FoodDetailContent(
 							.padding(horizontal = BODY_CONTENT_PADDING.dp),
 						verticalArrangement = Arrangement.spacedBy(BODY_CONTENT_PADDING.dp)
 					) {
-
-						SlavicDivider()
 						if (shouldShowValue(food.health)) {
+							SlavicDivider()
 							DarkGlassStatCard(
 								Lucide.Heart,
 								"Health",
