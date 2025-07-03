@@ -51,6 +51,7 @@ import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
+import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
@@ -193,29 +194,13 @@ fun MobDropDetailContent(
 					}
 				}
 			}
-			AnimatedVisibility(
-				visible = backButtonVisibleState,
-				enter = fadeIn(),
-				exit = fadeOut(),
+			AnimatedBackButton(
 				modifier = Modifier
 					.align(Alignment.TopStart)
-					.padding(16.dp)
-			) {
-				FilledIconButton(
-					onClick = onBack,
-					shape = RoundedCornerShape(12.dp),
-					colors = IconButtonDefaults.filledIconButtonColors(
-						containerColor = ForestGreen10Dark,
-					),
-					modifier = Modifier.size(56.dp)
-				) {
-					Icon(
-						Icons.AutoMirrored.Rounded.ArrowBack,
-						contentDescription = "Back",
-						tint = Color.White
-					)
-				}
-			}
+					.padding(16.dp),
+				scrollState = scrollState,
+				onBack = onBack
+			)
 		}
 	}
 }

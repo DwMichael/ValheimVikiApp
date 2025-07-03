@@ -232,7 +232,7 @@ fun NpcDetailContent(
                         )
                     }
                     if (uiState.shopItems.isNotEmpty()) {
-                        TridentsDividedRow(text = "TRAIDING")
+                        TridentsDividedRow(text = "TRADING")
                         Row(
                             modifier = Modifier
                                 .padding(
