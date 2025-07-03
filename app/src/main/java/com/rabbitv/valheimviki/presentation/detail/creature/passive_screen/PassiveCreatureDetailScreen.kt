@@ -50,8 +50,10 @@ import com.rabbitv.valheimviki.domain.model.creature.aggresive.AggressiveCreatur
 import com.rabbitv.valheimviki.domain.model.creature.aggresive.LevelCreatureData
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDetailImage
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
+import com.rabbitv.valheimviki.presentation.detail.creature.aggressive_screen.PageIndicator
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardStatDetails
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
 import com.rabbitv.valheimviki.presentation.detail.creature.components.horizontal_pager.DroppedItemsSection
@@ -103,118 +105,132 @@ fun PassiveCreatureDetailContent(
 					.fillMaxWidth(),
 				beyondViewportPageCount = passiveCreature.levels.size,
 			) { pageIndex ->
-				Column(
-					modifier = Modifier.verticalScroll(sharedScrollState),
-					verticalArrangement = Arrangement.Center,
+				Box(
+					modifier = Modifier
+						.fillMaxSize()
+						.padding(padding)
 				) {
-					MainDetailImage(
-						onBack = onBack,
-						imageUrl = passiveCreature.levels[pageIndex].image.toString(),
-						name = passiveCreature.name,
-						textAlign = TextAlign.Center
-					)
-					PageIndicator(pagerState)
-					StarLevelRow(
-						levelsNumber = passiveCreature.levels.size,
-						pageIndex = pageIndex,
-						paddingValues = PaddingValues(BODY_CONTENT_PADDING.dp),
-						onClick = {
-							coroutineScope.launch {
-								pagerState.animateScrollToPage(it)
-							}
-						}
-					)
-					HorizontalDivider(
-						modifier = Modifier
-							.fillMaxWidth()
-							.padding(BODY_CONTENT_PADDING.dp),
-						thickness = 1.dp,
-						color = PrimaryWhite
-					)
-					DetailExpandableText(
-						text = passiveCreature.description,
-						collapsedMaxLine = 3,
-						isExpanded = isExpandable
-					)
+					Column(
+						modifier = Modifier.verticalScroll(sharedScrollState),
+						verticalArrangement = Arrangement.Top,
+						horizontalAlignment = Alignment.Start,
+					) {
+						MainDetailImage(
 
-					TridentsDividedRow(text = "DETAILS")
-					uiState.biome?.let {
-						Text(
-							modifier = Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp),
-							text = "PRIMARY SPAWN",
-							textAlign = TextAlign.Left,
-							style = MaterialTheme.typography.titleSmall,
-							maxLines = 1,
-							overflow = TextOverflow.Visible
+							imageUrl = passiveCreature.levels[pageIndex].image.toString(),
+							name = passiveCreature.name,
+							textAlign = TextAlign.Center
 						)
-						CardWithOverlayLabel(
-							painter = rememberAsyncImagePainter(uiState.biome.imageUrl),
-							content = {
-								Box(
-									modifier = Modifier
-										.fillMaxSize()
-										.wrapContentHeight(Alignment.CenterVertically)
-										.wrapContentWidth(Alignment.CenterHorizontally)
-								) {
-									Text(
-										it.name.uppercase(),
-										style = MaterialTheme.typography.bodyLarge,
-										modifier = Modifier,
-										color = Color.White,
-										textAlign = TextAlign.Center
-									)
+						PageIndicator(pagerState)
+						StarLevelRow(
+							levelsNumber = passiveCreature.levels.size,
+							pageIndex = pageIndex,
+							paddingValues = PaddingValues(BODY_CONTENT_PADDING.dp),
+							onClick = {
+								coroutineScope.launch {
+									pagerState.animateScrollToPage(it)
 								}
 							}
 						)
-					}
-					if (uiState.materialDrops.isNotEmpty()) {
-						SlavicDivider()
-						DroppedItemsSection(
-							list = uiState.materialDrops,
-							starLevel = pageIndex,
-							title = "Drop Items",
-							subTitle = "Materials that drop from creature after defeating",
-						)
-					}
-
-					TridentsDividedRow(text = "BOSS STATS")
-					CardStatDetails(
-						title = stringResource(R.string.baseHp),
-						text = uiState.passiveCreature.levels[pageIndex].baseHp.toString(),
-						icon = Icons.Outlined.Favorite,
-						iconColor = Color.Red,
-						styleTextFirst = MaterialTheme.typography.labelSmall,
-						styleTextSecond = MaterialTheme.typography.bodyLarge,
-						iconSize = 36.dp
-					)
-					Spacer(Modifier.height(10.dp))
-					CardStatDetails(
-						title = stringResource(R.string.fun_fact),
-						text = uiState.passiveCreature.abilities.toString(),
-						icon = Lucide.Atom,
-						iconColor = Color.White,
-						styleTextFirst = MaterialTheme.typography.labelSmall,
-						styleTextSecond = MaterialTheme.typography.bodyMedium,
-						iconSize = 36.dp
-					)
-					if (uiState.passiveCreature.notes.isNotBlank()) {
-						SlavicDivider()
-						Text(
+						HorizontalDivider(
 							modifier = Modifier
-								.align(Alignment.CenterHorizontally)
-								.padding(horizontal = 10.dp),
-							text = "NOTE",
-							textAlign = TextAlign.Center,
-							style = MaterialTheme.typography.headlineMedium,
+								.fillMaxWidth()
+								.padding(BODY_CONTENT_PADDING.dp),
+							thickness = 1.dp,
+							color = PrimaryWhite
 						)
 						DetailExpandableText(
-							text = passiveCreature.notes,
+							text = passiveCreature.description,
 							collapsedMaxLine = 3,
-							isExpanded = isExpandableNote
+							isExpanded = isExpandable
 						)
+
+						TridentsDividedRow(text = "DETAILS")
+						uiState.biome?.let {
+							Text(
+								modifier = Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp),
+								text = "PRIMARY SPAWN",
+								textAlign = TextAlign.Left,
+								style = MaterialTheme.typography.titleSmall,
+								maxLines = 1,
+								overflow = TextOverflow.Visible
+							)
+							CardWithOverlayLabel(
+								painter = rememberAsyncImagePainter(uiState.biome.imageUrl),
+								content = {
+									Box(
+										modifier = Modifier
+											.fillMaxSize()
+											.wrapContentHeight(Alignment.CenterVertically)
+											.wrapContentWidth(Alignment.CenterHorizontally)
+									) {
+										Text(
+											it.name.uppercase(),
+											style = MaterialTheme.typography.bodyLarge,
+											modifier = Modifier,
+											color = Color.White,
+											textAlign = TextAlign.Center
+										)
+									}
+								}
+							)
+						}
+						if (uiState.materialDrops.isNotEmpty()) {
+							SlavicDivider()
+							DroppedItemsSection(
+								list = uiState.materialDrops,
+								starLevel = pageIndex,
+								title = "Drop Items",
+								subTitle = "Materials that drop from creature after defeating",
+							)
+						}
+
+						TridentsDividedRow(text = "BOSS STATS")
+						CardStatDetails(
+							title = stringResource(R.string.baseHp),
+							text = uiState.passiveCreature.levels[pageIndex].baseHp.toString(),
+							icon = Icons.Outlined.Favorite,
+							iconColor = Color.Red,
+							styleTextFirst = MaterialTheme.typography.labelSmall,
+							styleTextSecond = MaterialTheme.typography.bodyLarge,
+							iconSize = 36.dp
+						)
+						Spacer(Modifier.height(10.dp))
+						CardStatDetails(
+							title = stringResource(R.string.fun_fact),
+							text = uiState.passiveCreature.abilities.toString(),
+							icon = Lucide.Atom,
+							iconColor = Color.White,
+							styleTextFirst = MaterialTheme.typography.labelSmall,
+							styleTextSecond = MaterialTheme.typography.bodyMedium,
+							iconSize = 36.dp
+						)
+						if (uiState.passiveCreature.notes.isNotBlank()) {
+							SlavicDivider()
+							Text(
+								modifier = Modifier
+									.align(Alignment.CenterHorizontally)
+									.padding(horizontal = 10.dp),
+								text = "NOTE",
+								textAlign = TextAlign.Center,
+								style = MaterialTheme.typography.headlineMedium,
+							)
+							DetailExpandableText(
+								text = passiveCreature.notes,
+								collapsedMaxLine = 3,
+								isExpanded = isExpandableNote
+							)
+						}
+						SlavicDivider()
+						Box(modifier = Modifier.size(45.dp))
 					}
-					SlavicDivider()
-					Box(modifier = Modifier.size(45.dp))
+					AnimatedBackButton(
+						modifier = Modifier
+							.align(Alignment.TopStart)
+							.padding(16.dp),
+						scrollState = sharedScrollState,
+						onBack = onBack
+					)
 				}
 			}
 		}
