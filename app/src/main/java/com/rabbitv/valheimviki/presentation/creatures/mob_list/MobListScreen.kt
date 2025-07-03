@@ -45,73 +45,73 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class, FlowPreview::class)
 @Composable
 fun MobListScreen(
-    onItemClick: (String, CreatureSubCategory) -> Unit,
-    modifier: Modifier,
-    paddingValues: PaddingValues,
-    viewModel: MobListViewModel = hiltViewModel()
+	onItemClick: (String, CreatureSubCategory) -> Unit,
+	modifier: Modifier,
+	paddingValues: PaddingValues,
+	viewModel: MobListViewModel = hiltViewModel()
 ) {
-    val icons: List<ImageVector> = listOf(
-        Lucide.Rat,
-        Lucide.Skull,
-        Lucide.User
-    )
-    val uiState by viewModel.mobUiState.collectAsStateWithLifecycle()
-    val scope = rememberCoroutineScope()
-    val lazyListState = rememberLazyListState()
-    val backButtonVisibleState by remember {
-        derivedStateOf { lazyListState.firstVisibleItemIndex >= 2 }
-    }
+	val icons: List<ImageVector> = listOf(
+		Lucide.Rat,
+		Lucide.Skull,
+		Lucide.User
+	)
+	val uiState by viewModel.mobUiState.collectAsStateWithLifecycle()
+	val scope = rememberCoroutineScope()
+	val lazyListState = rememberLazyListState()
+	val backButtonVisibleState by remember {
+		derivedStateOf { lazyListState.firstVisibleItemIndex >= 2 }
+	}
 
-    Surface(
-        color = Color.Transparent,
-        modifier = Modifier
+	Surface(
+		color = Color.Transparent,
+		modifier = Modifier
             .testTag("MobListSurface")
             .fillMaxSize()
             .padding(paddingValues)
-    ) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            Column(
-                modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                SegmentedButtonSingleSelect(
-                    options = MobSegmentOption.entries,
-                    selectedOption = uiState.selectedCategory,
-                    onOptionSelected = {
-                        scope.launch {
-                            lazyListState.animateScrollToItem(0)
-                        }
-                        viewModel.onCategorySelected(it)
-                    },
-                    icons = icons
-                )
-                Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
+	) {
+		Box(modifier = Modifier.fillMaxSize()) {
+			Column(
+				modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+				horizontalAlignment = Alignment.CenterHorizontally
+			) {
+				SegmentedButtonSingleSelect(
+					options = MobSegmentOption.entries,
+					selectedOption = uiState.selectedCategory,
+					onOptionSelected = {
+						scope.launch {
+							lazyListState.animateScrollToItem(0)
+						}
+						viewModel.onCategorySelected(it)
+					},
+					icons = icons
+				)
+				Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
 
-                Box(modifier = Modifier.fillMaxSize()) {
-                    when (val state = uiState) {
-                        is UiCategoryState.Error<CreatureSubCategory> -> EmptyScreen(errorMessage = state.message.toString())
-                        is UiCategoryState.Loading<CreatureSubCategory> -> ShimmerGridEffect()
-                        is UiCategoryState.Success<CreatureSubCategory, Creature> -> ListContent(
-                            items = state.list,
-                            clickToNavigate = onItemClick,
-                            lazyListState = lazyListState,
-                            subCategoryNumber = state.selectedCategory,
-                            horizontalPadding = 0.dp,
-                        )
-                    }
-                }
-            }
-            CustomFloatingActionButton(
-                showBackButton = backButtonVisibleState,
-                onClick = {
-                    scope.launch {
-                        lazyListState.animateScrollToItem(0)
-                    }
-                },
-                modifier = Modifier
+				Box(modifier = Modifier.fillMaxSize()) {
+					when (val state = uiState) {
+						is UiCategoryState.Error<CreatureSubCategory> -> EmptyScreen(errorMessage = state.message.toString())
+						is UiCategoryState.Loading<CreatureSubCategory> -> ShimmerGridEffect()
+						is UiCategoryState.Success<CreatureSubCategory, Creature> -> ListContent(
+							items = state.list,
+							clickToNavigate = onItemClick,
+							lazyListState = lazyListState,
+							subCategoryNumber = state.selectedCategory,
+							horizontalPadding = 0.dp,
+						)
+					}
+				}
+			}
+			CustomFloatingActionButton(
+				showBackButton = backButtonVisibleState,
+				onClick = {
+					scope.launch {
+						lazyListState.animateScrollToItem(0)
+					}
+				},
+				modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(BODY_CONTENT_PADDING.dp)
-            )
-        }
-    }
+			)
+		}
+	}
 }
