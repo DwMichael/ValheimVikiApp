@@ -25,7 +25,7 @@ import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
 fun AnimatedBackButton(
 	modifier: Modifier = Modifier,
 	scrollState: ScrollState,
-	onBack: () -> Unit
+	onBack: () -> Unit,
 ) {
 	val previousScrollValue = remember { mutableIntStateOf(0) }
 	val backButtonVisibleState by remember {
@@ -42,7 +42,6 @@ fun AnimatedBackButton(
 			isVisible
 		}
 	}
-
 	AnimatedVisibility(
 		visible = backButtonVisibleState,
 		enter = fadeIn(),
