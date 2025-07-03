@@ -92,49 +92,44 @@ dependencies {
 	implementation(libs.kotlinx.serialization.json)
 	implementation(libs.hilt.android)
 //    ksp("com.google.dagger:hilt-compiler:2.56.1")
-	ksp("com.google.dagger:hilt-android-compiler:2.56.2")
-	implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+	ksp(libs.dagger.hilt.android.compiler)
+	implementation(libs.androidx.hilt.navigation.compose)
 
-	implementation("androidx.appcompat:appcompat:1.7.1")
-	implementation("com.composables:icons-lucide:1.1.0")
-
-
-	implementation("androidx.work:work-runtime-ktx:2.10.2")
-	androidTestImplementation("androidx.work:work-testing:2.10.2")
-
-	implementation("io.coil-kt.coil3:coil-compose:3.2.0")
-	implementation("io.coil-kt.coil3:coil-network-okhttp:3.2.0")
-
-	implementation("androidx.compose.ui:ui-text-google-fonts:1.8.3")
-	implementation("androidx.datastore:datastore-preferences:1.1.7")
-	implementation("androidx.room:room-runtime:2.7.2")
-	implementation("androidx.room:room-ktx:2.7.2")
+	implementation(libs.androidx.appcompat)
+	implementation(libs.icons.lucide)
 
 
+	implementation(libs.androidx.work.runtime.ktx)
+	androidTestImplementation(libs.work.testing)
 
+	implementation(libs.coil.compose)
+	implementation(libs.coil3.coil.network.okhttp)
 
+	implementation(libs.androidx.ui.text.google.fonts)
+	implementation(libs.androidx.datastore.preferences)
+	implementation(libs.androidx.room.runtime)
+	implementation(libs.room.ktx)
 
+	androidTestImplementation(libs.dagger.hilt.android.testing)
+	ksp(libs.androidx.room.compiler)
 
-	androidTestImplementation("com.google.dagger:hilt-android-testing:2.56.2")
-	ksp("androidx.room:room-compiler:2.7.2")
+	kspTest(libs.dagger.hilt.compiler)
+	kspAndroidTest(libs.com.google.dagger.hilt.compiler)
+	implementation(libs.androidx.hilt.work)
 
-	kspTest("com.google.dagger:hilt-compiler:2.56.2")
-	kspAndroidTest("com.google.dagger:hilt-compiler:2.56.2")
-	implementation("androidx.hilt:hilt-work:1.2.0")
-
-	testImplementation("org.mockito:mockito-core:5.18.0")
-	testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
+	testImplementation(libs.mockito.core)
+	testImplementation(libs.kotlinx.coroutines.test)
 
 
 	testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0") {
 		exclude(group = "org.mockito", module = "mockito-android")
 	}
 	// Kotlin Test with JUnit 5 (includes JUnit 5 engine)
-	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5:2.2.0")
+	testImplementation(libs.kotlin.test.junit5)
 	// Turbine for Flow testing
-	testImplementation("app.cash.turbine:turbine:1.2.1")
+	testImplementation(libs.turbine)
 
-	testImplementation("org.mockito:mockito-junit-jupiter:5.18.0")
+	testImplementation(libs.mockito.junit.jupiter)
 	mockitoAgent("org.mockito:mockito-core:5.18.0") { isTransitive = false }
 }
 
