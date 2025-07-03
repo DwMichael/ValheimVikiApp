@@ -134,9 +134,10 @@ fun BuildingMaterialDetailContent(
 			uiState.buildingMaterial?.let { buildingMaterial ->
 				Column(
 					modifier = Modifier
-						.verticalScroll(rememberScrollState())
+						.verticalScroll(scrollState)
 						.padding(
 							top = 20.dp,
+							bottom = 70.dp
 						),
 					horizontalAlignment = Alignment.CenterHorizontally,
 					verticalArrangement = Arrangement.Top,
