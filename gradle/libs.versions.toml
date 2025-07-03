@@ -7,10 +7,10 @@ junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.9.1"
 activityCompose = "1.10.1"
-composeBom = "2025.06.00"
+composeBom = "2025.06.01"
 composeMaterial = "1.4.1"
 junitKtx = "1.2.1"
-junitJupiter = "5.13.0"
+junitJupiter = "5.13.2"
 
 
 
