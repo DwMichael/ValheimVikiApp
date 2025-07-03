@@ -49,6 +49,7 @@ import com.composables.icons.lucide.Trees
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerSection
@@ -103,7 +104,6 @@ fun ValuableMaterialDetailContent(
 	}
 
 	val isExpandable = remember { mutableStateOf(false) }
-	val painterBackgroundImage = painterResource(R.drawable.main_background)
 
 	val creatureData = HorizontalPagerData(
 		title = "Creatures",
@@ -127,13 +127,7 @@ fun ValuableMaterialDetailContent(
 		itemContentScale = ContentScale.Crop
 	)
 
-	Image(
-		painter = painterBackgroundImage,
-		contentDescription = "bg",
-		contentScale = ContentScale.FillBounds,
-		modifier = Modifier.fillMaxSize()
-	)
-
+	BgImage()
 	Scaffold(
 		modifier = Modifier.fillMaxSize(),
 		containerColor = Color.Transparent,

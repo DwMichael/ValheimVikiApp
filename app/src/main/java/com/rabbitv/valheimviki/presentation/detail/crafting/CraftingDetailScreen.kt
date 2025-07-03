@@ -3,7 +3,6 @@ package com.rabbitv.valheimviki.presentation.detail.crafting
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
@@ -35,7 +34,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -53,11 +51,13 @@ import com.composables.icons.lucide.Shield
 import com.composables.icons.lucide.Swords
 import com.composables.icons.lucide.TrendingUp
 import com.composables.icons.lucide.Utensils
-import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingSubCategory
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
+import com.rabbitv.valheimviki.presentation.components.flow_row.flow_as_grid.TwoColumnGrid
 import com.rabbitv.valheimviki.presentation.components.grid.custom_column_grid.CustomColumnGrid
+import com.rabbitv.valheimviki.presentation.components.grid.grid_item.CustomItemCard
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerWithHeaderData
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
 import com.rabbitv.valheimviki.presentation.components.section_header.SectionHeader
@@ -66,6 +66,7 @@ import com.rabbitv.valheimviki.presentation.detail.crafting.model.CraftingDetail
 import com.rabbitv.valheimviki.presentation.detail.crafting.viewmodel.CraftingDetailViewModel
 import com.rabbitv.valheimviki.presentation.detail.creature.components.horizontal_pager.DroppedItemsSection
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
+import com.rabbitv.valheimviki.ui.theme.CUSTOM_ITEM_CARD_FILL_WIDTH
 import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
@@ -112,14 +113,9 @@ fun CraftingDetailContent(
 			isVisible
 		}
 	}
-	val painterBackgroundImage = painterResource(R.drawable.main_background)
 
-	Image(
-		painter = painterBackgroundImage,
-		contentDescription = "bg",
-		contentScale = ContentScale.FillBounds,
-		modifier = Modifier.fillMaxSize()
-	)
+
+	BgImage()
 	Scaffold(
 		modifier = Modifier.fillMaxSize(),
 		containerColor = Color.Transparent,
@@ -179,7 +175,7 @@ fun CraftingDetailContent(
 							) {
 								SectionHeader(
 									data = HorizontalPagerWithHeaderData(
-										title = "Construction Requirements",
+										title = "Requirements",
 										subTitle = "Components needed to build this station.",
 										icon = Lucide.ScrollText,
 										iconRotationDegrees = 0f,
@@ -191,12 +187,16 @@ fun CraftingDetailContent(
 							}
 
 							Spacer(modifier = Modifier.padding(6.dp))
-							CustomColumnGrid(
-								list = uiState.craftingMaterialToBuild,
-								getImageUrl = { it.itemDrop.imageUrl },
-								getName = { it.itemDrop.name },
-								getQuantity = { it.quantityList[0] },
-							)
+							TwoColumnGrid {
+								for (craftingMaterial in uiState.craftingMaterialToBuild) {
+									CustomItemCard(
+										fillWidth = CUSTOM_ITEM_CARD_FILL_WIDTH,
+										imageUrl = craftingMaterial.itemDrop.imageUrl,
+										name = craftingMaterial.itemDrop.name,
+										quantity = craftingMaterial.quantityList.firstOrNull()
+									)
+								}
+							}
 						}
 					}
 					item {
@@ -249,13 +249,16 @@ fun CraftingDetailContent(
 							}
 
 							Spacer(modifier = Modifier.padding(6.dp))
-							CustomColumnGrid(
-								list = uiState.craftingUpgraderObjects,
-								getImageUrl = { it.itemDrop.imageUrl },
-								getName = { it.itemDrop.name },
-								getQuantity = { it.quantityList[0] },
-
-								)
+							TwoColumnGrid {
+								for (craftingUpgrader in uiState.craftingUpgraderObjects) {
+									CustomItemCard(
+										fillWidth = CUSTOM_ITEM_CARD_FILL_WIDTH,
+										imageUrl = craftingUpgrader.itemDrop.imageUrl,
+										name = craftingUpgrader.itemDrop.name,
+										quantity = craftingUpgrader.quantityList.firstOrNull()
+									)
+								}
+							}
 						}
 					}
 					item {

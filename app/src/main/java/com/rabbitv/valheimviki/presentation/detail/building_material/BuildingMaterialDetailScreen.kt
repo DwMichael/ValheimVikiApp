@@ -12,13 +12,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -55,6 +53,7 @@ import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCard
+import com.rabbitv.valheimviki.presentation.components.flow_row.flow_as_grid.TwoColumnGrid
 import com.rabbitv.valheimviki.presentation.components.grid.grid_item.CustomItemCard
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
 import com.rabbitv.valheimviki.presentation.detail.building_material.model.BuildingMaterialUiState
@@ -213,15 +212,7 @@ fun BuildingMaterialDetailContent(
 							thickness = 1.dp,
 							color = Color.White
 						)
-						FlowRow(
-							modifier = Modifier
-								.wrapContentHeight()
-								.fillMaxWidth()
-								.padding(BODY_CONTENT_PADDING.dp),
-							maxItemsInEachRow = 2,
-							horizontalArrangement = Arrangement.SpaceBetween,
-							verticalArrangement = Arrangement.spacedBy(BODY_CONTENT_PADDING.dp),
-						) {
+						TwoColumnGrid {
 							for (material in uiState.materials) {
 								CustomItemCard(
 									fillWidth = 0.45f,

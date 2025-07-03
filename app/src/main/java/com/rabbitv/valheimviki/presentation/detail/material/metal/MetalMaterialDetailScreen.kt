@@ -55,8 +55,11 @@ import com.composables.icons.lucide.TreePine
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
+import com.rabbitv.valheimviki.presentation.components.flow_row.flow_as_grid.TwoColumnGrid
 import com.rabbitv.valheimviki.presentation.components.grid.custom_column_grid.CustomColumnGrid
+import com.rabbitv.valheimviki.presentation.components.grid.grid_item.CustomItemCard
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerWithHeaderData
@@ -68,6 +71,7 @@ import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.Ove
 import com.rabbitv.valheimviki.presentation.detail.material.metal.model.MetalMaterialUiState
 import com.rabbitv.valheimviki.presentation.detail.material.metal.viewmodel.MetalMaterialDetailViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
+import com.rabbitv.valheimviki.ui.theme.CUSTOM_ITEM_CARD_FILL_WIDTH
 import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
@@ -115,7 +119,7 @@ fun MetalMaterialDetailContent(
 	}
 
 	val isExpandable = remember { mutableStateOf(false) }
-	val painterBackgroundImage = painterResource(R.drawable.main_background)
+
 
 	val pointOfInterestData = HorizontalPagerData(
 		title = "Point Of Interest",
@@ -139,13 +143,7 @@ fun MetalMaterialDetailContent(
 		itemContentScale = ContentScale.Crop,
 	)
 
-	Image(
-		painter = painterBackgroundImage,
-		contentDescription = "bg",
-		contentScale = ContentScale.FillBounds,
-		modifier = Modifier.fillMaxSize()
-	)
-
+	BgImage()
 	Scaffold(
 		modifier = Modifier.fillMaxSize(),
 		containerColor = Color.Transparent,
@@ -258,12 +256,16 @@ fun MetalMaterialDetailContent(
 						}
 
 						Spacer(modifier = Modifier.padding(6.dp))
-						CustomColumnGrid(
-							list = uiState.requiredMaterials,
-							getImageUrl = { it.material.imageUrl },
-							getName = { it.material.name },
-							getQuantity = { it.quantityList[0] },
-						)
+						TwoColumnGrid {
+							for (items in uiState.requiredMaterials) {
+								CustomItemCard(
+									fillWidth = CUSTOM_ITEM_CARD_FILL_WIDTH,
+									imageUrl = items.itemDrop.imageUrl,
+									name = items.itemDrop.name,
+									quantity = items.quantityList.firstOrNull()
+								)
+							}
+						}
 					}
 					if (uiState.craftingStations.isNotEmpty()) {
 						TridentsDividedRow()

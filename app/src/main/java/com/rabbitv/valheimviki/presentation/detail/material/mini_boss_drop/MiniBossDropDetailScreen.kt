@@ -45,6 +45,7 @@ import com.rabbitv.valheimviki.data.mappers.creatures.toMainBoss
 import com.rabbitv.valheimviki.data.mappers.creatures.toMiniBoss
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.card.card_image.ImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
 import com.rabbitv.valheimviki.presentation.detail.material.boss_drop.model.BossDropUiState
@@ -99,16 +100,7 @@ fun MiniBossDropDetailContent(
 
 	val isExpandable = remember { mutableStateOf(false) }
 
-
-	val painterBackgroundImage = painterResource(R.drawable.main_background)
-
-	Image(
-		painter = painterBackgroundImage,
-		contentDescription = "bg",
-		contentScale = ContentScale.FillBounds,
-		modifier = Modifier.fillMaxSize()
-	)
-
+	BgImage()
 	Scaffold(
 		modifier = Modifier.fillMaxSize(),
 		containerColor = Color.Transparent,

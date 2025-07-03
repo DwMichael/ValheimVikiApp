@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.DarkWood
 import com.rabbitv.valheimviki.ui.theme.LightDark
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
@@ -53,7 +54,8 @@ fun CustomItemCard(fillWidth: Float = 1.0f, imageUrl: String, name: String, quan
 			AsyncImage(
 				modifier = Modifier
 					.fillMaxWidth()
-					.height(83.dp),
+					.height(83.dp)
+					.padding(top = BODY_CONTENT_PADDING.dp),
 				model = ImageRequest.Builder(LocalContext.current)
 					.data(imageUrl)
 					.crossfade(true)

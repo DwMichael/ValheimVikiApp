@@ -54,9 +54,12 @@ import com.rabbitv.valheimviki.domain.model.item_tool.ItemTool
 import com.rabbitv.valheimviki.domain.model.material.MaterialUpgrade
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.card.LevelInfoCard
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
+import com.rabbitv.valheimviki.presentation.components.flow_row.flow_as_grid.TwoColumnGrid
 import com.rabbitv.valheimviki.presentation.components.grid.custom_column_grid.CustomColumnGrid
+import com.rabbitv.valheimviki.presentation.components.grid.grid_item.CustomItemCard
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerWithHeaderData
@@ -66,6 +69,7 @@ import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsD
 import com.rabbitv.valheimviki.presentation.detail.tool.model.ToolDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.tool.viewmodel.ToolDetailViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
+import com.rabbitv.valheimviki.ui.theme.CUSTOM_ITEM_CARD_FILL_WIDTH
 import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
@@ -123,15 +127,8 @@ fun ToolDetailContent(
 	val isExpandable = remember { mutableStateOf(false) }
 
 
-	val painterBackgroundImage = painterResource(R.drawable.main_background)
 
-	Image(
-		painter = painterBackgroundImage,
-		contentDescription = "bg",
-		contentScale = ContentScale.FillBounds,
-		modifier = Modifier.fillMaxSize()
-	)
-
+	BgImage()
 	Scaffold(
 		modifier = Modifier.fillMaxSize(),
 		containerColor = Color.Transparent,
@@ -193,12 +190,16 @@ fun ToolDetailContent(
 						}
 
 						Spacer(modifier = Modifier.padding(6.dp))
-						CustomColumnGrid(
-							list = uiState.relatedMaterials,
-							getImageUrl = { it.material.imageUrl },
-							getName = { it.material.name },
-							getQuantity = { it.quantityList[0] }
-						)
+						TwoColumnGrid {
+							for (item in uiState.relatedMaterials) {
+								CustomItemCard(
+									fillWidth = CUSTOM_ITEM_CARD_FILL_WIDTH,
+									imageUrl = item.material.imageUrl,
+									name = item.material.name,
+									quantity = item.quantityList.firstOrNull()
+								)
+							}
+						}
 					}
 					if (!tool.upgradeInfoList.isNullOrEmpty()) {
 						Text(

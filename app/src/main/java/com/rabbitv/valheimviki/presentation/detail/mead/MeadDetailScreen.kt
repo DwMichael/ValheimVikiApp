@@ -57,9 +57,12 @@ import com.rabbitv.valheimviki.domain.model.mead.MeadSubCategory
 import com.rabbitv.valheimviki.domain.repository.Droppable
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCard
+import com.rabbitv.valheimviki.presentation.components.flow_row.flow_as_grid.TwoColumnGrid
 import com.rabbitv.valheimviki.presentation.components.grid.custom_column_grid.CustomColumnGrid
+import com.rabbitv.valheimviki.presentation.components.grid.grid_item.CustomItemCard
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerWithHeaderData
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
 import com.rabbitv.valheimviki.presentation.components.section_header.SectionHeader
@@ -70,6 +73,7 @@ import com.rabbitv.valheimviki.presentation.detail.mead.model.MeadDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.mead.model.RecipeMeadData
 import com.rabbitv.valheimviki.presentation.detail.mead.viewmodel.MeadDetailViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
+import com.rabbitv.valheimviki.ui.theme.CUSTOM_ITEM_CARD_FILL_WIDTH
 import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
@@ -143,17 +147,10 @@ fun MeadDetailContent(
 		mead != null && (shouldShowValue(mead.duration) || shouldShowValue(mead.cooldown) || shouldShowValue(
 			mead.recipeOutput
 		))
-
 	val showCraftingStationSection = uiState.craftingCookingStation != null
-	val painterBackgroundImage = painterResource(R.drawable.main_background)
 
-	Image(
-		painter = painterBackgroundImage,
-		contentDescription = "bg",
-		contentScale = ContentScale.FillBounds,
-		modifier = Modifier.fillMaxSize()
-	)
 
+	BgImage()
 	Scaffold(
 		modifier = Modifier.fillMaxSize(),
 		containerColor = Color.Transparent,
@@ -216,12 +213,16 @@ fun MeadDetailContent(
 						}
 
 						Spacer(modifier = Modifier.padding(6.dp))
-						CustomColumnGrid(
-							list = recipeItems,
-							getImageUrl = {it.itemDrop.imageUrl},
-							getName = {it.itemDrop.name},
-							getQuantity = {it.quantityList[0]},
-						)
+						TwoColumnGrid {
+							for (items in recipeItems) {
+								CustomItemCard(
+									fillWidth = CUSTOM_ITEM_CARD_FILL_WIDTH,
+									imageUrl = items.itemDrop.imageUrl,
+									name = items.itemDrop.name,
+									quantity = items.quantityList.firstOrNull()
+								)
+							}
+						}
 					}
 					if (showStatsSection) {
 						TridentsDividedRow("Stats")
@@ -293,14 +294,12 @@ fun MeadDetailContent(
 							SlavicDivider()
 						}
 
-						uiState.craftingCookingStation?.let { craftingStation ->
-							CardImageWithTopLabel(
-								itemData = craftingStation,
-								subTitle = if (category == MeadSubCategory.MEAD_BASE) "Requires cooking station" else "Requires fermenting station",
-								contentScale = ContentScale.Fit,
-								painter = craftingStationPainter
-							)
-						}
+						CardImageWithTopLabel(
+							itemData = uiState.craftingCookingStation,
+							subTitle = if (category == MeadSubCategory.MEAD_BASE) "Requires cooking station" else "Requires fermenting station",
+							contentScale = ContentScale.Fit,
+							painter = craftingStationPainter
+						)
 					}
 				}
 			}
