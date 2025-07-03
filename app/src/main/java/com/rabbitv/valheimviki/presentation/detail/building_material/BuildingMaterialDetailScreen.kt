@@ -16,16 +16,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -51,6 +44,7 @@ import com.composables.icons.lucide.Lucide
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCard
 import com.rabbitv.valheimviki.presentation.components.flow_row.flow_as_grid.TwoColumnGrid
@@ -59,7 +53,6 @@ import com.rabbitv.valheimviki.presentation.components.images.FramedImage
 import com.rabbitv.valheimviki.presentation.detail.building_material.model.BuildingMaterialUiState
 import com.rabbitv.valheimviki.presentation.detail.building_material.viewmodel.BuildingMaterialDetailViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
-import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 
 @RequiresApi(Build.VERSION_CODES.S)
@@ -232,29 +225,13 @@ fun BuildingMaterialDetailContent(
 						}
 					}
 				}
-				AnimatedVisibility(
-					visible = backButtonVisibleState,
-					enter = fadeIn(),
-					exit = fadeOut(),
+				AnimatedBackButton(
 					modifier = Modifier
 						.align(Alignment.TopStart)
-						.padding(16.dp)
-				) {
-					FilledIconButton(
-						onClick = onBack,
-						shape = RoundedCornerShape(12.dp),
-						colors = IconButtonDefaults.filledIconButtonColors(
-							containerColor = ForestGreen10Dark,
-						),
-						modifier = Modifier.size(56.dp)
-					) {
-						Icon(
-							Icons.AutoMirrored.Rounded.ArrowBack,
-							contentDescription = "Back",
-							tint = Color.White
-						)
-					}
-				}
+						.padding(16.dp),
+					scrollState = scrollState,
+					onBack = onBack
+				)
 			}
 		}
 	}
