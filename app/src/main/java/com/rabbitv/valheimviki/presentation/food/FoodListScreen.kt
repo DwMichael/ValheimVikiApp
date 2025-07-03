@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -43,79 +42,79 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun FoodListScreen(
-    onItemClick: (String, FoodSubCategory) -> Unit,
-    modifier: Modifier, paddingValues: PaddingValues,
-    viewModel: FoodListViewModel = hiltViewModel()
+	onItemClick: (String, FoodSubCategory) -> Unit,
+	modifier: Modifier, paddingValues: PaddingValues,
+	viewModel: FoodListViewModel = hiltViewModel()
 ) {
-    val icons: List<ImageVector> = listOf(
-        Lucide.Rat,
-        Lucide.Skull,
-        Lucide.User
-    )
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val lazyListState = rememberLazyListState()
-    val scope = rememberCoroutineScope()
-    val backButtonVisibleState by remember {
-        derivedStateOf { lazyListState.firstVisibleItemIndex >= 2 }
-    }
+	val icons: List<ImageVector> = listOf(
+		Lucide.Rat,
+		Lucide.Skull,
+		Lucide.User
+	)
+	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+	val lazyListState = rememberLazyListState()
+	val scope = rememberCoroutineScope()
+	val backButtonVisibleState by remember {
+		derivedStateOf { lazyListState.firstVisibleItemIndex >= 2 }
+	}
 
-    Surface(
-        color = Color.Transparent,
-        modifier = Modifier
+	Surface(
+		color = Color.Transparent,
+		modifier = Modifier
             .testTag("FoodListSurface")
             .fillMaxSize()
             .padding(paddingValues)
-    ) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            Column(
-                modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                SegmentedButtonSingleSelect(
-                    options = FoodSegmentOption.entries,
-                    selectedOption = uiState.selectedCategory,
-                    onOptionSelected = {
-                        viewModel.onCategorySelected(it)
-                        scope.launch {
-                            lazyListState.animateScrollToItem(0)
-                        }
-                    },
-                    icons = icons
-                )
-                Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
-                Box(modifier = Modifier.fillMaxSize()) {
-                    when (val state = uiState) {
-                        is UiCategoryState.Loading -> {
-                            Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
-                            ShimmerListEffect()
-                        }
+	) {
+		Box(modifier = Modifier.fillMaxSize()) {
+			Column(
+				modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+				horizontalAlignment = Alignment.CenterHorizontally
+			) {
+				SegmentedButtonSingleSelect(
+					options = FoodSegmentOption.entries,
+					selectedOption = uiState.selectedCategory,
+					onOptionSelected = {
+						viewModel.onCategorySelected(it)
+						scope.launch {
+							lazyListState.animateScrollToItem(0)
+						}
+					},
+					icons = icons
+				)
+				Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
+				Box(modifier = Modifier.fillMaxSize()) {
+					when (val state = uiState) {
+						is UiCategoryState.Loading -> {
+							Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
+							ShimmerListEffect()
+						}
 
-                        is UiCategoryState.Error -> EmptyScreen(errorMessage = state.message.toString())
-                        is UiCategoryState.Success -> ListContent(
-                            items = state.list,
-                            clickToNavigate = onItemClick,
-                            lazyListState = lazyListState,
-                            subCategoryNumber = state.selectedCategory,
-                            horizontalPadding = 0.dp,
-                            imageScale = ContentScale.Fit
-                        )
-                    }
+						is UiCategoryState.Error -> EmptyScreen(errorMessage = state.message.toString())
+						is UiCategoryState.Success -> ListContent(
+							items = state.list,
+							clickToNavigate = onItemClick,
+							lazyListState = lazyListState,
+							subCategoryNumber = state.selectedCategory,
+							horizontalPadding = 0.dp,
+							imageScale = ContentScale.Fit
+						)
+					}
 
-                    CustomFloatingActionButton(
-                        showBackButton = backButtonVisibleState,
-                        onClick = {
-                            scope.launch {
-                                lazyListState.animateScrollToItem(0)
-                            }
-                        },
-                        modifier = Modifier
+					CustomFloatingActionButton(
+						showBackButton = backButtonVisibleState,
+						onClick = {
+							scope.launch {
+								lazyListState.animateScrollToItem(0)
+							}
+						},
+						modifier = Modifier
                             .align(Alignment.BottomEnd)
                             .padding(BODY_CONTENT_PADDING.dp)
-                    )
-                }
-            }
-        }
-    }
+					)
+				}
+			}
+		}
+	}
 }
 
 
