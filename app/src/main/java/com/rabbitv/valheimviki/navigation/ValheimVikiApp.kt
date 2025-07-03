@@ -129,11 +129,8 @@ import kotlinx.coroutines.launch
 fun ValheimVikiApp() {
 	ValheimVikiAppTheme {
 		SharedTransitionLayout {
-			val valheimVikiNavController = rememberNavController()
 			CompositionLocalProvider(LocalSharedTransitionScope provides this) {
-				MainContainer(
-					valheimVikiNavController
-				)
+				MainContainer()
 			}
 		}
 	}
@@ -144,8 +141,8 @@ fun ValheimVikiApp() {
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun MainContainer(
-	valheimVikiNavController: NavHostController,
-	modifier: Modifier = Modifier
+	modifier: Modifier = Modifier,
+	valheimVikiNavController: NavHostController = rememberNavController(),
 ) {
 	val drawerState = rememberDrawerState(DrawerValue.Closed)
 	val scope = rememberCoroutineScope()
