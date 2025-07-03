@@ -228,8 +228,7 @@ fun AggressiveCreatureDetailContent(
 								.padding(16.dp),
 							scrollState = sharedScrollState,
 							onBack = onBack
-						)
-
+					)
 				}
 			}
 		}
