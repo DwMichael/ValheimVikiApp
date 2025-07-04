@@ -14,7 +14,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -31,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rabbitv.valheimviki.data.mappers.creatures.toMainBoss
+import com.rabbitv.valheimviki.domain.model.material.MaterialSubType
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
@@ -69,7 +69,7 @@ fun BossDropDetailContent(
 ) {
 
 	val scrollState = rememberScrollState()
-	val previousScrollValue = remember { mutableIntStateOf(0) }
+	remember { mutableIntStateOf(0) }
 
 	val isExpandable = remember { mutableStateOf(false) }
 
@@ -126,14 +126,15 @@ fun BossDropDetailContent(
 							style = MaterialTheme.typography.bodyLarge,
 						)
 					}
-
-					if (uiState.boss != null) {
+					if (uiState.boss != null && uiState.material.subType == MaterialSubType.TROPHY.toString()) {
 						TridentsDividedRow("Power")
 						Text(
 							text = uiState.boss.forsakenPower,
 							modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
 							style = MaterialTheme.typography.bodyLarge,
 						)
+					}
+					if (uiState.boss != null) {
 						TridentsDividedRow()
 						ImageWithTopLabel(
 							itemData = uiState.boss,
