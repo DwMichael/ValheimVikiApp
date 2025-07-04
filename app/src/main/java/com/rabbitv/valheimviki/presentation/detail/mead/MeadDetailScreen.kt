@@ -18,9 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -97,7 +95,6 @@ fun MeadDetailContent(
 	val isStatInfoExpanded2 = remember { mutableStateOf(false) }
 	val isStatInfoExpanded3 = remember { mutableStateOf(false) }
 	val scrollState = rememberScrollState()
-	val previousScrollValue = remember { mutableIntStateOf(0) }
 	val craftingStationPainter = painterResource(R.drawable.food_bg)
 
 	val recipeItems: List<Droppable> =
@@ -209,9 +206,9 @@ fun MeadDetailContent(
 						) {
 							if (shouldShowValue(mead.duration)) {
 								DarkGlassStatCard(
-									Lucide.Clock2,
-									"Duration",
-									"${mead.duration.toString()} min",
+									icon = Lucide.Clock2,
+									label = "Duration",
+									value = "${mead.duration.toString()} min",
 									expand = {
 										isStatInfoExpanded2.value = !isStatInfoExpanded2.value
 									},
@@ -227,9 +224,9 @@ fun MeadDetailContent(
 							}
 							if (shouldShowValue(mead.cooldown)) {
 								DarkGlassStatCard(
-									Lucide.ClockArrowDown,
-									"Cooldown",
-									mead.cooldown.toString(),
+									icon = Lucide.ClockArrowDown,
+									label = "Cooldown",
+									value = mead.cooldown.toString(),
 									expand = {
 										isStatInfoExpanded3.value = !isStatInfoExpanded3.value
 									},
@@ -245,9 +242,9 @@ fun MeadDetailContent(
 							}
 							if (shouldShowValue(mead.recipeOutput)) {
 								DarkGlassStatCard(
-									Lucide.Layers2,
-									"Stack size",
-									mead.recipeOutput.toString(),
+									icon = Lucide.Layers2,
+									label = "Stack size",
+									value = mead.recipeOutput.toString(),
 									expand = {
 										isStatInfoExpanded1.value = !isStatInfoExpanded1.value
 									},
