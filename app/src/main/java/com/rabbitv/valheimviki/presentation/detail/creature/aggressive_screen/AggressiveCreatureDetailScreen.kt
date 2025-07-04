@@ -1,5 +1,7 @@
 package com.rabbitv.valheimviki.presentation.detail.creature.aggressive_screen
 
+import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,8 +20,6 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -41,8 +42,13 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.rememberAsyncImagePainter
+import com.composables.icons.lucide.Atom
 import com.composables.icons.lucide.Beef
+import com.composables.icons.lucide.Grab
+import com.composables.icons.lucide.Heart
 import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.Swords
+import com.composables.icons.lucide.Unlink
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.aggresive.AggressiveCreature
@@ -54,15 +60,15 @@ import com.rabbitv.valheimviki.domain.model.material.MaterialDrop
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
+import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCard
 import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDetailImage
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.creature.aggressive_screen.model.AggressiveCreatureDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.creature.aggressive_screen.viewModel.AggressiveCreatureDetailScreenViewModel
-import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardStatDetails
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
+import com.rabbitv.valheimviki.presentation.detail.creature.components.column.StatColumn
 import com.rabbitv.valheimviki.presentation.detail.creature.components.horizontal_pager.DroppedItemsSection
 import com.rabbitv.valheimviki.presentation.detail.creature.components.rows.StarLevelRow
-import com.rabbitv.valheimviki.presentation.detail.creature.components.rows.StatsFlowRow
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
@@ -95,6 +101,7 @@ fun AggressiveCreatureDetailContent(
 	val sharedScrollState = rememberScrollState()
 	val isExpandable = remember { mutableStateOf(false) }
 	val coroutineScope = rememberCoroutineScope()
+
 	Scaffold { padding ->
 		uiState.aggressiveCreature?.let { aggressiveCreature ->
 			HorizontalPager(
@@ -102,19 +109,19 @@ fun AggressiveCreatureDetailContent(
 				modifier = Modifier
 					.padding(padding)
 					.fillMaxWidth(),
-				beyondViewportPageCount = aggressiveCreature.levels.size,
+				beyondViewportPageCount = 1,
 			) { pageIndex ->
 
 				Box(
 					modifier = Modifier
 						.fillMaxSize()
-						.padding(padding)
 				) {
 					Column(
 						modifier = Modifier.verticalScroll(sharedScrollState),
 						verticalArrangement = Arrangement.Top,
 						horizontalAlignment = Alignment.Start,
 					) {
+						val currentLevel = aggressiveCreature.levels[pageIndex]
 						MainDetailImage(
 							imageUrl = aggressiveCreature.levels[pageIndex].image.toString(),
 							name = aggressiveCreature.name,
@@ -141,7 +148,8 @@ fun AggressiveCreatureDetailContent(
 						DetailExpandableText(
 							text = aggressiveCreature.description,
 							collapsedMaxLine = 3,
-							isExpanded = isExpandable
+							isExpanded = isExpandable,
+							boxPadding = BODY_CONTENT_PADDING.dp
 						)
 
 						TridentsDividedRow(text = "DETAILS")
@@ -191,35 +199,18 @@ fun AggressiveCreatureDetailContent(
 								icon = Lucide.Beef,
 								starLevel = pageIndex,
 								title = "Food Drops",
-								subTitle = "Food items that drop from creature and can be instanly eaten",
+								subTitle = "Food items that drop from creature and can be instantly eaten",
 							)
 						}
 
-						TridentsDividedRow(text = "BOSS STATS")
-						Box(
-							modifier = Modifier.padding(horizontal = 10.dp)
+						TridentsDividedRow(text = "MOB STATS")
+						CreatureStatsSection(
+							creature = aggressiveCreature,
+							currentLevel = currentLevel
 						)
-						{
-							CardStatDetails(
-								title = stringResource(R.string.baseHp),
-								text = uiState.aggressiveCreature.levels[pageIndex].baseHp.toString(),
-								icon = Icons.Outlined.Favorite,
-								iconColor = Color.Red,
-								styleTextFirst = MaterialTheme.typography.labelSmall,
-								styleTextSecond = MaterialTheme.typography.bodyLarge,
-								iconSize = 36.dp
-							)
-						}
 
-
-						StatsFlowRow(
-							baseDamage = uiState.aggressiveCreature.levels[pageIndex].baseDamage,
-							weakness = uiState.aggressiveCreature.weakness,
-							resistance = uiState.aggressiveCreature.resistance,
-							abilities = uiState.aggressiveCreature.abilities,
-						)
 						SlavicDivider()
-						Box(modifier = Modifier.size(45.dp))
+						Box(modifier = Modifier.size(70.dp))
 					}
 					AnimatedBackButton(
 						modifier = Modifier
@@ -234,6 +225,137 @@ fun AggressiveCreatureDetailContent(
 	}
 }
 
+@Composable
+private fun CreatureStatsSection(
+	creature: AggressiveCreature,
+	currentLevel: LevelCreatureData
+) {
+
+	val expandedStates = remember {
+		mutableStateOf(BooleanArray(5) { false })
+	}
+
+
+	StatCard(
+		icon = Lucide.Heart,
+		label = stringResource(R.string.health),
+		value = currentLevel.baseHp.toString(),
+		expandedIndex = 0,
+		expandedStates = expandedStates.value,
+		onExpandToggle = { index ->
+			expandedStates.value = expandedStates.value.copyOf().apply {
+				this[index] = !this[index]
+			}
+		}
+	) {
+		Text(
+			text = "The amount of health points this mob have",
+			modifier = Modifier.padding(
+				start = BODY_CONTENT_PADDING.dp * 2,
+				end = BODY_CONTENT_PADDING.dp
+			),
+			style = MaterialTheme.typography.bodyLarge
+		)
+	}
+
+	// Base Damage
+	if (creature.baseDamage.isNotBlank() && creature.baseDamage != "null") {
+			StatCard(
+				icon = Lucide.Swords,
+				label = stringResource(R.string.base_damage),
+				value = "",
+				expandedIndex = 1,
+				expandedStates = expandedStates.value,
+				onExpandToggle = { index ->
+					expandedStates.value = expandedStates.value.copyOf().apply {
+						this[index] = !this[index]
+					}
+				}
+			) {
+				StatColumn(creature.baseDamage)
+			}
+	}
+
+	// Weakness
+	if (!creature.weakness.isNullOrBlank() && creature.weakness != "null") {
+		StatCard(
+			icon = Lucide.Unlink,
+			label = stringResource(R.string.weakness),
+			value = "",
+			expandedIndex = 2,
+			expandedStates = expandedStates.value,
+			onExpandToggle = { index ->
+				expandedStates.value = expandedStates.value.copyOf().apply {
+					this[index] = !this[index]
+				}
+			}
+		) {
+			StatColumn(creature.weakness)
+		}
+	}
+
+	// Resistance
+	if (!creature.resistance.isNullOrBlank() && creature.resistance != "null") {
+
+			StatCard(
+				icon = Lucide.Grab,
+				label = stringResource(R.string.resistance),
+				value = "",
+				expandedIndex = 3,
+				expandedStates = expandedStates.value,
+				onExpandToggle = { index ->
+					expandedStates.value = expandedStates.value.copyOf().apply {
+						this[index] = !this[index]
+					}
+				}
+			) {
+				StatColumn(creature.resistance)
+			}
+
+	}
+
+	// Abilities
+	if (!creature.abilities.isNullOrBlank() && creature.abilities != "null") {
+			StatCard(
+				icon = Lucide.Atom,
+				label = stringResource(R.string.abilities),
+				value = "",
+				expandedIndex = 4,
+				expandedStates = expandedStates.value,
+				onExpandToggle = { index ->
+					expandedStates.value = expandedStates.value.copyOf().apply {
+						this[index] = !this[index]
+					}
+				}
+			) {
+				StatColumn( creature.abilities)
+			}
+
+	}
+}
+
+@Composable
+private fun StatCard(
+	icon: ImageVector,
+	label: String,
+	value: String,
+	expandedIndex: Int,
+	expandedStates: BooleanArray,
+	onExpandToggle: (Int) -> Unit,
+	expandedContent: @Composable () -> Unit
+) {
+	DarkGlassStatCard(
+		modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+		icon = icon,
+		label = label,
+		value = value,
+		expand = { onExpandToggle(expandedIndex) },
+		isExpanded = expandedStates[expandedIndex]
+	)
+	AnimatedVisibility(expandedStates[expandedIndex]) {
+		expandedContent()
+	}
+}
 
 @Composable
 fun PageIndicator(

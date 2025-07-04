@@ -30,7 +30,7 @@ import com.rabbitv.valheimviki.domain.model.armor.ArmorSubCategory
 import com.rabbitv.valheimviki.domain.model.ui_state.category_state.UiCategoryState
 import com.rabbitv.valheimviki.presentation.armor.viewmodel.ArmorListViewModel
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
-import com.rabbitv.valheimviki.presentation.components.ListContent
+import com.rabbitv.valheimviki.presentation.components.list.ListContent
 import com.rabbitv.valheimviki.presentation.components.chip.ChipData
 import com.rabbitv.valheimviki.presentation.components.chip.CustomElevatedFilterChip
 import com.rabbitv.valheimviki.presentation.components.chip.SearchFilterBar
