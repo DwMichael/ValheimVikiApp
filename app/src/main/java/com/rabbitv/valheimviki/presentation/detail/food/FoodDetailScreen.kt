@@ -160,9 +160,9 @@ fun FoodDetailContent(
 						if (shouldShowValue(food.health)) {
 							SlavicDivider()
 							DarkGlassStatCard(
-								Lucide.Heart,
-								"Health",
-								food.health.toString(),
+								icon = Lucide.Heart,
+								label =  "Health",
+								value =  food.health.toString(),
 								expand = { isStatInfoExpanded1.value = !isStatInfoExpanded1.value },
 								isExpanded = isStatInfoExpanded1.value
 							)
@@ -208,9 +208,9 @@ fun FoodDetailContent(
 						}
 						if (shouldShowValue(food.duration)) {
 							DarkGlassStatCard(
-								Lucide.Clock2,
-								"Duration",
-								"${food.duration.toString()} min",
+								icon = Lucide.Clock2,
+								label = "Duration",
+								value = "${food.duration.toString()} min",
 								expand = { isStatInfoExpanded4.value = !isStatInfoExpanded4.value },
 								isExpanded = isStatInfoExpanded4.value
 							)
@@ -224,9 +224,9 @@ fun FoodDetailContent(
 						}
 						if (shouldShowValue(food.eitr)) {
 							DarkGlassStatCard(
-								Lucide.Wand,
-								"Eitr",
-								food.eitr.toString(),
+								icon = 	Lucide.Wand,
+								label = "Eitr",
+								value =  food.eitr.toString(),
 								expand = { isStatInfoExpanded5.value = !isStatInfoExpanded5.value },
 								isExpanded = isStatInfoExpanded5.value
 							)
@@ -240,9 +240,9 @@ fun FoodDetailContent(
 						}
 						if (shouldShowValue(food.weight)) {
 							DarkGlassStatCard(
-								Lucide.Weight,
-								"Weight",
-								food.weight.toString(),
+								icon = 	Lucide.Weight,
+								label = "Weight",
+								value = food.weight.toString(),
 								expand = { isStatInfoExpanded6.value = !isStatInfoExpanded6.value },
 								isExpanded = isStatInfoExpanded6.value
 							)
@@ -256,9 +256,9 @@ fun FoodDetailContent(
 						}
 						if (shouldShowValue(food.forkType)) {
 							DarkGlassStatCard(
-								Lucide.Info,
-								"Fork Type",
-								food.forkType.toString(),
+								icon = Lucide.Info,
+								label =  "Fork Type",
+								value =  food.forkType.toString(),
 								expand = { isStatInfoExpanded7.value = !isStatInfoExpanded7.value },
 								isExpanded = isStatInfoExpanded7.value
 							)
@@ -272,9 +272,9 @@ fun FoodDetailContent(
 						}
 						if (shouldShowValue(food.stackSize)) {
 							DarkGlassStatCard(
-								Lucide.Layers2,
-								"Stack Size",
-								food.stackSize.toString(),
+								icon = 	Lucide.Layers2,
+								label = "Stack Size",
+								value =  food.stackSize.toString(),
 								expand = { isStatInfoExpanded8.value = !isStatInfoExpanded8.value },
 								isExpanded = isStatInfoExpanded8.value
 							)
