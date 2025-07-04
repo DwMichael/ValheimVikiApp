@@ -866,8 +866,8 @@ fun rememberDrawerItems(): List<DrawerItem> {
 	val poiDesc = stringResource(R.string.points_of_interest_section)
 
 	// Painters & icons
-	val skullPainter = painterResource(R.drawable.skull)
-	val ogrePainter = painterResource(R.drawable.ogre)
+	val skullPainter = painterResource(R.drawable.boss_1)
+	val ogrePainter = painterResource(R.drawable.miniboss)
 
 	val mountainSnowIcon = Lucide.MountainSnow
 	val rabbitIcon = Lucide.Rabbit
