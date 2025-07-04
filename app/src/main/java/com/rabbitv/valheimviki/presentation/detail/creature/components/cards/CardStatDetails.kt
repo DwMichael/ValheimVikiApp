@@ -44,12 +44,13 @@ fun CardStatDetails(
     iconSize: Dp = 64.dp,
     styleTextFirst: TextStyle = MaterialTheme.typography.bodyMedium,
     styleTextSecond: TextStyle = MaterialTheme.typography.bodyLarge,
-
+cardPadding :Dp = 0.dp
     ) {
     Card(
         Modifier
             .wrapContentHeight()
             .fillMaxWidth()
+            .padding(cardPadding)
             .shadow(
                 elevation = 8.dp,
                 shape = CardDefaults.shape,

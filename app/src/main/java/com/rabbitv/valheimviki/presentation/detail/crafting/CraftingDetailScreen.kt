@@ -242,18 +242,7 @@ fun CraftingDetailContent(
 						)
 					}
 
-
-					if (uiState.craftingMeadProducts.isNotEmpty()) {
-						TridentsDividedRow()
-						DroppedItemsSection(
-							list = uiState.craftingMeadProducts,
-							icon = Lucide.BookOpenCheck,
-							starLevel = 0,
-							title = "Crafting Ingredients",
-							subTitle = "Materials this station consumes to produce items.",
-						)
-					}
-
+					
 
 					if (uiState.craftingMeadProducts.isNotEmpty()) {
 						TridentsDividedRow()
