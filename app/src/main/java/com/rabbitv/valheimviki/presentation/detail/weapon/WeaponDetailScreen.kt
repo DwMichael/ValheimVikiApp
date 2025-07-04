@@ -104,15 +104,6 @@ fun WeaponDetailContent(
 							boxPadding = BODY_CONTENT_PADDING.dp
 						)
 					}
-
-					uiState.craftingObjects?.let { craftingStation ->
-						TridentsDividedRow()
-						CardImageWithTopLabel(
-							itemData = craftingStation,
-							subTitle = "Crafting Station Needed to Make This Item",
-							contentScale = ContentScale.FillBounds,
-						)
-					}
 					TridentsDividedRow()
 					Text(
 						"Upgrade Information",
@@ -138,7 +129,14 @@ fun WeaponDetailContent(
 							foodForUpgrade = uiState.foodAsMaterials,
 						)
 					}
-
+					uiState.craftingObjects?.let { craftingStation ->
+						TridentsDividedRow()
+						CardImageWithTopLabel(
+							itemData = craftingStation,
+							subTitle = "Crafting Station Needed to Make This Item",
+							contentScale = ContentScale.FillBounds,
+						)
+					}
 					Spacer(modifier = Modifier.height(45.dp))
 				}
 				AnimatedBackButton(

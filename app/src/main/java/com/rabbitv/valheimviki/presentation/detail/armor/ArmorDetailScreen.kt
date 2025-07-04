@@ -124,15 +124,6 @@ fun ArmorDetailContent(
 							boxPadding = BODY_CONTENT_PADDING.dp
 						)
 					}
-
-					uiState.craftingObjects?.let { craftingStation ->
-						TridentsDividedRow()
-						CardImageWithTopLabel(
-							itemData = craftingStation,
-							subTitle = "Crafting Station Needed to Make This Item",
-							contentScale = ContentScale.Fit,
-						)
-					}
 					TridentsDividedRow()
 					if (!armor.upgradeInfoList.isNullOrEmpty()) {
 						Text(
@@ -185,6 +176,17 @@ fun ArmorDetailContent(
 							)
 						}
 					}
+					uiState.craftingObjects?.let { craftingStation ->
+						TridentsDividedRow()
+						CardImageWithTopLabel(
+							itemData = craftingStation,
+							subTitle = "Crafting Station Needed to Make This Item",
+							contentScale = ContentScale.Fit,
+						)
+					}
+
+
+
 				}
 				AnimatedBackButton(
 					modifier = Modifier
