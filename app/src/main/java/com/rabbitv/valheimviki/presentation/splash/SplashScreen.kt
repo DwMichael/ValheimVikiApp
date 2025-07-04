@@ -18,6 +18,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.navigation.Screen
+import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 
 
 @Composable
@@ -40,12 +41,7 @@ fun SplashScreen(
 			popUpTo(0) { inclusive = true }
 		}
 	}
-	Image(
-		painter = painterResource(id = R.drawable.main_background),
-		contentDescription = "BackgroundImage",
-		contentScale = ContentScale.Crop,
-		modifier = Modifier.fillMaxSize(),
-	)
+	BgImage()
 }
 
 @Preview(name = "SplashScreen")
