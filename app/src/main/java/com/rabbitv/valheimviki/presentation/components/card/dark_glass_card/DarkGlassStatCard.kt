@@ -19,10 +19,10 @@ import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
 @Composable
 fun DarkGlassStatCard(
+	modifier: Modifier = Modifier,
 	icon: ImageVector,
 	label: String,
 	value: String,
-	modifier: Modifier = Modifier,
 	expand: () -> Unit,
 	isExpanded: Boolean,
 	baseDarkGlassStatCardHeight: Dp = 60.dp
@@ -38,7 +38,6 @@ fun DarkGlassStatCard(
 		},
 		label = label,
 		value = value,
-		modifier = modifier.clickable { expand() },
 		expand = expand,
 		isExpanded = isExpanded,
 		height =baseDarkGlassStatCardHeight,
@@ -51,7 +50,7 @@ fun DarkGlassStatCard(
 fun PreviewFoodStatCard() {
 
 	ValheimVikiAppTheme {
-		DarkGlassStatCard(Lucide.Utensils, "Health", "100", expand = {}, isExpanded = false)
+		DarkGlassStatCard(icon =  Lucide.Utensils, label =   "Health", value =  "100", expand = {}, isExpanded = false)
 	}
 
 }
