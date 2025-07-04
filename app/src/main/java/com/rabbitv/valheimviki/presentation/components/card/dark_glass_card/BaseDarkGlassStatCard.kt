@@ -40,10 +40,10 @@ import com.rabbitv.valheimviki.ui.theme.Shapes
 
 @Composable
 fun BaseDarkGlassStatCard(
+	modifier: Modifier = Modifier,
 	iconContent: @Composable () -> Unit,
 	label: String,
 	value: String,
-	modifier: Modifier = Modifier,
 	expand: () -> Unit,
 	isExpanded: Boolean,
 	height: Dp = 60.dp

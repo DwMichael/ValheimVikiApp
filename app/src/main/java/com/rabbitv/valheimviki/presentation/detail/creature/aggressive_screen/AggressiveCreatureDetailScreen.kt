@@ -328,7 +328,11 @@ private fun CreatureStatsSection(
 					}
 				}
 			) {
-				StatColumn( creature.abilities)
+				Text(
+					modifier = Modifier.padding(start = BODY_CONTENT_PADDING.dp * 2, end = BODY_CONTENT_PADDING.dp),
+					text = creature.abilities,
+					style = MaterialTheme.typography.bodyLarge
+				)
 			}
 
 	}

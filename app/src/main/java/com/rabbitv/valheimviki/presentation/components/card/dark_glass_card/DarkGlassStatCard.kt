@@ -28,6 +28,7 @@ fun DarkGlassStatCard(
 	baseDarkGlassStatCardHeight: Dp = 60.dp
 ) {
 	BaseDarkGlassStatCard(
+		modifier = modifier,
 		iconContent = {
 			Icon(
 				imageVector = icon,

@@ -100,7 +100,7 @@ fun FoodDetailContent(
 	val isStatInfoExpanded8 = remember { mutableStateOf(false) }
 
 	val scrollState = rememberScrollState()
-	val previousScrollValue = remember { mutableIntStateOf(0) }
+
 
 	val recipeItems: List<Droppable> = uiState.materialsForRecipe + uiState.foodForRecipe
 	val isExpandable = remember { mutableStateOf(false) }
