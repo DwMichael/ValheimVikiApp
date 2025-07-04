@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.components
+package com.rabbitv.valheimviki.presentation.components.list
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -34,6 +34,7 @@ import coil3.compose.AsyncImage
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.repository.ItemData
+import com.rabbitv.valheimviki.presentation.modifiers.lazyVerticalScrollbar
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.DEFAULT_LIST_ITEM_HEIGHT
 import com.rabbitv.valheimviki.ui.theme.DEFAULT_WITH_LIST_IMAGE
@@ -51,13 +52,14 @@ fun <T> ListContent(
 	subCategoryNumber: T,
 	imageScale: ContentScale = ContentScale.Crop,
 	horizontalPadding: Dp = BODY_CONTENT_PADDING.dp,
-    bottomBosPadding:Dp =24.dp,
+	bottomBosPadding: Dp = 24.dp,
 ) {
 	LazyColumn(
 		state = lazyListState,
 		modifier = Modifier
-            .padding(horizontal = horizontalPadding)
-            .fillMaxSize()
+			.padding(horizontal = horizontalPadding)
+			.lazyVerticalScrollbar(lazyListState)
+			.fillMaxSize()
 	) {
 		items(items) { item ->
 			ListItem(
@@ -84,19 +86,19 @@ fun ListItem(
 ) {
 	Row(
 		modifier = Modifier
-            .fillMaxWidth()
-            .height(DEFAULT_LIST_ITEM_HEIGHT)
-            .clip(RoundedCornerShape(DETAIL_ITEM_SHAPE_PADDING))
-            .background(ShimmerDarkGray)
-            .clickable { clickToNavigate() },
+			.fillMaxWidth()
+			.height(DEFAULT_LIST_ITEM_HEIGHT)
+			.clip(RoundedCornerShape(DETAIL_ITEM_SHAPE_PADDING))
+			.background(ShimmerDarkGray)
+			.clickable { clickToNavigate() },
 	) {
 		AsyncImage(
 			model = item.imageUrl,
 			contentDescription = item.name,
 			modifier = modifier
-                .fillMaxHeight()
-                .width(DEFAULT_WITH_LIST_IMAGE)
-                .clip(RoundedCornerShape(DETAIL_ITEM_SHAPE_PADDING)),
+				.fillMaxHeight()
+				.width(DEFAULT_WITH_LIST_IMAGE)
+				.clip(RoundedCornerShape(DETAIL_ITEM_SHAPE_PADDING)),
 			placeholder = painterResource(R.drawable.ic_placeholder),
 			contentScale = imageScale,
 		)
@@ -104,10 +106,10 @@ fun ListItem(
 			text = item.name,
 			color = PrimaryWhite,
 			modifier = modifier
-                .weight(1f)
-                .fillMaxSize()
-                .wrapContentHeight(Alignment.CenterVertically)
-                .padding(start = 12.dp, end = 8.dp),
+				.weight(1f)
+				.fillMaxSize()
+				.wrapContentHeight(Alignment.CenterVertically)
+				.padding(start = 12.dp, end = 8.dp),
 			style = MaterialTheme.typography.titleLarge,
 			overflow = TextOverflow.Ellipsis
 		)
