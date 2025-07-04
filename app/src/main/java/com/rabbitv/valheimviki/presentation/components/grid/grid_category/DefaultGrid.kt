@@ -4,9 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -31,33 +29,33 @@ private const val boundsAnimationDurationMillis = 500
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DefaultGrid(
-    modifier: Modifier,
-    items: List<ItemData>,
-    onItemClick: (String) -> Unit,
-    numbersOfColumns: Int,
-    height: Dp,
-    animatedVisibilityScope: AnimatedVisibilityScope,
-    lazyGridState: LazyGridState,
+	modifier: Modifier,
+	items: List<ItemData>,
+	onItemClick: (String) -> Unit,
+	numbersOfColumns: Int,
+	height: Dp,
+	animatedVisibilityScope: AnimatedVisibilityScope,
+	lazyGridState: LazyGridState,
 ) {
 
-    LazyVerticalGrid(
-        state = lazyGridState,
-        columns = GridCells.Fixed(numbersOfColumns),
-        horizontalArrangement = Arrangement.spacedBy(BODY_CONTENT_PADDING.dp),
-        verticalArrangement = Arrangement.spacedBy(BODY_CONTENT_PADDING.dp),
-        modifier = Modifier.clipToBounds(),
-        contentPadding = PaddingValues(bottom = 45.dp),
-    ) {
-        items(items, key = { item -> "${item.id}-${item.name}" }) { item ->
-            AnimatedGridItem(
-                item = item,
-                onItemClick = onItemClick,
-                height = height,
-                animatedVisibilityScope = animatedVisibilityScope
-            )
-        }
+	LazyVerticalGrid(
+		state = lazyGridState,
+		columns = GridCells.Fixed(numbersOfColumns),
+		horizontalArrangement = Arrangement.spacedBy(BODY_CONTENT_PADDING.dp),
+		verticalArrangement = Arrangement.spacedBy(BODY_CONTENT_PADDING.dp),
+		modifier = Modifier.clipToBounds(),
+		contentPadding = PaddingValues(bottom = 70.dp),
+	) {
+		items(items, key = { item -> "${item.id}-${item.name}" }) { item ->
+			AnimatedGridItem(
+				item = item,
+				onItemClick = onItemClick,
+				height = height,
+				animatedVisibilityScope = animatedVisibilityScope
+			)
+		}
 
-    }
+	}
 }
 
 
@@ -66,35 +64,35 @@ fun DefaultGrid(
 @Composable
 private fun PreviewContentGrid() {
 
-    val sampleBiomes = listOf(
-        Biome(
-            id = "123123",
-            category = "BIOME",
-            name = "Forest Forest", description = "A dense and lush forest.",
-            imageUrl = "",
-            order = 1
-        ),
-        Biome(
-            id = "123123",
-            category = "BIOME",
-            name = "Desert", description = "A vast and arid desert.",
-            imageUrl = "",
-            order = 2
-        ),
-    )
+	val sampleBiomes = listOf(
+		Biome(
+			id = "123123",
+			category = "BIOME",
+			name = "Forest Forest", description = "A dense and lush forest.",
+			imageUrl = "",
+			order = 1
+		),
+		Biome(
+			id = "123123",
+			category = "BIOME",
+			name = "Desert", description = "A vast and arid desert.",
+			imageUrl = "",
+			order = 2
+		),
+	)
 
 
-    ValheimVikiAppTheme {
-        AnimatedVisibility(true) {
-            DefaultGrid(
-                modifier = Modifier,
-                items = sampleBiomes,
-                onItemClick = { _ -> {} },
-                numbersOfColumns = 2,
-                height = ITEM_HEIGHT_TWO_COLUMNS,
-                this,
-                rememberLazyGridState()
-            )
-        }
-    }
+	ValheimVikiAppTheme {
+		AnimatedVisibility(true) {
+			DefaultGrid(
+				modifier = Modifier,
+				items = sampleBiomes,
+				onItemClick = { _ -> {} },
+				numbersOfColumns = 2,
+				height = ITEM_HEIGHT_TWO_COLUMNS,
+				this,
+				rememberLazyGridState()
+			)
+		}
+	}
 }

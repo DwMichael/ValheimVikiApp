@@ -36,7 +36,7 @@ fun <T> CategoryGrid(
         columns = GridCells.Fixed(numbersOfColumns),
         horizontalArrangement = Arrangement.spacedBy(BODY_CONTENT_PADDING.dp),
         verticalArrangement = Arrangement.spacedBy(BODY_CONTENT_PADDING.dp),
-        contentPadding = PaddingValues(bottom = 45.dp),
+        contentPadding = PaddingValues(bottom = 200.dp),
     ) {
         itemsIndexed(items) { index, item ->
             MaterialGridItem(

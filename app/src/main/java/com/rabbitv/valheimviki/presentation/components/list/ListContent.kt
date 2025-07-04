@@ -45,94 +45,95 @@ import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun <T> ListContent(
-    items: List<ItemData>,
-    clickToNavigate: (String, T) -> Unit,
-    lazyListState: LazyListState,
-    subCategoryNumber: T,
-    imageScale: ContentScale = ContentScale.Crop,
-    horizontalPadding: Dp = BODY_CONTENT_PADDING.dp
+	items: List<ItemData>,
+	clickToNavigate: (String, T) -> Unit,
+	lazyListState: LazyListState,
+	subCategoryNumber: T,
+	imageScale: ContentScale = ContentScale.Crop,
+	horizontalPadding: Dp = BODY_CONTENT_PADDING.dp,
+    bottomBosPadding:Dp =24.dp,
 ) {
-    LazyColumn(
-        state = lazyListState,
-        modifier = Modifier
+	LazyColumn(
+		state = lazyListState,
+		modifier = Modifier
             .padding(horizontal = horizontalPadding)
             .fillMaxSize()
-    ) {
-        items(items) { item ->
-            ListItem(
-                item = item, clickToNavigate = {
-                    clickToNavigate(item.id, subCategoryNumber)
-                },
-                imageScale = imageScale
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-        item {
-            Box(modifier = Modifier.padding(16.dp))
-        }
+	) {
+		items(items) { item ->
+			ListItem(
+				item = item, clickToNavigate = {
+					clickToNavigate(item.id, subCategoryNumber)
+				},
+				imageScale = imageScale
+			)
+			Spacer(modifier = Modifier.height(16.dp))
+		}
+		item {
+			Box(modifier = Modifier.padding(bottomBosPadding))
+		}
 
-    }
+	}
 }
 
 @Composable
 fun ListItem(
-    item: ItemData,
-    modifier: Modifier = Modifier,
-    clickToNavigate: () -> Unit,
-    imageScale: ContentScale
+	item: ItemData,
+	modifier: Modifier = Modifier,
+	clickToNavigate: () -> Unit,
+	imageScale: ContentScale
 ) {
-    Row(
-        modifier = Modifier
+	Row(
+		modifier = Modifier
             .fillMaxWidth()
             .height(DEFAULT_LIST_ITEM_HEIGHT)
             .clip(RoundedCornerShape(DETAIL_ITEM_SHAPE_PADDING))
             .background(ShimmerDarkGray)
             .clickable { clickToNavigate() },
-    ) {
-        AsyncImage(
-            model = item.imageUrl,
-            contentDescription = item.name,
-            modifier = modifier
+	) {
+		AsyncImage(
+			model = item.imageUrl,
+			contentDescription = item.name,
+			modifier = modifier
                 .fillMaxHeight()
                 .width(DEFAULT_WITH_LIST_IMAGE)
                 .clip(RoundedCornerShape(DETAIL_ITEM_SHAPE_PADDING)),
-            placeholder = painterResource(R.drawable.ic_placeholder),
-            contentScale = imageScale,
-        )
-        Text(
-            text = item.name,
-            color = PrimaryWhite,
-            modifier = modifier
+			placeholder = painterResource(R.drawable.ic_placeholder),
+			contentScale = imageScale,
+		)
+		Text(
+			text = item.name,
+			color = PrimaryWhite,
+			modifier = modifier
                 .weight(1f)
                 .fillMaxSize()
                 .wrapContentHeight(Alignment.CenterVertically)
                 .padding(start = 12.dp, end = 8.dp),
-            style = MaterialTheme.typography.titleLarge,
-            overflow = TextOverflow.Ellipsis
-        )
-    }
+			style = MaterialTheme.typography.titleLarge,
+			overflow = TextOverflow.Ellipsis
+		)
+	}
 }
 
 
 @Preview(name = "ListItem", showBackground = true)
 @Composable
 private fun PreviewListItem() {
-    val item = Biome(
-        id = "123",
-        category = "BIOME",
-        imageUrl = "https://stackoverflow.com/questions/27963555/display-image-in-jsp-using-image-url",
-        name = "TestImage",
-        description = "ImageTest",
-        order = 1
-    )
-    ValheimVikiAppTheme {
-        ListItem(
-            item = item,
-            modifier = Modifier,
-            clickToNavigate = {},
-            imageScale = ContentScale.Crop
-        )
-    }
+	val item = Biome(
+		id = "123",
+		category = "BIOME",
+		imageUrl = "https://stackoverflow.com/questions/27963555/display-image-in-jsp-using-image-url",
+		name = "TestImage",
+		description = "ImageTest",
+		order = 1
+	)
+	ValheimVikiAppTheme {
+		ListItem(
+			item = item,
+			modifier = Modifier,
+			clickToNavigate = {},
+			imageScale = ContentScale.Crop
+		)
+	}
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -140,32 +141,32 @@ private fun PreviewListItem() {
 @Composable
 private fun PreviewContentList2() {
 
-    val sampleBiomes = listOf(
-        Biome(
-            id = "123123",
-            category = "BIOME",
-            name = "Forest", description = "A dense and lush forest.",
-            imageUrl = "",
-            order = 1
-        ),
-        Biome(
-            id = "123123",
-            category = "BIOME",
-            name = "Desert", description = "A vast and arid desert.",
-            imageUrl = "",
-            order = 2
-        ),
-    )
+	val sampleBiomes = listOf(
+		Biome(
+			id = "123123",
+			category = "BIOME",
+			name = "Forest", description = "A dense and lush forest.",
+			imageUrl = "",
+			order = 1
+		),
+		Biome(
+			id = "123123",
+			category = "BIOME",
+			name = "Desert", description = "A vast and arid desert.",
+			imageUrl = "",
+			order = 2
+		),
+	)
 
 
-    ValheimVikiAppTheme {
-        ListContent(
-            items = sampleBiomes,
-            clickToNavigate = { string1, intValue ->
-                println("Navigating with: $string1, $intValue")
-            },
-            lazyListState = rememberLazyListState(),
-            0,
-        )
-    }
+	ValheimVikiAppTheme {
+		ListContent(
+			items = sampleBiomes,
+			clickToNavigate = { string1, intValue ->
+				println("Navigating with: $string1, $intValue")
+			},
+			lazyListState = rememberLazyListState(),
+			0,
+		)
+	}
 }

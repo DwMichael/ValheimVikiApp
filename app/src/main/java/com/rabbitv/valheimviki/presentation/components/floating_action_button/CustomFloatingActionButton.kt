@@ -13,11 +13,11 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
@@ -27,44 +27,45 @@ import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
 @Composable
 fun CustomFloatingActionButton(
-    showBackButton: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
+	modifier: Modifier = Modifier,
+	showBackButton: Boolean,
+	onClick: () -> Unit,
+	bottomPadding: Dp = 45.dp
 ) {
-    AnimatedVisibility(
-        visible = showBackButton,
-        enter = fadeIn(animationSpec = tween(300)),
-        exit = fadeOut(animationSpec = tween(300)),
-        modifier = modifier.padding(bottom = 45.dp,top = 45.dp, end = 10.dp, start = 10.dp)
-    ) {
-        FloatingActionButton(
-            onClick = onClick,
-            shape = RoundedCornerShape(BODY_CONTENT_PADDING.dp),
-            containerColor = ForestGreen10Dark,
-            contentColor = PrimaryWhite,
-            elevation = FloatingActionButtonDefaults.elevation(),
-        ) {
-            Icon(
-                Icons.Filled.KeyboardArrowUp,
-                contentDescription = "Button Up",
-                modifier = Modifier.size(ICON_SIZE)
-            )
-        }
-    }
+	AnimatedVisibility(
+		visible = showBackButton,
+		enter = fadeIn(animationSpec = tween(300)),
+		exit = fadeOut(animationSpec = tween(300)),
+		modifier = modifier.padding(bottom = bottomPadding, top = 45.dp, end = 10.dp, start = 10.dp)
+	) {
+		FloatingActionButton(
+			onClick = onClick,
+			shape = RoundedCornerShape(BODY_CONTENT_PADDING.dp),
+			containerColor = ForestGreen10Dark,
+			contentColor = PrimaryWhite,
+			elevation = FloatingActionButtonDefaults.elevation(),
+		) {
+			Icon(
+				Icons.Filled.KeyboardArrowUp,
+				contentDescription = "Button Up",
+				modifier = Modifier.size(ICON_SIZE)
+			)
+		}
+	}
 }
 
 
 @Preview("CustomFloatingActionButton", widthDp = 80, heightDp = 80)
 @Composable
 fun PreviewCustomFloatingActionButton() {
-    val backButtonVisibleState = true
+	val backButtonVisibleState = true
 
-    val backToTopState = remember { mutableStateOf(false) }
-    ValheimVikiAppTheme {
-        CustomFloatingActionButton(
-            showBackButton = backButtonVisibleState,
-            onClick = { backToTopState.value = true },
+	val backToTopState = remember { mutableStateOf(false) }
+	ValheimVikiAppTheme {
+		CustomFloatingActionButton(
+			showBackButton = backButtonVisibleState,
+			onClick = { backToTopState.value = true },
 
-        )
-    }
+			)
+	}
 }

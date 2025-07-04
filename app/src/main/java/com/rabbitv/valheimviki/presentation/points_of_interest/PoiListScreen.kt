@@ -64,9 +64,9 @@ fun PoiListScreen(
 	Surface(
 		color = Color.Transparent,
 		modifier = Modifier
-            .testTag("MeadListSurface")
-            .fillMaxSize()
-            .padding(paddingValues)
+			.testTag("MeadListSurface")
+			.fillMaxSize()
+			.padding(paddingValues)
 	) {
 		Box(modifier = Modifier.fillMaxSize()) {
 			Column(
@@ -99,21 +99,22 @@ fun PoiListScreen(
 							lazyListState = lazyListState,
 							subCategoryNumber = state.selectedCategory,
 							horizontalPadding = 0.dp,
-							imageScale = ContentScale.Crop
+							imageScale = ContentScale.Crop,
+							bottomBosPadding = 50.dp
 						)
 					}
 
 					CustomFloatingActionButton(
+						modifier = Modifier
+							.align(Alignment.BottomEnd)
+							.padding(BODY_CONTENT_PADDING.dp),
 						showBackButton = backButtonVisibleState,
 						onClick = {
 							scope.launch {
 								lazyListState.animateScrollToItem(0)
 							}
 						},
-						modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .padding(BODY_CONTENT_PADDING.dp)
-					)
+						)
 				}
 			}
 		}

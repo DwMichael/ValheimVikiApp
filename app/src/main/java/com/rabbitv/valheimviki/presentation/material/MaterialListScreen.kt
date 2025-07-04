@@ -97,7 +97,8 @@ fun MaterialListScreen(
 					scope.launch {
 						lazyListState.animateScrollToItem(0)
 					}
-				}
+				},
+				bottomPadding = 0.dp
 			)
 		},
 		floatingActionButtonPosition = FabPosition.End,
@@ -166,7 +167,8 @@ fun MaterialListScreen(
 										lazyListState = lazyListState,
 										subCategoryNumber = currentState.selectedCategory,
 										imageScale = ContentScale.Fit,
-										horizontalPadding = 0.dp
+										horizontalPadding = 0.dp,
+										bottomBosPadding = 30.dp
 									)
 								}
 							}
