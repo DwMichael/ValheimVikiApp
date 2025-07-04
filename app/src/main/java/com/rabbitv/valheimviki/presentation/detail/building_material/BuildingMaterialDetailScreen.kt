@@ -8,7 +8,6 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,9 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -44,6 +41,7 @@ import com.composables.icons.lucide.Lucide
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCard
@@ -79,26 +77,9 @@ fun BuildingMaterialDetailContent(
 ) {
 
 	val scrollState = rememberScrollState()
-	val previousScrollValue = remember { mutableIntStateOf(0) }
-
-	val backButtonVisibleState by remember {
-		derivedStateOf {
-			val currentScroll = scrollState.value
-			val previous = previousScrollValue.intValue
-			val isVisible = when {
-				currentScroll == 0 -> true
-				currentScroll < previous -> true
-				currentScroll > previous -> false
-				else -> true
-			}
-			previousScrollValue.intValue = currentScroll
-			isVisible
-		}
-	}
-
 	val isStatInfoExpanded1 = remember { mutableStateOf(false) }
 	val isExpandable = remember { mutableStateOf(false) }
-	val painterBackgroundImage = painterResource(R.drawable.main_background)
+	painterResource(R.drawable.main_background)
 
 	val comfortDescription =
 		"<p><b>Comfort</b> level determines the duration of <a href=\"/wiki/Resting_Effect\" class=\"mw-redirect\" title=\"Resting Effect\">Resting Effect</a>. Base duration is 8 minutes, with each comfort level stacking 1 minute up to 24 minutes with usual items and 26 minutes with rare seasonal items.  \n" +
@@ -106,13 +87,7 @@ fun BuildingMaterialDetailContent(
 				"</p><p>When entering most dungeons (such as <a href=\"/wiki/Burial_Chambers\" title=\"Burial Chambers\">Burial Chambers</a>) a fire can be constructed to easily gain Comfort 3 (and a 10-minute <a href=\"/wiki/Rested_Effect\" class=\"mw-redirect\" title=\"Rested Effect\">Rested Effect</a>).  \n" +
 				"</p><p>Note that while you can add more than one furniture item from the categories below, only the one with the highest comfort will influence the comfort rating. \n</p>"
 
-	Image(
-		painter = painterBackgroundImage,
-		contentDescription = "bg",
-		contentScale = ContentScale.FillBounds,
-		modifier = Modifier.fillMaxSize()
-	)
-
+	BgImage()
 	Scaffold(
 		modifier = Modifier.fillMaxSize(),
 		containerColor = Color.Transparent,
@@ -156,9 +131,9 @@ fun BuildingMaterialDetailContent(
 					if (uiState.buildingMaterial.comfortLevel != null) {
 						SlavicDivider()
 						DarkGlassStatCard(
-							Lucide.Gauge,
-							"Comfort Level",
-							uiState.buildingMaterial.comfortLevel.toString(),
+							icon = Lucide.Gauge,
+							label = "Comfort Level",
+							value = uiState.buildingMaterial.comfortLevel.toString(),
 							expand = { isStatInfoExpanded1.value = !isStatInfoExpanded1.value },
 							isExpanded = isStatInfoExpanded1.value,
 						)

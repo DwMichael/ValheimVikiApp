@@ -12,7 +12,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -98,7 +97,7 @@ fun TreeDetailContent(
 ) {
 	val isRunning by remember { derivedStateOf { animatedVisibilityScope.transition.isRunning } }
 	val scrollState = rememberScrollState()
-	val mainPainter = painterResource(id = R.drawable.main_background)
+	painterResource(id = R.drawable.main_background)
 	val axesData = HorizontalPagerData(
 		title = "Axes",
 		subTitle = "List of axes that can cut this tree",
@@ -230,7 +229,7 @@ fun TreeDetailContent(
 							}
 							Box(modifier = Modifier.size(45.dp))
 						}
-						if(!isRunning) {
+						if (!isRunning) {
 							AnimatedBackButton(
 								modifier = Modifier
 									.align(Alignment.TopStart)

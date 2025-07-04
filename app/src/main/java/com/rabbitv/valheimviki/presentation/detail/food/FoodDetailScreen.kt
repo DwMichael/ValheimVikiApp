@@ -3,24 +3,14 @@ package com.rabbitv.valheimviki.presentation.detail.food
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material3.FilledIconButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -67,7 +57,6 @@ import com.rabbitv.valheimviki.presentation.detail.food.model.RecipeFoodData
 import com.rabbitv.valheimviki.presentation.detail.food.model.RecipeMaterialData
 import com.rabbitv.valheimviki.presentation.detail.food.viewmodel.FoodDetailViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
-import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
@@ -112,20 +101,6 @@ fun FoodDetailContent(
 
 	val scrollState = rememberScrollState()
 	val previousScrollValue = remember { mutableIntStateOf(0) }
-	val backButtonVisibleState by remember {
-		derivedStateOf {
-			val currentScroll = scrollState.value
-			val previous = previousScrollValue.intValue
-			val isVisible = when {
-				currentScroll == 0 -> true
-				currentScroll < previous -> true
-				currentScroll > previous -> false
-				else -> true
-			}
-			previousScrollValue.intValue = currentScroll
-			isVisible
-		}
-	}
 
 	val recipeItems: List<Droppable> = uiState.materialsForRecipe + uiState.foodForRecipe
 	val isExpandable = remember { mutableStateOf(false) }
@@ -185,9 +160,9 @@ fun FoodDetailContent(
 						if (shouldShowValue(food.health)) {
 							SlavicDivider()
 							DarkGlassStatCard(
-								Lucide.Heart,
-								"Health",
-								food.health.toString(),
+								icon = Lucide.Heart,
+								label =  "Health",
+								value =  food.health.toString(),
 								expand = { isStatInfoExpanded1.value = !isStatInfoExpanded1.value },
 								isExpanded = isStatInfoExpanded1.value
 							)
@@ -233,9 +208,9 @@ fun FoodDetailContent(
 						}
 						if (shouldShowValue(food.duration)) {
 							DarkGlassStatCard(
-								Lucide.Clock2,
-								"Duration",
-								"${food.duration.toString()} min",
+								icon = Lucide.Clock2,
+								label = "Duration",
+								value = "${food.duration.toString()} min",
 								expand = { isStatInfoExpanded4.value = !isStatInfoExpanded4.value },
 								isExpanded = isStatInfoExpanded4.value
 							)
@@ -249,9 +224,9 @@ fun FoodDetailContent(
 						}
 						if (shouldShowValue(food.eitr)) {
 							DarkGlassStatCard(
-								Lucide.Wand,
-								"Eitr",
-								food.eitr.toString(),
+								icon = 	Lucide.Wand,
+								label = "Eitr",
+								value =  food.eitr.toString(),
 								expand = { isStatInfoExpanded5.value = !isStatInfoExpanded5.value },
 								isExpanded = isStatInfoExpanded5.value
 							)
@@ -265,9 +240,9 @@ fun FoodDetailContent(
 						}
 						if (shouldShowValue(food.weight)) {
 							DarkGlassStatCard(
-								Lucide.Weight,
-								"Weight",
-								food.weight.toString(),
+								icon = 	Lucide.Weight,
+								label = "Weight",
+								value = food.weight.toString(),
 								expand = { isStatInfoExpanded6.value = !isStatInfoExpanded6.value },
 								isExpanded = isStatInfoExpanded6.value
 							)
@@ -281,9 +256,9 @@ fun FoodDetailContent(
 						}
 						if (shouldShowValue(food.forkType)) {
 							DarkGlassStatCard(
-								Lucide.Info,
-								"Fork Type",
-								food.forkType.toString(),
+								icon = Lucide.Info,
+								label =  "Fork Type",
+								value =  food.forkType.toString(),
 								expand = { isStatInfoExpanded7.value = !isStatInfoExpanded7.value },
 								isExpanded = isStatInfoExpanded7.value
 							)
@@ -297,9 +272,9 @@ fun FoodDetailContent(
 						}
 						if (shouldShowValue(food.stackSize)) {
 							DarkGlassStatCard(
-								Lucide.Layers2,
-								"Stack Size",
-								food.stackSize.toString(),
+								icon = 	Lucide.Layers2,
+								label = "Stack Size",
+								value =  food.stackSize.toString(),
 								expand = { isStatInfoExpanded8.value = !isStatInfoExpanded8.value },
 								isExpanded = isStatInfoExpanded8.value
 							)

@@ -77,7 +77,7 @@ fun AnimatedGridItem(
                     .fillMaxSize()
                     .clip(RoundedCornerShape(MEDIUM_PADDING)),
                 model = ImageRequest.Builder(context = LocalContext.current)
-                    .data(item.imageUrl.toString())
+                    .data(item.imageUrl)
                     .placeholderMemoryCacheKey("image--$item.id")
                     .memoryCacheKey("image--$item.id")
                     .crossfade(true)

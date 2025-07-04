@@ -39,7 +39,7 @@ import com.rabbitv.valheimviki.domain.model.material.MaterialSubCategory
 import com.rabbitv.valheimviki.domain.model.material.MaterialSubType
 import com.rabbitv.valheimviki.domain.model.ui_state.category_chip_state.UiCategoryChipState
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
-import com.rabbitv.valheimviki.presentation.components.ListContent
+import com.rabbitv.valheimviki.presentation.components.list.ListContent
 import com.rabbitv.valheimviki.presentation.components.chip.ChipData
 import com.rabbitv.valheimviki.presentation.components.chip.SearchFilterBar
 import com.rabbitv.valheimviki.presentation.components.floating_action_button.CustomFloatingActionButton
@@ -97,7 +97,8 @@ fun MaterialListScreen(
 					scope.launch {
 						lazyListState.animateScrollToItem(0)
 					}
-				}
+				},
+				bottomPadding = 0.dp
 			)
 		},
 		floatingActionButtonPosition = FabPosition.End,
@@ -166,7 +167,8 @@ fun MaterialListScreen(
 										lazyListState = lazyListState,
 										subCategoryNumber = currentState.selectedCategory,
 										imageScale = ContentScale.Fit,
-										horizontalPadding = 0.dp
+										horizontalPadding = 0.dp,
+										bottomBosPadding = 30.dp
 									)
 								}
 							}

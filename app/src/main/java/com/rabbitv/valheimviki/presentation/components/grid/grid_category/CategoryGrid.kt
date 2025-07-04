@@ -2,9 +2,7 @@ package com.rabbitv.valheimviki.presentation.components.grid.grid_category
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -24,29 +22,29 @@ import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
 @Composable
 fun <T> CategoryGrid(
-    modifier: Modifier,
-    items: List<GridCategoryOption<T>>,
-    onItemClick: (T) -> Unit,
-    numbersOfColumns: Int,
-    height: Dp,
-    lazyGridState: LazyGridState,
+	modifier: Modifier,
+	items: List<GridCategoryOption<T>>,
+	onItemClick: (T) -> Unit,
+	numbersOfColumns: Int,
+	height: Dp,
+	lazyGridState: LazyGridState,
 ) {
-    LazyVerticalGrid(
-        state = lazyGridState,
-        columns = GridCells.Fixed(numbersOfColumns),
-        horizontalArrangement = Arrangement.spacedBy(BODY_CONTENT_PADDING.dp),
-        verticalArrangement = Arrangement.spacedBy(BODY_CONTENT_PADDING.dp),
-        contentPadding = PaddingValues(bottom = 45.dp),
-    ) {
-        itemsIndexed(items) { index, item ->
-            MaterialGridItem(
-                item = item,
-                onClick = { onItemClick(item.value) },
-                height = height,
-            )
-        }
+	LazyVerticalGrid(
+		state = lazyGridState,
+		columns = GridCells.Fixed(numbersOfColumns),
+		horizontalArrangement = Arrangement.spacedBy(BODY_CONTENT_PADDING.dp),
+		verticalArrangement = Arrangement.spacedBy(BODY_CONTENT_PADDING.dp),
+		contentPadding = PaddingValues(bottom = 100.dp),
+	) {
+		itemsIndexed(items) { index, item ->
+			MaterialGridItem(
+				item = item,
+				onClick = { onItemClick(item.value) },
+				height = height,
+			)
+		}
 
-    }
+	}
 }
 
 
@@ -55,18 +53,18 @@ fun <T> CategoryGrid(
 private fun PreviewCategoryGrid() {
 
 
-    val items = MaterialSegmentOption.entries
+	val items = MaterialSegmentOption.entries
 
-    ValheimVikiAppTheme {
-        AnimatedVisibility(true) {
-            CategoryGrid(
-                modifier = Modifier,
-                items = items,
-                onItemClick = { _ -> {} },
-                numbersOfColumns = 2,
-                height = ITEM_HEIGHT_TWO_COLUMNS,
-                rememberLazyGridState()
-            )
-        }
-    }
+	ValheimVikiAppTheme {
+		AnimatedVisibility(true) {
+			CategoryGrid(
+				modifier = Modifier,
+				items = items,
+				onItemClick = { _ -> {} },
+				numbersOfColumns = 2,
+				height = ITEM_HEIGHT_TWO_COLUMNS,
+				rememberLazyGridState()
+			)
+		}
+	}
 }

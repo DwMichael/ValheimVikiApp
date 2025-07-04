@@ -50,4 +50,5 @@
     <string name="armor_section">Armor section</string>
     <string name="crafting_stations_section">Crafting Stations section</string>
     <string name="crafting_stations">Crafting Stations</string>
+    <string name="health">Health</string>
 </resources>

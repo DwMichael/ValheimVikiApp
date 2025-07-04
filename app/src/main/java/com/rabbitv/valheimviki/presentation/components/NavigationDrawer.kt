@@ -71,10 +71,7 @@ data class DrawerItem(
 	val label: String,
 	val contentDescription: String,
 	val screen: Screen
-) {
-	val screenName: String
-		get() = screen::class.simpleName ?: ""
-}
+)
 
 @Composable
 fun NavigationDrawer(
@@ -96,107 +93,132 @@ fun NavigationDrawer(
 		drawerState = drawerState,
 		gesturesEnabled = isDetailScreen && !isTransitionActive,
 		drawerContent = {
-			ModalDrawerSheet(
-				modifier = Modifier.fillMaxWidth(0.92f),
-				drawerContainerColor = ForestGreen40Dark,
-			) {
-				Column(
-					Modifier.verticalScroll(rememberScrollState()),
-					verticalArrangement = Arrangement.Center,
-					horizontalAlignment = Alignment.CenterHorizontally
-
-				) {
-					Spacer(Modifier.height(12.dp))
-					Row(
-						modifier = Modifier
-							.fillMaxWidth()
-							.padding(start = 12.dp, top = 0.dp, end = 12.dp),
-						verticalAlignment = Alignment.CenterVertically,
-						horizontalArrangement = Arrangement.Start
-
-					) {
-						Image(
-							modifier = Modifier
-								.size(42.dp),
-							painter = painterResource(R.drawable.viking),
-							contentDescription = "DrawerLogoImage",
-							contentScale = ContentScale.FillBounds,
-						)
-						Spacer(modifier.padding(12.dp))
-						Text(
-							text = "ValheimViki",
-							fontWeight = FontWeight.Medium,
-							fontSize = 28.sp,
-							color = MaterialTheme.colorScheme.onPrimaryContainer,
-						)
+			DrawerContent(
+				items = items,
+				selectedItem = selectedItem,
+				onItemClick = { item ->
+					if (item != selectedItem) {
+						onItemSelected(item)
+						childNavController.navigate(item.screen) {
+							popUpTo(childNavController.graph.findStartDestination().id) {
+								saveState = true
+							}
+							launchSingleTop = true
+							restoreState = true
+						}
 					}
-					Spacer(Modifier.height(12.dp))
-					HorizontalDivider()
-					Spacer(Modifier.height(12.dp))
-					items.forEach { item ->
-						NavigationDrawerItem(
-							colors = NavigationDrawerItemDefaults.colors(
-								selectedIconColor = PrimaryText,
-								selectedTextColor = PrimaryText,
-								selectedContainerColor = ForestGreen10Dark,
-								unselectedIconColor = PrimaryWhite,
-								unselectedTextColor = PrimaryWhite,
-								unselectedContainerColor = Color.Transparent,
-							),
-							icon = {
-								if (item.iconPainter != null) {
-									Icon(
-										painter = item.iconPainter,
-										contentDescription = item.contentDescription,
-										modifier = Modifier.size(24.dp)
-									)
-								} else {
-									item.icon?.let {
-										Icon(
-											imageVector = it,
-											contentDescription = item.contentDescription,
-											modifier = Modifier.size(24.dp)
-										)
-									}
-								}
-							},
-							label = {
-								Text(
-									item.label,
-									fontWeight = FontWeight.Normal,
-									lineHeight = 20.sp,
-									fontSize = 16.sp,
-								)
-							},
-							selected = (item == selectedItem),
-							onClick = {
-								if (item != selectedItem) {
-									onItemSelected(item)
-									childNavController.navigate(item.screen) {
-										popUpTo(childNavController.graph.findStartDestination().id) {
-											saveState = true
-										}
-										launchSingleTop = true
-										restoreState = true
-									}
-								}
-								scope.launch { drawerState.close() }
-							},
-							modifier = Modifier
-								.height(48.dp)
-								.padding(
-									NavigationDrawerItemDefaults
-										.ItemPadding
-								)
-						)
-					}
-					Spacer(Modifier.height(24.dp))
+					scope.launch { drawerState.close() }
 				}
-			}
+			)
 		},
 	) {
 		content()
 	}
+}
+
+@Composable
+private fun DrawerContent(
+	items: List<DrawerItem>,
+	selectedItem: DrawerItem,
+	onItemClick: (DrawerItem) -> Unit,
+) {
+	ModalDrawerSheet(
+		modifier = Modifier.fillMaxWidth(0.92f),
+		drawerContainerColor = ForestGreen40Dark,
+	) {
+		Column(
+			Modifier.verticalScroll(rememberScrollState()),
+			verticalArrangement = Arrangement.Center,
+			horizontalAlignment = Alignment.CenterHorizontally
+		) {
+			DrawerHeader()
+			Spacer(Modifier.height(12.dp))
+			HorizontalDivider()
+			Spacer(Modifier.height(12.dp))
+
+			items.forEach { item ->
+				DrawerNavigationItem(
+					item = item,
+					isSelected = item == selectedItem,
+					onClick = { onItemClick(item) }
+				)
+			}
+			Spacer(Modifier.height(24.dp))
+		}
+	}
+}
+
+@Composable
+private fun DrawerHeader() {
+	Row(
+		modifier = Modifier
+			.fillMaxWidth()
+			.padding(start = 12.dp, top = 12.dp, end = 12.dp),
+		verticalAlignment = Alignment.CenterVertically,
+		horizontalArrangement = Arrangement.Start
+	) {
+		Image(
+			modifier = Modifier.size(42.dp),
+			painter = painterResource(R.drawable.valheim_viki_oval),
+			contentDescription = "DrawerLogoImage",
+			contentScale = ContentScale.Crop,
+		)
+		Spacer(Modifier.padding(12.dp))
+		Text(
+			text = "ValheimViki",
+			fontWeight = FontWeight.Medium,
+			fontSize = 28.sp,
+			color = MaterialTheme.colorScheme.onPrimaryContainer,
+		)
+	}
+}
+
+@Composable
+private fun DrawerNavigationItem(
+	item: DrawerItem,
+	isSelected: Boolean,
+	onClick: () -> Unit,
+) {
+	NavigationDrawerItem(
+		colors = NavigationDrawerItemDefaults.colors(
+			selectedIconColor = PrimaryText,
+			selectedTextColor = PrimaryText,
+			selectedContainerColor = ForestGreen10Dark,
+			unselectedIconColor = PrimaryWhite,
+			unselectedTextColor = PrimaryWhite,
+			unselectedContainerColor = Color.Transparent,
+		),
+		icon = {
+			if (item.iconPainter != null) {
+				Icon(
+					painter = item.iconPainter,
+					contentDescription = item.contentDescription,
+					modifier = Modifier.size(24.dp)
+				)
+			} else {
+				item.icon?.let {
+					Icon(
+						imageVector = it,
+						contentDescription = item.contentDescription,
+						modifier = Modifier.size(24.dp)
+					)
+				}
+			}
+		},
+		label = {
+			Text(
+				item.label,
+				fontWeight = FontWeight.Normal,
+				lineHeight = 20.sp,
+				fontSize = 16.sp,
+			)
+		},
+		selected = isSelected,
+		onClick = onClick,
+		modifier = Modifier
+			.height(48.dp)
+			.padding(NavigationDrawerItemDefaults.ItemPadding)
+	)
 }
 
 @Preview(name = "NavigationDrawerImage", uiMode = Configuration.UI_MODE_NIGHT_YES)
@@ -209,7 +231,7 @@ private fun NavigationDrawerImage() {
 			modifier = Modifier
 				.padding(start = 16.dp, top = 24.dp, end = 12.dp)
 				.size(80.dp),
-			painter = painterResource(R.drawable.viking),
+			painter = painterResource(R.drawable.valheim_viki_oval),
 			contentDescription = "DrawerBackground",
 			contentScale = ContentScale.Crop,
 
@@ -231,13 +253,13 @@ private fun PreviewNavigationDrawer() {
 			screen = Screen.BiomeList
 		),
 		DrawerItem(
-			iconPainter = painterResource(R.drawable.skull),
+			iconPainter = painterResource(R.drawable.boss_1),
 			label = "Bosses",
 			contentDescription = "Bosses section",
 			screen = Screen.BossList
 		),
 		DrawerItem(
-			iconPainter = painterResource(R.drawable.ogre),
+			iconPainter = painterResource(R.drawable.miniboss),
 			label = "MiniBosses",
 			contentDescription = "MiniBosses section",
 			screen = Screen.MiniBossList

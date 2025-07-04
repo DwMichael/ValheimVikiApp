@@ -5,6 +5,7 @@ import android.graphics.Shader
 import android.os.Build
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -60,6 +61,7 @@ fun BaseDarkGlassStatCard(
 				color = Color(0xFF4A4A4A).copy(alpha = 0.5f),
 				shape = Shapes.large
 			)
+			.clickable { expand() }
 	) {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
 			Box(
@@ -97,7 +99,6 @@ fun BaseDarkGlassStatCard(
 			)
 
 			Spacer(modifier = Modifier.width(10.dp))
-
 
 			Text(
 				modifier = Modifier

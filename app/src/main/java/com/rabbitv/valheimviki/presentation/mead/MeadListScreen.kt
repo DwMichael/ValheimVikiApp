@@ -30,7 +30,7 @@ import com.composables.icons.lucide.Soup
 import com.rabbitv.valheimviki.domain.model.mead.MeadSubCategory
 import com.rabbitv.valheimviki.domain.model.ui_state.category_state.UiCategoryState
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
-import com.rabbitv.valheimviki.presentation.components.ListContent
+import com.rabbitv.valheimviki.presentation.components.list.ListContent
 import com.rabbitv.valheimviki.presentation.components.floating_action_button.CustomFloatingActionButton
 import com.rabbitv.valheimviki.presentation.components.segmented.SegmentedButtonSingleSelect
 import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerListEffect
@@ -43,81 +43,81 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MeadListScreen(
-    onItemClick: (String, MeadSubCategory) -> Unit,
-    modifier: Modifier, paddingValues: PaddingValues,
-    viewModel: MeadListViewModel = hiltViewModel()
+	onItemClick: (String, MeadSubCategory) -> Unit,
+	modifier: Modifier, paddingValues: PaddingValues,
+	viewModel: MeadListViewModel = hiltViewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    val lazyListState = rememberLazyListState()
-    val scope = rememberCoroutineScope()
-    val backButtonVisibleState by remember {
-        derivedStateOf { lazyListState.firstVisibleItemIndex >= 2 }
-    }
+	val lazyListState = rememberLazyListState()
+	val scope = rememberCoroutineScope()
+	val backButtonVisibleState by remember {
+		derivedStateOf { lazyListState.firstVisibleItemIndex >= 2 }
+	}
 
-    val icons: List<ImageVector> = listOf(
-        Lucide.Soup,
-        Lucide.FlaskConical,
-    )
+	val icons: List<ImageVector> = listOf(
+		Lucide.Soup,
+		Lucide.FlaskConical,
+	)
 
 
-    Surface(
-        color = Color.Transparent,
-        modifier = Modifier
+	Surface(
+		color = Color.Transparent,
+		modifier = Modifier
             .testTag("MeadListSurface")
             .fillMaxSize()
             .padding(paddingValues)
-    ) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            Column(
-                modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                SegmentedButtonSingleSelect(
-                    options = MeadSegmentOption.entries,
-                    selectedOption = uiState.selectedCategory,
-                    onOptionSelected = {
-                        viewModel.onCategorySelected(it)
-                        scope.launch {
-                            lazyListState.animateScrollToItem(0)
-                        }
-                    },
-                    icons = icons
-                )
-                Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
-                Box(modifier = Modifier.fillMaxSize()) {
-                    when (val state = uiState) {
-                        is UiCategoryState.Loading -> {
-                            Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
-                            ShimmerListEffect()
-                        }
+	) {
+		Box(modifier = Modifier.fillMaxSize()) {
+			Column(
+				modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+				horizontalAlignment = Alignment.CenterHorizontally
+			) {
+				SegmentedButtonSingleSelect(
+					options = MeadSegmentOption.entries,
+					selectedOption = uiState.selectedCategory,
+					onOptionSelected = {
+						viewModel.onCategorySelected(it)
+						scope.launch {
+							lazyListState.animateScrollToItem(0)
+						}
+					},
+					icons = icons
+				)
+				Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
+				Box(modifier = Modifier.fillMaxSize()) {
+					when (val state = uiState) {
+						is UiCategoryState.Loading -> {
+							Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
+							ShimmerListEffect()
+						}
 
-                        is UiCategoryState.Error -> EmptyScreen(errorMessage = state.message.toString())
-                        is UiCategoryState.Success -> ListContent(
-                            items = state.list,
-                            clickToNavigate = onItemClick,
-                            lazyListState = lazyListState,
-                            subCategoryNumber = state.selectedCategory,
-                            horizontalPadding = 0.dp,
-                            imageScale = ContentScale.Fit
-                        )
-                    }
+						is UiCategoryState.Error -> EmptyScreen(errorMessage = state.message.toString())
+						is UiCategoryState.Success -> ListContent(
+							items = state.list,
+							clickToNavigate = onItemClick,
+							lazyListState = lazyListState,
+							subCategoryNumber = state.selectedCategory,
+							horizontalPadding = 0.dp,
+							imageScale = ContentScale.Fit
+						)
+					}
 
-                    CustomFloatingActionButton(
-                        showBackButton = backButtonVisibleState,
-                        onClick = {
-                            scope.launch {
-                                lazyListState.animateScrollToItem(0)
-                            }
-                        },
-                        modifier = Modifier
+					CustomFloatingActionButton(
+						showBackButton = backButtonVisibleState,
+						onClick = {
+							scope.launch {
+								lazyListState.animateScrollToItem(0)
+							}
+						},
+						modifier = Modifier
                             .align(Alignment.BottomEnd)
                             .padding(BODY_CONTENT_PADDING.dp)
-                    )
-                }
-            }
-        }
-    }
+					)
+				}
+			}
+		}
+	}
 }
 
 

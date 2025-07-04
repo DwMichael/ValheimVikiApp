@@ -35,7 +35,7 @@ import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.item_tool.ToolSubCategory
 import com.rabbitv.valheimviki.domain.model.ui_state.category_state.UiCategoryState
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
-import com.rabbitv.valheimviki.presentation.components.ListContent
+import com.rabbitv.valheimviki.presentation.components.list.ListContent
 import com.rabbitv.valheimviki.presentation.components.chip.SearchFilterBar
 import com.rabbitv.valheimviki.presentation.components.floating_action_button.CustomFloatingActionButton
 import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerListEffect

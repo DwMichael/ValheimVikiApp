@@ -12,7 +12,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,7 +34,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -47,7 +45,6 @@ import com.composables.icons.lucide.Combine
 import com.composables.icons.lucide.Gem
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Pickaxe
-import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
 import com.rabbitv.valheimviki.navigation.LocalSharedTransitionScope
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
@@ -236,7 +233,7 @@ fun OreDepositDetailContent(
 						}
 						Box(modifier = Modifier.size(45.dp))
 					}
-					if(!isRunning) {
+					if (!isRunning) {
 						AnimatedBackButton(
 							modifier = Modifier
 								.align(Alignment.TopStart)

@@ -129,11 +129,8 @@ import kotlinx.coroutines.launch
 fun ValheimVikiApp() {
 	ValheimVikiAppTheme {
 		SharedTransitionLayout {
-			val valheimVikiNavController = rememberNavController()
 			CompositionLocalProvider(LocalSharedTransitionScope provides this) {
-				MainContainer(
-					valheimVikiNavController
-				)
+				MainContainer()
 			}
 		}
 	}
@@ -144,8 +141,8 @@ fun ValheimVikiApp() {
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun MainContainer(
-	valheimVikiNavController: NavHostController,
-	modifier: Modifier = Modifier
+	modifier: Modifier = Modifier,
+	valheimVikiNavController: NavHostController = rememberNavController(),
 ) {
 	val drawerState = rememberDrawerState(DrawerValue.Closed)
 	val scope = rememberCoroutineScope()
@@ -869,8 +866,8 @@ fun rememberDrawerItems(): List<DrawerItem> {
 	val poiDesc = stringResource(R.string.points_of_interest_section)
 
 	// Painters & icons
-	val skullPainter = painterResource(R.drawable.skull)
-	val ogrePainter = painterResource(R.drawable.ogre)
+	val skullPainter = painterResource(R.drawable.boss_1)
+	val ogrePainter = painterResource(R.drawable.miniboss)
 
 	val mountainSnowIcon = Lucide.MountainSnow
 	val rabbitIcon = Lucide.Rabbit

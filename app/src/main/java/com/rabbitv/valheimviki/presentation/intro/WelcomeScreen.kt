@@ -144,7 +144,7 @@ fun PagerScreen(onBoardingPage: OnBoardingPage, position: Int, horizontalPadding
 	) {
 		if (position == 0) {
 			Image(
-				painter = painterResource(id = R.drawable.viking_logo_hd),
+				painter = painterResource(id = R.drawable.valheim_viki_log_no_bg),
 				contentDescription = "VikingLogo",
 				contentScale = ContentScale.Crop,
 				modifier = Modifier
@@ -153,21 +153,21 @@ fun PagerScreen(onBoardingPage: OnBoardingPage, position: Int, horizontalPadding
 			)
 			Spacer(modifier = Modifier.height(24.dp))
 		}
-		Text(
-			modifier = Modifier.testTag("AppTitle"),
-			text = onBoardingPage.title,
-			style = MaterialTheme.typography.displayLarge,
-			color = Color.White
-//            style = TextStyle(
-//                color = Color.PrimaryWhite,
-//                fontSize = 48.sp,
-//                fontWeight = FontWeight(800),
-//                letterSpacing = 0.15.sp,
-//                lineHeight = 62.sp,
-//                textAlign = TextAlign.Center
-//            )
-		)
-		Spacer(modifier = Modifier.height(18.dp))
+//		Text(
+//			modifier = Modifier.testTag("AppTitle"),
+//			text = onBoardingPage.title,
+//			style = MaterialTheme.typography.displayLarge,
+//			color = Color.White
+////            style = TextStyle(
+////                color = Color.PrimaryWhite,
+////                fontSize = 48.sp,
+////                fontWeight = FontWeight(800),
+////                letterSpacing = 0.15.sp,
+////                lineHeight = 62.sp,
+////                textAlign = TextAlign.Center
+////            )
+//		)
+//		Spacer(modifier = Modifier.height(18.dp))
 		Text(
 			text = onBoardingPage.description,
 			textAlign = TextAlign.Center,

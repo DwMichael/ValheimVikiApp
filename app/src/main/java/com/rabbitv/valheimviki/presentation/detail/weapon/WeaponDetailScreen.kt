@@ -74,17 +74,17 @@ fun WeaponDetailContent(
 		uiState.weapon?.let { weapon ->
 			Box(
 				modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
+					.fillMaxSize()
+					.padding(innerPadding)
 			) {
 				Column(
 					modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(scrollState)
-                        .padding(
-                            top = 20.dp,
-                            bottom = 70.dp
-                        ),
+						.fillMaxSize()
+						.verticalScroll(scrollState)
+						.padding(
+							top = 20.dp,
+							bottom = 70.dp
+						),
 					horizontalAlignment = Alignment.CenterHorizontally,
 					verticalArrangement = Arrangement.Top,
 				) {
@@ -102,15 +102,6 @@ fun WeaponDetailContent(
 							collapsedMaxLine = 3,
 							isExpanded = isExpandable,
 							boxPadding = BODY_CONTENT_PADDING.dp
-						)
-					}
-
-					uiState.craftingObjects?.let { craftingStation ->
-						TridentsDividedRow()
-						CardImageWithTopLabel(
-							itemData = craftingStation,
-							subTitle = "Crafting Station Needed to Make This Item",
-							contentScale = ContentScale.FillBounds,
 						)
 					}
 					TridentsDividedRow()
@@ -138,13 +129,20 @@ fun WeaponDetailContent(
 							foodForUpgrade = uiState.foodAsMaterials,
 						)
 					}
-
+					uiState.craftingObjects?.let { craftingStation ->
+						TridentsDividedRow()
+						CardImageWithTopLabel(
+							itemData = craftingStation,
+							subTitle = "Crafting Station Needed to Make This Item",
+							contentScale = ContentScale.FillBounds,
+						)
+					}
 					Spacer(modifier = Modifier.height(45.dp))
 				}
 				AnimatedBackButton(
 					modifier = Modifier
-                        .align(Alignment.TopStart)
-                        .padding(16.dp),
+						.align(Alignment.TopStart)
+						.padding(16.dp),
 					scrollState = scrollState,
 					onBack = onBack
 				)
