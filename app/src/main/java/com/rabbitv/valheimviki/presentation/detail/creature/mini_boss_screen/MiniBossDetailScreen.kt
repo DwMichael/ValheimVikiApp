@@ -1,6 +1,7 @@
 package com.rabbitv.valheimviki.presentation.detail.creature.mini_boss_screen
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -10,7 +11,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,21 +23,19 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -45,20 +43,26 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.rememberAsyncImagePainter
+import com.composables.icons.lucide.Grab
+import com.composables.icons.lucide.Heart
 import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.Shield
+import com.composables.icons.lucide.Swords
 import com.composables.icons.lucide.Trophy
+import com.composables.icons.lucide.Unlink
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.navigation.LocalSharedTransitionScope
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
+import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCard
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDetailImageAnimated
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
-import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardStatDetails
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
-import com.rabbitv.valheimviki.presentation.detail.creature.components.rows.StatsFlowRow
+import com.rabbitv.valheimviki.presentation.detail.creature.components.column.StatColumn
 import com.rabbitv.valheimviki.presentation.detail.creature.mini_boss_screen.model.MiniBossDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.creature.mini_boss_screen.viewmodel.MiniBossDetailScreenViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
@@ -101,14 +105,18 @@ fun MiniBossContent(
 		iconRotationDegrees = 0f,
 		itemContentScale = ContentScale.Crop,
 	)
-
+	val isStatInfoExpanded = remember { mutableStateOf(false) }
+	val isStatInfoExpanded1 = remember { mutableStateOf(false) }
+	val isStatInfoExpanded2 = remember { mutableStateOf(false) }
+	val isStatInfoExpanded3 = remember { mutableStateOf(false) }
+	val isStatInfoExpanded4 = remember { mutableStateOf(false) }
 	Scaffold(
 		content = { padding ->
 			AnimatedContent(
 				targetState = miniBossUiSate.isLoading,
 				modifier = Modifier.fillMaxSize(),
 				transitionSpec = {
-					if (targetState == false && initialState == true) {
+					if (!targetState && initialState) {
 						fadeIn(
 							animationSpec = tween(
 								durationMillis = 650,
@@ -144,12 +152,7 @@ fun MiniBossContent(
 						Box(modifier = Modifier.size(45.dp))
 					}
 				} else if (miniBossUiSate.miniBoss != null) {
-					Image(
-						painter = painterResource(id = R.drawable.main_background),
-						contentDescription = "BackgroundImage",
-						contentScale = ContentScale.Crop,
-						modifier = Modifier.fillMaxSize(),
-					)
+					BgImage()
 					Box(
 						modifier = Modifier
 							.fillMaxSize()
@@ -171,7 +174,10 @@ fun MiniBossContent(
 								imageUrl = miniBossUiSate.miniBoss.imageUrl,
 								title = miniBossUiSate.miniBoss.name
 							)
-							DetailExpandableText(text = miniBossUiSate.miniBoss.description.toString())
+							DetailExpandableText(
+								text = miniBossUiSate.miniBoss.description,
+								boxPadding = BODY_CONTENT_PADDING.dp
+							)
 							TridentsDividedRow(text = "BOSS DETAIL")
 							miniBossUiSate.primarySpawn?.let {
 								Text(
@@ -225,28 +231,93 @@ fun MiniBossContent(
 
 							}
 							TridentsDividedRow(text = "BOSS STATS")
-							Box(
-								modifier = Modifier.padding(horizontal = 10.dp)
-							)
-							{
-								CardStatDetails(
-									title = stringResource(R.string.baseHp),
-									text = miniBossUiSate.miniBoss.baseHP.toString(),
-									icon = Icons.Outlined.Favorite,
-									iconColor = Color.Red,
-									styleTextFirst = MaterialTheme.typography.labelSmall,
-									styleTextSecond = MaterialTheme.typography.bodyLarge,
-									iconSize = 36.dp
+
+							if (miniBossUiSate.miniBoss.baseHP.toString().isNotBlank()) {
+								DarkGlassStatCard(
+									modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+									icon = Lucide.Heart,
+									label = "Health",
+									value = miniBossUiSate.miniBoss.baseHP.toString(),
+									expand = {
+										isStatInfoExpanded.value = !isStatInfoExpanded.value
+									},
+									isExpanded = isStatInfoExpanded.value
 								)
+								AnimatedVisibility(isStatInfoExpanded.value) {
+									Text(
+										text = "The amount of health points this boss have",
+										modifier = Modifier.padding(
+											start = BODY_CONTENT_PADDING.dp * 2,
+											end = BODY_CONTENT_PADDING.dp
+										),
+										style = MaterialTheme.typography.bodyLarge
+									)
+								}
 							}
-							StatsFlowRow(
-								baseDamage = miniBossUiSate.miniBoss.baseDamage,
-								weakness = miniBossUiSate.miniBoss.weakness,
-								resistance = miniBossUiSate.miniBoss.resistance,
-								collapseImmune = miniBossUiSate.miniBoss.collapseImmune,
-							)
+
+							if (miniBossUiSate.miniBoss.baseDamage.isNotBlank()) {
+								DarkGlassStatCard(
+									modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+									Lucide.Swords,
+									stringResource(R.string.base_damage),
+									"",
+									expand = {
+										isStatInfoExpanded1.value = !isStatInfoExpanded1.value
+									},
+									isExpanded = isStatInfoExpanded1.value
+								)
+								AnimatedVisibility(isStatInfoExpanded1.value) {
+									StatColumn(miniBossUiSate.miniBoss.baseDamage)
+								}
+							}
+							if (!miniBossUiSate.miniBoss.weakness.isNullOrBlank()) {
+								DarkGlassStatCard(
+									modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+									Lucide.Unlink,
+									stringResource(R.string.weakness),
+									"",
+									expand = {
+										isStatInfoExpanded2.value = !isStatInfoExpanded2.value
+									},
+									isExpanded = isStatInfoExpanded2.value
+								)
+								AnimatedVisibility(isStatInfoExpanded2.value) {
+									StatColumn(miniBossUiSate.miniBoss.weakness)
+								}
+							}
+							if (!miniBossUiSate.miniBoss.resistance.isNullOrBlank()) {
+								DarkGlassStatCard(
+									modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+									Lucide.Grab,
+									stringResource(R.string.resistance),
+									"",
+									expand = {
+										isStatInfoExpanded3.value = !isStatInfoExpanded3.value
+									},
+									isExpanded = isStatInfoExpanded3.value
+								)
+								AnimatedVisibility(isStatInfoExpanded3.value) {
+									StatColumn(miniBossUiSate.miniBoss.resistance)
+								}
+							}
+							if (!miniBossUiSate.miniBoss.collapseImmune.isNullOrBlank()) {
+								DarkGlassStatCard(
+									modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+									icon = Lucide.Shield,
+									label = stringResource(R.string.immune),
+									value = "",
+									expand = {
+										isStatInfoExpanded4.value = !isStatInfoExpanded4.value
+									},
+									isExpanded = isStatInfoExpanded4.value
+								)
+								AnimatedVisibility(isStatInfoExpanded4.value) {
+									StatColumn(miniBossUiSate.miniBoss.collapseImmune)
+								}
+							}
+
 							SlavicDivider()
-							Box(modifier = Modifier.size(45.dp))
+							Box(modifier = Modifier.size(70.dp))
 						}
 						if (!isRunning) {
 							AnimatedBackButton(

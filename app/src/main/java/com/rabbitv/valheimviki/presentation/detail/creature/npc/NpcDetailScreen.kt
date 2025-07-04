@@ -154,7 +154,8 @@ fun NpcDetailContent(
 					DetailExpandableText(
 						text = it.description,
 						collapsedMaxLine = 3,
-						isExpanded = isExpandable
+						isExpanded = isExpandable,
+						boxPadding = BODY_CONTENT_PADDING.dp
 					)
 					TridentsDividedRow(text = "NPC DETAIL")
 					if (uiState.biome != null) {
@@ -199,7 +200,8 @@ fun NpcDetailContent(
 						DetailExpandableText(
 							text = it.location,
 							collapsedMaxLine = 3,
-							isExpanded = isExpandableLocation
+							isExpanded = isExpandableLocation,
+							boxPadding = BODY_CONTENT_PADDING.dp
 						)
 					}
 					if (it.biography.isNotBlank()) {
@@ -217,7 +219,8 @@ fun NpcDetailContent(
 						DetailExpandableText(
 							text = it.biography,
 							collapsedMaxLine = 3,
-							isExpanded = isExpandableBiography
+							isExpanded = isExpandableBiography,
+							boxPadding = BODY_CONTENT_PADDING.dp
 						)
 					}
 					if (uiState.npc.name == "Hildir" && uiState.chestsLocation.isNotEmpty() && uiState.hildirChests.isNotEmpty()) {

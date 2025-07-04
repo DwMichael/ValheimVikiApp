@@ -159,9 +159,9 @@ private fun DrawerHeader() {
 	) {
 		Image(
 			modifier = Modifier.size(42.dp),
-			painter = painterResource(R.drawable.viking),
+			painter = painterResource(R.drawable.valheim_viki_oval),
 			contentDescription = "DrawerLogoImage",
-			contentScale = ContentScale.FillBounds,
+			contentScale = ContentScale.Crop,
 		)
 		Spacer(Modifier.padding(12.dp))
 		Text(
@@ -231,7 +231,7 @@ private fun NavigationDrawerImage() {
 			modifier = Modifier
 				.padding(start = 16.dp, top = 24.dp, end = 12.dp)
 				.size(80.dp),
-			painter = painterResource(R.drawable.viking),
+			painter = painterResource(R.drawable.valheim_viki_oval),
 			contentDescription = "DrawerBackground",
 			contentScale = ContentScale.Crop,
 
@@ -253,13 +253,13 @@ private fun PreviewNavigationDrawer() {
 			screen = Screen.BiomeList
 		),
 		DrawerItem(
-			iconPainter = painterResource(R.drawable.skull),
+			iconPainter = painterResource(R.drawable.boss_1),
 			label = "Bosses",
 			contentDescription = "Bosses section",
 			screen = Screen.BossList
 		),
 		DrawerItem(
-			iconPainter = painterResource(R.drawable.ogre),
+			iconPainter = painterResource(R.drawable.miniboss),
 			label = "MiniBosses",
 			contentDescription = "MiniBosses section",
 			screen = Screen.MiniBossList
