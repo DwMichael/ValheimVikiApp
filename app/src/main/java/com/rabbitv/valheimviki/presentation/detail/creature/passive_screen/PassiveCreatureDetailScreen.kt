@@ -6,10 +6,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -103,12 +101,11 @@ fun PassiveCreatureDetailContent(
 				modifier = Modifier
 					.padding(padding)
 					.fillMaxWidth(),
-				beyondViewportPageCount = passiveCreature.levels.size,
+				beyondViewportPageCount = 1,
 			) { pageIndex ->
 				Box(
 					modifier = Modifier
 						.fillMaxSize()
-						.padding(padding)
 				) {
 					Column(
 						modifier = Modifier.verticalScroll(sharedScrollState),
@@ -142,7 +139,8 @@ fun PassiveCreatureDetailContent(
 						DetailExpandableText(
 							text = passiveCreature.description,
 							collapsedMaxLine = 3,
-							isExpanded = isExpandable
+							isExpanded = isExpandable,
+							boxPadding = BODY_CONTENT_PADDING.dp
 						)
 
 						TridentsDividedRow(text = "DETAILS")
@@ -193,9 +191,10 @@ fun PassiveCreatureDetailContent(
 							iconColor = Color.Red,
 							styleTextFirst = MaterialTheme.typography.labelSmall,
 							styleTextSecond = MaterialTheme.typography.bodyLarge,
-							iconSize = 36.dp
+							iconSize = 36.dp,
+							cardPadding = BODY_CONTENT_PADDING.dp
 						)
-						Spacer(Modifier.height(10.dp))
+
 						CardStatDetails(
 							title = stringResource(R.string.fun_fact),
 							text = uiState.passiveCreature.abilities.toString(),
@@ -203,14 +202,15 @@ fun PassiveCreatureDetailContent(
 							iconColor = Color.White,
 							styleTextFirst = MaterialTheme.typography.labelSmall,
 							styleTextSecond = MaterialTheme.typography.bodyMedium,
-							iconSize = 36.dp
+							iconSize = 36.dp,
+							cardPadding = BODY_CONTENT_PADDING.dp
 						)
 						if (uiState.passiveCreature.notes.isNotBlank()) {
 							SlavicDivider()
 							Text(
 								modifier = Modifier
 									.align(Alignment.CenterHorizontally)
-									.padding(horizontal = 10.dp),
+									.padding(horizontal = BODY_CONTENT_PADDING.dp),
 								text = "NOTE",
 								textAlign = TextAlign.Center,
 								style = MaterialTheme.typography.headlineMedium,
@@ -218,7 +218,8 @@ fun PassiveCreatureDetailContent(
 							DetailExpandableText(
 								text = passiveCreature.notes,
 								collapsedMaxLine = 3,
-								isExpanded = isExpandableNote
+								isExpanded = isExpandableNote,
+								boxPadding = BODY_CONTENT_PADDING.dp
 							)
 						}
 						SlavicDivider()

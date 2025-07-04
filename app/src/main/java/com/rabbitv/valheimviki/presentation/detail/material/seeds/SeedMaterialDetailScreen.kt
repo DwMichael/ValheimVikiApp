@@ -192,9 +192,9 @@ fun SeedMaterialDetailContent(
 					if (uiState.material.growthTime != null) {
 						TridentsDividedRow()
 						DarkGlassStatCard(
-							Lucide.Gauge,
-							"Growth Time",
-							uiState.material.growthTime,
+							icon = Lucide.Gauge,
+							label = "Growth Time",
+							value = uiState.material.growthTime,
 							expand = { isStatInfoExpanded1.value = !isStatInfoExpanded1.value },
 							isExpanded = isStatInfoExpanded1.value,
 						)
@@ -215,9 +215,9 @@ fun SeedMaterialDetailContent(
 					if (uiState.material.needCultivatorGround != null) {
 						Spacer(modifier = Modifier.padding(BODY_CONTENT_PADDING.dp))
 						DarkGlassStatCard(
-							Lucide.Gauge,
-							"Need Cultivator?",
-							uiState.material.needCultivatorGround,
+							icon = 	Lucide.Gauge,
+							label = "Need Cultivator?",
+							value = uiState.material.needCultivatorGround,
 							expand = { isStatInfoExpanded2.value = !isStatInfoExpanded2.value },
 							isExpanded = isStatInfoExpanded2.value,
 						)
