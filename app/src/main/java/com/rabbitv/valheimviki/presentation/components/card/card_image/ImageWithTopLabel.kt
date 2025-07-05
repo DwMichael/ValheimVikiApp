@@ -1,6 +1,7 @@
 package com.rabbitv.valheimviki.presentation.components.card.card_image
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -50,7 +51,8 @@ fun ImageWithTopLabel(
     horizontalDividerWidth: Dp = 100.dp ,
     subTitle: String? = null,
     textStyle: TextStyle = MaterialTheme.typography.titleMedium,
-    contentScale: ContentScale =  ContentScale.Crop
+    contentScale: ContentScale =  ContentScale.Crop,
+    onItemClick: (itemId: String) -> Unit = {},
 ) {
     Box(
         modifier = modifier
@@ -61,7 +63,7 @@ fun ImageWithTopLabel(
                 elevation = 8.dp,
                 shape = RoundedCornerShape(8.dp),
                 spotColor = Color.Black.copy(alpha = 0.25f)
-            ),
+            ).clickable { onItemClick(itemData.id) },
         contentAlignment = Alignment.TopStart
     ) {
         AsyncImage(

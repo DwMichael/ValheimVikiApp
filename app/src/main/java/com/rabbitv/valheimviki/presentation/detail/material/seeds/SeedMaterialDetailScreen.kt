@@ -262,7 +262,7 @@ fun SeedMaterialDetailContent(
 						CardImageWithTopLabel(
 							itemData = npc,
 							subTitle = "NPC from whom you can buy those seeds",
-							contentScale = ContentScale.Fit,
+							contentScale = ContentScale.Crop,
 						)
 					}
 				}
