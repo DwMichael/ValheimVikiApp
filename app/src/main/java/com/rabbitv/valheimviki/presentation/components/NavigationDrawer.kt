@@ -56,7 +56,10 @@ import com.composables.icons.lucide.Swords
 import com.composables.icons.lucide.Trees
 import com.composables.icons.lucide.Utensils
 import com.rabbitv.valheimviki.R
-import com.rabbitv.valheimviki.navigation.Screen
+import com.rabbitv.valheimviki.navigation.GridDestination
+import com.rabbitv.valheimviki.navigation.ListDestination
+import com.rabbitv.valheimviki.navigation.NavigationDestination
+
 import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
 import com.rabbitv.valheimviki.ui.theme.ForestGreen40Dark
 import com.rabbitv.valheimviki.ui.theme.PrimaryText
@@ -70,7 +73,7 @@ data class DrawerItem(
 	val icon: ImageVector? = null,
 	val label: String,
 	val contentDescription: String,
-	val screen: Screen
+	val navigationDestination: NavigationDestination
 )
 
 @Composable
@@ -99,7 +102,7 @@ fun NavigationDrawer(
 				onItemClick = { item ->
 					if (item != selectedItem) {
 						onItemSelected(item)
-						childNavController.navigate(item.screen) {
+						childNavController.navigate(item.navigationDestination) {
 							popUpTo(childNavController.graph.findStartDestination().id) {
 								saveState = true
 							}
@@ -250,92 +253,92 @@ private fun PreviewNavigationDrawer() {
 			icon = Lucide.MountainSnow,
 			label = "Biomes",
 			contentDescription = "List of Biomes",
-			screen = Screen.BiomeList
+			navigationDestination = GridDestination.WorldDestinations.BiomeGrid
 		),
 		DrawerItem(
 			iconPainter = painterResource(R.drawable.boss_1),
 			label = "Bosses",
 			contentDescription = "Bosses section",
-			screen = Screen.BossList
+			navigationDestination = GridDestination.CreatureDestinations.BossGrid
 		),
 		DrawerItem(
 			iconPainter = painterResource(R.drawable.miniboss),
 			label = "MiniBosses",
 			contentDescription = "MiniBosses section",
-			screen = Screen.MiniBossList
+			navigationDestination = GridDestination.CreatureDestinations.MiniBossGrid
 		),
 		DrawerItem(
 			icon = Lucide.Rabbit,
 			label = "Creatures",
 			contentDescription = "Creatures section",
-			screen = Screen.MobList
+			navigationDestination = ListDestination.CreatureDestinations.MobList
 		),
 		DrawerItem(
 			icon = Lucide.Swords,
 			label = "Weapons",
 			contentDescription = "Weapons section",
-			screen = Screen.WeaponList
+			navigationDestination = ListDestination.ItemDestinations.WeaponList
 		),
 		DrawerItem(
 			icon = Lucide.Shield,
 			label = "Armor",
 			contentDescription = "Armor section",
-			screen = Screen.ArmorList
+			navigationDestination = ListDestination.ItemDestinations.ArmorList
 		),
 		DrawerItem(
 			icon = Lucide.Utensils,
 			label = "Food",
 			contentDescription = "Food section",
-			screen = Screen.FoodList
+			navigationDestination = ListDestination.FoodDestinations.FoodList
 		),
 		DrawerItem(
 			icon = Lucide.FlaskRound,
 			label = "Mead",
 			contentDescription = "Mead section",
-			screen = Screen.MeadList
+			navigationDestination = ListDestination.FoodDestinations.MeadList
 		),
 
 		DrawerItem(
 			icon = Lucide.Anvil,
 			label = "Crafting Stations",
 			contentDescription = "Crafting Station section",
-			screen = Screen.CraftingObjectsList
+			navigationDestination = ListDestination.CraftingDestinations.CraftingObjectsList
 		),
 		DrawerItem(
 			icon = Lucide.Gavel,
 			label = "Tools",
 			contentDescription = "Tools section",
-			screen = Screen.ToolList
+			navigationDestination = ListDestination.ItemDestinations.ToolList
 		),
 		DrawerItem(
 			icon = Lucide.Cuboid,
 			label = "Materials",
 			contentDescription = "Materials section",
-			screen = Screen.MaterialCategory
+			navigationDestination = ListDestination.CraftingDestinations.MaterialCategory
 		),
 		DrawerItem(
 			icon = Lucide.House,
 			label = "Building Materials",
 			contentDescription = "Building Materials section",
-			screen = Screen.BuildingMaterialCategory
+			navigationDestination = ListDestination.CraftingDestinations.BuildingMaterialCategory
 		),
 		DrawerItem(
 			icon = Lucide.Pickaxe,
 			label = "Ore Deposits",
 			contentDescription = "Ore Deposits section",
-			screen = Screen.OreDepositList
+			navigationDestination = GridDestination.WorldDestinations.OreDepositGrid
 		),
 		DrawerItem(
 			icon = Lucide.Trees,
 			label = "Trees",
 			contentDescription = "Trees section",
-			screen = Screen.TreeGrid
+			navigationDestination = GridDestination.WorldDestinations.TreeGrid
 		),
 		DrawerItem(
 			icon = Lucide.MapPinned,
 			label = "Points Of Interest",
 			contentDescription = "Points Of Interest section",
-			screen = Screen.PointOfInterestList
+			navigationDestination = ListDestination.WorldDestinations.PointOfInterestList
 		)
 	)
 

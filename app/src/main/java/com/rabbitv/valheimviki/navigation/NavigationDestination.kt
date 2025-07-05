@@ -20,6 +20,31 @@ sealed interface TopLevelDestination : NavigationDestination {
 	data object Home : TopLevelDestination
 }
 
+@Serializable
+sealed interface GridDestination : NavigationDestination {
+	@Serializable
+	sealed interface WorldDestinations : GridDestination {
+		@Serializable
+		data object BiomeGrid : WorldDestinations
+
+		@Serializable
+		data object OreDepositGrid : WorldDestinations
+
+		@Serializable
+		data object TreeGrid : WorldDestinations
+
+	}
+
+	@Serializable
+	sealed interface CreatureDestinations : GridDestination {
+		@Serializable
+		data object BossGrid : CreatureDestinations
+
+		@Serializable
+		data object MiniBossGrid : CreatureDestinations
+	}
+
+}
 
 @Serializable
 sealed interface ListDestination : NavigationDestination {
@@ -27,25 +52,11 @@ sealed interface ListDestination : NavigationDestination {
 	@Serializable
 	sealed interface WorldDestinations : ListDestination {
 		@Serializable
-		data object BiomeList : WorldDestinations
-
-		@Serializable
-		data object OreDepositList : WorldDestinations
-
-		@Serializable
-		data object TreeGrid : WorldDestinations
-
-		@Serializable
 		data object PointOfInterestList : WorldDestinations
 	}
 
 	@Serializable
 	sealed interface CreatureDestinations : ListDestination {
-		@Serializable
-		data object BossList : CreatureDestinations
-
-		@Serializable
-		data object MiniBossList : CreatureDestinations
 
 		@Serializable
 		data object MobList : CreatureDestinations
@@ -96,10 +107,13 @@ sealed interface DetailDestination : NavigationDestination
 
 @Serializable
 sealed interface WorldDetailDestination : DetailDestination {
+
+	@Serializable
 	data class BiomeDetail(
 		val biomeId: String
 	) : WorldDetailDestination
 
+	@Serializable
 	data class OreDepositDetail(
 		val oreDepositId: String
 	) : WorldDetailDestination
@@ -168,14 +182,14 @@ sealed interface EquipmentDetailDestination : DetailDestination {
 sealed interface ConsumableDetailDestination : DetailDestination {
 	@Serializable
 	data class FoodDetail(
-		val itemId: String,
-		val foodId: String
+		val foodId: String,
+		val category: FoodSubCategory
 	) : ConsumableDetailDestination
 
 	@Serializable
 	data class MeadDetail(
 		val meadId: String,
-		val categoryId: String
+		val category: MeadSubCategory,
 	) : ConsumableDetailDestination
 }
 
@@ -269,28 +283,34 @@ object NavigationHelper {
 
 	fun routeToCreature(creatureType: String, itemId: String): CreatureDetailDestination {
 		return when (creatureType) {
-			"BOSS" -> CreatureDetailDestination.MainBossDetail(itemId)
-			"MINI_BOSS" -> CreatureDetailDestination.MiniBossDetail(itemId)
-			"AGGRESSIVE" -> CreatureDetailDestination.AggressiveCreatureDetail(itemId)
-			"PASSIVE" -> CreatureDetailDestination.PassiveCreatureDetail(itemId)
-			"NPC" -> CreatureDetailDestination.NpcDetail(itemId)
+			"BOSS" -> CreatureDetailDestination.MainBossDetail(mainBossId = itemId)
+			"MINI_BOSS" -> CreatureDetailDestination.MiniBossDetail(miniBossId = itemId)
+			"AGGRESSIVE_CREATURE" -> CreatureDetailDestination.AggressiveCreatureDetail(
+				aggressiveCreatureId = itemId
+			)
+
+			"PASSIVE_CREATURE" -> CreatureDetailDestination.PassiveCreatureDetail(passiveCreatureId = itemId)
+			"NPC" -> CreatureDetailDestination.NpcDetail(npcId = itemId)
 			else -> throw IllegalArgumentException("Unknown creature type: $creatureType")
 		}
 	}
 
 	fun routeToMaterial(materialType: String, itemId: String): MaterialDetailDestination {
 		return when (materialType) {
-			"BOSS_DROP" -> MaterialDetailDestination.BossDropDetail(itemId)
-			"MINI_BOSS_DROP" -> MaterialDetailDestination.MiniBossDropDetail(itemId)
-			"CREATURE_DROP" -> MaterialDetailDestination.MobDropDetail(itemId)
-			"CRAFTED" -> MaterialDetailDestination.CraftedMaterialDetail(itemId)
-			"METAL" -> MaterialDetailDestination.MetalMaterialDetail(itemId)
-			"MISCELLANEOUS" -> MaterialDetailDestination.GeneralMaterialDetail(itemId)
-			"GEMSTONE" -> MaterialDetailDestination.GemstoneDetail(itemId)
-			"SEED" -> MaterialDetailDestination.SeedDetail(itemId)
-			"SHOP" -> MaterialDetailDestination.ShopMaterialDetail(itemId)
-			"VALUABLE" -> MaterialDetailDestination.ValuableDetail(itemId)
-			"FORSAKEN_ALTAR_OFFERING" -> MaterialDetailDestination.OfferingsDetail(itemId)
+			"BOSS_DROP" -> MaterialDetailDestination.BossDropDetail(bossDropId = itemId)
+			"MINI_BOSS_DROP" -> MaterialDetailDestination.MiniBossDropDetail(miniBossDropId = itemId)
+			"CREATURE_DROP" -> MaterialDetailDestination.MobDropDetail(mobDropId = itemId)
+			"CRAFTED" -> MaterialDetailDestination.CraftedMaterialDetail(craftedMaterialId = itemId)
+			"METAL" -> MaterialDetailDestination.MetalMaterialDetail(metalMaterialId = itemId)
+			"MISCELLANEOUS" -> MaterialDetailDestination.GeneralMaterialDetail(generalMaterialId = itemId)
+			"GEMSTONE" -> MaterialDetailDestination.GemstoneDetail(gemstoneId = itemId)
+			"SEED" -> MaterialDetailDestination.SeedDetail(seedMaterialId = itemId)
+			"SHOP" -> MaterialDetailDestination.ShopMaterialDetail(shopMaterialId = itemId)
+			"VALUABLE" -> MaterialDetailDestination.ValuableDetail(valuableMaterialId = itemId)
+			"FORSAKEN_ALTAR_OFFERING" -> MaterialDetailDestination.OfferingsDetail(
+				offeringsMaterialId = itemId
+			)
+
 			else -> throw IllegalArgumentException("Unknown material type: $materialType")
 		}
 	}
