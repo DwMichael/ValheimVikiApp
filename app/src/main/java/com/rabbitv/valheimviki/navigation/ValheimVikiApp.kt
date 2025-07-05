@@ -268,7 +268,7 @@ fun ValheimNavGraph(
 			WelcomeScreen(valheimVikiNavController)
 		}
 
-		composable<ListDestination.WorldDestinations.BiomeList> {
+		composable<GridDestination.WorldDestinations.BiomeGrid> {
 			BiomeScreen(
 				modifier = Modifier.padding(10.dp),
 				onItemClick = { id ->
@@ -287,7 +287,7 @@ fun ValheimNavGraph(
 			)
 		}
 
-		composable<Screen.BossList> {
+		composable<GridDestination.CreatureDestinations.BossGrid> {
 			BossScreen(
 				modifier = Modifier.padding(10.dp),
 				onItemClick = { mainBossId ->
@@ -295,7 +295,7 @@ fun ValheimNavGraph(
 					if (currentTime - lastClickTime.longValue > clickDebounceMillis) {
 						lastClickTime.longValue = currentTime
 						valheimVikiNavController.navigate(
-							Screen.MainBossDetail(mainBossId = mainBossId)
+							CreatureDetailDestination.MainBossDetail(mainBossId = mainBossId)
 						) {
 							launchSingleTop = true
 						}
@@ -305,7 +305,7 @@ fun ValheimNavGraph(
 				animatedVisibilityScope = this@composable
 			)
 		}
-		composable<Screen.MiniBossList> {
+		composable<GridDestination.CreatureDestinations.MiniBossGrid> {
 			MiniBossScreen(
 				modifier = Modifier.padding(10.dp),
 				onItemClick = { miniBossId ->
@@ -313,7 +313,7 @@ fun ValheimNavGraph(
 					if (currentTime - lastClickTime.longValue > clickDebounceMillis) {
 						lastClickTime.longValue = currentTime
 						valheimVikiNavController.navigate(
-							Screen.MiniBossDetail(miniBossId = miniBossId)
+							CreatureDetailDestination.MiniBossDetail(miniBossId = miniBossId)
 						) {
 							launchSingleTop = true
 						}
@@ -323,21 +323,21 @@ fun ValheimNavGraph(
 				animatedVisibilityScope = this@composable
 			)
 		}
-		composable<Screen.MobList> {
+		composable<ListDestination.CreatureDestinations.MobList> {
 			MobListScreen(
 				modifier = Modifier.padding(10.dp),
 				onItemClick = { creatureId, creatureSubCategory: CreatureSubCategory ->
 					when (creatureSubCategory) {
 						CreatureSubCategory.PASSIVE_CREATURE -> valheimVikiNavController.navigate(
-							Screen.PassiveCreatureDetail(passiveCreatureId = creatureId)
+							CreatureDetailDestination.PassiveCreatureDetail(passiveCreatureId = creatureId)
 						)
 
 						CreatureSubCategory.AGGRESSIVE_CREATURE -> valheimVikiNavController.navigate(
-							Screen.AggressiveCreatureDetail(aggressiveCreatureId = creatureId)
+							CreatureDetailDestination.AggressiveCreatureDetail(aggressiveCreatureId = creatureId)
 						)
 
 						CreatureSubCategory.NPC -> valheimVikiNavController.navigate(
-							Screen.NpcDetail(npcId = creatureId)
+							CreatureDetailDestination.NpcDetail(npcId = creatureId)
 						)
 
 						CreatureSubCategory.BOSS -> null
@@ -348,37 +348,37 @@ fun ValheimNavGraph(
 			)
 		}
 
-		composable<Screen.WeaponList> {
+		composable<ListDestination.ItemDestinations.WeaponList> {
 			WeaponListScreen(
 				modifier = Modifier.padding(10.dp),
 				onItemClick = { weaponId, _ ->
 					valheimVikiNavController.navigate(
-						Screen.WeaponDetail(weaponId = weaponId)
+						EquipmentDetailDestination.WeaponDetail(weaponId = weaponId)
 					)
 				},
 				paddingValues = innerPadding,
 			)
 		}
 
-		composable<Screen.ArmorList> {
+		composable<ListDestination.ItemDestinations.ArmorList> {
 			ArmorListScreen(
 				modifier = Modifier.padding(10.dp),
 				onItemClick = { armorId, _ ->
 					valheimVikiNavController.navigate(
-						Screen.ArmorDetail(armorId = armorId)
+						EquipmentDetailDestination.ArmorDetail(armorId = armorId)
 					)
 				},
 				paddingValues = innerPadding,
 			)
 		}
-		composable<Screen.FoodList> {
+		composable<ListDestination.FoodDestinations.FoodList> {
 			FoodListScreen(
 				modifier = Modifier.padding(10.dp),
 				onItemClick = { foodId, foodSubCategory: FoodSubCategory ->
 					valheimVikiNavController.navigate(
-						Screen.FoodDetail(
+						ConsumableDetailDestination.FoodDetail(
 							foodId = foodId,
-							foodCategory = foodSubCategory
+							category = foodSubCategory
 						)
 					)
 				},
@@ -386,14 +386,14 @@ fun ValheimNavGraph(
 			)
 		}
 
-		composable<Screen.MeadList> {
+		composable<ListDestination.FoodDestinations.MeadList> {
 			MeadListScreen(
 				modifier = Modifier.padding(10.dp),
 				onItemClick = { meadId, meadSubCategory: MeadSubCategory ->
 					valheimVikiNavController.navigate(
-						Screen.MeadDetail(
+						ConsumableDetailDestination.MeadDetail(
 							meadId = meadId,
-							meadCategory = meadSubCategory
+							category = meadSubCategory
 						)
 					)
 				},
@@ -401,24 +401,24 @@ fun ValheimNavGraph(
 			)
 		}
 
-		composable<Screen.CraftingObjectsList> {
+		composable<ListDestination.CraftingDestinations.CraftingObjectsList> {
 			CraftingListScreen(
 				modifier = Modifier.padding(10.dp),
 				onItemClick = { craftingObjectId, _ ->
 					valheimVikiNavController.navigate(
-						Screen.CraftingObjectDetail(craftingObjectId = craftingObjectId)
+						BuildingDetailDestination.CraftingObjectDetail(craftingObjectId = craftingObjectId)
 					)
 				},
 				paddingValues = innerPadding,
 			)
 		}
 
-		composable<Screen.ToolList> {
+		composable<ListDestination.ItemDestinations.ToolList> {
 			ToolListScreen(
 				modifier = Modifier.padding(10.dp),
 				onItemClick = { toolId, _ ->
 					valheimVikiNavController.navigate(
-						Screen.ToolDetail(toolId = toolId)
+						EquipmentDetailDestination.ToolDetail(toolId = toolId)
 					)
 
 				},
@@ -426,27 +426,27 @@ fun ValheimNavGraph(
 			)
 		}
 
-		navigation<Screen.MaterialGraph>(
-			startDestination = Screen.MaterialCategory
+		navigation<NavigationGraph.MaterialGraph>(
+			startDestination = ListDestination.CraftingDestinations.MaterialCategory
 		) {
-			composable<Screen.MaterialCategory> { backStackEntry ->
+			composable<ListDestination.CraftingDestinations.MaterialCategory> { backStackEntry ->
 				val parentEntry = remember(backStackEntry) {
-					valheimVikiNavController.getBackStackEntry<Screen.MaterialGraph>()
+					valheimVikiNavController.getBackStackEntry<NavigationGraph.MaterialGraph>()
 				}
 				val vm = hiltViewModel<MaterialListViewModel>(parentEntry)
 				MaterialCategoryScreen(
 					modifier = Modifier.padding(10.dp),
 					paddingValues = innerPadding,
 					onGridCategoryClick = {
-						valheimVikiNavController.navigate(Screen.MaterialList)
+						valheimVikiNavController.navigate(ListDestination.CraftingDestinations.MaterialList)
 					},
 					viewModel = vm
 				)
 			}
 
-			composable<Screen.MaterialList> { backStackEntry ->
+			composable<ListDestination.CraftingDestinations.MaterialList> { backStackEntry ->
 				val parentEntry = remember(backStackEntry) {
-					valheimVikiNavController.getBackStackEntry<Screen.MaterialGraph>()
+					valheimVikiNavController.getBackStackEntry<NavigationGraph.MaterialGraph>()
 				}
 				val vm = hiltViewModel<MaterialListViewModel>(parentEntry)
 				MaterialListScreen(
@@ -454,47 +454,47 @@ fun ValheimNavGraph(
 
 						when (itemCategory) {
 							MaterialSubCategory.BOSS_DROP -> valheimVikiNavController.navigate(
-								Screen.BossDropDetail(bossDropId = itemId)
+								MaterialDetailDestination.BossDropDetail(bossDropId = itemId)
 							)
 
 							MaterialSubCategory.MINI_BOSS_DROP -> valheimVikiNavController.navigate(
-								Screen.MiniBossDropDetail(miniBossDropId = itemId)
+								MaterialDetailDestination.MiniBossDropDetail(miniBossDropId = itemId)
 							)
 
 							MaterialSubCategory.CREATURE_DROP -> valheimVikiNavController.navigate(
-								Screen.MobDropDetail(mobDropId = itemId)
+								MaterialDetailDestination.MobDropDetail(mobDropId = itemId)
 							)
 
 							MaterialSubCategory.FORSAKEN_ALTAR_OFFERING -> valheimVikiNavController.navigate(
-								Screen.OfferingsDetail(offeringsMaterialId = itemId)
+								MaterialDetailDestination.OfferingsDetail(offeringsMaterialId = itemId)
 							)
 
 							MaterialSubCategory.CRAFTED -> valheimVikiNavController.navigate(
-								Screen.CraftedMaterialDetail(craftedMaterialId = itemId)
+								MaterialDetailDestination.CraftedMaterialDetail(craftedMaterialId = itemId)
 							)
 
 							MaterialSubCategory.METAL -> valheimVikiNavController.navigate(
-								Screen.MetalMaterialDetail(metalMaterialId = itemId)
+								MaterialDetailDestination.MetalMaterialDetail(metalMaterialId = itemId)
 							)
 
 							MaterialSubCategory.MISCELLANEOUS -> valheimVikiNavController.navigate(
-								Screen.GeneralMaterialDetail(generalMaterialId = itemId)
+								MaterialDetailDestination.GeneralMaterialDetail(generalMaterialId = itemId)
 							)
 
 							MaterialSubCategory.GEMSTONE -> valheimVikiNavController.navigate(
-								Screen.GemstoneDetail(gemstoneId = itemId)
+								MaterialDetailDestination.GemstoneDetail(gemstoneId = itemId)
 							)
 
 							MaterialSubCategory.SEED -> valheimVikiNavController.navigate(
-								Screen.SeedDetail(seedMaterialId = itemId)
+								MaterialDetailDestination.SeedDetail(seedMaterialId = itemId)
 							)
 
 							MaterialSubCategory.SHOP -> valheimVikiNavController.navigate(
-								Screen.ShopMaterialDetail(shopMaterialId = itemId)
+								MaterialDetailDestination.ShopMaterialDetail(shopMaterialId = itemId)
 							)
 
 							MaterialSubCategory.VALUABLE -> valheimVikiNavController.navigate(
-								Screen.ValuableDetail(valuableMaterialId = itemId)
+								MaterialDetailDestination.ValuableDetail(valuableMaterialId = itemId)
 							)
 						}
 					},
@@ -506,34 +506,34 @@ fun ValheimNavGraph(
 			}
 		}
 
-		navigation<Screen.BuildingMaterialsGraph>(
-			startDestination = Screen.BuildingMaterialCategory
+		navigation<NavigationGraph.BuildingMaterialsGraph>(
+			startDestination = ListDestination.CraftingDestinations.BuildingMaterialCategory
 		) {
-			composable<Screen.BuildingMaterialCategory> { backStackEntry ->
+			composable<ListDestination.CraftingDestinations.BuildingMaterialCategory> { backStackEntry ->
 				val parentEntry = remember(backStackEntry) {
-					valheimVikiNavController.getBackStackEntry<Screen.BuildingMaterialsGraph>()
+					valheimVikiNavController.getBackStackEntry<NavigationGraph.BuildingMaterialsGraph>()
 				}
 				val vm = hiltViewModel<BuildingMaterialListViewModel>(parentEntry)
 				BuildingMaterialCategoryScreen(
 					modifier = Modifier.padding(10.dp),
 					paddingValues = innerPadding,
 					onGridCategoryClick = {
-						valheimVikiNavController.navigate(Screen.BuildingMaterialList)
+						valheimVikiNavController.navigate(ListDestination.CraftingDestinations.BuildingMaterialList)
 					},
 					viewModel = vm
 				)
 			}
 
-			composable<Screen.BuildingMaterialList> { backStackEntry ->
+			composable<ListDestination.CraftingDestinations.BuildingMaterialList> { backStackEntry ->
 
 				val parentEntry = remember(backStackEntry) {
-					valheimVikiNavController.getBackStackEntry<Screen.BuildingMaterialsGraph>()
+					valheimVikiNavController.getBackStackEntry<NavigationGraph.BuildingMaterialsGraph>()
 				}
 				val vm = hiltViewModel<BuildingMaterialListViewModel>(parentEntry)
 				BuildingMaterialListScreen(
 					onItemClick = { buildingMaterialId, _ ->
 						valheimVikiNavController.navigate(
-							Screen.BuildingMaterialDetail(buildingMaterialId = buildingMaterialId)
+							BuildingDetailDestination.BuildingMaterialDetail(buildingMaterialId = buildingMaterialId)
 						)
 					},
 					onBackClick = {
@@ -544,7 +544,7 @@ fun ValheimNavGraph(
 			}
 		}
 
-		composable<Screen.OreDepositList> {
+		composable<GridDestination.WorldDestinations.OreDepositGrid> {
 			OreDepositScreen(
 				modifier = Modifier.padding(10.dp),
 				onItemClick = { oreDepositId ->
@@ -552,7 +552,7 @@ fun ValheimNavGraph(
 					if (currentTime - lastClickTime.longValue > clickDebounceMillis) {
 						lastClickTime.longValue = currentTime
 						valheimVikiNavController.navigate(
-							Screen.OreDepositDetail(oreDepositId = oreDepositId)
+							WorldDetailDestination.OreDepositDetail(oreDepositId = oreDepositId)
 						) {
 							launchSingleTop = true
 						}
@@ -563,7 +563,7 @@ fun ValheimNavGraph(
 			)
 		}
 
-		composable<Screen.TreeGrid> {
+		composable<GridDestination.WorldDestinations.TreeGrid> {
 			TreeScreen(
 				modifier = Modifier.padding(10.dp),
 				onItemClick = { treeId ->
@@ -571,7 +571,7 @@ fun ValheimNavGraph(
 					if (currentTime - lastClickTime.longValue > clickDebounceMillis) {
 						lastClickTime.longValue = currentTime
 						valheimVikiNavController.navigate(
-							Screen.TreeDetail(treeId = treeId)
+							WorldDetailDestination.TreeDetail(treeId = treeId)
 						) {
 							launchSingleTop = true
 						}
@@ -582,12 +582,12 @@ fun ValheimNavGraph(
 			)
 		}
 
-		composable<Screen.PointOfInterestList> {
+		composable<ListDestination.WorldDestinations.PointOfInterestList> {
 			PoiListScreen(
 				modifier = Modifier.padding(10.dp),
 				onItemClick = { pointOfInterestId, _ ->
 					valheimVikiNavController.navigate(
-						Screen.PointOfInterestDetail(pointOfInterestId = pointOfInterestId)
+						WorldDetailDestination.PointOfInterestDetail(pointOfInterestId = pointOfInterestId)
 					)
 
 				},
@@ -597,23 +597,20 @@ fun ValheimNavGraph(
 
 
 		//Detail Screens
-		composable<Screen.BiomeDetail>(
+		composable<WorldDetailDestination.BiomeDetail>(
 			enterTransition = { enterTransition() },
 			popExitTransition = { popExitTransition() }
 		) {
 			val animatedContentScope = this
 			BiomeDetailScreen(
 				onBack = { valheimVikiNavController.popBackStack() },
-				onItemClick ={ itemId:String ->
-					valheimVikiNavController.navigate(
-						Screen.BuildingMaterialDetail(buildingMaterialId = buildingMaterialId)
-					)
-
-				} ,
+				onItemClick = { destination ->
+					valheimVikiNavController.navigate(destination)
+				},
 				animatedVisibilityScope = animatedContentScope
 			)
 		}
-		composable<Screen.MainBossDetail>(
+		composable<CreatureDetailDestination.MainBossDetail>(
 			enterTransition = { enterTransition() },
 			popExitTransition = { popExitTransition() }
 		) {
@@ -624,7 +621,7 @@ fun ValheimNavGraph(
 				animatedVisibilityScope = this@composable,
 			)
 		}
-		composable<Screen.MiniBossDetail>(
+		composable<CreatureDetailDestination.MiniBossDetail>(
 			enterTransition = { enterTransition() },
 			popExitTransition = { popExitTransition() }
 
@@ -636,7 +633,7 @@ fun ValheimNavGraph(
 				animatedVisibilityScope = this@composable,
 			)
 		}
-		composable<Screen.AggressiveCreatureDetail> {
+		composable<CreatureDetailDestination.AggressiveCreatureDetail> {
 			AggressiveCreatureDetailScreen(
 				onBack = {
 					valheimVikiNavController.popBackStack()
@@ -644,14 +641,14 @@ fun ValheimNavGraph(
 			)
 		}
 
-		composable<Screen.PassiveCreatureDetail> {
+		composable<CreatureDetailDestination.PassiveCreatureDetail> {
 			PassiveCreatureDetailScreen(
 				onBack = {
 					valheimVikiNavController.popBackStack()
 				},
 			)
 		}
-		composable<Screen.NpcDetail> {
+		composable<CreatureDetailDestination.NpcDetail> {
 			NpcDetailScreen(
 				onBack = {
 					valheimVikiNavController.popBackStack()
@@ -659,7 +656,34 @@ fun ValheimNavGraph(
 			)
 		}
 
-		composable<Screen.WeaponDetail> {
+		composable<ConsumableDetailDestination.FoodDetail> { backStackEntry ->
+			val args = backStackEntry.toRoute<ConsumableDetailDestination.FoodDetail>()
+			FoodDetailScreen(
+				category = args.category,
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+			)
+		}
+
+		composable<ConsumableDetailDestination.MeadDetail> { backStackEntry ->
+			val args = backStackEntry.toRoute<ConsumableDetailDestination.MeadDetail>()
+			MeadDetailScreen(
+				category = args.category,
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+			)
+		}
+		composable<BuildingDetailDestination.CraftingObjectDetail> {
+			CraftingDetailScreen(
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+			)
+		}
+
+		composable<EquipmentDetailDestination.WeaponDetail> {
 			WeaponDetailScreen(
 				onBack = {
 					valheimVikiNavController.popBackStack()
@@ -667,7 +691,7 @@ fun ValheimNavGraph(
 			)
 		}
 
-		composable<Screen.ArmorDetail> {
+		composable<EquipmentDetailDestination.ArmorDetail> {
 			ArmorDetailScreen(
 				onBack = {
 					valheimVikiNavController.popBackStack()
@@ -675,40 +699,14 @@ fun ValheimNavGraph(
 			)
 		}
 
-		composable<Screen.FoodDetail> { backStackEntry ->
-			val args = backStackEntry.toRoute<Screen.FoodDetail>()
-			FoodDetailScreen(
-				category = args.foodCategory,
-				onBack = {
-					valheimVikiNavController.popBackStack()
-				},
-			)
-		}
-
-		composable<Screen.MeadDetail> { backStackEntry ->
-			val args = backStackEntry.toRoute<Screen.MeadDetail>()
-			MeadDetailScreen(
-				category = args.meadCategory,
-				onBack = {
-					valheimVikiNavController.popBackStack()
-				},
-			)
-		}
-		composable<Screen.CraftingObjectDetail> {
-			CraftingDetailScreen(
-				onBack = {
-					valheimVikiNavController.popBackStack()
-				},
-			)
-		}
-		composable<Screen.ToolDetail> {
+		composable<EquipmentDetailDestination.ToolDetail> {
 			ToolDetailScreen(
 				onBack = {
 					valheimVikiNavController.popBackStack()
 				},
 			)
 		}
-		composable<Screen.OreDepositDetail> {
+		composable<WorldDetailDestination.OreDepositDetail> {
 			OreDepositDetailScreen(
 				onBack = {
 					valheimVikiNavController.popBackStack()
@@ -716,7 +714,7 @@ fun ValheimNavGraph(
 				animatedVisibilityScope = this@composable,
 			)
 		}
-		composable<Screen.TreeDetail> {
+		composable<WorldDetailDestination.TreeDetail> {
 			TreeDetailScreen(
 				onBack = {
 					valheimVikiNavController.popBackStack()
@@ -725,7 +723,7 @@ fun ValheimNavGraph(
 			)
 		}
 
-		composable<Screen.PointOfInterestDetail> {
+		composable<WorldDetailDestination.PointOfInterestDetail> {
 			PointOfInterestDetailScreen(
 				onBack = {
 					valheimVikiNavController.popBackStack()
@@ -733,7 +731,7 @@ fun ValheimNavGraph(
 			)
 		}
 
-		composable<Screen.BossDropDetail> {
+		composable<MaterialDetailDestination.BossDropDetail> {
 			BossDropDetailScreen(
 				onBack = {
 					valheimVikiNavController.popBackStack()
@@ -741,49 +739,49 @@ fun ValheimNavGraph(
 			)
 		}
 
-		composable<Screen.CraftedMaterialDetail> {
+		composable<MaterialDetailDestination.CraftedMaterialDetail> {
 			CraftedMaterialDetailScreen(
 				onBack = {
 					valheimVikiNavController.popBackStack()
 				},
 			)
 		}
-		composable<Screen.GeneralMaterialDetail> {
+		composable<MaterialDetailDestination.GeneralMaterialDetail> {
 			GeneralMaterialDetailScreen(
 				onBack = {
 					valheimVikiNavController.popBackStack()
 				},
 			)
 		}
-		composable<Screen.MetalMaterialDetail> {
+		composable<MaterialDetailDestination.MetalMaterialDetail> {
 			MetalMaterialDetailScreen(
 				onBack = {
 					valheimVikiNavController.popBackStack()
 				},
 			)
 		}
-		composable<Screen.MiniBossDropDetail> {
+		composable<MaterialDetailDestination.MiniBossDropDetail> {
 			MiniBossDropDetailScreen(
 				onBack = {
 					valheimVikiNavController.popBackStack()
 				},
 			)
 		}
-		composable<Screen.MobDropDetail> {
+		composable<MaterialDetailDestination.MobDropDetail> {
 			MobDropDetailScreen(
 				onBack = {
 					valheimVikiNavController.popBackStack()
 				},
 			)
 		}
-		composable<Screen.OfferingsDetail> {
+		composable<MaterialDetailDestination.OfferingsDetail> {
 			OfferingsDetailScreen(
 				onBack = {
 					valheimVikiNavController.popBackStack()
 				},
 			)
 		}
-		composable<Screen.GemstoneDetail> {
+		composable<MaterialDetailDestination.GemstoneDetail> {
 			GemstoneDetailScreen(
 				onBack = {
 					valheimVikiNavController.popBackStack()
@@ -791,28 +789,28 @@ fun ValheimNavGraph(
 			)
 		}
 
-		composable<Screen.SeedDetail> {
+		composable<MaterialDetailDestination.SeedDetail> {
 			SeedMaterialDetailScreen(
 				onBack = {
 					valheimVikiNavController.popBackStack()
 				},
 			)
 		}
-		composable<Screen.ShopMaterialDetail> {
+		composable<MaterialDetailDestination.ShopMaterialDetail> {
 			ShopMaterialDetailScreen(
 				onBack = {
 					valheimVikiNavController.popBackStack()
 				},
 			)
 		}
-		composable<Screen.ValuableDetail> {
+		composable<MaterialDetailDestination.ValuableDetail> {
 			ValuableMaterialDetailScreen(
 				onBack = {
 					valheimVikiNavController.popBackStack()
 				},
 			)
 		}
-		composable<Screen.BuildingMaterialDetail> {
+		composable<BuildingDetailDestination.BuildingMaterialDetail> {
 			BuildingMaterialDetailScreen(
 				onBack = {
 					valheimVikiNavController.popBackStack()
@@ -897,105 +895,105 @@ fun rememberDrawerItems(): List<DrawerItem> {
 				icon = mountainSnowIcon,
 				label = biomesLabel,
 				contentDescription = biomesDesc,
-				screen = Screen.BiomeList
+				navigationDestination = GridDestination.WorldDestinations.BiomeGrid
 			),
 			// Bosses
 			DrawerItem(
 				iconPainter = skullPainter,
 				label = bossesLabel,
 				contentDescription = bossesDesc,
-				screen = Screen.BossList
+				navigationDestination = GridDestination.CreatureDestinations.BossGrid
 			),
 			// Mini-bosses
 			DrawerItem(
 				iconPainter = ogrePainter,
 				label = minibossesLabel,
 				contentDescription = minibossesDesc,
-				screen = Screen.MiniBossList
+				navigationDestination = GridDestination.CreatureDestinations.MiniBossGrid
 			),
 			// Creatures
 			DrawerItem(
 				icon = rabbitIcon,
 				label = creaturesLabel,
 				contentDescription = creaturesDesc,
-				screen = Screen.MobList
+				navigationDestination = ListDestination.CreatureDestinations.MobList
 			),
 			// Weapons
 			DrawerItem(
 				icon = swordsIcon,
 				label = weaponsLabel,
 				contentDescription = weaponsDesc,
-				screen = Screen.WeaponList
+				navigationDestination = ListDestination.ItemDestinations.WeaponList
 			),
 			// Armors
 			DrawerItem(
 				icon = shieldIcon,
 				label = armorsLabel,
 				contentDescription = armorsDesc,
-				screen = Screen.ArmorList
+				navigationDestination = ListDestination.ItemDestinations.ArmorList
 			),
 			// Food
 			DrawerItem(
 				icon = utensilsIcon,
 				label = foodLabel,
 				contentDescription = foodDesc,
-				screen = Screen.FoodList
+				navigationDestination = ListDestination.FoodDestinations.FoodList
 			),
 			// Meads
 			DrawerItem(
 				icon = flaskIcon,
 				label = meadsLabel,
 				contentDescription = meadsDesc,
-				screen = Screen.MeadList
+				navigationDestination = ListDestination.FoodDestinations.MeadList
 			),
 			// CraftingObjects
 			DrawerItem(
 				icon = anvilIcon,
 				label = craftingObjectsLabel,
 				contentDescription = craftingObjectsDesc,
-				screen = Screen.CraftingObjectsList
+				navigationDestination = ListDestination.CraftingDestinations.CraftingObjectsList
 			),
 			// Tools
 			DrawerItem(
 				icon = gavelIcon,
 				label = toolsLabel,
 				contentDescription = toolsDesc,
-				screen = Screen.ToolList
+				navigationDestination = ListDestination.ItemDestinations.ToolList
 			),
 			// Materials
 			DrawerItem(
 				icon = cuboidIcon,
 				label = materialsLabel,
 				contentDescription = materialsDesc,
-				screen = Screen.MaterialCategory
+				navigationDestination = ListDestination.CraftingDestinations.MaterialCategory
 			),
 			// Building Materials
 			DrawerItem(
 				icon = houseIcon,
 				label = buildingMatsLabel,
 				contentDescription = buildingMatsDesc,
-				screen = Screen.BuildingMaterialCategory
+				navigationDestination = ListDestination.CraftingDestinations.BuildingMaterialCategory
 			),
 			// Ore Deposits
 			DrawerItem(
 				icon = pickaxeIcon,
 				label = oreLabel,
 				contentDescription = oreDesc,
-				screen = Screen.OreDepositList
+				navigationDestination = GridDestination.WorldDestinations.OreDepositGrid
 			),
 			// Trees
 			DrawerItem(
 				icon = treesIcon,
 				label = treesLabel,
 				contentDescription = treesDesc,
-				screen = Screen.TreeGrid
+				navigationDestination = GridDestination.WorldDestinations.TreeGrid
 			),
 			// Points of Interest
 			DrawerItem(
 				icon = mapPinnedIcon,
 				label = poiLabel,
 				contentDescription = poiDesc,
-				screen = Screen.PointOfInterestList
+				navigationDestination = ListDestination.WorldDestinations.PointOfInterestList
 			)
 		)
 	}
@@ -1006,22 +1004,22 @@ private fun findSelectedDrawerItem(
 	drawerItems: List<DrawerItem>
 ): DrawerItem {
 	val allMatches = drawerItems.filter { item ->
-		val screenName = item.screen::class.simpleName ?: ""
+		val screenName = item.navigationDestination::class.simpleName ?: ""
 		screenName.isNotEmpty() && currentRoute.contains(screenName, ignoreCase = true)
 	}
 
 	return allMatches.maxByOrNull { item ->
-		(item.screen::class.simpleName ?: "").length
+		(item.navigationDestination::class.simpleName ?: "").length
 	} ?: drawerItems.first()
 }
 
 fun NavDestination.shouldShowTopBar(): Boolean {
 	val route = this.route ?: return false
 	val mainScreens = listOf(
-		"BiomeList", "BossList", "MiniBossList", "MobList",
+		"BiomeGrid", "BossGrid", "MiniBossGrid", "MobList",
 		"WeaponList", "ArmorList", "FoodList", "MeadList",
 		"CraftingObjectsList", "ToolList", "MaterialCategory",
-		"BuildingMaterialCategory", "OreDepositList", "TreeGrid", "PointOfInterestList"
+		"BuildingMaterialCategory", "OreDepositGrid", "TreeGrid", "PointOfInterestList"
 	)
 	return mainScreens.any { screenName ->
 		route.contains(screenName, ignoreCase = true)
