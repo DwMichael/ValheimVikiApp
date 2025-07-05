@@ -41,13 +41,13 @@ import com.rabbitv.valheimviki.utils.FakeData
 
 @Composable
 fun CardWithOverlayLabel(
-    painter: Painter,
-    height: Dp = 75.dp,
-    content: @Composable () -> Unit = {},
-    alpha: Float = 0.3f
+	painter: Painter,
+	height: Dp = 75.dp,
+	content: @Composable () -> Unit = {},
+	alpha: Float = 0.3f
 ) {
-    Box(
-        modifier = Modifier
+	Box(
+		modifier = Modifier
             .padding(BODY_CONTENT_PADDING.dp)
             .fillMaxWidth()
             .height(height)
@@ -57,28 +57,28 @@ fun CardWithOverlayLabel(
                 painter = painter,
                 contentScale = ContentScale.Crop
             )
-    ) {
-        Card(
-            modifier = Modifier
+	) {
+		Card(
+			modifier = Modifier
                 .background(Color.Black.copy(alpha = alpha))
                 .fillMaxSize(),
-            colors = CardDefaults.cardColors(
-                containerColor = Color.Transparent
-            ),
-            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-        ) {
-            content()
-        }
-    }
+			colors = CardDefaults.cardColors(
+				containerColor = Color.Transparent
+			),
+			elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+		) {
+			content()
+		}
+	}
 }
 
 @Composable
 fun OverlayLabel(
-    icon: ImageVector,
-    label: String
+	icon: ImageVector,
+	label: String
 ) {
-    Box(
-        modifier = Modifier
+	Box(
+		modifier = Modifier
             .clip(
                 RoundedCornerShape(
                     bottomEnd = DETAIL_ITEM_SHAPE_PADDING,
@@ -89,53 +89,53 @@ fun OverlayLabel(
             .wrapContentHeight(Alignment.Top)
             .wrapContentWidth(Alignment.Start)
 
-    ) {
-        Row(
-            modifier = Modifier.padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                icon,
-                modifier = Modifier.height(12.dp),
-                tint = Color.White,
-                contentDescription = "Icon Label",
+	) {
+		Row(
+			modifier = Modifier.padding(8.dp),
+			verticalAlignment = Alignment.CenterVertically
+		) {
+			Icon(
+				icon,
+				modifier = Modifier.height(12.dp),
+				tint = Color.White,
+				contentDescription = "Icon Label",
 
-                )
-            Spacer(modifier = Modifier.padding(1.dp))
-            Text(
-                label,
-                style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
-                color = Color.White
-            )
-        }
-    }
+				)
+			Spacer(modifier = Modifier.padding(1.dp))
+			Text(
+				label,
+				style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+				color = Color.White
+			)
+		}
+	}
 }
 
 @Composable
 @Preview(showBackground = true)
 fun PreviewCardWithOverlayLabel() {
-    val fakeList = FakeData.generateFakeMaterials()
-    CardWithOverlayLabel(
-        height = 180.dp,
-        alpha = 0.1f,
-        painter = painterResource(R.drawable.summoning_bg),
-        content = {
-            Column {
-                Box(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    OverlayLabel(
+	val fakeList = FakeData.generateFakeMaterials()
+	CardWithOverlayLabel(
+		height = 180.dp,
+		alpha = 0.1f,
+		painter = painterResource(R.drawable.summoning_bg),
+		content = {
+			Column {
+				Box(
+					modifier = Modifier.fillMaxWidth()
+				) {
+					OverlayLabel(
 
-                        icon = Lucide.Flame,
-                        label = "SUMMONING ITEMS",
-                    )
-                }
-                CustomRowLayout(
-                    relatedSummoningItems = fakeList,
-                    modifier = Modifier.weight(1f)
-                )
-            }
-        }
-    )
+						icon = Lucide.Flame,
+						label = "SUMMONING ITEMS",
+					)
+				}
+				CustomRowLayout(
+					relatedSummoningItems = fakeList,
+					modifier = Modifier.weight(1f)
+				)
+			}
+		}
+	)
 }
 

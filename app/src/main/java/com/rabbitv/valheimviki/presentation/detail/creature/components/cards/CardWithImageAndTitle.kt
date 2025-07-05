@@ -1,5 +1,6 @@
 package com.rabbitv.valheimviki.presentation.detail.creature.components.cards
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,53 +38,55 @@ import com.rabbitv.valheimviki.ui.theme.SecondGrey
 
 @Composable
 fun CardWithImageAndTitle(
-    title: String,
-    imageUrl: String?,
-    itemName: String,
-    contentScale: ContentScale = ContentScale.Crop,
-    height: Dp = 200.dp,
+	onCardClick: () -> Unit = {},
+	title: String,
+	imageUrl: String?,
+	itemName: String,
+	contentScale: ContentScale = ContentScale.Crop,
+	height: Dp = 200.dp,
 ) {
-    Card(
-        modifier = Modifier
+	Card(
+		modifier = Modifier
             .height(height)
-            .fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = SecondGrey
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-    ) {
-        Column(
-            modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onCardClick() },
+		colors = CardDefaults.cardColors(
+			containerColor = SecondGrey
+		),
+		elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+	) {
+		Column(
+			modifier = Modifier
                 .fillMaxSize()
                 .padding(8.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+			verticalArrangement = Arrangement.Center,
+			horizontalAlignment = Alignment.CenterHorizontally
+		) {
 
-            Text(
-                title,
-                style = MaterialTheme.typography.labelMedium
-            )
-            Spacer(modifier = Modifier.padding(4.dp))
-            Box(
-                modifier = Modifier
+			Text(
+				title,
+				style = MaterialTheme.typography.labelMedium
+			)
+			Spacer(modifier = Modifier.padding(4.dp))
+			Box(
+				modifier = Modifier
                     .fillMaxWidth()
                     .wrapContentWidth(Alignment.End)
-            ) {
-                AsyncImage(
-                    modifier = Modifier
+			) {
+				AsyncImage(
+					modifier = Modifier
                         .fillMaxSize()
                         .clip(RoundedCornerShape(12.dp)),
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(imageUrl)
-                        .crossfade(true)
-                        .build(),
-                    contentDescription = "Sacrifical Strones Image",
-                    placeholder = painterResource(R.drawable.ic_placeholder),
-                    contentScale = contentScale
-                )
-                Surface(
-                    modifier = Modifier
+					model = ImageRequest.Builder(LocalContext.current)
+						.data(imageUrl)
+						.crossfade(true)
+						.build(),
+					contentDescription = "Sacrifical Strones Image",
+					placeholder = painterResource(R.drawable.ic_placeholder),
+					contentScale = contentScale
+				)
+				Surface(
+					modifier = Modifier
                         .align(Alignment.BottomStart)
                         .fillMaxHeight(0.2f)
                         .fillMaxWidth()
@@ -92,22 +95,22 @@ fun CardWithImageAndTitle(
                                 bottomStart = 12.dp, bottomEnd = 12.dp
                             )
                         ),
-                    tonalElevation = 0.dp,
-                    color = Color.Black.copy(alpha = ContentAlpha.medium),
-                ) {
-                    Text(
-                        modifier = Modifier
+					tonalElevation = 0.dp,
+					color = Color.Black.copy(alpha = ContentAlpha.medium),
+				) {
+					Text(
+						modifier = Modifier
                             .padding
                                 (horizontal = 5.dp)
                             .wrapContentHeight(align = Alignment.CenterVertically),
-                        text = itemName,
-                        textAlign = TextAlign.Center,
-                        color = Color.White,
-                        style = MaterialTheme.typography.labelLarge,
-                    )
-                }
-            }
-        }
+						text = itemName,
+						textAlign = TextAlign.Center,
+						color = Color.White,
+						style = MaterialTheme.typography.labelLarge,
+					)
+				}
+			}
+		}
 
-    }
+	}
 }

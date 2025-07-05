@@ -12,6 +12,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,7 +24,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
@@ -57,7 +57,10 @@ import com.composables.icons.lucide.TreePine
 import com.composables.icons.lucide.Trophy
 import com.composables.icons.lucide.Unlink
 import com.rabbitv.valheimviki.R
+import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.LocalSharedTransitionScope
+import com.rabbitv.valheimviki.navigation.NavigationHelper
+import com.rabbitv.valheimviki.navigation.WorldDetailDestination
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
@@ -83,6 +86,7 @@ import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 @Composable
 fun MainBossDetailScreen(
 	onBack: () -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	viewModel: MainBossScreenViewModel = hiltViewModel(),
 	animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
@@ -91,6 +95,7 @@ fun MainBossDetailScreen(
 		?: throw IllegalStateException("No Scope found")
 	MainBossContent(
 		onBack = onBack,
+		onItemClick = onItemClick,
 		animatedVisibilityScope = animatedVisibilityScope,
 		sharedTransitionScope = sharedTransitionScope,
 		mainBossUiState = mainBossUiState
@@ -103,6 +108,7 @@ fun MainBossDetailScreen(
 @Composable
 fun MainBossContent(
 	onBack: () -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	sharedTransitionScope: SharedTransitionScope,
 	animatedVisibilityScope: AnimatedVisibilityScope,
 	mainBossUiState: MainBossDetailUiState,
@@ -194,11 +200,19 @@ fun MainBossContent(
 								boxPadding = BODY_CONTENT_PADDING.dp
 							)
 							TridentsDividedRow(text = "BOSS DETAIL")
-							mainBossUiState.relatedBiome?.let {
+							mainBossUiState.relatedBiome?.let { biome ->
 								CardWithOverlayLabel(
 									painter = rememberAsyncImagePainter(mainBossUiState.relatedBiome.imageUrl),
 									content = {
-										Row {
+										Row(
+											modifier = Modifier.clickable {
+												val destination =
+													WorldDetailDestination.BiomeDetail(
+														biomeId = biome.id
+													)
+												onItemClick(destination)
+											}
+										) {
 											Box(
 												modifier = Modifier.fillMaxHeight()
 											) {
@@ -208,7 +222,7 @@ fun MainBossContent(
 												)
 											}
 											Text(
-												it.name.uppercase(),
+												biome.name.uppercase(),
 												style = MaterialTheme.typography.bodyLarge,
 												modifier = Modifier
 													.align(Alignment.CenterVertically)
@@ -225,6 +239,13 @@ fun MainBossContent(
 							mainBossUiState.relatedForsakenAltar?.let {
 								TridentsDividedRow()
 								ImageWithTopLabel(
+									onItemClick = { pointOfInterestId ->
+										val destination =
+											WorldDetailDestination.PointOfInterestDetail(
+												pointOfInterestId = pointOfInterestId
+											)
+										onItemClick(destination)
+									},
 									itemData = mainBossUiState.relatedForsakenAltar,
 									horizontalDividerWidth = 250.dp,
 									textStyle = MaterialTheme.typography.titleLarge
@@ -248,6 +269,18 @@ fun MainBossContent(
 												)
 											}
 											CustomRowLayout(
+												onItemClick = { clickedItemId: String ->
+													val material =
+														mainBossUiState.relatedSummoningItems.find { it.id == clickedItemId }
+													material?.let {
+														val destination =
+															NavigationHelper.routeToMaterial(
+																it.subCategory,
+																it.id
+															)
+														onItemClick(destination)
+													}
+												},
 												relatedSummoningItems = mainBossUiState.relatedSummoningItems,
 												modifier = Modifier.weight(1f)
 											)
@@ -258,39 +291,67 @@ fun MainBossContent(
 							}
 							mainBossUiState.dropItems.isNotEmpty().let {
 								HorizontalPagerSection(
+									onItemClick = { clickedItemId ->
+										val material =
+											mainBossUiState.dropItems.find { it.id == clickedItemId }
+										material?.let {
+											val destination = NavigationHelper.routeToMaterial(
+												it.subCategory,
+												it.id
+											)
+											onItemClick(destination)
+										}
+									},
 									list = mainBossUiState.dropItems,
 									data = dropData
 								)
 							}
 							GreenTorchesDivider(text = "FORSAKEN POWER")
-							Row(
-								modifier = Modifier.padding(BODY_CONTENT_PADDING.dp)
-							) {
-								Box(
-									modifier = Modifier.weight(1f)
+							mainBossUiState.trophy?.let { trophy ->
+								Row(
+									modifier = Modifier.padding(BODY_CONTENT_PADDING.dp)
 								) {
-									CardWithTrophy(
-										forsakenPower = mainBossUiState.mainBoss.forsakenPower,
-										trophyUrl = mainBossUiState.trophy?.imageUrl
-									)
-								}
-								Spacer(
-									modifier = Modifier
-										.width(15.dp)
-										.wrapContentSize()
-								)
-								Box(
-									modifier = Modifier.weight(1f)
-								) {
-									mainBossUiState.sacrificialStones?.let {
-										CardWithImageAndTitle(
-											"WHERE TO HANG THE BOSS TROPHY",
-											imageUrl = mainBossUiState.sacrificialStones.imageUrl,
-											itemName = mainBossUiState.sacrificialStones.name,
-											contentScale = ContentScale.Crop,
+									Box(
+										modifier = Modifier.weight(1f)
+									) {
+										CardWithTrophy(
+											onCardClicked = {
+												val destination =
+													NavigationHelper.routeToMaterial(
+														trophy.subCategory,
+														trophy.id
+													)
+												onItemClick(destination)
+											},
+											forsakenPower = mainBossUiState.mainBoss.forsakenPower,
+											trophyUrl = trophy.imageUrl
 										)
 									}
 
+									// Move Spacer inside the Row
+									Spacer(
+										modifier = Modifier.width(15.dp)
+									)
+
+									Box(
+										modifier = Modifier.weight(1f)
+									) {
+										mainBossUiState.sacrificialStones?.let { sacrificialStones ->
+											CardWithImageAndTitle(
+												onCardClick = {
+													val destination =
+														WorldDetailDestination.PointOfInterestDetail(
+															pointOfInterestId = sacrificialStones.id
+														)
+													onItemClick(destination)
+												},
+												title = "WHERE TO HANG THE BOSS TROPHY",
+												imageUrl = sacrificialStones.imageUrl,
+												itemName = sacrificialStones.name,
+												contentScale = ContentScale.Crop,
+											)
+										}
+									}
 								}
 							}
 							TridentsDividedRow(text = "BOSS STATS")
@@ -413,10 +474,12 @@ private fun PreviewCreatureDetail() {
 		AnimatedVisibility(visible = true) {
 			MainBossContent(
 				onBack = { },
+				onItemClick = {},
 				animatedVisibilityScope = this,
 				sharedTransitionScope = this@SharedTransitionLayout,
-				mainBossUiState = MainBossDetailUiState()
-			)
+				mainBossUiState = MainBossDetailUiState(),
+
+				)
 		}
 	}
 
