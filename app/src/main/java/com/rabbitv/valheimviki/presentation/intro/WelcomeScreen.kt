@@ -48,9 +48,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.welcome.OnBoardingPage
-import com.rabbitv.valheimviki.navigation.Screen
+import com.rabbitv.valheimviki.navigation.GridDestination
+import com.rabbitv.valheimviki.navigation.ListDestination
 import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
-//import com.rabbitv.valheimviki.ui.theme.IMFellEnglishFontFamily
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.Constants.LAST_ON_BOARDING_PAGE
 import kotlinx.coroutines.CoroutineScope
@@ -75,20 +75,20 @@ fun WelcomeScreen(
 	val scope = rememberCoroutineScope()
 	Column(
 		modifier = Modifier
-            .testTag("WelcomeScreen")
-            .fillMaxSize()
-            .paint(
-                painterResource(id = pages[currentPage].image),
-                contentScale = ContentScale.Crop
-            )
-            .padding(bottom = 50.dp)
+			.testTag("WelcomeScreen")
+			.fillMaxSize()
+			.paint(
+				painterResource(id = pages[currentPage].image),
+				contentScale = ContentScale.Crop
+			)
+			.padding(bottom = 50.dp)
 	) {
 		HorizontalPager(
 			state = pagerState,
 			verticalAlignment = Alignment.Top,
 			modifier = Modifier
-                .weight(7f)
-                .fillMaxWidth()
+				.weight(7f)
+				.fillMaxWidth()
 		) { position ->
 
 			PagerScreen(onBoardingPage = pages[position], position, horizontalPadding)
@@ -103,23 +103,23 @@ fun WelcomeScreen(
 		)
 		Row(
 			modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth(),
+				.weight(1f)
+				.fillMaxWidth(),
 			horizontalArrangement = Arrangement.Center,
 			verticalAlignment = Alignment.CenterVertically
 		) {
 			repeat(pages.size) { page ->
 				Box(
 					modifier = Modifier
-                        .width(12.dp)
-                        .height(12.dp)
-                        .clip(CircleShape)
-                        .background(
-                            if (page == pagerState.currentPage)
-                                ForestGreen10Dark
-                            else
-                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                        )
+						.width(12.dp)
+						.height(12.dp)
+						.clip(CircleShape)
+						.background(
+							if (page == pagerState.currentPage)
+								ForestGreen10Dark
+							else
+								MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+						)
 				)
 				if (page < pages.size - 1) {
 					Spacer(Modifier.width(8.dp))
@@ -137,8 +137,8 @@ fun WelcomeScreen(
 fun PagerScreen(onBoardingPage: OnBoardingPage, position: Int, horizontalPadding: Dp) {
 	Column(
 		modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = horizontalPadding),
+			.fillMaxSize()
+			.padding(horizontal = horizontalPadding),
 		verticalArrangement = Arrangement.Center,
 		horizontalAlignment = Alignment.CenterHorizontally
 	) {
@@ -148,8 +148,8 @@ fun PagerScreen(onBoardingPage: OnBoardingPage, position: Int, horizontalPadding
 				contentDescription = "VikingLogo",
 				contentScale = ContentScale.Crop,
 				modifier = Modifier
-                    .size(260.dp)
-                    .clip(CircleShape)
+					.size(260.dp)
+					.clip(CircleShape)
 			)
 			Spacer(modifier = Modifier.height(24.dp))
 		}
@@ -196,14 +196,14 @@ fun NavigationButton(
 				} else {
 					welcomeViewModel.saveOnBoardingState(completed = true)
 					navController.popBackStack()
-					navController.navigate(Screen.BiomeList)
+					navController.navigate(GridDestination.WorldDestinations.BiomeGrid)
 				}
 			}
 		},
 		modifier = Modifier
-            .height(64.dp)
-            .fillMaxWidth()
-            .padding(horizontal = horizontalPadding),
+			.height(64.dp)
+			.fillMaxWidth()
+			.padding(horizontal = horizontalPadding),
 		shape = RoundedCornerShape(12.dp),
 		colors = ButtonDefaults.elevatedButtonColors(
 			containerColor = ForestGreen10Dark,

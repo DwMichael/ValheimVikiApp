@@ -75,7 +75,7 @@ data class HorizontalPagerData(
 fun HorizontalPagerSection(
 	list: List<ItemData>,
 	data: HorizontalPagerData,
-	onItemClick: (itemId: String) -> Unit,
+	onItemClick: (itemId: String) -> Unit = {},
 ) {
 	val state = rememberPagerState(pageCount = { list.size })
 	val pageWidth = 160.dp

@@ -2,22 +2,18 @@ package com.rabbitv.valheimviki.presentation.splash
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.rabbitv.valheimviki.R
-import com.rabbitv.valheimviki.navigation.Screen
+import com.rabbitv.valheimviki.navigation.GridDestination
+import com.rabbitv.valheimviki.navigation.ListDestination
+import com.rabbitv.valheimviki.navigation.TopLevelDestination
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 
 
@@ -36,7 +32,7 @@ fun SplashScreen(
 			)
 		)
 		val destination =
-			if (hasOnboarded) Screen.BiomeList else Screen.Welcome
+			if (hasOnboarded) GridDestination.WorldDestinations.BiomeGrid else TopLevelDestination.Welcome
 		navController.navigate(destination) {
 			popUpTo(0) { inclusive = true }
 		}

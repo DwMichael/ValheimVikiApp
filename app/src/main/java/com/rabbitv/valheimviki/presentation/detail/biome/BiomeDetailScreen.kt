@@ -41,7 +41,10 @@ import com.composables.icons.lucide.Pickaxe
 import com.composables.icons.lucide.Trees
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
+import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.LocalSharedTransitionScope
+import com.rabbitv.valheimviki.navigation.NavigationHelper
+import com.rabbitv.valheimviki.navigation.WorldDetailDestination
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
@@ -62,7 +65,7 @@ import com.rabbitv.valheimviki.utils.FakeData
 @Composable
 fun BiomeDetailScreen(
 	onBack: () -> Unit,
-	onItemClick: (itemId: String, category: String, type: String) -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	viewModel: BiomeDetailScreenViewModel = hiltViewModel(),
 	animatedVisibilityScope: AnimatedVisibilityScope
 ) {
@@ -85,7 +88,7 @@ fun BiomeDetailScreen(
 @Composable
 fun BiomeDetailContent(
 	onBack: () -> Unit,
-	onItemClick: (itemId: String) -> Unit,
+	onItemClick:  (destination: DetailDestination) -> Unit,
 	biomeUiState: BiomeDetailUiState,
 	sharedTransitionScope: SharedTransitionScope,
 	animatedVisibilityScope: AnimatedVisibilityScope,
@@ -202,6 +205,10 @@ fun BiomeDetailContent(
 								ImageWithTopLabel(
 									itemData = mainBoss,
 									subTitle = "BOSS",
+									onItemClick = { clickedItemId ->
+										val destination = NavigationHelper.routeToCreature(biomeUiState.mainBoss.subCategory, biomeUiState.mainBoss.id)
+											onItemClick(destination)
+									},
 								)
 							}
 							SlavicDivider()
@@ -209,7 +216,13 @@ fun BiomeDetailContent(
 								HorizontalPagerSection(
 									list = biomeUiState.relatedCreatures,
 									data = creatureData,
-									onItemClick = onItemClick,
+									onItemClick = { clickedItemId ->
+										val creature = biomeUiState.relatedCreatures.find { it.id == clickedItemId }
+										creature?.let {
+											val destination = NavigationHelper.routeToCreature(it.subCategory.toString(), it.id)
+											onItemClick(destination)
+										}
+									},
 								)
 							}
 
@@ -218,7 +231,10 @@ fun BiomeDetailContent(
 								HorizontalPagerSection(
 									list = biomeUiState.relatedOreDeposits,
 									data = oreDepositData,
-									onItemClick = onItemClick,
+									onItemClick = { clickedItemId ->
+										val destination = WorldDetailDestination.OreDepositDetail(oreDepositId = clickedItemId)
+										onItemClick(destination)
+									},
 								)
 							}
 
@@ -227,15 +243,25 @@ fun BiomeDetailContent(
 								HorizontalPagerSection(
 									list = biomeUiState.relatedMaterials,
 									data = materialData,
-									onItemClick = onItemClick
+									onItemClick = { clickedItemId ->
+										val material = biomeUiState.relatedMaterials.find { it.id == clickedItemId }
+										material?.let {
+											val destination = NavigationHelper.routeToMaterial(it.subCategory, it.id)
+											onItemClick(destination)
+										}
+									}
 								)
 							}
+
 							if (biomeUiState.relatedPointOfInterest.isNotEmpty()) {
 								TridentsDividedRow()
 								HorizontalPagerSection(
 									list = biomeUiState.relatedPointOfInterest,
 									data = pointOfInterestData,
-									onItemClick = onItemClick
+									onItemClick = { clickedItemId ->
+										val destination = WorldDetailDestination.PointOfInterestDetail(pointOfInterestId = clickedItemId)
+										onItemClick(destination)
+									}
 								)
 							}
 							if (biomeUiState.relatedTrees.isNotEmpty()) {
@@ -243,7 +269,11 @@ fun BiomeDetailContent(
 								HorizontalPagerSection(
 									list = biomeUiState.relatedTrees,
 									data = treeData,
-									onItemClick = onItemClick
+									onItemClick = { clickedItemId ->
+										// Directly construct the TreeDetail destination
+										val destination = WorldDetailDestination.TreeDetail(treeId = clickedItemId)
+										onItemClick(destination)
+									}
 								)
 							}
 							Box(modifier = Modifier.size(45.dp))
