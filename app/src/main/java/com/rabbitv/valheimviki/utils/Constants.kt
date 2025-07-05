@@ -32,17 +32,19 @@ object Constants {
 	const val FOOD_KEY = "foodId"
 	const val MEAD_KEY = "meadId"
 	const val CRAFTING_KEY = "craftingObjectId"
-	const val TOOl_KEY = "toolId"
+	const val TOOL_KEY = "toolId"
 	const val TREE_KEY = "treeId"
 	const val POINT_OF_INTEREST_KEY = "pointOfInterestId"
 	const val ORE_DEPOSIT_KEY = "oreDepositId"
 
 	const val BOSS_DROP_KEY = "bossDropId"
+	const val MINI_BOSS_DROP_KEY = "miniBossDropId"
+	const val MOB_DROP_KEY = "mobDropId"
 	const val CRAFTED_MATERIAL_KEY = "craftedMaterialId"
 	const val GENERAL_MATERIAL_KEY = "generalMaterialId"
 	const val METAL_MATERIAL_KEY = "metalMaterialId"
-	const val MINI_BOSS_DROP_KEY = "miniBossDropId"
-	const val MOB_DROP_KEY = "mobDropId"
+
+
 	const val OFFERINGS_MATERIAL_KEY = "offeringsMaterialId"
 	const val POINT_OF_INTEREST_MATERIAL_KEY = "gemstoneId"
 	const val SEED_MATERIAL_KEY = "seedMaterialId"

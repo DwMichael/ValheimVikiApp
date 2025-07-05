@@ -62,6 +62,7 @@ import com.rabbitv.valheimviki.utils.FakeData
 @Composable
 fun BiomeDetailScreen(
 	onBack: () -> Unit,
+	onItemClick: (itemId: String, category: String, type: String) -> Unit,
 	viewModel: BiomeDetailScreenViewModel = hiltViewModel(),
 	animatedVisibilityScope: AnimatedVisibilityScope
 ) {
@@ -71,6 +72,7 @@ fun BiomeDetailScreen(
 
 	BiomeDetailContent(
 		onBack = onBack,
+		onItemClick = onItemClick,
 		sharedTransitionScope = sharedTransitionScope,
 		animatedVisibilityScope = animatedVisibilityScope,
 		biomeUiState = biomeUiState
@@ -83,6 +85,7 @@ fun BiomeDetailScreen(
 @Composable
 fun BiomeDetailContent(
 	onBack: () -> Unit,
+	onItemClick: (itemId: String) -> Unit,
 	biomeUiState: BiomeDetailUiState,
 	sharedTransitionScope: SharedTransitionScope,
 	animatedVisibilityScope: AnimatedVisibilityScope,
@@ -206,6 +209,7 @@ fun BiomeDetailContent(
 								HorizontalPagerSection(
 									list = biomeUiState.relatedCreatures,
 									data = creatureData,
+									onItemClick = onItemClick,
 								)
 							}
 
@@ -213,7 +217,8 @@ fun BiomeDetailContent(
 								TridentsDividedRow()
 								HorizontalPagerSection(
 									list = biomeUiState.relatedOreDeposits,
-									data = oreDepositData
+									data = oreDepositData,
+									onItemClick = onItemClick,
 								)
 							}
 
@@ -221,21 +226,24 @@ fun BiomeDetailContent(
 								TridentsDividedRow()
 								HorizontalPagerSection(
 									list = biomeUiState.relatedMaterials,
-									data = materialData
+									data = materialData,
+									onItemClick = onItemClick
 								)
 							}
 							if (biomeUiState.relatedPointOfInterest.isNotEmpty()) {
 								TridentsDividedRow()
 								HorizontalPagerSection(
 									list = biomeUiState.relatedPointOfInterest,
-									data = pointOfInterestData
+									data = pointOfInterestData,
+									onItemClick = onItemClick
 								)
 							}
 							if (biomeUiState.relatedTrees.isNotEmpty()) {
 								TridentsDividedRow()
 								HorizontalPagerSection(
 									list = biomeUiState.relatedTrees,
-									data = treeData
+									data = treeData,
+									onItemClick = onItemClick
 								)
 							}
 							Box(modifier = Modifier.size(45.dp))
@@ -309,7 +317,8 @@ fun PreviewBiomeDetailContent() {
 					onBack = { },
 					sharedTransitionScope = this@SharedTransitionLayout,
 					animatedVisibilityScope = this,
-					biomeUiState = uiState
+					biomeUiState = uiState,
+					onItemClick = { _ -> {} },
 				)
 			}
 		}

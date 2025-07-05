@@ -1,6 +1,7 @@
 package com.rabbitv.valheimviki.presentation.components.horizontal_pager
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -72,8 +73,9 @@ data class HorizontalPagerData(
 
 @Composable
 fun HorizontalPagerSection(
-	list: List<ItemData?>,
-	data: HorizontalPagerData
+	list: List<ItemData>,
+	data: HorizontalPagerData,
+	onItemClick: (itemId: String) -> Unit,
 ) {
 	val state = rememberPagerState(pageCount = { list.size })
 	val pageWidth = 160.dp
@@ -81,13 +83,13 @@ fun HorizontalPagerSection(
 	val horizontalPadding = (screenWidth - pageWidth) / 2
 	Box(
 		modifier = Modifier
-            .fillMaxWidth()
-            .heightIn(min = 210.dp, max = 240.dp)
-            .padding(
-                start = BODY_CONTENT_PADDING.dp,
-                end = BODY_CONTENT_PADDING.dp,
-                bottom = BODY_CONTENT_PADDING.dp,
-            )
+			.fillMaxWidth()
+			.heightIn(min = 210.dp, max = 240.dp)
+			.padding(
+				start = BODY_CONTENT_PADDING.dp,
+				end = BODY_CONTENT_PADDING.dp,
+				bottom = BODY_CONTENT_PADDING.dp,
+			)
 	)
 	{
 		Column(
@@ -114,7 +116,8 @@ fun HorizontalPagerSection(
 					list = list,
 					pageIndex = pageIndex,
 					contentScale = data.itemContentScale,
-					size = list.size
+					size = list.size,
+					onItemClick = onItemClick
 				)
 			}
 		}
@@ -159,51 +162,54 @@ fun HorizontalHeader(
 @Composable
 fun HorizontalPagerItem(
 	pagerState: PagerState,
-	list: List<ItemData?>,
+	list: List<ItemData>,
 	pageIndex: Int,
 	size: Int,
 	contentScale: ContentScale,
+	onItemClick: (itemId: String) -> Unit,
 ) {
-	Card(
-		Modifier
-            .size(150.dp)
-            .graphicsLayer {
-                val pageOffset = (
-                        (pagerState.currentPage - pageIndex) + pagerState
-                            .currentPageOffsetFraction
-                        ).absoluteValue
-                val scale = lerp(
-                    start = 0.8f,
-                    stop = 1f,
-                    fraction = 1f - pageOffset.coerceIn(0f, 1f)
-                )
-                scaleX = scale
-                scaleY = scale
+	list.let {
+		Card(
+			Modifier
+				.size(150.dp)
+				.graphicsLayer {
+					val pageOffset = (
+							(pagerState.currentPage - pageIndex) + pagerState
+								.currentPageOffsetFraction
+							).absoluteValue
+					val scale = lerp(
+						start = 0.8f,
+						stop = 1f,
+						fraction = 1f - pageOffset.coerceIn(0f, 1f)
+					)
+					scaleX = scale
+					scaleY = scale
 
-                alpha = lerp(
-                    start = 0.5f,
-                    stop = 1f,
-                    fraction = 1f - pageOffset.coerceIn(0f, 1f)
-                )
-                cameraDistance = 8f * density
-            }
-            .shadow(
-                elevation = 8.dp,
-                shape = RoundedCornerShape(8.dp),
-                spotColor = Color.White.copy(alpha = 0.25f)
-            )
-	) {
-		list.let {
+					alpha = lerp(
+						start = 0.5f,
+						stop = 1f,
+						fraction = 1f - pageOffset.coerceIn(0f, 1f)
+					)
+					cameraDistance = 8f * density
+				}
+				.shadow(
+					elevation = 8.dp,
+					shape = RoundedCornerShape(8.dp),
+					spotColor = Color.White.copy(alpha = 0.25f)
+				)
+				.clickable { onItemClick(it[pageIndex].id) },
+		) {
+
 			Box(
 				modifier = Modifier
 					.height(150.dp),
 			) {
 				AsyncImage(
 					modifier = Modifier
-                        .fillMaxSize()
-                        .background(DarkGrey),
+						.fillMaxSize()
+						.background(DarkGrey),
 					model = ImageRequest.Builder(LocalContext.current)
-						.data(it[pageIndex]?.imageUrl)
+						.data(it[pageIndex].imageUrl)
 						.crossfade(true)
 						.build(),
 					contentDescription = stringResource(R.string.item_grid_image),
@@ -211,10 +217,10 @@ fun HorizontalPagerItem(
 				)
 				Surface(
 					modifier = Modifier
-                        .height(18.dp)
-                        .width(32.dp)
-                        .align(Alignment.TopEnd)
-                        .clip(RoundedCornerShape(2.dp)),
+						.height(18.dp)
+						.width(32.dp)
+						.align(Alignment.TopEnd)
+						.clip(RoundedCornerShape(2.dp)),
 					color = ForestGreen10Dark,
 				) {
 					Text(
@@ -227,17 +233,17 @@ fun HorizontalPagerItem(
 				}
 				Surface(
 					modifier = Modifier
-                        .align(Alignment.BottomStart)
-                        .fillMaxHeight(0.2f)
-                        .fillMaxWidth(),
+						.align(Alignment.BottomStart)
+						.fillMaxHeight(0.2f)
+						.fillMaxWidth(),
 					tonalElevation = 0.dp,
 					color = Color.Black.copy(alpha = ContentAlpha.medium),
 				) {
 					Text(
 						modifier = Modifier
-                            .padding
-                                (horizontal = 5.dp)
-                            .wrapContentHeight(align = Alignment.CenterVertically),
+							.padding
+								(horizontal = 5.dp)
+							.wrapContentHeight(align = Alignment.CenterVertically),
 						text = it[pageIndex]?.name.toString(),
 						maxLines = 1,
 						overflow = TextOverflow.Ellipsis,
@@ -264,6 +270,7 @@ fun PreviewHorizontalPagerItem() {
 		pageIndex = 0,
 		size = 10,
 		contentScale = ContentScale.Crop,
+		onItemClick = {},
 	)
 }
 
@@ -271,7 +278,7 @@ fun PreviewHorizontalPagerItem() {
 @Preview("RectangleSectionHeader")
 fun PreviewRectangleSectionHeader() {
 	ValheimVikiAppTheme {
-		val pagerState = rememberPagerState(pageCount = {
+		rememberPagerState(pageCount = {
 			10
 		})
 
@@ -285,7 +292,8 @@ fun PreviewRectangleSectionHeader() {
 		val creatureList = FakeData.generateFakeCreatures()
 		HorizontalPagerSection(
 			list = creatureList,
-			data = horizontalPagerData
+			data = horizontalPagerData,
+			onItemClick = { _ -> {} },
 		)
 	}
 }

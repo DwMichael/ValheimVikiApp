@@ -259,16 +259,16 @@ fun ValheimNavGraph(
 
 	NavHost(
 		navController = valheimVikiNavController,
-		startDestination = Screen.Splash,
+		startDestination = TopLevelDestination.Splash,
 	) {
-		composable<Screen.Splash> {
+		composable<TopLevelDestination.Splash> {
 			SplashScreen(valheimVikiNavController)
 		}
-		composable<Screen.Welcome> {
+		composable<TopLevelDestination.Welcome> {
 			WelcomeScreen(valheimVikiNavController)
 		}
 
-		composable<Screen.BiomeList> {
+		composable<ListDestination.WorldDestinations.BiomeList> {
 			BiomeScreen(
 				modifier = Modifier.padding(10.dp),
 				onItemClick = { id ->
@@ -276,7 +276,7 @@ fun ValheimNavGraph(
 					if (currentTime - lastClickTime.longValue > clickDebounceMillis) {
 						lastClickTime.longValue = currentTime
 						valheimVikiNavController.navigate(
-							Screen.BiomeDetail(biomeId = id)
+							WorldDetailDestination.BiomeDetail(biomeId = id)
 						) {
 							launchSingleTop = true
 						}
@@ -604,6 +604,12 @@ fun ValheimNavGraph(
 			val animatedContentScope = this
 			BiomeDetailScreen(
 				onBack = { valheimVikiNavController.popBackStack() },
+				onItemClick ={ itemId:String ->
+					valheimVikiNavController.navigate(
+						Screen.BuildingMaterialDetail(buildingMaterialId = buildingMaterialId)
+					)
+
+				} ,
 				animatedVisibilityScope = animatedContentScope
 			)
 		}
