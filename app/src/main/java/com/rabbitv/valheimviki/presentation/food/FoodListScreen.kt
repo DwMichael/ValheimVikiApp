@@ -42,8 +42,8 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun FoodListScreen(
-	onItemClick: (String, FoodSubCategory) -> Unit,
 	modifier: Modifier, paddingValues: PaddingValues,
+	onItemClick: (String, FoodSubCategory) -> Unit,
 	viewModel: FoodListViewModel = hiltViewModel()
 ) {
 	val icons: List<ImageVector> = listOf(

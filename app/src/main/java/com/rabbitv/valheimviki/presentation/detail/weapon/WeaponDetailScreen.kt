@@ -27,6 +27,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
+import com.rabbitv.valheimviki.navigation.BuildingDetailDestination
+import com.rabbitv.valheimviki.navigation.DetailDestination
+import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
@@ -47,12 +50,14 @@ import com.rabbitv.valheimviki.utils.mapUpgradeInfoToGridList
 @Composable
 fun WeaponDetailScreen(
 	onBack: () -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	viewModel: WeaponDetailViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
 	WeaponDetailContent(
 		onBack = onBack,
+		onItemClick = onItemClick,
 		uiState = uiState
 	)
 }
@@ -60,6 +65,7 @@ fun WeaponDetailScreen(
 @Composable
 fun WeaponDetailContent(
 	onBack: () -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	uiState: WeaponUiState
 ) {
 	val isExpandable = remember { mutableStateOf(false) }
@@ -123,7 +129,11 @@ fun WeaponDetailContent(
 								horizontal = BODY_CONTENT_PADDING.dp,
 								vertical = 8.dp
 							),
-							onItemClick = {_,_->{}},
+							onItemClick = { clickedItemId, subCategory ->
+								val destination =
+									NavigationHelper.routeToMaterial(subCategory, clickedItemId)
+								onItemClick(destination)
+							},
 							level = levelIndex,
 							upgradeStats = upgradeStats,
 							materialsForUpgrade = uiState.materials,
@@ -133,7 +143,12 @@ fun WeaponDetailContent(
 					uiState.craftingObjects?.let { craftingStation ->
 						TridentsDividedRow()
 						CardImageWithTopLabel(
-							onClickedItem = {},
+							onClickedItem ={
+								val destination = BuildingDetailDestination.CraftingObjectDetail(
+									craftingObjectId = craftingStation.id
+								)
+								onItemClick(destination)
+							},
 							itemData = craftingStation,
 							subTitle = "Crafting Station Needed to Make This Item",
 							contentScale = ContentScale.FillBounds,
@@ -160,6 +175,7 @@ private fun PreviewWeaponDetailScreen() {
 	ValheimVikiAppTheme {
 		WeaponDetailContent(
 			onBack = {},
+			onItemClick = {},
 			uiState = WeaponUiState(
 				weapon = fakeWeaponList[0],
 				materials = emptyList(),

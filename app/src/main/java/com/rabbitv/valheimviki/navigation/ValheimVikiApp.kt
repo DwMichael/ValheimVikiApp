@@ -674,10 +674,13 @@ fun ValheimNavGraph(
 		composable<ConsumableDetailDestination.FoodDetail> { backStackEntry ->
 			val args = backStackEntry.toRoute<ConsumableDetailDestination.FoodDetail>()
 			FoodDetailScreen(
-				category = args.category,
 				onBack = {
 					valheimVikiNavController.popBackStack()
 				},
+				onItemClick = { destination ->
+					valheimVikiNavController.navigate(destination)
+				},
+				category = args.category,
 			)
 		}
 
@@ -702,6 +705,9 @@ fun ValheimNavGraph(
 			WeaponDetailScreen(
 				onBack = {
 					valheimVikiNavController.popBackStack()
+				},
+				onItemClick = { destination ->
+					valheimVikiNavController.navigate(destination)
 				},
 			)
 		}

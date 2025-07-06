@@ -1,6 +1,7 @@
 package com.rabbitv.valheimviki.presentation.components.grid.grid_item
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,7 +30,13 @@ import com.rabbitv.valheimviki.ui.theme.LightDark
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 
 @Composable
-fun CustomItemCard(fillWidth: Float = 1.0f, imageUrl: String, name: String, quantity: Int?) {
+fun CustomItemCard(
+	onItemClick: () -> Unit = {},
+	fillWidth: Float = 1.0f,
+	imageUrl: String,
+	name: String,
+	quantity: Int?
+) {
 
 	Card(
 		modifier = Modifier
@@ -41,7 +48,8 @@ fun CustomItemCard(fillWidth: Float = 1.0f, imageUrl: String, name: String, quan
 				clip = false,
 				ambientColor = Color.White.copy(alpha = 0.1f),
 				spotColor = Color.White.copy(alpha = 0.25f)
-			),
+			)
+			.clickable { onItemClick() },
 		colors = CardDefaults.cardColors(containerColor = LightDark),
 		border = BorderStroke(2.dp, DarkWood)
 	) {
