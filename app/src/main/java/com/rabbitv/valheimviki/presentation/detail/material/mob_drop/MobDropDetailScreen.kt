@@ -112,7 +112,6 @@ fun MobDropDetailContent(
 				.padding(innerPadding)
 		) {
 			uiState.material?.let { material ->
-				Log.e("ID", "ID: ${material.id}")
 				Column(
 					modifier = Modifier
 						.fillMaxSize()
