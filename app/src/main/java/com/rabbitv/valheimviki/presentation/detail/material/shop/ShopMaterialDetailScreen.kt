@@ -63,10 +63,7 @@ fun ShopMaterialDetailContent(
 	uiState: ShopUiState,
 	onBack: () -> Unit,
 ) {
-
 	val scrollState = rememberScrollState()
-	val previousScrollValue = remember { mutableIntStateOf(0) }
-
 	val isExpandable = remember { mutableStateOf(false) }
 
 	BgImage()
@@ -108,9 +105,16 @@ fun ShopMaterialDetailContent(
 							boxPadding = BODY_CONTENT_PADDING.dp,
 							isExpanded = isExpandable
 						)
-
 					}
-
+					material.effect?.let {
+						TridentsDividedRow("Effect")
+						Text(
+							it,
+							modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+							style = MaterialTheme.typography.bodyLarge,
+							textAlign = TextAlign.Center
+						)
+					}
 					uiState.npc?.let { npc ->
 						TridentsDividedRow()
 						CardImageWithTopLabel(
