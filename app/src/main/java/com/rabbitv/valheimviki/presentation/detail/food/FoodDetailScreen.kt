@@ -291,6 +291,7 @@ fun FoodDetailContent(
 					uiState.craftingCookingStation?.let { craftingStation ->
 						SlavicDivider()
 						CardImageWithTopLabel(
+							onClickedItem = {},
 							itemData = craftingStation,
 							subTitle = if (category == FoodSubCategory.UNCOOKED_FOOD) "Cook at Station to Consume" else "Requires Cooking Station",
 							contentScale = ContentScale.Fit,

@@ -260,6 +260,7 @@ fun SeedMaterialDetailContent(
 					uiState.npc?.let { npc ->
 						TridentsDividedRow()
 						CardImageWithTopLabel(
+							onClickedItem = {},
 							itemData = npc,
 							subTitle = "NPC from whom you can buy those seeds",
 							contentScale = ContentScale.Crop,

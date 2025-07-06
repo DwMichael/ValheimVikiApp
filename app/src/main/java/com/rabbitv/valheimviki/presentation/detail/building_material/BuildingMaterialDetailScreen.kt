@@ -155,10 +155,12 @@ fun BuildingMaterialDetailContent(
 						SlavicDivider()
 						uiState.craftingStation.forEach { craftingStation ->
 							CardImageWithTopLabel(
+								onClickedItem = {},
 								itemData = craftingStation,
 								subTitle = "Crafting station that must be near the construction",
 								contentScale = ContentScale.Fit,
-							)
+
+								)
 							Spacer(modifier = Modifier.padding(BODY_CONTENT_PADDING.dp))
 						}
 					}

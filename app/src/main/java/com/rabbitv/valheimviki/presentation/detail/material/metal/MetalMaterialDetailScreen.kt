@@ -242,6 +242,7 @@ fun MetalMaterialDetailContent(
 						TridentsDividedRow()
 						uiState.craftingStations.forEach { craftingStation ->
 							CardImageWithTopLabel(
+								onClickedItem = {},
 								itemData = craftingStation,
 								subTitle = "Crafting station where you can produce this item ",
 								contentScale = ContentScale.Fit,

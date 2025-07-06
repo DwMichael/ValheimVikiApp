@@ -194,6 +194,7 @@ fun ToolDetailContent(
 									horizontal = BODY_CONTENT_PADDING.dp,
 									vertical = 8.dp
 								),
+								onItemClick = {_,_->{}},
 								level = levelIndex,
 								upgradeStats = upgradeStats,
 								materialsForUpgrade = uiState.relatedMaterials,
@@ -207,6 +208,7 @@ fun ToolDetailContent(
 							SlavicDivider()
 						}
 						CardImageWithTopLabel(
+							onClickedItem = {},
 							itemData = uiState.relatedCraftingStation,
 							subTitle = "Requires crafting station",
 							contentScale = ContentScale.Fit,
@@ -243,6 +245,7 @@ fun ToolDetailContent(
 					if (uiState.relatedNpc != null) {
 						SlavicDivider()
 						CardImageWithTopLabel(
+							onClickedItem = {},
 							itemData = uiState.relatedNpc,
 							subTitle = "Npc that sell this item",
 							contentScale = ContentScale.Crop,

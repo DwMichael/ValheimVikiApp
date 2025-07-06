@@ -123,6 +123,7 @@ fun WeaponDetailContent(
 								horizontal = BODY_CONTENT_PADDING.dp,
 								vertical = 8.dp
 							),
+							onItemClick = {_,_->{}},
 							level = levelIndex,
 							upgradeStats = upgradeStats,
 							materialsForUpgrade = uiState.materials,
@@ -132,6 +133,7 @@ fun WeaponDetailContent(
 					uiState.craftingObjects?.let { craftingStation ->
 						TridentsDividedRow()
 						CardImageWithTopLabel(
+							onClickedItem = {},
 							itemData = craftingStation,
 							subTitle = "Crafting Station Needed to Make This Item",
 							contentScale = ContentScale.FillBounds,

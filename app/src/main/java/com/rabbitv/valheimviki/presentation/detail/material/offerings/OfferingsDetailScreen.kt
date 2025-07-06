@@ -185,6 +185,7 @@ fun OfferingsDetailContent(
 						TridentsDividedRow()
 						uiState.craftingStation.forEach { craftingStation ->
 							CardImageWithTopLabel(
+								onClickedItem = {},
 								itemData = craftingStation,
 								subTitle = "Crafting station where you can produce this item ",
 								contentScale = ContentScale.Fit,

@@ -38,6 +38,9 @@ import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.armor.Armor
 import com.rabbitv.valheimviki.domain.model.armor.UpgradeArmorInfo
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
+import com.rabbitv.valheimviki.navigation.BuildingDetailDestination
+import com.rabbitv.valheimviki.navigation.DetailDestination
+import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
@@ -60,12 +63,14 @@ import com.rabbitv.valheimviki.utils.mapUpgradeArmorInfoToGridList
 @Composable
 fun ArmorDetailScreen(
 	onBack: () -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	viewModel: ArmorDetailViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
 	ArmorDetailContent(
 		onBack = onBack,
+		onItemClick = onItemClick,
 		uiState = uiState
 	)
 }
@@ -73,6 +78,7 @@ fun ArmorDetailScreen(
 @Composable
 fun ArmorDetailContent(
 	onBack: () -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	uiState: ArmorUiState
 ) {
 
@@ -144,6 +150,11 @@ fun ArmorDetailContent(
 									horizontal = BODY_CONTENT_PADDING.dp,
 									vertical = 8.dp
 								),
+								onItemClick = { clickedItemId, subCategory ->
+									val destination =
+										NavigationHelper.routeToMaterial(subCategory, clickedItemId)
+									onItemClick(destination)
+								},
 								level = levelIndex,
 								upgradeStats = upgradeStats,
 								materialsForUpgrade = uiState.materials,
@@ -151,11 +162,15 @@ fun ArmorDetailContent(
 						}
 						SlavicDivider()
 					} else if (uiState.materials.isNotEmpty()) {
-
 						RequiredMaterialColumn(
 							level = 0,
 							foodForUpgrade = emptyList(),
-							materialsForUpgrade = uiState.materials
+							materialsForUpgrade = uiState.materials,
+							onItemClick = { clickedItemId, subCategory ->
+								val destination =
+									NavigationHelper.routeToMaterial(subCategory, clickedItemId)
+								onItemClick(destination)
+							},
 						)
 
 					}
@@ -179,12 +194,17 @@ fun ArmorDetailContent(
 					uiState.craftingObjects?.let { craftingStation ->
 						TridentsDividedRow()
 						CardImageWithTopLabel(
+							onClickedItem = {
+								val destination = BuildingDetailDestination.CraftingObjectDetail(
+									craftingObjectId = craftingStation.id
+								)
+								onItemClick(destination)
+							},
 							itemData = craftingStation,
 							subTitle = "Crafting Station Needed to Make This Item",
 							contentScale = ContentScale.Fit,
 						)
 					}
-
 
 
 				}
@@ -265,6 +285,7 @@ private fun PreviewArmorDetailScreen() {
 	ValheimVikiAppTheme {
 		ArmorDetailContent(
 			onBack = {},
+			onItemClick = {},
 			uiState = ArmorUiState(
 				armor = testArmor,
 				materials = emptyList(),

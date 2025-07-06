@@ -123,6 +123,7 @@ fun CraftedMaterialDetailContent(
 					if (uiState.requiredCraftingStation.isNotEmpty()) {
 						uiState.requiredCraftingStation.forEach { craftingStation ->
 							CardImageWithTopLabel(
+								onClickedItem = {},
 								itemData = craftingStation,
 								subTitle = "Crafting station where you can produce this item ",
 								contentScale = ContentScale.Fit,

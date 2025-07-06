@@ -118,6 +118,7 @@ fun ShopMaterialDetailContent(
 					uiState.npc?.let { npc ->
 						TridentsDividedRow()
 						CardImageWithTopLabel(
+							onClickedItem = {},
 							itemData = npc,
 							subTitle = "NPC whom you can sell this item",
 							contentScale = ContentScale.FillBounds,

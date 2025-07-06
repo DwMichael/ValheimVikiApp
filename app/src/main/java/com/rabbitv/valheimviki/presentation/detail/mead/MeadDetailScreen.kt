@@ -266,6 +266,7 @@ fun MeadDetailContent(
 							SlavicDivider()
 						}
 						CardImageWithTopLabel(
+							onClickedItem = {},
 							itemData = uiState.craftingCookingStation,
 							subTitle = if (category == MeadSubCategory.MEAD_BASE) "Requires cooking station" else "Requires fermenting station",
 							contentScale = ContentScale.Fit,
