@@ -2,6 +2,7 @@ package com.rabbitv.valheimviki.presentation.detail.creature.npc
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -62,6 +63,10 @@ import com.rabbitv.valheimviki.domain.model.creature.npc.NPC
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
 import com.rabbitv.valheimviki.domain.repository.ItemData
+import com.rabbitv.valheimviki.navigation.DetailDestination
+import com.rabbitv.valheimviki.navigation.EquipmentDetailDestination
+import com.rabbitv.valheimviki.navigation.NavigationHelper
+import com.rabbitv.valheimviki.navigation.WorldDetailDestination
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
@@ -82,13 +87,15 @@ import com.rabbitv.valheimviki.utils.valid
 @Composable
 fun NpcDetailScreen(
 	onBack: () -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	viewModel: NpcDetailScreenViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
 	NpcDetailContent(
+		onBack = onBack,
+		onItemClick = onItemClick,
 		uiState = uiState,
-		onBack = onBack
 	)
 
 }
@@ -97,6 +104,7 @@ fun NpcDetailScreen(
 @Composable
 fun NpcDetailContent(
 	onBack: () -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	uiState: NpcDetailUiState,
 ) {
 	val isExpandable = remember { mutableStateOf(false) }
@@ -162,7 +170,13 @@ fun NpcDetailContent(
 						CardWithOverlayLabel(
 							painter = rememberAsyncImagePainter(uiState.biome.imageUrl),
 							content = {
-								Row {
+								Row(
+									modifier = Modifier.clickable {
+										val destination =
+											WorldDetailDestination.BiomeDetail(biomeId = uiState.biome.id)
+										onItemClick(destination)
+									}
+								) {
 									Box(
 										modifier = Modifier.fillMaxHeight()
 									) {
@@ -227,8 +241,9 @@ fun NpcDetailContent(
 						SlavicDivider()
 						TridentsDividedRow(text = "QUESTS")
 						HildirQuestSection(
+							onItemClick = onItemClick,
 							chestsLocations = uiState.chestsLocation,
-							chestList = uiState.hildirChests
+							chestList = uiState.hildirChests,
 						)
 					}
 					if (uiState.shopItems.isNotEmpty()) {
@@ -255,7 +270,8 @@ fun NpcDetailContent(
 							)
 						}
 						ShopItemsTable(
-							uiState.shopItems,
+							onItemClick = onItemClick,
+							itemList = uiState.shopItems,
 							headers = headersShopTable,
 							modifier = sideBorder,
 						)
@@ -282,7 +298,8 @@ fun NpcDetailContent(
 							)
 						}
 						SellItemsTable(
-							uiState.shopSellItems,
+							onItemClick = onItemClick,
+							itemList = uiState.shopSellItems,
 							headers = headersSellTable,
 							modifier = sideBorder
 						)
@@ -304,6 +321,7 @@ fun NpcDetailContent(
 
 @Composable
 fun HildirQuestSection(
+	onItemClick: (DetailDestination) -> Unit,
 	chestsLocations: List<PointOfInterest>,
 	chestList: List<Material>,
 ) {
@@ -328,7 +346,14 @@ fun HildirQuestSection(
 				.horizontalScroll(rememberScrollState())
 		) {
 			chestsLocations.forEach { pointOfInterest ->
-				CardItemData(pointOfInterest)
+				CardItemData(
+					onItemClick = {
+						val destination =
+							WorldDetailDestination.PointOfInterestDetail(pointOfInterestId = pointOfInterest.id)
+						onItemClick(destination)
+					},
+					pointOfInterest = pointOfInterest
+				)
 			}
 		}
 		Spacer(modifier = Modifier.padding(10.dp))
@@ -360,8 +385,15 @@ fun HildirQuestSection(
 				.wrapContentHeight()
 				.horizontalScroll(rememberScrollState())
 		) {
-			chestList.forEach { chests ->
-				CardItemData(chests)
+			chestList.forEach { chest ->
+				CardItemData(
+					onItemClick = {
+						val destination =
+							NavigationHelper.routeToMaterial(chest.subCategory, chest.id)
+						onItemClick(destination)
+					},
+					chest
+				)
 			}
 		}
 		Spacer(modifier = Modifier.padding(10.dp))
@@ -381,6 +413,7 @@ fun HildirQuestSection(
 
 @Composable
 fun CardItemData(
+	onItemClick: () -> Unit,
 	pointOfInterest: ItemData
 ) {
 	Card(
@@ -392,6 +425,7 @@ fun CardItemData(
 				spotColor = Color.White.copy(alpha = 0.25f)
 			)
 			.padding(8.dp)
+			.clickable { onItemClick() }
 	) {
 		Box(
 			modifier = Modifier.wrapContentHeight()
@@ -435,6 +469,7 @@ fun CardItemData(
 
 @Composable
 fun SellItemsTable(
+	onItemClick: (DetailDestination) -> Unit,
 	itemList: List<Material>,
 	headers: List<String>,
 	modifier: Modifier
@@ -452,7 +487,11 @@ fun SellItemsTable(
 					.fillMaxWidth()
 					.height(IntrinsicSize.Min)
 					.then(modifier)
-					.padding(8.dp),
+					.padding(8.dp)
+					.clickable {
+						val destination = NavigationHelper.routeToMaterial(it.subCategory, it.id)
+						onItemClick(destination)
+					},
 				verticalAlignment = Alignment.CenterVertically,
 			) {
 				Text(
@@ -501,6 +540,7 @@ fun SellItemsTable(
 
 @Composable
 fun ShopItemsTable(
+	onItemClick: (destination: DetailDestination) -> Unit,
 	itemList: List<Material>,
 	headers: List<String>,
 	modifier: Modifier
@@ -523,7 +563,11 @@ fun ShopItemsTable(
 			) {
 				Row(
 					modifier = Modifier
-						.fillMaxWidth(),
+						.fillMaxWidth()
+						.clickable {
+							val destination = NavigationHelper.routeToMaterial(it.subCategory, it.id)
+							onItemClick(destination)
+						},
 					verticalAlignment = Alignment.CenterVertically,
 				) {
 					Text(
@@ -649,7 +693,8 @@ fun PreviewHildirQuestSection() {
 		val materials = FakeData.generateFakeMaterials()
 		HildirQuestSection(
 			chestsLocations = pointsOfInterest,
-			chestList = materials
+			chestList = materials,
+			onItemClick = {}
 		)
 	}
 }
@@ -688,9 +733,11 @@ fun PreviewSellItemsTable() {
 	}
 	ValheimVikiAppTheme {
 		SellItemsTable(
+
 			itemList = fakeMaterialList,
 			headers = headersSellTable,
 			modifier = sideBorder,
+			onItemClick = {},
 		)
 	}
 }
@@ -728,6 +775,7 @@ fun PreviewShopItemsTable() {
 	}
 	ValheimVikiAppTheme {
 		ShopItemsTable(
+			onItemClick = {},
 			itemList = fakeMaterialList,
 			headers = headers,
 			modifier = sideBorder,
@@ -754,6 +802,7 @@ fun PreviewNPCPage() {
 	ValheimVikiAppTheme {
 		NpcDetailContent(
 			onBack = {},
+			onItemClick = {},
 			uiState = fakeNpcDetailUiState
 		)
 	}
@@ -778,6 +827,7 @@ fun PreviewNPCPageSmal() {
 	ValheimVikiAppTheme {
 		NpcDetailContent(
 			onBack = {},
+			onItemClick = {},
 			uiState = NpcDetailUiState(
 				npc = NPC(
 					id = "npc_blacksmith",
