@@ -687,10 +687,14 @@ fun ValheimNavGraph(
 		composable<ConsumableDetailDestination.MeadDetail> { backStackEntry ->
 			val args = backStackEntry.toRoute<ConsumableDetailDestination.MeadDetail>()
 			MeadDetailScreen(
-				category = args.category,
 				onBack = {
 					valheimVikiNavController.popBackStack()
 				},
+				onItemClick = { destination ->
+					valheimVikiNavController.navigate(destination)
+				},
+				category = args.category,
+
 			)
 		}
 		composable<BuildingDetailDestination.CraftingObjectDetail> {

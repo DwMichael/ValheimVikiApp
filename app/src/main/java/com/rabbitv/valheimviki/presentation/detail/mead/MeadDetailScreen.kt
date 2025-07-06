@@ -42,7 +42,10 @@ import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 import com.rabbitv.valheimviki.domain.model.food.Food
 import com.rabbitv.valheimviki.domain.model.mead.Mead
 import com.rabbitv.valheimviki.domain.model.mead.MeadSubCategory
-import com.rabbitv.valheimviki.domain.repository.Droppable
+import com.rabbitv.valheimviki.navigation.BuildingDetailDestination
+import com.rabbitv.valheimviki.navigation.ConsumableDetailDestination
+import com.rabbitv.valheimviki.navigation.DetailDestination
+import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
@@ -70,14 +73,16 @@ import com.rabbitv.valheimviki.utils.FakeData
 @Composable
 fun MeadDetailScreen(
 	onBack: () -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	category: MeadSubCategory,
 	viewModel: MeadDetailViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
 	MeadDetailContent(
-		uiState = uiState,
 		onBack = onBack,
+		onItemClick = onItemClick,
+		uiState = uiState,
 		category = category
 	)
 
@@ -87,8 +92,10 @@ fun MeadDetailScreen(
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun MeadDetailContent(
-	uiState: MeadDetailUiState,
 	onBack: () -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
+	uiState: MeadDetailUiState,
+
 	category: MeadSubCategory
 ) {
 	val isStatInfoExpanded1 = remember { mutableStateOf(false) }
@@ -97,10 +104,6 @@ fun MeadDetailContent(
 	val scrollState = rememberScrollState()
 	val craftingStationPainter = painterResource(R.drawable.food_bg)
 
-	val recipeItems: List<Droppable> =
-		uiState.materialsForRecipe + uiState.foodForRecipe + uiState.meadForRecipe
-
-	val showRecipeSection = recipeItems.isNotEmpty()
 
 	val isExpandable = remember { mutableStateOf(false) }
 	fun shouldShowValue(value: Any?): Boolean {
@@ -155,7 +158,6 @@ fun MeadDetailContent(
 					)
 					SlavicDivider()
 					if (mead.description != null) {
-
 						Box(modifier = Modifier.padding(BODY_CONTENT_PADDING.dp)) {
 							DetailExpandableText(
 								text = mead.description,
@@ -163,7 +165,7 @@ fun MeadDetailContent(
 							)
 						}
 					}
-					if (showRecipeSection) {
+					if (uiState.foodForRecipe.isNotEmpty() || uiState.materialsForRecipe.isNotEmpty() || uiState.meadForRecipe.isNotEmpty()) {
 						TridentsDividedRow()
 						Box(
 							modifier = Modifier
@@ -186,12 +188,54 @@ fun MeadDetailContent(
 
 						Spacer(modifier = Modifier.padding(6.dp))
 						TwoColumnGrid {
-							for (items in recipeItems) {
+							for (item in uiState.materialsForRecipe) {
 								CustomItemCard(
+									onItemClick = {
+										val destination =
+											NavigationHelper.routeToMaterial(
+												item.itemDrop.subCategory,
+												item.itemDrop.id
+											)
+										onItemClick(destination)
+									},
 									fillWidth = CUSTOM_ITEM_CARD_FILL_WIDTH,
-									imageUrl = items.itemDrop.imageUrl,
-									name = items.itemDrop.name,
-									quantity = items.quantityList.firstOrNull()
+									imageUrl = item.itemDrop.imageUrl,
+									name = item.itemDrop.name,
+									quantity = item.quantityList.firstOrNull()
+								)
+							}
+							for (item in uiState.foodForRecipe) {
+								CustomItemCard(
+									onItemClick = {
+										val subCategory =
+											NavigationHelper.stringToFoodSubCategory(item.itemDrop.subCategory)
+										val destination = ConsumableDetailDestination.FoodDetail(
+											item.itemDrop.id,
+											subCategory
+										)
+										onItemClick(destination)
+									},
+									fillWidth = CUSTOM_ITEM_CARD_FILL_WIDTH,
+									imageUrl = item.itemDrop.imageUrl,
+									name = item.itemDrop.name,
+									quantity = item.quantityList.firstOrNull()
+								)
+							}
+							for (item in uiState.meadForRecipe) {
+								CustomItemCard(
+									onItemClick = {
+										val subCategory =
+											NavigationHelper.stringToMeadSubCategory(item.itemDrop.subCategory)
+										val destination = ConsumableDetailDestination.MeadDetail(
+											item.itemDrop.id,
+											subCategory
+										)
+										onItemClick(destination)
+									},
+									fillWidth = CUSTOM_ITEM_CARD_FILL_WIDTH,
+									imageUrl = item.itemDrop.imageUrl,
+									name = item.itemDrop.name,
+									quantity = item.quantityList.firstOrNull()
 								)
 							}
 						}
@@ -262,11 +306,16 @@ fun MeadDetailContent(
 					}
 
 					if (showCraftingStationSection) {
-						if (showStatsSection || showRecipeSection) {
+						if (showStatsSection || (uiState.foodForRecipe.isNotEmpty() || uiState.materialsForRecipe.isNotEmpty() || uiState.meadForRecipe.isNotEmpty())) {
 							SlavicDivider()
 						}
 						CardImageWithTopLabel(
-							onClickedItem = {},
+							onClickedItem ={
+								val destination = BuildingDetailDestination.CraftingObjectDetail(
+									craftingObjectId = uiState.craftingCookingStation.id
+								)
+								onItemClick(destination)
+							},
 							itemData = uiState.craftingCookingStation,
 							subTitle = if (category == MeadSubCategory.MEAD_BASE) "Requires cooking station" else "Requires fermenting station",
 							contentScale = ContentScale.Fit,
@@ -395,6 +444,7 @@ fun PreviewMeadDetailContentCooked() {
 				error = null
 			),
 			onBack = {},
+			onItemClick = {},
 			category = MeadSubCategory.MEAD_BASE,
 		)
 	}
