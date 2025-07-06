@@ -1,6 +1,7 @@
 package com.rabbitv.valheimviki.presentation.detail.creature.components.cards
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -41,6 +42,7 @@ import com.rabbitv.valheimviki.utils.FakeData
 
 @Composable
 fun CardWithOverlayLabel(
+	onClickedItem: () -> Unit = {},
 	painter: Painter,
 	height: Dp = 75.dp,
 	content: @Composable () -> Unit = {},
@@ -48,20 +50,23 @@ fun CardWithOverlayLabel(
 ) {
 	Box(
 		modifier = Modifier
-            .padding(BODY_CONTENT_PADDING.dp)
-            .fillMaxWidth()
-            .height(height)
-            .clip(RoundedCornerShape(12.dp))
-            .background(Color.Transparent)
-            .paint(
-                painter = painter,
-                contentScale = ContentScale.Crop
-            )
+			.padding(BODY_CONTENT_PADDING.dp)
+			.fillMaxWidth()
+			.height(height)
+			.clip(RoundedCornerShape(12.dp))
+			.background(Color.Transparent)
+			.paint(
+				painter = painter,
+				contentScale = ContentScale.Crop
+			)
+			.clickable {
+				onClickedItem()
+			}
 	) {
 		Card(
 			modifier = Modifier
-                .background(Color.Black.copy(alpha = alpha))
-                .fillMaxSize(),
+				.background(Color.Black.copy(alpha = alpha))
+				.fillMaxSize(),
 			colors = CardDefaults.cardColors(
 				containerColor = Color.Transparent
 			),
@@ -79,15 +84,15 @@ fun OverlayLabel(
 ) {
 	Box(
 		modifier = Modifier
-            .clip(
-                RoundedCornerShape(
-                    bottomEnd = DETAIL_ITEM_SHAPE_PADDING,
-                    topStart = DETAIL_ITEM_SHAPE_PADDING
-                )
-            )
-            .background(Color.Black.copy(alpha = 0.4f))
-            .wrapContentHeight(Alignment.Top)
-            .wrapContentWidth(Alignment.Start)
+			.clip(
+				RoundedCornerShape(
+					bottomEnd = DETAIL_ITEM_SHAPE_PADDING,
+					topStart = DETAIL_ITEM_SHAPE_PADDING
+				)
+			)
+			.background(Color.Black.copy(alpha = 0.4f))
+			.wrapContentHeight(Alignment.Top)
+			.wrapContentWidth(Alignment.Start)
 
 	) {
 		Row(

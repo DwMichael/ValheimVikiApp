@@ -51,7 +51,10 @@ import com.composables.icons.lucide.Swords
 import com.composables.icons.lucide.Trophy
 import com.composables.icons.lucide.Unlink
 import com.rabbitv.valheimviki.R
+import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.LocalSharedTransitionScope
+import com.rabbitv.valheimviki.navigation.NavigationHelper
+import com.rabbitv.valheimviki.navigation.WorldDetailDestination
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
@@ -72,6 +75,7 @@ import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 @Composable
 fun MiniBossDetailScreen(
 	onBack: () -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	viewModel: MiniBossDetailScreenViewModel = hiltViewModel(),
 	animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
@@ -81,6 +85,7 @@ fun MiniBossDetailScreen(
 
 	MiniBossContent(
 		onBack = onBack,
+		onItemClick = onItemClick,
 		miniBossUiSate = miniBossUiState,
 		sharedTransitionScope = sharedTransitionScope,
 		animatedVisibilityScope = animatedVisibilityScope
@@ -91,13 +96,18 @@ fun MiniBossDetailScreen(
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun MiniBossContent(
-	miniBossUiSate: MiniBossDetailUiState,
 	onBack: () -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
+	miniBossUiSate: MiniBossDetailUiState,
 	sharedTransitionScope: SharedTransitionScope,
 	animatedVisibilityScope: AnimatedVisibilityScope
 ) {
 	val isRunning by remember { derivedStateOf { animatedVisibilityScope.transition.isRunning } }
 	val scrollState = rememberScrollState()
+	val isStatInfoExpanded = remember {
+		List(5) { mutableStateOf(false) }
+	}
+
 	val dropItemData = HorizontalPagerData(
 		title = "Drop Items",
 		subTitle = "Items that drop from boss after defeating him",
@@ -105,11 +115,7 @@ fun MiniBossContent(
 		iconRotationDegrees = 0f,
 		itemContentScale = ContentScale.Crop,
 	)
-	val isStatInfoExpanded = remember { mutableStateOf(false) }
-	val isStatInfoExpanded1 = remember { mutableStateOf(false) }
-	val isStatInfoExpanded2 = remember { mutableStateOf(false) }
-	val isStatInfoExpanded3 = remember { mutableStateOf(false) }
-	val isStatInfoExpanded4 = remember { mutableStateOf(false) }
+
 	Scaffold(
 		content = { padding ->
 			AnimatedContent(
@@ -179,7 +185,7 @@ fun MiniBossContent(
 								boxPadding = BODY_CONTENT_PADDING.dp
 							)
 							TridentsDividedRow(text = "BOSS DETAIL")
-							miniBossUiSate.primarySpawn?.let {
+							miniBossUiSate.primarySpawn?.let { primarySpawn ->
 								Text(
 									modifier = Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp),
 									text = "PRIMARY SPAWN",
@@ -189,6 +195,13 @@ fun MiniBossContent(
 									overflow = TextOverflow.Visible
 								)
 								CardWithOverlayLabel(
+									onClickedItem = {
+										val destination =
+											WorldDetailDestination.PointOfInterestDetail(
+												pointOfInterestId = primarySpawn.id
+											)
+										onItemClick(destination)
+									},
 									painter = rememberAsyncImagePainter(miniBossUiSate.primarySpawn.imageUrl),
 									content = {
 										Box(
@@ -198,7 +211,7 @@ fun MiniBossContent(
 												.wrapContentWidth(Alignment.CenterHorizontally)
 										) {
 											Text(
-												it.name.uppercase(),
+												primarySpawn.name.uppercase(),
 												style = MaterialTheme.typography.bodyLarge,
 												modifier = Modifier,
 												color = Color.White,
@@ -211,6 +224,18 @@ fun MiniBossContent(
 							if (miniBossUiSate.dropItems.isNotEmpty()) {
 								SlavicDivider()
 								HorizontalPagerSection(
+									onItemClick = { clickedItemId ->
+										val dropItem =
+											miniBossUiSate.dropItems.find { it.id == clickedItemId }
+										dropItem?.let {
+											val destination = NavigationHelper.routeToMaterial(
+												it.subCategory,
+												it.id
+											)
+											onItemClick(destination)
+										}
+
+									},
 									list = miniBossUiSate.dropItems,
 									data = dropItemData
 								)
@@ -239,11 +264,11 @@ fun MiniBossContent(
 									label = "Health",
 									value = miniBossUiSate.miniBoss.baseHP.toString(),
 									expand = {
-										isStatInfoExpanded.value = !isStatInfoExpanded.value
+										isStatInfoExpanded[0].value = !isStatInfoExpanded[0].value
 									},
-									isExpanded = isStatInfoExpanded.value
+									isExpanded = isStatInfoExpanded[0].value
 								)
-								AnimatedVisibility(isStatInfoExpanded.value) {
+								AnimatedVisibility(isStatInfoExpanded[0].value) {
 									Text(
 										text = "The amount of health points this boss have",
 										modifier = Modifier.padding(
@@ -262,11 +287,11 @@ fun MiniBossContent(
 									stringResource(R.string.base_damage),
 									"",
 									expand = {
-										isStatInfoExpanded1.value = !isStatInfoExpanded1.value
+										isStatInfoExpanded[1].value = !isStatInfoExpanded[1].value
 									},
-									isExpanded = isStatInfoExpanded1.value
+									isExpanded = isStatInfoExpanded[1].value
 								)
-								AnimatedVisibility(isStatInfoExpanded1.value) {
+								AnimatedVisibility(isStatInfoExpanded[1].value) {
 									StatColumn(miniBossUiSate.miniBoss.baseDamage)
 								}
 							}
@@ -277,11 +302,11 @@ fun MiniBossContent(
 									stringResource(R.string.weakness),
 									"",
 									expand = {
-										isStatInfoExpanded2.value = !isStatInfoExpanded2.value
+										isStatInfoExpanded[2].value = !isStatInfoExpanded[2].value
 									},
-									isExpanded = isStatInfoExpanded2.value
+									isExpanded = isStatInfoExpanded[2].value
 								)
-								AnimatedVisibility(isStatInfoExpanded2.value) {
+								AnimatedVisibility(isStatInfoExpanded[2].value) {
 									StatColumn(miniBossUiSate.miniBoss.weakness)
 								}
 							}
@@ -292,11 +317,11 @@ fun MiniBossContent(
 									stringResource(R.string.resistance),
 									"",
 									expand = {
-										isStatInfoExpanded3.value = !isStatInfoExpanded3.value
+										isStatInfoExpanded[3].value = !isStatInfoExpanded[3].value
 									},
-									isExpanded = isStatInfoExpanded3.value
+									isExpanded = isStatInfoExpanded[3].value
 								)
-								AnimatedVisibility(isStatInfoExpanded3.value) {
+								AnimatedVisibility(isStatInfoExpanded[3].value) {
 									StatColumn(miniBossUiSate.miniBoss.resistance)
 								}
 							}
@@ -307,11 +332,11 @@ fun MiniBossContent(
 									label = stringResource(R.string.immune),
 									value = "",
 									expand = {
-										isStatInfoExpanded4.value = !isStatInfoExpanded4.value
+										isStatInfoExpanded[4].value = !isStatInfoExpanded[4].value
 									},
-									isExpanded = isStatInfoExpanded4.value
+									isExpanded = isStatInfoExpanded[4].value
 								)
-								AnimatedVisibility(isStatInfoExpanded4.value) {
+								AnimatedVisibility(isStatInfoExpanded[4].value) {
 									StatColumn(miniBossUiSate.miniBoss.collapseImmune)
 								}
 							}

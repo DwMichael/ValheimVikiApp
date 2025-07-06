@@ -633,6 +633,9 @@ fun ValheimNavGraph(
 				onBack = {
 					valheimVikiNavController.popBackStack()
 				},
+				onItemClick = { destination ->
+					valheimVikiNavController.navigate(destination)
+				},
 				animatedVisibilityScope = this@composable,
 			)
 		}
