@@ -644,6 +644,9 @@ fun ValheimNavGraph(
 				onBack = {
 					valheimVikiNavController.popBackStack()
 				},
+				onItemClick = { destination ->
+					valheimVikiNavController.navigate(destination)
+				},
 			)
 		}
 
@@ -652,12 +655,18 @@ fun ValheimNavGraph(
 				onBack = {
 					valheimVikiNavController.popBackStack()
 				},
+				onItemClick = { destination ->
+					valheimVikiNavController.navigate(destination)
+				},
 			)
 		}
 		composable<CreatureDetailDestination.NpcDetail> {
 			NpcDetailScreen(
 				onBack = {
 					valheimVikiNavController.popBackStack()
+				},
+				onItemClick = { destination ->
+					valheimVikiNavController.navigate(destination)
 				},
 			)
 		}
