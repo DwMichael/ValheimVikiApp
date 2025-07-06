@@ -281,6 +281,20 @@ object NavigationHelper {
 	fun foodCategoryToString(category: FoodSubCategory): String = category.toString()
 	fun meadCategoryToString(category: MeadSubCategory): String = category.toString()
 
+	fun stringToFoodSubCategory(category: String): FoodSubCategory =
+		when (category) {
+			"UNCOOKED_FOOD" -> FoodSubCategory.UNCOOKED_FOOD
+			"COOKED_FOOD" -> FoodSubCategory.COOKED_FOOD
+			else -> throw IllegalArgumentException("Unknown category: $category")
+		}
+
+	fun stringToMeadSubCategory(category: String): MeadSubCategory =
+		when (category) {
+			"MEAD_BASE" -> MeadSubCategory.MEAD_BASE
+			"POTION" -> MeadSubCategory.POTION
+			else -> throw IllegalArgumentException("Unknown category: $category")
+		}
+
 	fun routeToCreature(creatureType: String, itemId: String): CreatureDetailDestination {
 		return when (creatureType) {
 			"BOSS" -> CreatureDetailDestination.MainBossDetail(mainBossId = itemId)
