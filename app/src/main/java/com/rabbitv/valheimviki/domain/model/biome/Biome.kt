@@ -11,17 +11,18 @@ import kotlinx.serialization.Serializable
 @Entity(tableName = "biomes")
 @Serializable
 data class Biome(
-    @SerializedName("id")
-    @PrimaryKey(autoGenerate = false)
-    override val id: String,
-    @SerializedName("category")
-    override val category: String,
-    @SerializedName("imageUrl")
-    override val imageUrl: String,
-    @SerializedName("name")
-    override val name: String,
-    @SerializedName("description")
-    val description: String,
-    @SerializedName("order")
-    val order: Int
+	@SerializedName("id")
+	@PrimaryKey(autoGenerate = false)
+	override val id: String,
+	@SerializedName("category")
+	override val category: String,
+	override val subCategory: String? = null,
+	@SerializedName("imageUrl")
+	override val imageUrl: String,
+	@SerializedName("name")
+	override val name: String,
+	@SerializedName("description")
+	val description: String,
+	@SerializedName("order")
+	val order: Int,
 ) : ItemData

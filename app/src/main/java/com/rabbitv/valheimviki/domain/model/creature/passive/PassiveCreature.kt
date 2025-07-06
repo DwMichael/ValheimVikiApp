@@ -6,15 +6,15 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class PassiveCreature(
-    override val id: String,
-    override val category: String,
-    val subCategory: String,
-    override val imageUrl: String,
-    override val name: String,
-    val description: String,
-    val notes: String,
-    val order: Int,
-    val levels: List<LevelCreatureData>,
-    val abilities: String?,
-    val weaknesses: String?,
+	override val id: String,
+	override val category: String,
+	override val subCategory: String,
+	override val imageUrl: String,
+	override val name: String,
+	val description: String,
+	val notes: String,
+	val order: Int,
+	val levels: List<LevelCreatureData>,
+	val abilities: String?,
+	val weaknesses: String?,
 ) : ItemData
