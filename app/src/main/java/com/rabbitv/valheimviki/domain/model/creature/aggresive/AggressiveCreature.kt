@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 data class AggressiveCreature(
 	override val id: String,
 	override val category: String,
-	val subCategory: String,
+	override val subCategory: String,
 	override val imageUrl: String,
 	override val name: String,
 	val description: String,

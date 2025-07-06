@@ -1,6 +1,5 @@
 package com.rabbitv.valheimviki.presentation.detail.creature.aggressive_screen
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -57,6 +56,10 @@ import com.rabbitv.valheimviki.domain.model.food.Food
 import com.rabbitv.valheimviki.domain.model.food.FoodDrop
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.material.MaterialDrop
+import com.rabbitv.valheimviki.navigation.ConsumableDetailDestination
+import com.rabbitv.valheimviki.navigation.DetailDestination
+import com.rabbitv.valheimviki.navigation.NavigationHelper
+import com.rabbitv.valheimviki.navigation.WorldDetailDestination
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
@@ -77,14 +80,16 @@ import kotlinx.coroutines.launch
 @Composable
 fun AggressiveCreatureDetailScreen(
 	onBack: () -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	viewModel: AggressiveCreatureDetailScreenViewModel = hiltViewModel()
 ) {
 
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
 	AggressiveCreatureDetailContent(
-		uiState = uiState,
 		onBack = onBack,
+		onItemClick = onItemClick,
+		uiState = uiState,
 	)
 
 }
@@ -93,6 +98,7 @@ fun AggressiveCreatureDetailScreen(
 @Composable
 fun AggressiveCreatureDetailContent(
 	onBack: () -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	uiState: AggressiveCreatureDetailUiState,
 ) {
 
@@ -163,6 +169,11 @@ fun AggressiveCreatureDetailContent(
 								overflow = TextOverflow.Visible
 							)
 							CardWithOverlayLabel(
+								onClickedItem = {
+									val destination =
+										WorldDetailDestination.BiomeDetail(biomeId = it.id)
+									onItemClick(destination)
+								},
 								painter = rememberAsyncImagePainter(uiState.biome.imageUrl),
 								content = {
 									Box(
@@ -185,6 +196,11 @@ fun AggressiveCreatureDetailContent(
 						if (uiState.materialDrops.isNotEmpty()) {
 							SlavicDivider()
 							DroppedItemsSection(
+								onItemClick = { clickedItemId, subCategory ->
+									val destination =
+										NavigationHelper.routeToMaterial(subCategory, clickedItemId)
+									onItemClick(destination)
+								},
 								list = uiState.materialDrops,
 								starLevel = pageIndex,
 								title = "Drop Items",
@@ -195,6 +211,15 @@ fun AggressiveCreatureDetailContent(
 						if (uiState.foodDrops.isNotEmpty()) {
 							SlavicDivider()
 							DroppedItemsSection(
+								onItemClick = { clickedItemId, subCategory ->
+									val destination = ConsumableDetailDestination.FoodDetail(
+										foodId = clickedItemId,
+										category = NavigationHelper.stringToFoodSubCategory(
+											subCategory
+										)
+									)
+									onItemClick(destination)
+								},
 								list = uiState.foodDrops,
 								icon = Lucide.Beef,
 								starLevel = pageIndex,
@@ -260,20 +285,20 @@ private fun CreatureStatsSection(
 
 	// Base Damage
 	if (creature.baseDamage.isNotBlank() && creature.baseDamage != "null") {
-			StatCard(
-				icon = Lucide.Swords,
-				label = stringResource(R.string.base_damage),
-				value = "",
-				expandedIndex = 1,
-				expandedStates = expandedStates.value,
-				onExpandToggle = { index ->
-					expandedStates.value = expandedStates.value.copyOf().apply {
-						this[index] = !this[index]
-					}
+		StatCard(
+			icon = Lucide.Swords,
+			label = stringResource(R.string.base_damage),
+			value = "",
+			expandedIndex = 1,
+			expandedStates = expandedStates.value,
+			onExpandToggle = { index ->
+				expandedStates.value = expandedStates.value.copyOf().apply {
+					this[index] = !this[index]
 				}
-			) {
-				StatColumn(creature.baseDamage)
 			}
+		) {
+			StatColumn(creature.baseDamage)
+		}
 	}
 
 	// Weakness
@@ -297,43 +322,46 @@ private fun CreatureStatsSection(
 	// Resistance
 	if (!creature.resistance.isNullOrBlank() && creature.resistance != "null") {
 
-			StatCard(
-				icon = Lucide.Grab,
-				label = stringResource(R.string.resistance),
-				value = "",
-				expandedIndex = 3,
-				expandedStates = expandedStates.value,
-				onExpandToggle = { index ->
-					expandedStates.value = expandedStates.value.copyOf().apply {
-						this[index] = !this[index]
-					}
+		StatCard(
+			icon = Lucide.Grab,
+			label = stringResource(R.string.resistance),
+			value = "",
+			expandedIndex = 3,
+			expandedStates = expandedStates.value,
+			onExpandToggle = { index ->
+				expandedStates.value = expandedStates.value.copyOf().apply {
+					this[index] = !this[index]
 				}
-			) {
-				StatColumn(creature.resistance)
 			}
+		) {
+			StatColumn(creature.resistance)
+		}
 
 	}
 
 	// Abilities
 	if (!creature.abilities.isNullOrBlank() && creature.abilities != "null") {
-			StatCard(
-				icon = Lucide.Atom,
-				label = stringResource(R.string.abilities),
-				value = "",
-				expandedIndex = 4,
-				expandedStates = expandedStates.value,
-				onExpandToggle = { index ->
-					expandedStates.value = expandedStates.value.copyOf().apply {
-						this[index] = !this[index]
-					}
+		StatCard(
+			icon = Lucide.Atom,
+			label = stringResource(R.string.abilities),
+			value = "",
+			expandedIndex = 4,
+			expandedStates = expandedStates.value,
+			onExpandToggle = { index ->
+				expandedStates.value = expandedStates.value.copyOf().apply {
+					this[index] = !this[index]
 				}
-			) {
-				Text(
-					modifier = Modifier.padding(start = BODY_CONTENT_PADDING.dp * 2, end = BODY_CONTENT_PADDING.dp),
-					text = creature.abilities,
-					style = MaterialTheme.typography.bodyLarge
-				)
 			}
+		) {
+			Text(
+				modifier = Modifier.padding(
+					start = BODY_CONTENT_PADDING.dp * 2,
+					end = BODY_CONTENT_PADDING.dp
+				),
+				text = creature.abilities,
+				style = MaterialTheme.typography.bodyLarge
+			)
+		}
 
 	}
 }
@@ -516,6 +544,7 @@ fun PreviewCreaturePage() {
 	ValheimVikiAppTheme {
 		AggressiveCreatureDetailContent(
 			onBack = {},
+			onItemClick = {},
 			uiState = exampleUiState
 		)
 	}
