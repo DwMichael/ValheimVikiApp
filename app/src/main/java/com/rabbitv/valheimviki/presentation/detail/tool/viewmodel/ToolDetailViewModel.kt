@@ -17,7 +17,7 @@ import com.rabbitv.valheimviki.domain.use_cases.ore_deposit.OreDepositUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.domain.use_cases.tool.ToolUseCases
 import com.rabbitv.valheimviki.presentation.detail.tool.model.ToolDetailUiState
-import com.rabbitv.valheimviki.utils.Constants.TOOl_KEY
+import com.rabbitv.valheimviki.utils.Constants.TOOL_KEY
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -42,7 +42,7 @@ class ToolDetailViewModel @Inject constructor(
 	private val creatureUseCases: CreatureUseCases,
 	private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-	private val _toolId: String = checkNotNull(savedStateHandle[TOOl_KEY])
+	private val _toolId: String = checkNotNull(savedStateHandle[TOOL_KEY])
 	private val _tool = MutableStateFlow<ItemTool?>(null)
 	private val _relatedCraftingObject = MutableStateFlow<CraftingObject?>(null)
 	private val _relatedOreDeposits = MutableStateFlow<List<OreDeposit>>(emptyList())

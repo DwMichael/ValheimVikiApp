@@ -46,6 +46,9 @@ import com.composables.icons.lucide.Lucide
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.creature.aggresive.AggressiveCreature
 import com.rabbitv.valheimviki.domain.model.creature.aggresive.LevelCreatureData
+import com.rabbitv.valheimviki.navigation.DetailDestination
+import com.rabbitv.valheimviki.navigation.NavigationHelper
+import com.rabbitv.valheimviki.navigation.WorldDetailDestination
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
@@ -66,14 +69,17 @@ import kotlinx.coroutines.launch
 @Composable
 fun PassiveCreatureDetailScreen(
 	onBack: () -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	viewModel: PassiveCreatureDetailScreenViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
 	PassiveCreatureDetailContent(
+		onBack = onBack,
+		onItemClick = onItemClick,
 		uiState = uiState,
-		onBack = onBack
-	)
+
+		)
 
 }
 
@@ -81,6 +87,7 @@ fun PassiveCreatureDetailScreen(
 @Composable
 fun PassiveCreatureDetailContent(
 	onBack: () -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	uiState: PassiveCreatureDetailUiState,
 ) {
 
@@ -113,7 +120,6 @@ fun PassiveCreatureDetailContent(
 						horizontalAlignment = Alignment.Start,
 					) {
 						MainDetailImage(
-
 							imageUrl = passiveCreature.levels[pageIndex].image.toString(),
 							name = passiveCreature.name,
 							textAlign = TextAlign.Center
@@ -154,6 +160,11 @@ fun PassiveCreatureDetailContent(
 								overflow = TextOverflow.Visible
 							)
 							CardWithOverlayLabel(
+								onClickedItem = {
+									val destination =
+										WorldDetailDestination.BiomeDetail(biomeId = it.id)
+									onItemClick(destination)
+								},
 								painter = rememberAsyncImagePainter(uiState.biome.imageUrl),
 								content = {
 									Box(
@@ -180,6 +191,12 @@ fun PassiveCreatureDetailContent(
 								starLevel = pageIndex,
 								title = "Drop Items",
 								subTitle = "Materials that drop from creature after defeating",
+								onItemClick = { clickedItemId, subCategory ->
+									val destination =
+										NavigationHelper.routeToMaterial(subCategory, clickedItemId)
+									onItemClick(destination)
+
+								}
 							)
 						}
 

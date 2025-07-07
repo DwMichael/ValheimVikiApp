@@ -1,5 +1,6 @@
 package com.rabbitv.valheimviki.presentation.detail.creature.components.cards
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -32,6 +33,7 @@ import com.rabbitv.valheimviki.ui.theme.SecondGrey
 
 @Composable
 fun CardWithTrophy(
+    onCardClicked:()->Unit = {},
     forsakenPower: String,
     trophyUrl: String?,
     contentScale: ContentScale = ContentScale.Fit,
@@ -40,7 +42,8 @@ fun CardWithTrophy(
     Card(
         modifier = Modifier
             .height(height)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clickable{onCardClicked()},
         colors = CardDefaults.cardColors(
             containerColor = SecondGrey
         ),

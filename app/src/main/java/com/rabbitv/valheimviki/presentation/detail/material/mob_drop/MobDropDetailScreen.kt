@@ -2,7 +2,6 @@ package com.rabbitv.valheimviki.presentation.detail.material.mob_drop
 
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,7 +14,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -35,6 +33,9 @@ import com.composables.icons.lucide.PawPrint
 import com.rabbitv.valheimviki.data.mappers.creatures.toAggressiveCreatures
 import com.rabbitv.valheimviki.data.mappers.creatures.toPassiveCreatures
 import com.rabbitv.valheimviki.domain.model.creature.Creature
+import com.rabbitv.valheimviki.navigation.DetailDestination
+import com.rabbitv.valheimviki.navigation.NavigationHelper
+import com.rabbitv.valheimviki.navigation.WorldDetailDestination
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
@@ -54,13 +55,15 @@ import com.rabbitv.valheimviki.utils.FakeData
 @Composable
 fun MobDropDetailScreen(
 	onBack: () -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	viewModel: MobDropDetailViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
 	MobDropDetailContent(
-		uiState = uiState,
 		onBack = onBack,
+		onItemClick = onItemClick,
+		uiState = uiState,
 	)
 
 }
@@ -69,12 +72,13 @@ fun MobDropDetailScreen(
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun MobDropDetailContent(
-	uiState: MobDropUiState,
 	onBack: () -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
+	uiState: MobDropUiState,
 ) {
 
 	val scrollState = rememberScrollState()
-	val previousScrollValue = remember { mutableIntStateOf(0) }
+	remember { mutableIntStateOf(0) }
 
 	val isExpandable = remember { mutableStateOf(false) }
 
@@ -112,7 +116,6 @@ fun MobDropDetailContent(
 				.padding(innerPadding)
 		) {
 			uiState.material?.let { material ->
-				Log.e("ID", "ID: ${material.id}")
 				Column(
 					modifier = Modifier
 						.fillMaxSize()
@@ -147,6 +150,17 @@ fun MobDropDetailContent(
 						HorizontalPagerSection(
 							list = uiState.aggressive,
 							data = aggressiveCreatureData,
+							onItemClick = { clickedItemId ->
+								val creature =
+									uiState.aggressive.find { it.id == clickedItemId }
+								creature?.let {
+									val destination = NavigationHelper.routeToCreature(
+										it.subCategory,
+										it.id
+									)
+									onItemClick(destination)
+								}
+							},
 						)
 					}
 					if (uiState.passive.isNotEmpty()) {
@@ -154,6 +168,17 @@ fun MobDropDetailContent(
 						HorizontalPagerSection(
 							list = uiState.passive,
 							data = passiveCreatureData,
+							onItemClick = { clickedItemId ->
+								val creature =
+									uiState.passive.find { it.id == clickedItemId }
+								creature?.let {
+									val destination = NavigationHelper.routeToCreature(
+										it.subCategory,
+										it.id
+									)
+									onItemClick(destination)
+								}
+							},
 						)
 					}
 					if (uiState.pointsOfInterest.isNotEmpty()) {
@@ -161,6 +186,11 @@ fun MobDropDetailContent(
 						HorizontalPagerSection(
 							list = uiState.pointsOfInterest,
 							data = pointsOfInterestData,
+							onItemClick = { clickedItemId ->
+								val destination =
+									WorldDetailDestination.PointOfInterestDetail(pointOfInterestId = clickedItemId)
+								onItemClick(destination)
+							}
 						)
 					}
 				}
@@ -208,6 +238,7 @@ fun PreviewToolDetailContentCooked() {
 				error = null
 			),
 			onBack = {},
+			onItemClick = {}
 		)
 	}
 

@@ -18,7 +18,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -40,6 +39,10 @@ import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 import com.rabbitv.valheimviki.domain.model.item_tool.ItemTool
 import com.rabbitv.valheimviki.domain.model.material.MaterialUpgrade
+import com.rabbitv.valheimviki.navigation.BuildingDetailDestination
+import com.rabbitv.valheimviki.navigation.DetailDestination
+import com.rabbitv.valheimviki.navigation.NavigationHelper
+import com.rabbitv.valheimviki.navigation.WorldDetailDestination
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
@@ -67,13 +70,15 @@ import com.rabbitv.valheimviki.utils.mapUpgradeToolsInfoToGridList
 @Composable
 fun ToolDetailScreen(
 	onBack: () -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	viewModel: ToolDetailViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
 	ToolDetailContent(
-		uiState = uiState,
 		onBack = onBack,
+		onItemClick = onItemClick,
+		uiState = uiState,
 	)
 
 }
@@ -82,9 +87,11 @@ fun ToolDetailScreen(
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun ToolDetailContent(
-	uiState: ToolDetailUiState,
 	onBack: () -> Unit,
-) {
+	onItemClick: (destination: DetailDestination) -> Unit,
+	uiState: ToolDetailUiState,
+
+	) {
 
 	val oreDepositData = HorizontalPagerData(
 		title = "Ore Deposits",
@@ -94,12 +101,8 @@ fun ToolDetailContent(
 		itemContentScale = ContentScale.Crop
 	)
 	val scrollState = rememberScrollState()
-	remember { mutableIntStateOf(0) }
 	val craftingStationPainter = painterResource(R.drawable.food_bg)
-
 	val isExpandable = remember { mutableStateOf(false) }
-
-
 
 	BgImage()
 	Scaffold(
@@ -133,14 +136,11 @@ fun ToolDetailContent(
 						textAlign = TextAlign.Center
 					)
 					SlavicDivider()
-
 					DetailExpandableText(
 						text = tool.description,
 						boxPadding = BODY_CONTENT_PADDING.dp,
 						isExpanded = isExpandable
 					)
-
-
 					if (uiState.relatedMaterials.isNotEmpty() && uiState.tool.upgradeInfoList.isNullOrEmpty()) {
 						SlavicDivider()
 						Box(
@@ -166,6 +166,14 @@ fun ToolDetailContent(
 						TwoColumnGrid {
 							for (item in uiState.relatedMaterials) {
 								CustomItemCard(
+									onItemClick = {
+										val destination =
+											NavigationHelper.routeToMaterial(
+												item.material.subCategory,
+												item.material.id
+											)
+										onItemClick(destination)
+									},
 									fillWidth = CUSTOM_ITEM_CARD_FILL_WIDTH,
 									imageUrl = item.material.imageUrl,
 									name = item.material.name,
@@ -194,6 +202,11 @@ fun ToolDetailContent(
 									horizontal = BODY_CONTENT_PADDING.dp,
 									vertical = 8.dp
 								),
+								onItemClick = { clickedItemId, subCategory ->
+									val destination =
+										NavigationHelper.routeToMaterial(subCategory, clickedItemId)
+									onItemClick(destination)
+								},
 								level = levelIndex,
 								upgradeStats = upgradeStats,
 								materialsForUpgrade = uiState.relatedMaterials,
@@ -207,6 +220,12 @@ fun ToolDetailContent(
 							SlavicDivider()
 						}
 						CardImageWithTopLabel(
+							onClickedItem = {
+								val destination = BuildingDetailDestination.CraftingObjectDetail(
+									craftingObjectId = uiState.relatedCraftingStation.id
+								)
+								onItemClick(destination)
+							},
 							itemData = uiState.relatedCraftingStation,
 							subTitle = "Requires crafting station",
 							contentScale = ContentScale.Fit,
@@ -238,11 +257,25 @@ fun ToolDetailContent(
 						HorizontalPagerSection(
 							list = uiState.relatedOreDeposits,
 							data = oreDepositData,
+							onItemClick = { clickedItemId ->
+								val destination =
+									WorldDetailDestination.OreDepositDetail(oreDepositId = clickedItemId)
+								onItemClick(destination)
+							},
 						)
 					}
 					if (uiState.relatedNpc != null) {
 						SlavicDivider()
 						CardImageWithTopLabel(
+							onClickedItem = {
+								uiState.relatedNpc.subCategory?.let {
+									val destination = NavigationHelper.routeToCreature(
+										uiState.relatedNpc.subCategory,
+										uiState.relatedNpc.id
+									)
+									onItemClick(destination)
+								}
+							},
 							itemData = uiState.relatedNpc,
 							subTitle = "Npc that sell this item",
 							contentScale = ContentScale.Crop,
@@ -309,6 +342,8 @@ fun PreviewToolDetailContentCooked() {
 
 	ValheimVikiAppTheme {
 		ToolDetailContent(
+			onBack = {},
+			onItemClick = {},
 			uiState = ToolDetailUiState(
 
 				isLoading = false,
@@ -317,7 +352,7 @@ fun PreviewToolDetailContentCooked() {
 				relatedCraftingStation = craftingStation,
 				relatedMaterials = fakeMaterialsList
 			),
-			onBack = {},
+
 		)
 	}
 

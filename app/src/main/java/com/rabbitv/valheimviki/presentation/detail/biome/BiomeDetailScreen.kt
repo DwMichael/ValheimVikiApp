@@ -41,7 +41,10 @@ import com.composables.icons.lucide.Pickaxe
 import com.composables.icons.lucide.Trees
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
+import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.LocalSharedTransitionScope
+import com.rabbitv.valheimviki.navigation.NavigationHelper
+import com.rabbitv.valheimviki.navigation.WorldDetailDestination
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
@@ -62,6 +65,7 @@ import com.rabbitv.valheimviki.utils.FakeData
 @Composable
 fun BiomeDetailScreen(
 	onBack: () -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	viewModel: BiomeDetailScreenViewModel = hiltViewModel(),
 	animatedVisibilityScope: AnimatedVisibilityScope
 ) {
@@ -71,6 +75,7 @@ fun BiomeDetailScreen(
 
 	BiomeDetailContent(
 		onBack = onBack,
+		onItemClick = onItemClick,
 		sharedTransitionScope = sharedTransitionScope,
 		animatedVisibilityScope = animatedVisibilityScope,
 		biomeUiState = biomeUiState
@@ -83,6 +88,7 @@ fun BiomeDetailScreen(
 @Composable
 fun BiomeDetailContent(
 	onBack: () -> Unit,
+	onItemClick:  (destination: DetailDestination) -> Unit,
 	biomeUiState: BiomeDetailUiState,
 	sharedTransitionScope: SharedTransitionScope,
 	animatedVisibilityScope: AnimatedVisibilityScope,
@@ -199,6 +205,10 @@ fun BiomeDetailContent(
 								ImageWithTopLabel(
 									itemData = mainBoss,
 									subTitle = "BOSS",
+									onItemClick = { clickedItemId ->
+										val destination = NavigationHelper.routeToCreature(biomeUiState.mainBoss.subCategory, biomeUiState.mainBoss.id)
+											onItemClick(destination)
+									},
 								)
 							}
 							SlavicDivider()
@@ -206,6 +216,13 @@ fun BiomeDetailContent(
 								HorizontalPagerSection(
 									list = biomeUiState.relatedCreatures,
 									data = creatureData,
+									onItemClick = { clickedItemId ->
+										val creature = biomeUiState.relatedCreatures.find { it.id == clickedItemId }
+										creature?.let {
+											val destination = NavigationHelper.routeToCreature(it.subCategory.toString(), it.id)
+											onItemClick(destination)
+										}
+									},
 								)
 							}
 
@@ -213,7 +230,11 @@ fun BiomeDetailContent(
 								TridentsDividedRow()
 								HorizontalPagerSection(
 									list = biomeUiState.relatedOreDeposits,
-									data = oreDepositData
+									data = oreDepositData,
+									onItemClick = { clickedItemId ->
+										val destination = WorldDetailDestination.OreDepositDetail(oreDepositId = clickedItemId)
+										onItemClick(destination)
+									},
 								)
 							}
 
@@ -221,21 +242,37 @@ fun BiomeDetailContent(
 								TridentsDividedRow()
 								HorizontalPagerSection(
 									list = biomeUiState.relatedMaterials,
-									data = materialData
+									data = materialData,
+									onItemClick = { clickedItemId ->
+										val material = biomeUiState.relatedMaterials.find { it.id == clickedItemId }
+										material?.let {
+											val destination = NavigationHelper.routeToMaterial(it.subCategory, it.id)
+											onItemClick(destination)
+										}
+									}
 								)
 							}
+
 							if (biomeUiState.relatedPointOfInterest.isNotEmpty()) {
 								TridentsDividedRow()
 								HorizontalPagerSection(
 									list = biomeUiState.relatedPointOfInterest,
-									data = pointOfInterestData
+									data = pointOfInterestData,
+									onItemClick = { clickedItemId ->
+										val destination = WorldDetailDestination.PointOfInterestDetail(pointOfInterestId = clickedItemId)
+										onItemClick(destination)
+									}
 								)
 							}
 							if (biomeUiState.relatedTrees.isNotEmpty()) {
 								TridentsDividedRow()
 								HorizontalPagerSection(
 									list = biomeUiState.relatedTrees,
-									data = treeData
+									data = treeData,
+									onItemClick = { clickedItemId ->
+										val destination = WorldDetailDestination.TreeDetail(treeId = clickedItemId)
+										onItemClick(destination)
+									}
 								)
 							}
 							Box(modifier = Modifier.size(45.dp))
@@ -309,7 +346,8 @@ fun PreviewBiomeDetailContent() {
 					onBack = { },
 					sharedTransitionScope = this@SharedTransitionLayout,
 					animatedVisibilityScope = this,
-					biomeUiState = uiState
+					biomeUiState = uiState,
+					onItemClick = { _ -> {} },
 				)
 			}
 		}

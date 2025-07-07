@@ -22,7 +22,7 @@ import com.rabbitv.valheimviki.utils.Constants.CRAFTING_KEY
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -30,6 +30,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @Suppress("UNCHECKED_CAST")
@@ -46,7 +47,7 @@ class CraftingDetailViewModel @Inject constructor(
 	private val _buildIngMaterials: BuildMaterialUseCases,
 	private val _savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-
+	//TODO MUST FIND THE WAY TO OPTIMALIZE IT
 	private val _craftingObjectId: String = checkNotNull(_savedStateHandle[CRAFTING_KEY])
 	private val _craftingObject = MutableStateFlow<CraftingObject?>(null)
 	private val _craftingUpgraderObjects = MutableStateFlow<List<CraftingProducts>>(emptyList())
@@ -61,7 +62,7 @@ class CraftingDetailViewModel @Inject constructor(
 	private val _craftingBuildingMaterialProducts =
 		MutableStateFlow<List<CraftingProducts>>(emptyList())
 
-	private val _isLoading = MutableStateFlow<Boolean>(false)
+	private val _isLoading = MutableStateFlow<Boolean>(true)
 	private val _error = MutableStateFlow<String?>(null)
 
 	val uiState: StateFlow<CraftingDetailUiState> = combine(
@@ -97,227 +98,214 @@ class CraftingDetailViewModel @Inject constructor(
 	}.stateIn(
 		scope = viewModelScope,
 		started = SharingStarted.WhileSubscribed(5000),
-		initialValue = CraftingDetailUiState()
+		initialValue = CraftingDetailUiState(isLoading = true)
 	)
 
 	init {
-		loadCraftingData()
+
+		loadEssentialData()
+
+		loadRemainingData()
 	}
 
-	internal fun loadCraftingData() {
+	private fun loadEssentialData() {
 		viewModelScope.launch(Dispatchers.IO) {
-
-			_craftingObject.value =
-				_craftingObjectUseCases.getCraftingObjectById(_craftingObjectId).first()
-			val relationObjects: List<RelatedItem> = async {
-				_relationUseCase.getRelatedIdsUseCase(_craftingObjectId).first()
-			}.await()
-
-			val relatedIds: List<String> = relationObjects.map { it.id }
+			try {
+				_craftingObject.value =
+					_craftingObjectUseCases.getCraftingObjectById(_craftingObjectId).first()
 
 
-			val craftingUpgraderObjectsDeferred = async {
-				val craftingObjects =
-					_craftingObjectUseCases.getCraftingObjectsByIds(relatedIds).first()
-
-				val tempList = mutableListOf<CraftingProducts>()
-				val relatedItemsMap = relationObjects.associateBy { it.id }
-				craftingObjects.forEach { craftingObject ->
-					val relatedItem = relatedItemsMap[craftingObject.id]
-					val quantityList = listOf(
-						relatedItem?.quantity,
-					)
-					tempList.add(
-						CraftingProducts(
-							itemDrop = craftingObject,
-							quantityList = quantityList,
-							chanceStarList = emptyList(),
-							droppableType = DroppableType.CRAFTING_OBJECT,
-						)
-					)
+				withContext(Dispatchers.Main) {
+					_isLoading.value = false
 				}
-				_craftingUpgraderObjects.value = tempList
+			} catch (e: Exception) {
+				_error.value = e.message
+				_isLoading.value = false
 			}
-
-
-			val foodDeferred = async {
-				val foods = _foodUseCase.getFoodListByIdsUseCase(relatedIds).first()
-
-				val tempList = mutableListOf<CraftingProducts>()
-				val relatedItemsMap = relationObjects.associateBy { it.id }
-				foods.forEach { food ->
-					val relatedItem = relatedItemsMap[food.id]
-					val quantityList = listOf(
-						relatedItem?.quantity,
-					)
-					tempList.add(
-						CraftingProducts(
-							itemDrop = food,
-							quantityList = quantityList,
-							chanceStarList = emptyList(),
-							droppableType = DroppableType.FOOD,
-						)
-					)
-				}
-				_craftingFoodProducts.value = tempList
-			}
-			val meadDeferred = async {
-				val meads = _meadUseCase.getMeadsByIdsUseCase(relatedIds).first()
-
-				val tempList = mutableListOf<CraftingProducts>()
-				val relatedItemsMap = relationObjects.associateBy { it.id }
-				meads.forEach { mead ->
-					val relatedItem = relatedItemsMap[mead.id]
-					val quantityList = listOf(
-						relatedItem?.quantity,
-					)
-					tempList.add(
-						CraftingProducts(
-							itemDrop = mead,
-							quantityList = quantityList,
-							chanceStarList = emptyList(),
-							droppableType = DroppableType.MEAD,
-						)
-					)
-				}
-				_craftingMeadProducts.value = tempList
-			}
-			val materialDeferred = async {
-				val materials = _materialUseCase.getMaterialsByIds(relatedIds).first()
-				val relatedItemsMap = relationObjects.associateBy { it.id }
-
-
-				val producedMaterials = mutableListOf<CraftingProducts>()
-				val requiredMaterials = mutableListOf<CraftingProducts>()
-				val buildMaterials = mutableListOf<CraftingProducts>()
-
-				materials.forEach { material ->
-					val relatedItem = relatedItemsMap[material.id]
-					val quantityList = listOf(relatedItem?.quantity)
-
-					val craftingProduct = CraftingProducts(
-						itemDrop = material,
-						quantityList = quantityList,
-						chanceStarList = emptyList(),
-						droppableType = DroppableType.MATERIAL,
-					)
-
-					when (relatedItem?.relationType) {
-						RelationType.PRODUCES.name -> {
-							producedMaterials.add(craftingProduct)
-						}
-
-						RelationType.REQUIRES.name -> {
-							requiredMaterials.add(craftingProduct)
-						}
-
-						RelationType.TO_BUILD.name -> {
-							buildMaterials.add(craftingProduct)
-						}
-					}
-				}
-
-				_craftingMaterialProducts.value = producedMaterials  // PRODUCES or null
-				_craftingMaterialRequired.value = requiredMaterials  // REQUIRES
-				_craftingMaterialToBuild.value = buildMaterials      // TO_BUILD
-			}
-			val armorDeferred = async {
-				val armors = _armorUseCase.getArmorsByIdsUseCase(relatedIds).first()
-
-				val tempList = mutableListOf<CraftingProducts>()
-				val relatedItemsMap = relationObjects.associateBy { it.id }
-				armors.forEach { armor ->
-					val relatedItem = relatedItemsMap[armor.id]
-					val quantityList = listOf(
-						relatedItem?.quantity,
-					)
-					tempList.add(
-						CraftingProducts(
-							itemDrop = armor,
-							quantityList = quantityList,
-							chanceStarList = emptyList(),
-							droppableType = DroppableType.ARMOR,
-						)
-					)
-				}
-				_craftingArmorProducts.value = tempList
-			}
-
-			val weaponDeferred = async {
-				val weapons = _weaponUseCase.getWeaponsByIdsUseCase(relatedIds).first()
-
-				val tempList = mutableListOf<CraftingProducts>()
-				val relatedItemsMap = relationObjects.associateBy { it.id }
-				weapons.forEach { weapon ->
-					val relatedItem = relatedItemsMap[weapon.id]
-					val quantityList = listOf(
-						relatedItem?.quantity,
-					)
-					tempList.add(
-						CraftingProducts(
-							itemDrop = weapon,
-							quantityList = quantityList,
-							chanceStarList = emptyList(),
-							droppableType = DroppableType.WEAPON,
-						)
-					)
-				}
-				_craftingWeaponProducts.value = tempList
-			}
-			val toolDeferred = async {
-				val tools = _toolsUseCase.getToolsByIdsUseCase(relatedIds).first()
-
-				val tempList = mutableListOf<CraftingProducts>()
-				val relatedItemsMap = relationObjects.associateBy { it.id }
-				tools.forEach { tool ->
-					val relatedItem = relatedItemsMap[tool.id]
-					val quantityList = listOf(
-						relatedItem?.quantity,
-					)
-					tempList.add(
-						CraftingProducts(
-							itemDrop = tool,
-							quantityList = quantityList,
-							chanceStarList = emptyList(),
-							droppableType = DroppableType.TOOL,
-						)
-					)
-				}
-				_craftingToolProducts.value = tempList
-			}
-
-			val buildingMaterialDeferred = async {
-				val buildingMaterials = _buildIngMaterials.getBuildMaterialByIds(relatedIds).first()
-
-				val tempList = mutableListOf<CraftingProducts>()
-				val relatedItemsMap = relationObjects.associateBy { it.id }
-				buildingMaterials.forEach { buildingMaterial ->
-					val relatedItem = relatedItemsMap[buildingMaterial.id]
-					val quantityList = listOf(
-						relatedItem?.quantity,
-					)
-					tempList.add(
-						CraftingProducts(
-							itemDrop = buildingMaterial,
-							quantityList = quantityList,
-							chanceStarList = emptyList(),
-							droppableType = DroppableType.BUILDING_MATERIAL,
-						)
-					)
-				}
-				_craftingBuildingMaterialProducts.value = tempList
-			}
-			awaitAll(
-				craftingUpgraderObjectsDeferred,
-				foodDeferred,
-				meadDeferred,
-				materialDeferred,
-				armorDeferred,
-				weaponDeferred,
-				toolDeferred,
-				buildingMaterialDeferred
-			)
 		}
 	}
 
+	private fun loadRemainingData() {
+		viewModelScope.launch(Dispatchers.IO) {
+			try {
+
+				delay(300)
+
+				val relationObjects: List<RelatedItem> =
+					_relationUseCase.getRelatedIdsUseCase(_craftingObjectId).first()
+
+				if (relationObjects.isEmpty()) {
+					return@launch
+				}
+
+				val relatedIds: List<String> = relationObjects.map { it.id }
+				val relatedItemsMap = relationObjects.associateBy { it.id }
+
+
+				loadCraftingUpgraders(relatedIds, relatedItemsMap)
+				loadConsumables(relatedIds, relatedItemsMap)
+				loadEquipment(relatedIds, relatedItemsMap)
+				loadMaterials(relatedIds, relatedItemsMap)
+
+			} catch (e: Exception) {
+				_error.value = e.message
+			}
+		}
+	}
+
+	private suspend fun loadCraftingUpgraders(
+		relatedIds: List<String>,
+		relatedItemsMap: Map<String, RelatedItem>
+	) {
+		val craftingObjects = _craftingObjectUseCases.getCraftingObjectsByIds(relatedIds).first()
+		if (craftingObjects.isNotEmpty()) {
+			val tempList = craftingObjects.map { craftingObject ->
+				val relatedItem = relatedItemsMap[craftingObject.id]
+				CraftingProducts(
+					itemDrop = craftingObject,
+					quantityList = listOf(relatedItem?.quantity),
+					chanceStarList = emptyList(),
+					droppableType = DroppableType.CRAFTING_OBJECT,
+				)
+			}
+			_craftingUpgraderObjects.value = tempList
+		}
+	}
+
+	private suspend fun loadConsumables(
+		relatedIds: List<String>,
+		relatedItemsMap: Map<String, RelatedItem>
+	) = withContext(Dispatchers.IO) {
+
+		val foodDeferred = async {
+			val foods = _foodUseCase.getFoodListByIdsUseCase(relatedIds).first()
+			foods.map { food ->
+				val relatedItem = relatedItemsMap[food.id]
+				CraftingProducts(
+					itemDrop = food,
+					quantityList = listOf(relatedItem?.quantity),
+					chanceStarList = emptyList(),
+					droppableType = DroppableType.FOOD,
+				)
+			}
+		}
+
+		val meadDeferred = async {
+			val meads = _meadUseCase.getMeadsByIdsUseCase(relatedIds).first()
+			meads.map { mead ->
+				val relatedItem = relatedItemsMap[mead.id]
+				CraftingProducts(
+					itemDrop = mead,
+					quantityList = listOf(relatedItem?.quantity),
+					chanceStarList = emptyList(),
+					droppableType = DroppableType.MEAD,
+				)
+			}
+		}
+
+		_craftingFoodProducts.value = foodDeferred.await()
+		_craftingMeadProducts.value = meadDeferred.await()
+	}
+
+	private suspend fun loadEquipment(
+		relatedIds: List<String>,
+		relatedItemsMap: Map<String, RelatedItem>
+	) = withContext(Dispatchers.IO) {
+
+		val weaponDeferred = async {
+			val weapons = _weaponUseCase.getWeaponsByIdsUseCase(relatedIds).first()
+			weapons.map { weapon ->
+				val relatedItem = relatedItemsMap[weapon.id]
+				CraftingProducts(
+					itemDrop = weapon,
+					quantityList = listOf(relatedItem?.quantity),
+					chanceStarList = emptyList(),
+					droppableType = DroppableType.WEAPON,
+				)
+			}
+		}
+
+		val armorDeferred = async {
+			val armors = _armorUseCase.getArmorsByIdsUseCase(relatedIds).first()
+			armors.map { armor ->
+				val relatedItem = relatedItemsMap[armor.id]
+				CraftingProducts(
+					itemDrop = armor,
+					quantityList = listOf(relatedItem?.quantity),
+					chanceStarList = emptyList(),
+					droppableType = DroppableType.ARMOR,
+				)
+			}
+		}
+
+		val toolDeferred = async {
+			val tools = _toolsUseCase.getToolsByIdsUseCase(relatedIds).first()
+			tools.map { tool ->
+				val relatedItem = relatedItemsMap[tool.id]
+				CraftingProducts(
+					itemDrop = tool,
+					quantityList = listOf(relatedItem?.quantity),
+					chanceStarList = emptyList(),
+					droppableType = DroppableType.TOOL,
+				)
+			}
+		}
+
+		_craftingWeaponProducts.value = weaponDeferred.await()
+		_craftingArmorProducts.value = armorDeferred.await()
+		_craftingToolProducts.value = toolDeferred.await()
+	}
+
+	private suspend fun loadMaterials(
+		relatedIds: List<String>,
+		relatedItemsMap: Map<String, RelatedItem>
+	) = withContext(Dispatchers.IO) {
+
+		val materialDeferred = async {
+			val materials = _materialUseCase.getMaterialsByIds(relatedIds).first()
+
+			val producedMaterials = mutableListOf<CraftingProducts>()
+			val requiredMaterials = mutableListOf<CraftingProducts>()
+			val buildMaterials = mutableListOf<CraftingProducts>()
+
+			materials.forEach { material ->
+				val relatedItem = relatedItemsMap[material.id]
+				val quantityList = listOf(relatedItem?.quantity)
+
+				val craftingProduct = CraftingProducts(
+					itemDrop = material,
+					quantityList = quantityList,
+					chanceStarList = emptyList(),
+					droppableType = DroppableType.MATERIAL,
+				)
+
+				when (relatedItem?.relationType) {
+					RelationType.PRODUCES.name -> producedMaterials.add(craftingProduct)
+					RelationType.REQUIRES.name -> requiredMaterials.add(craftingProduct)
+					RelationType.TO_BUILD.name -> buildMaterials.add(craftingProduct)
+				}
+			}
+
+			Triple(producedMaterials, requiredMaterials, buildMaterials)
+		}
+
+		val buildingMaterialDeferred = async {
+			val buildingMaterials = _buildIngMaterials.getBuildMaterialByIds(relatedIds).first()
+			buildingMaterials.map { buildingMaterial ->
+				val relatedItem = relatedItemsMap[buildingMaterial.id]
+				CraftingProducts(
+					itemDrop = buildingMaterial,
+					quantityList = listOf(relatedItem?.quantity),
+					chanceStarList = emptyList(),
+					droppableType = DroppableType.BUILDING_MATERIAL,
+				)
+			}
+		}
+
+		val (produced, required, build) = materialDeferred.await()
+		_craftingMaterialProducts.value = produced
+		_craftingMaterialRequired.value = required
+		_craftingMaterialToBuild.value = build
+		_craftingBuildingMaterialProducts.value = buildingMaterialDeferred.await()
+	}
 }

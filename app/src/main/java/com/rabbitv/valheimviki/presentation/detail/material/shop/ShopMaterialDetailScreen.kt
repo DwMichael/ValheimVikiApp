@@ -14,9 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -28,6 +26,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.rabbitv.valheimviki.navigation.DetailDestination
+import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
@@ -45,13 +45,15 @@ import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 @Composable
 fun ShopMaterialDetailScreen(
 	onBack: () -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	viewModel: ShopMaterialDetailViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
 	ShopMaterialDetailContent(
-		uiState = uiState,
 		onBack = onBack,
+		onItemClick = onItemClick,
+		uiState = uiState,
 	)
 
 }
@@ -60,13 +62,11 @@ fun ShopMaterialDetailScreen(
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun ShopMaterialDetailContent(
-	uiState: ShopUiState,
 	onBack: () -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
+	uiState: ShopUiState,
 ) {
-
 	val scrollState = rememberScrollState()
-	val previousScrollValue = remember { mutableIntStateOf(0) }
-
 	val isExpandable = remember { mutableStateOf(false) }
 
 	BgImage()
@@ -108,12 +108,26 @@ fun ShopMaterialDetailContent(
 							boxPadding = BODY_CONTENT_PADDING.dp,
 							isExpanded = isExpandable
 						)
-
 					}
-
+					if(material.effect.isNullOrBlank() && material.effect != "null"){
+						TridentsDividedRow("Effect")
+						Text(
+							material.effect.toString(),
+							modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+							style = MaterialTheme.typography.bodyLarge,
+							textAlign = TextAlign.Center
+						)
+					}
 					uiState.npc?.let { npc ->
 						TridentsDividedRow()
 						CardImageWithTopLabel(
+							onClickedItem = {
+								val destination = NavigationHelper.routeToCreature(
+									creatureType = npc.subCategory,
+									itemId = npc.id
+								)
+								onItemClick(destination)
+							},
 							itemData = npc,
 							subTitle = "NPC whom you can sell this item",
 							contentScale = ContentScale.FillBounds,
@@ -143,7 +157,7 @@ fun PreviewToolDetailContentCooked() {
 		ShopMaterialDetailContent(
 			uiState = ShopUiState(),
 			onBack = {},
-
+			onItemClick = {}
 			)
 	}
 

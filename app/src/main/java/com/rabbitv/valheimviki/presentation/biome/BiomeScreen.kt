@@ -29,45 +29,45 @@ import kotlinx.coroutines.FlowPreview
 @OptIn(FlowPreview::class)
 @Composable
 fun BiomeScreen(
-    modifier: Modifier,
-    onItemClick: (String) -> Unit,
-    paddingValues: PaddingValues,
-    viewModel: BiomeScreenViewModel = hiltViewModel(),
-    animatedVisibilityScope: AnimatedVisibilityScope
+	modifier: Modifier,
+	onItemClick: (String) -> Unit,
+	paddingValues: PaddingValues,
+	viewModel: BiomeScreenViewModel = hiltViewModel(),
+	animatedVisibilityScope: AnimatedVisibilityScope
 ) {
-    val biomeUiListState: UiListState<Biome> by viewModel.biomeUiListState.collectAsStateWithLifecycle()
-    val lazyGridState = rememberLazyGridState()
+	val biomeUiListState: UiListState<Biome> by viewModel.biomeUiListState.collectAsStateWithLifecycle()
+	val lazyGridState = rememberLazyGridState()
 
-    Box(
-        modifier = modifier
-    ) {
-        Surface(
-            color = Color.Transparent,
-            modifier = Modifier
+	Box(
+		modifier = modifier
+	) {
+		Surface(
+			color = Color.Transparent,
+			modifier = Modifier
                 .testTag("BiomeSurface")
                 .fillMaxSize()
 
                 .padding(paddingValues)
-        ) {
-            when (val state = biomeUiListState) {
-                is UiListState.Loading -> ShimmerGridEffect()
-                is UiListState.Error -> EmptyScreen(
-                    errorMessage = state.message.toString(),
-                    errorType = state.errorType
-                )
+		) {
+			when (val state = biomeUiListState) {
+				is UiListState.Loading -> ShimmerGridEffect()
+				is UiListState.Error -> EmptyScreen(
+					errorMessage = state.message,
+					errorType = state.errorType
+				)
 
-                is UiListState.Success -> DefaultGrid(
-                    modifier = Modifier,
-                    items = state.list,
-                    onItemClick = onItemClick,
-                    numbersOfColumns = BIOME_GRID_COLUMNS,
-                    height = ITEM_HEIGHT_TWO_COLUMNS,
-                    animatedVisibilityScope = animatedVisibilityScope,
-                    lazyGridState = lazyGridState,
-                )
-            }
-        }
-    }
+				is UiListState.Success -> DefaultGrid(
+					modifier = Modifier,
+					items = state.list,
+					onItemClick = onItemClick,
+					numbersOfColumns = BIOME_GRID_COLUMNS,
+					height = ITEM_HEIGHT_TWO_COLUMNS,
+					animatedVisibilityScope = animatedVisibilityScope,
+					lazyGridState = lazyGridState,
+				)
+			}
+		}
+	}
 }
 
 

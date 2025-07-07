@@ -1,6 +1,7 @@
 package com.rabbitv.valheimviki.presentation.detail.creature.components.rows
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -43,106 +44,114 @@ import com.rabbitv.valheimviki.utils.FakeData
 
 @Composable
 fun CustomRowLayout(
-    relatedSummoningItems: List<Material?>,
-    modifier: Modifier,
+	onItemClick: (itemId: String) -> Unit = { _ -> {} },
+	relatedSummoningItems: List<Material>,
+	modifier: Modifier,
 ) {
-    LazyRow(
-        modifier = modifier
+	LazyRow(
+		modifier = modifier
             .padding(BODY_CONTENT_PADDING.dp)
             .wrapContentHeight(Alignment.CenterVertically),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-    ) {
-        items(relatedSummoningItems.size) { index ->
-            ItemCard(
-                list = relatedSummoningItems,
-                pageIndex = index,
-                contentScale = ContentScale.Crop,
-            )
-        }
-    }
+		horizontalArrangement = Arrangement.spacedBy(10.dp),
+	) {
+		items(relatedSummoningItems.size) { index ->
+			ItemCard(
+				onItemClick = onItemClick,
+				list = relatedSummoningItems,
+				pageIndex = index,
+				contentScale = ContentScale.Crop,
+
+				)
+		}
+	}
 }
 
 
 @Composable
 fun ItemCard(
-    list: List<ItemData?>,
-    pageIndex: Int,
-    contentScale: ContentScale,
+	onItemClick: (itemId: String) -> Unit,
+	list: List<ItemData>,
+	pageIndex: Int,
+	contentScale: ContentScale,
 ) {
-    Card(
-        Modifier
+	Card(
+		Modifier
             .size(110.dp)
             .shadow(
                 elevation = 8.dp,
                 shape = RoundedCornerShape(8.dp),
                 spotColor = Color.White.copy(alpha = 0.25f)
             )
-    ) {
-        list.let {
-            Box(
-                modifier = Modifier
+            .clickable {
+                onItemClick(list[pageIndex].id)
+            }
+	) {
+		list.let {
+			Box(
+				modifier = Modifier
                     .background(DarkGrey)
                     .height(150.dp),
 
-                ) {
-                AsyncImage(
-                    modifier = Modifier
+				) {
+				AsyncImage(
+					modifier = Modifier
                         .fillMaxSize()
                         .padding(BODY_CONTENT_PADDING.dp),
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(it[pageIndex]?.imageUrl)
-                        .crossfade(true)
-                        .build(),
-                    contentDescription = stringResource(R.string.item_grid_image),
-                    contentScale = contentScale
-                )
-                Surface(
-                    modifier = Modifier
+					model = ImageRequest.Builder(LocalContext.current)
+						.data(it[pageIndex]?.imageUrl)
+						.crossfade(true)
+						.build(),
+					contentDescription = stringResource(R.string.item_grid_image),
+					contentScale = contentScale
+				)
+				Surface(
+					modifier = Modifier
                         .height(18.dp)
                         .width(28.dp)
                         .align(Alignment.TopEnd)
                         .clip(RoundedCornerShape(2.dp)),
-                    color = ForestGreen10Dark,
-                ) {
-                    Text(
-                        text = "${pageIndex + 1}/${list.size}",
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center,
-                        color = Color.White,
-                        style = MaterialTheme.typography.labelSmall
-                    )
-                }
-                Surface(
-                    modifier = Modifier
+					color = ForestGreen10Dark,
+				) {
+					Text(
+						text = "${pageIndex + 1}/${list.size}",
+						modifier = Modifier.fillMaxWidth(),
+						textAlign = TextAlign.Center,
+						color = Color.White,
+						style = MaterialTheme.typography.labelSmall
+					)
+				}
+				Surface(
+					modifier = Modifier
                         .align(Alignment.BottomStart)
                         .fillMaxHeight(0.2f)
                         .fillMaxWidth(),
-                    tonalElevation = 0.dp,
-                    color = Color.Black.copy(alpha = ContentAlpha.medium),
-                ) {
+					tonalElevation = 0.dp,
+					color = Color.Black.copy(alpha = ContentAlpha.medium),
+				) {
 
-                    Text(
-                        modifier = Modifier
+					Text(
+						modifier = Modifier
                             .padding
                                 (horizontal = 5.dp)
                             .wrapContentHeight(align = Alignment.CenterVertically),
-                        text = it[pageIndex]?.name.toString(),
-                        color = Color.White,
-                        style = MaterialTheme.typography.labelSmall,
-                    )
-                }
-            }
-        }
-    }
+						text = it[pageIndex]?.name.toString(),
+						color = Color.White,
+						style = MaterialTheme.typography.labelSmall,
+					)
+				}
+			}
+		}
+	}
 }
 
 @Composable
 @Preview(showBackground = true)
 fun PreviewItemCard() {
-    val fakeList = FakeData.generateFakeMaterials()
-    ItemCard(
-        list = fakeList,
-        pageIndex = 1,
-        contentScale = ContentScale.Crop,
-    )
+	val fakeList = FakeData.generateFakeMaterials()
+	ItemCard(
+        onItemClick = {_ ->{}},
+		list = fakeList,
+		pageIndex = 1,
+		contentScale = ContentScale.Crop,
+	)
 }

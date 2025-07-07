@@ -15,7 +15,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -31,6 +30,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rabbitv.valheimviki.data.mappers.creatures.toMainBoss
 import com.rabbitv.valheimviki.domain.model.material.MaterialSubType
+import com.rabbitv.valheimviki.navigation.DetailDestination
+import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
@@ -49,13 +50,15 @@ import com.rabbitv.valheimviki.utils.FakeData
 @Composable
 fun BossDropDetailScreen(
 	onBack: () -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	viewModel: BossDropDetailViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
 	BossDropDetailContent(
-		uiState = uiState,
 		onBack = onBack,
+		onItemClick = onItemClick,
+		uiState = uiState,
 	)
 
 }
@@ -64,13 +67,12 @@ fun BossDropDetailScreen(
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun BossDropDetailContent(
-	uiState: BossDropUiState,
 	onBack: () -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
+	uiState: BossDropUiState,
 ) {
 
 	val scrollState = rememberScrollState()
-	remember { mutableIntStateOf(0) }
-
 	val isExpandable = remember { mutableStateOf(false) }
 
 
@@ -140,6 +142,13 @@ fun BossDropDetailContent(
 							itemData = uiState.boss,
 							subTitle = "Boss from witch this item drop",
 							contentScale = ContentScale.Crop,
+							onItemClick = { clickedItemId ->
+								val destination = NavigationHelper.routeToCreature(
+									uiState.boss.subCategory,
+									uiState.boss.id
+								)
+								onItemClick(destination)
+							},
 						)
 					}
 				}
@@ -171,6 +180,7 @@ fun PreviewToolDetailContentCooked() {
 				error = null
 			),
 			onBack = {},
+			onItemClick = {}
 		)
 	}
 

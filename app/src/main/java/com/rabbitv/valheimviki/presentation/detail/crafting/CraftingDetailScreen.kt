@@ -27,7 +27,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.composables.icons.lucide.BookOpenCheck
 import com.composables.icons.lucide.Cuboid
 import com.composables.icons.lucide.FlaskRound
 import com.composables.icons.lucide.Gavel
@@ -40,6 +39,11 @@ import com.composables.icons.lucide.Swords
 import com.composables.icons.lucide.TrendingUp
 import com.composables.icons.lucide.Utensils
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingSubCategory
+import com.rabbitv.valheimviki.navigation.BuildingDetailDestination
+import com.rabbitv.valheimviki.navigation.ConsumableDetailDestination
+import com.rabbitv.valheimviki.navigation.DetailDestination
+import com.rabbitv.valheimviki.navigation.EquipmentDetailDestination
+import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
@@ -64,12 +68,14 @@ import com.rabbitv.valheimviki.utils.FakeData
 @Composable
 fun CraftingDetailScreen(
 	onBack: () -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	viewmodel: CraftingDetailViewModel = hiltViewModel()
 ) {
 	val uiState by viewmodel.uiState.collectAsStateWithLifecycle()
 
 	CraftingDetailContent(
 		onBack = onBack,
+		onItemClick = onItemClick,
 		uiState = uiState
 	)
 
@@ -79,6 +85,7 @@ fun CraftingDetailScreen(
 @Composable
 fun CraftingDetailContent(
 	onBack: () -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	uiState: CraftingDetailUiState,
 ) {
 	val scrollState = rememberScrollState()
@@ -159,6 +166,16 @@ fun CraftingDetailContent(
 						TwoColumnGrid {
 							for (craftingMaterial in uiState.craftingMaterialToBuild) {
 								CustomItemCard(
+									onItemClick = {
+										craftingMaterial.itemDrop.subCategory?.let { subCategory ->
+											val destination =
+												NavigationHelper.routeToMaterial(
+													subCategory,
+													craftingMaterial.itemDrop.id
+												)
+											onItemClick(destination)
+										}
+									},
 									fillWidth = CUSTOM_ITEM_CARD_FILL_WIDTH,
 									imageUrl = craftingMaterial.itemDrop.imageUrl,
 									name = craftingMaterial.itemDrop.name,
@@ -221,6 +238,14 @@ fun CraftingDetailContent(
 						TwoColumnGrid {
 							for (craftingUpgrader in uiState.craftingUpgraderObjects) {
 								CustomItemCard(
+									onItemClick = {
+										val destination =
+											BuildingDetailDestination.CraftingObjectDetail(
+												craftingUpgrader.itemDrop.id
+											)
+										onItemClick(destination)
+
+									},
 									fillWidth = CUSTOM_ITEM_CARD_FILL_WIDTH,
 									imageUrl = craftingUpgrader.itemDrop.imageUrl,
 									name = craftingUpgrader.itemDrop.name,
@@ -234,6 +259,15 @@ fun CraftingDetailContent(
 					if (uiState.craftingFoodProducts.isNotEmpty()) {
 						TridentsDividedRow()
 						DroppedItemsSection(
+							onItemClick = { clickedItemId, subCategory ->
+								val subCategory =
+									NavigationHelper.stringToFoodSubCategory(subCategory)
+								val destination = ConsumableDetailDestination.FoodDetail(
+									clickedItemId,
+									subCategory
+								)
+								onItemClick(destination)
+							},
 							list = uiState.craftingFoodProducts,
 							icon = Lucide.Utensils,
 							starLevel = 0,
@@ -242,11 +276,20 @@ fun CraftingDetailContent(
 						)
 					}
 
-					
+
 
 					if (uiState.craftingMeadProducts.isNotEmpty()) {
 						TridentsDividedRow()
 						DroppedItemsSection(
+							onItemClick = { clickedItemId, subCategory ->
+								val subCategory =
+									NavigationHelper.stringToMeadSubCategory(subCategory)
+								val destination = ConsumableDetailDestination.MeadDetail(
+									clickedItemId,
+									subCategory
+								)
+								onItemClick(destination)
+							},
 							list = uiState.craftingMeadProducts,
 							icon = Lucide.FlaskRound,
 							starLevel = 0,
@@ -258,6 +301,12 @@ fun CraftingDetailContent(
 					if (uiState.craftingWeaponProducts.isNotEmpty()) {
 						TridentsDividedRow()
 						DroppedItemsSection(
+							onItemClick = { clickedItemId, _ ->
+								val destination = EquipmentDetailDestination.WeaponDetail(
+									clickedItemId
+								)
+								onItemClick(destination)
+							},
 							list = uiState.craftingWeaponProducts,
 							icon = Lucide.Swords,
 							starLevel = 0,
@@ -269,6 +318,12 @@ fun CraftingDetailContent(
 					if (uiState.craftingArmorProducts.isNotEmpty()) {
 						TridentsDividedRow()
 						DroppedItemsSection(
+							onItemClick = { clickedItemId, _ ->
+								val destination = EquipmentDetailDestination.ArmorDetail(
+									clickedItemId
+								)
+								onItemClick(destination)
+							},
 							list = uiState.craftingArmorProducts,
 							icon = Lucide.Shield,
 							starLevel = 0,
@@ -280,6 +335,14 @@ fun CraftingDetailContent(
 					if (uiState.craftingMaterialProducts.isNotEmpty()) {
 						TridentsDividedRow()
 						DroppedItemsSection(
+							onItemClick = { clickedItemId, subCategory ->
+								val destination =
+									NavigationHelper.routeToMaterial(
+										subCategory,
+										clickedItemId
+									)
+								onItemClick(destination)
+							},
 							list = uiState.craftingMaterialProducts,
 							icon = Lucide.Cuboid,
 							starLevel = 0,
@@ -291,6 +354,14 @@ fun CraftingDetailContent(
 					if (uiState.craftingMaterialRequired.isNotEmpty()) {
 						TridentsDividedRow()
 						DroppedItemsSection(
+							onItemClick = { clickedItemId, subCategory ->
+								val destination =
+									NavigationHelper.routeToMaterial(
+										subCategory,
+										clickedItemId
+									)
+								onItemClick(destination)
+							},
 							list = uiState.craftingMaterialRequired,
 							icon = Lucide.OctagonAlert,
 							starLevel = 0,
@@ -302,6 +373,14 @@ fun CraftingDetailContent(
 					if (uiState.craftingBuildingMaterialProducts.isNotEmpty()) {
 						TridentsDividedRow()
 						DroppedItemsSection(
+							onItemClick = { clickedItemId, subCategory ->
+								val destination =
+									NavigationHelper.routeToMaterial(
+										subCategory,
+										clickedItemId
+									)
+								onItemClick(destination)
+							},
 							list = uiState.craftingBuildingMaterialProducts,
 							icon = Lucide.House,
 							starLevel = 0,
@@ -313,6 +392,11 @@ fun CraftingDetailContent(
 					if (uiState.craftingToolProducts.isNotEmpty()) {
 						TridentsDividedRow()
 						DroppedItemsSection(
+							onItemClick = { clickedItemId, _ ->
+								val destination =
+									EquipmentDetailDestination.ToolDetail(clickedItemId)
+								onItemClick(destination)
+							},
 							list = uiState.craftingToolProducts,
 							icon = Lucide.Gavel,
 							starLevel = 0,
@@ -347,6 +431,7 @@ fun PreviewCraftingDetailContent() {
 	ValheimVikiAppTheme {
 		CraftingDetailContent(
 			onBack = {},
+			onItemClick = {},
 			uiState = CraftingDetailUiState(
 				craftingObject = FakeData.fakeCraftingObjectList()[0],
 				craftingUpgraderObjects = FakeData.fakeCraftingProductsList(),

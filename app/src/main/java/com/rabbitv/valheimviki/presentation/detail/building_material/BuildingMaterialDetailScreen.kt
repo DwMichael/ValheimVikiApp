@@ -39,6 +39,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.composables.icons.lucide.Gauge
 import com.composables.icons.lucide.Lucide
 import com.rabbitv.valheimviki.R
+import com.rabbitv.valheimviki.navigation.BuildingDetailDestination
+import com.rabbitv.valheimviki.navigation.ConsumableDetailDestination
+import com.rabbitv.valheimviki.navigation.DetailDestination
+import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
@@ -57,13 +61,15 @@ import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 @Composable
 fun BuildingMaterialDetailScreen(
 	onBack: () -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	viewModel: BuildingMaterialDetailViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
 	BuildingMaterialDetailContent(
-		uiState = uiState,
 		onBack = onBack,
+		onItemClick = onItemClick,
+		uiState = uiState,
 	)
 
 }
@@ -72,9 +78,11 @@ fun BuildingMaterialDetailScreen(
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun BuildingMaterialDetailContent(
-	uiState: BuildingMaterialUiState,
 	onBack: () -> Unit,
-) {
+	onItemClick: (destination: DetailDestination) -> Unit,
+	uiState: BuildingMaterialUiState,
+
+	) {
 
 	val scrollState = rememberScrollState()
 	val isStatInfoExpanded1 = remember { mutableStateOf(false) }
@@ -155,10 +163,18 @@ fun BuildingMaterialDetailContent(
 						SlavicDivider()
 						uiState.craftingStation.forEach { craftingStation ->
 							CardImageWithTopLabel(
+								onClickedItem = {
+									val destination =
+										BuildingDetailDestination.CraftingObjectDetail(
+											craftingObjectId = craftingStation.id
+										)
+									onItemClick(destination)
+								},
 								itemData = craftingStation,
 								subTitle = "Crafting station that must be near the construction",
 								contentScale = ContentScale.Fit,
-							)
+
+								)
 							Spacer(modifier = Modifier.padding(BODY_CONTENT_PADDING.dp))
 						}
 					}
@@ -183,6 +199,16 @@ fun BuildingMaterialDetailContent(
 						TwoColumnGrid {
 							for (material in uiState.materials) {
 								CustomItemCard(
+									onItemClick = {
+										material.itemDrop.subCategory?.let { subCategory ->
+											val destination =
+												NavigationHelper.routeToMaterial(
+													subCategory,
+													material.itemDrop.id
+												)
+											onItemClick(destination)
+										}
+									},
 									fillWidth = 0.45f,
 									imageUrl = material.itemDrop.imageUrl,
 									name = material.itemDrop.name,
@@ -191,6 +217,18 @@ fun BuildingMaterialDetailContent(
 							}
 							for (food in uiState.foods) {
 								CustomItemCard(
+									onItemClick = {
+										food.itemDrop.subCategory?.let {
+											val subCategory =
+												NavigationHelper.stringToFoodSubCategory(it)
+											val destination =
+												ConsumableDetailDestination.FoodDetail(
+													food.itemDrop.id,
+													subCategory
+												)
+											onItemClick(destination)
+										}
+									},
 									fillWidth = 0.45f,
 									imageUrl = food.itemDrop.imageUrl,
 									name = food.itemDrop.name,

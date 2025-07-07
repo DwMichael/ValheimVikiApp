@@ -8,11 +8,12 @@ import kotlinx.serialization.Serializable
 @Entity("trees")
 @Serializable
 data class Tree(
-    @PrimaryKey(autoGenerate = false)
-    override val id: String,
-    override val imageUrl: String,
-    override val category: String,
-    override val name: String,
-    val description: String,
-    val order: Int,
+	@PrimaryKey(autoGenerate = false)
+	override val id: String,
+	override val imageUrl: String,
+	override val category: String,
+	override val subCategory: String? = null,
+	override val name: String,
+	val description: String,
+	val order: Int,
 ) : ItemData

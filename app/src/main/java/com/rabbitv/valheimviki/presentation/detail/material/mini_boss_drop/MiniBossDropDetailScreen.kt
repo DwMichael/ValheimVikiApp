@@ -14,9 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -29,6 +27,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rabbitv.valheimviki.data.mappers.creatures.toMiniBoss
+import com.rabbitv.valheimviki.navigation.DetailDestination
+import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
@@ -46,13 +46,15 @@ import com.rabbitv.valheimviki.utils.FakeData
 @Composable
 fun MiniBossDropDetailScreen(
 	onBack: () -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	viewModel: MiniBossDropDetailViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
 	MiniBossDropDetailContent(
-		uiState = uiState,
 		onBack = onBack,
+		onItemClick = onItemClick,
+		uiState = uiState,
 	)
 
 }
@@ -61,13 +63,12 @@ fun MiniBossDropDetailScreen(
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun MiniBossDropDetailContent(
-	uiState: MiniBossDropUiState,
 	onBack: () -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
+	uiState: MiniBossDropUiState,
 ) {
 
 	val scrollState = rememberScrollState()
-	val previousScrollValue = remember { mutableIntStateOf(0) }
-
 	val isExpandable = remember { mutableStateOf(false) }
 
 	BgImage()
@@ -116,6 +117,13 @@ fun MiniBossDropDetailContent(
 
 					if (uiState.miniBoss != null) {
 						ImageWithTopLabel(
+							onItemClick = { clickedItemId ->
+								val destination = NavigationHelper.routeToCreature(
+									uiState.miniBoss.subCategory,
+									uiState.miniBoss.id
+								)
+								onItemClick(destination)
+							},
 							itemData = uiState.miniBoss,
 							subTitle = "Boss from witch this item drop",
 							contentScale = ContentScale.Crop,
@@ -125,6 +133,13 @@ fun MiniBossDropDetailContent(
 
 					if (uiState.npc != null) {
 						ImageWithTopLabel(
+							onItemClick = { clickedItemId ->
+								val destination = NavigationHelper.routeToCreature(
+									uiState.npc.subCategory,
+									uiState.npc.id
+								)
+								onItemClick(destination)
+							},
 							itemData = uiState.npc,
 							subTitle = "Npc that give you quest for this item",
 							contentScale = ContentScale.Crop,
@@ -159,6 +174,7 @@ fun PreviewToolDetailContentCooked() {
 				error = null
 			),
 			onBack = {},
+			onItemClick = {}
 		)
 	}
 

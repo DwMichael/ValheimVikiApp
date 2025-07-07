@@ -14,9 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -32,6 +30,9 @@ import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.MapPinned
 import com.composables.icons.lucide.Rabbit
 import com.composables.icons.lucide.ShoppingBag
+import com.rabbitv.valheimviki.navigation.DetailDestination
+import com.rabbitv.valheimviki.navigation.NavigationHelper
+import com.rabbitv.valheimviki.navigation.WorldDetailDestination
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
@@ -50,13 +51,15 @@ import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 @Composable
 fun ValuableMaterialDetailScreen(
 	onBack: () -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	viewModel: ValuableMaterialDetailViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
 	ValuableMaterialDetailContent(
-		uiState = uiState,
 		onBack = onBack,
+		onItemClick = onItemClick,
+		uiState = uiState,
 	)
 
 }
@@ -65,13 +68,12 @@ fun ValuableMaterialDetailScreen(
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun ValuableMaterialDetailContent(
-	uiState: ValuableMaterialUiState,
 	onBack: () -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
+	uiState: ValuableMaterialUiState,
 ) {
 
 	val scrollState = rememberScrollState()
-	val previousScrollValue = remember { mutableIntStateOf(0) }
-
 	val isExpandable = remember { mutableStateOf(false) }
 
 	val creatureData = HorizontalPagerData(
@@ -142,6 +144,11 @@ fun ValuableMaterialDetailContent(
 						HorizontalPagerSection(
 							list = uiState.pointsOfInterest,
 							data = pointsOfInterestData,
+							onItemClick = { clickedItemId ->
+								val destination =
+									WorldDetailDestination.PointOfInterestDetail(pointOfInterestId = clickedItemId)
+								onItemClick(destination)
+							}
 						)
 					}
 					if (uiState.creatures.isNotEmpty()) {
@@ -149,6 +156,16 @@ fun ValuableMaterialDetailContent(
 						HorizontalPagerSection(
 							list = uiState.creatures,
 							data = creatureData,
+							onItemClick = { clickedItemId ->
+								val creature = uiState.creatures.find { it.id == clickedItemId }
+								creature?.let {
+									val destination = NavigationHelper.routeToCreature(
+										it.subCategory.toString(),
+										it.id
+									)
+									onItemClick(destination)
+								}
+							},
 						)
 					}
 					if (uiState.npc.isNotEmpty()) {
@@ -156,6 +173,16 @@ fun ValuableMaterialDetailContent(
 						HorizontalPagerSection(
 							list = uiState.npc,
 							data = npcData,
+							onItemClick = { clickedItemId ->
+								val creature = uiState.creatures.find { it.id == clickedItemId }
+								creature?.let {
+									val destination = NavigationHelper.routeToCreature(
+										it.subCategory.toString(),
+										it.id
+									)
+									onItemClick(destination)
+								}
+							},
 						)
 					}
 				}
@@ -182,7 +209,7 @@ fun PreviewToolDetailContentCooked() {
 		ValuableMaterialDetailContent(
 			uiState = ValuableMaterialUiState(),
 			onBack = {},
-
+			onItemClick = {}
 			)
 	}
 

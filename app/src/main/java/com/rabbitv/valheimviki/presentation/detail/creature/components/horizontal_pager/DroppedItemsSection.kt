@@ -1,10 +1,10 @@
 package com.rabbitv.valheimviki.presentation.detail.creature.components.horizontal_pager
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -22,11 +22,9 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
@@ -50,6 +48,7 @@ import com.rabbitv.valheimviki.utils.FakeData
 @Composable
 fun DroppedItemsSection(
 	modifier: Modifier = Modifier,
+	onItemClick: (itemId: String, category: String) -> Unit = { _, _ -> {} },
 	list: List<Droppable> = emptyList(),
 	starLevel: Int,
 	icon: ImageVector = Lucide.Trophy,
@@ -75,6 +74,9 @@ fun DroppedItemsSection(
 		modifier = modifier,
 	) { item, pageIndex ->
 		DropItemCard(
+			onItemClick = { itemId, subCategory ->
+				onItemClick(itemId, subCategory)
+			},
 			itemData = item.itemDrop,
 			quantityList = item.quantityList,
 			chanceStarList = item.chanceStarList,
@@ -86,13 +88,14 @@ fun DroppedItemsSection(
 
 @Composable
 fun DropItemCard(
+	onItemClick: (itemId: String, subCategory: String) -> Unit,
 	itemData: ItemData,
 	quantityList: List<Int?>,
 	chanceStarList: List<Int?>,
 	starLevel: Int,
 	modifier: Modifier = Modifier
 ) {
-	val quantity :Int? = quantityList[starLevel]
+	val quantity: Int? = quantityList[starLevel]
 	Card(
 		modifier = modifier
 			.fillMaxWidth()
@@ -103,7 +106,10 @@ fun DropItemCard(
 				clip = false,
 				ambientColor = Color.White.copy(alpha = 0.1f),
 				spotColor = Color.White.copy(alpha = 0.25f)
-			),
+			)
+			.clickable {
+				itemData.subCategory?.let { onItemClick(itemData.id, it) }
+			},
 		colors = CardDefaults.cardColors(containerColor = LightDark),
 		border = BorderStroke(2.dp, DarkWood)
 	) {
@@ -125,7 +131,7 @@ fun DropItemCard(
 			Column(
 				modifier = Modifier
 					.fillMaxWidth()
-					.padding(start=10.dp)
+					.padding(start = 10.dp)
 			) {
 				Text(
 					text = itemData.name.uppercase(),
@@ -178,7 +184,8 @@ fun PreviewCreatureHorizontalPagerMaterial() {
 
 		DroppedItemsSection(
 			list = materialDrops,
-			starLevel = 0
+			starLevel = 0,
+			onItemClick = { _, _ -> {} }
 		)
 	}
 }
@@ -199,7 +206,8 @@ fun PreviewCreatureDropCard() {
 			itemData = materialDrop.itemDrop,
 			quantityList = materialDrop.quantityList,
 			chanceStarList = materialDrop.chanceStarList,
-			starLevel = 1
+			starLevel = 1,
+			onItemClick = { _, _ -> {} }
 		)
 	}
 }
@@ -231,7 +239,8 @@ fun PreviewCreatureHorizontalPagerStarLevels() {
 
 			DroppedItemsSection(
 				list = materialDrops,
-				starLevel = 0
+				starLevel = 0,
+				onItemClick = { _, _ -> {} }
 			)
 
 			Spacer(modifier = Modifier.height(16.dp))
@@ -239,7 +248,8 @@ fun PreviewCreatureHorizontalPagerStarLevels() {
 			// 1 star creature
 			DroppedItemsSection(
 				list = materialDrops,
-				starLevel = 1
+				starLevel = 1,
+				onItemClick = { _, _ -> {} }
 			)
 
 			Spacer(modifier = Modifier.height(16.dp))
@@ -247,7 +257,8 @@ fun PreviewCreatureHorizontalPagerStarLevels() {
 			// 2 star creature
 			DroppedItemsSection(
 				list = materialDrops,
-				starLevel = 2
+				starLevel = 2,
+				onItemClick = { _, _ -> {} }
 			)
 		}
 	}
