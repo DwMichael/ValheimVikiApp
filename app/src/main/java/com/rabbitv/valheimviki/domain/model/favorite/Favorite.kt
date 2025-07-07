@@ -1,11 +1,12 @@
 package com.rabbitv.valheimviki.domain.model.favorite
 
 import androidx.room.Entity
+import androidx.room.PrimaryKey
 import kotlinx.serialization.Serializable
 
-@Entity("favorite")
+@Entity(tableName = "favorite")
 data class Favorite(
-	@Serializable val id: Int,
+	@PrimaryKey @Serializable val id: Int,
 	@Serializable val itemId: String,
 	@Serializable val category: String,
 	@Serializable val subCategory: String,
