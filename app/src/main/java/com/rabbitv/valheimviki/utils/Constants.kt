@@ -43,7 +43,7 @@ object Constants {
 	const val CRAFTED_MATERIAL_KEY = "craftedMaterialId"
 	const val GENERAL_MATERIAL_KEY = "generalMaterialId"
 	const val METAL_MATERIAL_KEY = "metalMaterialId"
-
+	const val WOOD_MATERIAL_KEY = "woodMaterialId"
 
 	const val OFFERINGS_MATERIAL_KEY = "offeringsMaterialId"
 	const val POINT_OF_INTEREST_MATERIAL_KEY = "gemstoneId"

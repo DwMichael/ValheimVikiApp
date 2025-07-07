@@ -39,10 +39,10 @@ import com.rabbitv.valheimviki.domain.model.material.MaterialSubCategory
 import com.rabbitv.valheimviki.domain.model.material.MaterialSubType
 import com.rabbitv.valheimviki.domain.model.ui_state.category_chip_state.UiCategoryChipState
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
-import com.rabbitv.valheimviki.presentation.components.list.ListContent
 import com.rabbitv.valheimviki.presentation.components.chip.ChipData
 import com.rabbitv.valheimviki.presentation.components.chip.SearchFilterBar
 import com.rabbitv.valheimviki.presentation.components.floating_action_button.CustomFloatingActionButton
+import com.rabbitv.valheimviki.presentation.components.list.ListContent
 import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerListEffect
 import com.rabbitv.valheimviki.presentation.components.topbar.SimpleTopBar
 import com.rabbitv.valheimviki.presentation.material.viewmodel.MaterialListViewModel
@@ -262,6 +262,7 @@ private fun getChipsForCategory(category: MaterialSubCategory?): List<MaterialCh
 		)
 
 		MaterialSubCategory.VALUABLE -> emptyList()
+		MaterialSubCategory.WOOD -> emptyList()
 		null -> emptyList() // Handle the null case explicitly
 	}
 }

@@ -100,6 +100,7 @@ import com.rabbitv.valheimviki.presentation.detail.material.offerings.OfferingsD
 import com.rabbitv.valheimviki.presentation.detail.material.seeds.SeedMaterialDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.material.shop.ShopMaterialDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.material.valuable.ValuableMaterialDetailScreen
+import com.rabbitv.valheimviki.presentation.detail.material.wood.WoodMaterialDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.mead.MeadDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.ore_deposit.OreDepositDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.point_of_interest.PointOfInterestDetailScreen
@@ -496,6 +497,10 @@ fun ValheimNavGraph(
 							MaterialSubCategory.VALUABLE -> valheimVikiNavController.navigate(
 								MaterialDetailDestination.ValuableDetail(valuableMaterialId = itemId)
 							)
+
+							MaterialSubCategory.WOOD -> valheimVikiNavController.navigate(
+								MaterialDetailDestination.WoodDetail(woodMaterialId = itemId)
+							)
 						}
 					},
 					onBackClick = {
@@ -735,6 +740,9 @@ fun ValheimNavGraph(
 				onBack = {
 					valheimVikiNavController.popBackStack()
 				},
+				onItemClick = { destination ->
+					valheimVikiNavController.navigate(destination)
+				},
 			)
 		}
 		composable<WorldDetailDestination.OreDepositDetail> {
@@ -836,6 +844,13 @@ fun ValheimNavGraph(
 		}
 		composable<MaterialDetailDestination.ValuableDetail> {
 			ValuableMaterialDetailScreen(
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+			)
+		}
+		composable<MaterialDetailDestination.WoodDetail> {
+			WoodMaterialDetailScreen(
 				onBack = {
 					valheimVikiNavController.popBackStack()
 				},

@@ -250,6 +250,11 @@ sealed interface MaterialDetailDestination : DetailDestination {
 	data class ValuableDetail(
 		val valuableMaterialId: String
 	) : MaterialDetailDestination
+
+	@Serializable
+	data class WoodDetail(
+		val woodMaterialId: String
+	) : MaterialDetailDestination
 }
 
 // Building-related details
@@ -324,6 +329,8 @@ object NavigationHelper {
 			"FORSAKEN_ALTAR_OFFERING" -> MaterialDetailDestination.OfferingsDetail(
 				offeringsMaterialId = itemId
 			)
+
+			"WOOD" -> MaterialDetailDestination.WoodDetail(woodMaterialId = itemId)
 
 			else -> throw IllegalArgumentException("Unknown material type: $materialType")
 		}
