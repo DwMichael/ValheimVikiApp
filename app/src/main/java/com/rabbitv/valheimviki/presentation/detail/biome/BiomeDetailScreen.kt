@@ -270,7 +270,6 @@ fun BiomeDetailContent(
 									list = biomeUiState.relatedTrees,
 									data = treeData,
 									onItemClick = { clickedItemId ->
-										// Directly construct the TreeDetail destination
 										val destination = WorldDetailDestination.TreeDetail(treeId = clickedItemId)
 										onItemClick(destination)
 									}

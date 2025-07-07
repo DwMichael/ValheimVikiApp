@@ -19,9 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -40,6 +38,10 @@ import com.composables.icons.lucide.Pickaxe
 import com.composables.icons.lucide.Rabbit
 import com.composables.icons.lucide.ScrollText
 import com.composables.icons.lucide.TreePine
+import com.rabbitv.valheimviki.navigation.BuildingDetailDestination
+import com.rabbitv.valheimviki.navigation.DetailDestination
+import com.rabbitv.valheimviki.navigation.NavigationHelper
+import com.rabbitv.valheimviki.navigation.WorldDetailDestination
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
@@ -67,13 +69,15 @@ import com.rabbitv.valheimviki.utils.FakeData
 @Composable
 fun MetalMaterialDetailScreen(
 	onBack: () -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	viewModel: MetalMaterialDetailViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
 	MetalMaterialDetailContent(
-		uiState = uiState,
 		onBack = onBack,
+		onItemClick = onItemClick,
+		uiState = uiState,
 	)
 
 }
@@ -82,13 +86,13 @@ fun MetalMaterialDetailScreen(
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun MetalMaterialDetailContent(
-	uiState: MetalMaterialUiState,
 	onBack: () -> Unit,
-) {
+	onItemClick: (destination: DetailDestination) -> Unit,
+	uiState: MetalMaterialUiState,
+
+	) {
 
 	val scrollState = rememberScrollState()
-	val previousScrollValue = remember { mutableIntStateOf(0) }
-
 	val isExpandable = remember { mutableStateOf(false) }
 
 
@@ -157,6 +161,11 @@ fun MetalMaterialDetailContent(
 					uiState.biomes.forEach { biome ->
 						TridentsDividedRow()
 						CardWithOverlayLabel(
+							onClickedItem = {
+								val destination =
+									WorldDetailDestination.BiomeDetail(biomeId = biome.id)
+								onItemClick(destination)
+							},
 							painter = rememberAsyncImagePainter(biome.imageUrl),
 							content = {
 								Row {
@@ -189,6 +198,11 @@ fun MetalMaterialDetailContent(
 						HorizontalPagerSection(
 							list = uiState.pointOfInterests,
 							data = pointOfInterestData,
+							onItemClick = { clickedItemId ->
+								val destination =
+									WorldDetailDestination.PointOfInterestDetail(pointOfInterestId = clickedItemId)
+								onItemClick(destination)
+							}
 						)
 					}
 					if (uiState.oreDeposits.isNotEmpty()) {
@@ -196,6 +210,11 @@ fun MetalMaterialDetailContent(
 						HorizontalPagerSection(
 							list = uiState.oreDeposits,
 							data = oreDepositData,
+							onItemClick = { clickedItemId ->
+								val destination =
+									WorldDetailDestination.OreDepositDetail(oreDepositId = clickedItemId)
+								onItemClick(destination)
+							},
 						)
 					}
 					if (uiState.creatures.isNotEmpty()) {
@@ -203,6 +222,16 @@ fun MetalMaterialDetailContent(
 						HorizontalPagerSection(
 							list = uiState.creatures,
 							data = creatureData,
+							onItemClick = { clickedItemId ->
+								val creature = uiState.creatures.find { it.id == clickedItemId }
+								creature?.let {
+									val destination = NavigationHelper.routeToCreature(
+										it.subCategory.toString(),
+										it.id
+									)
+									onItemClick(destination)
+								}
+							},
 						)
 					}
 					if (uiState.requiredMaterials.isNotEmpty()) {
@@ -228,12 +257,21 @@ fun MetalMaterialDetailContent(
 
 						Spacer(modifier = Modifier.padding(6.dp))
 						TwoColumnGrid {
-							for (items in uiState.requiredMaterials) {
+							for (item in uiState.requiredMaterials) {
 								CustomItemCard(
+									onItemClick = {
+										val destination =
+											NavigationHelper.routeToMaterial(
+												item.itemDrop.subCategory,
+												item.itemDrop.id
+											)
+										onItemClick(destination)
+
+									},
 									fillWidth = CUSTOM_ITEM_CARD_FILL_WIDTH,
-									imageUrl = items.itemDrop.imageUrl,
-									name = items.itemDrop.name,
-									quantity = items.quantityList.firstOrNull()
+									imageUrl = item.itemDrop.imageUrl,
+									name = item.itemDrop.name,
+									quantity = item.quantityList.firstOrNull()
 								)
 							}
 						}
@@ -242,7 +280,13 @@ fun MetalMaterialDetailContent(
 						TridentsDividedRow()
 						uiState.craftingStations.forEach { craftingStation ->
 							CardImageWithTopLabel(
-								onClickedItem = {},
+								onClickedItem = {
+									val destination =
+										BuildingDetailDestination.CraftingObjectDetail(
+											craftingObjectId = craftingStation.id
+										)
+									onItemClick(destination)
+								},
 								itemData = craftingStation,
 								subTitle = "Crafting station where you can produce this item ",
 								contentScale = ContentScale.Fit,
@@ -279,6 +323,7 @@ fun PreviewToolDetailContentCooked() {
 				error = null
 			),
 			onBack = {},
+			onItemClick = {}
 		)
 	}
 

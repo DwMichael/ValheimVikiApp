@@ -3,17 +3,10 @@ package com.rabbitv.valheimviki.presentation.detail.material.wood
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -24,15 +17,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,24 +30,18 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.rememberAsyncImagePainter
-import com.composables.icons.lucide.Gauge
-import com.composables.icons.lucide.Gavel
 import com.composables.icons.lucide.Lucide
-import com.composables.icons.lucide.MapPinned
 import com.composables.icons.lucide.Trees
+import com.rabbitv.valheimviki.navigation.DetailDestination
+import com.rabbitv.valheimviki.navigation.WorldDetailDestination
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
-import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
-import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCard
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
-import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
-import com.rabbitv.valheimviki.presentation.detail.material.seeds.model.SeedUiState
-import com.rabbitv.valheimviki.presentation.detail.material.seeds.viewmodel.SeedMaterialDetailViewModel
 import com.rabbitv.valheimviki.presentation.detail.material.wood.model.WoodUiState
 import com.rabbitv.valheimviki.presentation.detail.material.wood.viewmodel.WoodMaterialDetailViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
@@ -68,13 +52,15 @@ import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 @Composable
 fun WoodMaterialDetailScreen(
 	onBack: () -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	viewModel: WoodMaterialDetailViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
 	WoodMaterialDetailContent(
-		uiState = uiState,
 		onBack = onBack,
+		onItemClick = onItemClick,
+		uiState = uiState,
 	)
 
 }
@@ -83,8 +69,9 @@ fun WoodMaterialDetailScreen(
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun WoodMaterialDetailContent(
-	uiState: WoodUiState,
 	onBack: () -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
+	uiState: WoodUiState,
 ) {
 	val scrollState = rememberScrollState()
 	val isExpandable = remember { mutableStateOf(false) }
@@ -118,7 +105,7 @@ fun WoodMaterialDetailContent(
 						),
 					horizontalAlignment = Alignment.CenterHorizontally,
 					verticalArrangement = Arrangement.Top,
-					) {
+				) {
 					FramedImage(material.imageUrl)
 					Text(
 						material.name,
@@ -147,6 +134,11 @@ fun WoodMaterialDetailContent(
 						)
 						uiState.biomes.forEach { biome ->
 							CardWithOverlayLabel(
+								onClickedItem = {
+									val destination =
+										WorldDetailDestination.BiomeDetail(biomeId = biome.id)
+									onItemClick(destination)
+								},
 								painter = rememberAsyncImagePainter(biome.imageUrl),
 								content = {
 									Box(
@@ -173,6 +165,11 @@ fun WoodMaterialDetailContent(
 						HorizontalPagerSection(
 							list = uiState.trees,
 							data = treesData,
+							onItemClick = { clickedItemId ->
+								val destination =
+									WorldDetailDestination.TreeDetail(treeId = clickedItemId)
+								onItemClick(destination)
+							}
 						)
 					}
 
@@ -200,8 +197,8 @@ fun PreviewToolDetailContentCooked() {
 		WoodMaterialDetailContent(
 			uiState = WoodUiState(),
 			onBack = {},
-
-			)
+			onItemClick = {}
+		)
 	}
 
 }

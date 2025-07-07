@@ -750,6 +750,9 @@ fun ValheimNavGraph(
 				onBack = {
 					valheimVikiNavController.popBackStack()
 				},
+				onItemClick = { destination ->
+					valheimVikiNavController.navigate(destination)
+				},
 				animatedVisibilityScope = this@composable,
 			)
 		}
@@ -757,6 +760,9 @@ fun ValheimNavGraph(
 			TreeDetailScreen(
 				onBack = {
 					valheimVikiNavController.popBackStack()
+				},
+				onItemClick = { destination ->
+					valheimVikiNavController.navigate(destination)
 				},
 				animatedVisibilityScope = this@composable,
 			)
@@ -767,6 +773,9 @@ fun ValheimNavGraph(
 				onBack = {
 					valheimVikiNavController.popBackStack()
 				},
+				onItemClick = { destination ->
+					valheimVikiNavController.navigate(destination)
+				},
 			)
 		}
 
@@ -774,6 +783,9 @@ fun ValheimNavGraph(
 			BossDropDetailScreen(
 				onBack = {
 					valheimVikiNavController.popBackStack()
+				},
+				onItemClick = { destination ->
+					valheimVikiNavController.navigate(destination)
 				},
 			)
 		}
@@ -783,12 +795,18 @@ fun ValheimNavGraph(
 				onBack = {
 					valheimVikiNavController.popBackStack()
 				},
+				onItemClick = { destination ->
+					valheimVikiNavController.navigate(destination)
+				},
 			)
 		}
 		composable<MaterialDetailDestination.GeneralMaterialDetail> {
 			GeneralMaterialDetailScreen(
 				onBack = {
 					valheimVikiNavController.popBackStack()
+				},
+				onItemClick = { destination ->
+					valheimVikiNavController.navigate(destination)
 				},
 			)
 		}
@@ -797,12 +815,18 @@ fun ValheimNavGraph(
 				onBack = {
 					valheimVikiNavController.popBackStack()
 				},
+				onItemClick = { destination ->
+					valheimVikiNavController.navigate(destination)
+				},
 			)
 		}
 		composable<MaterialDetailDestination.MiniBossDropDetail> {
 			MiniBossDropDetailScreen(
 				onBack = {
 					valheimVikiNavController.popBackStack()
+				},
+				onItemClick = { destination ->
+					valheimVikiNavController.navigate(destination)
 				},
 			)
 		}
@@ -811,6 +835,9 @@ fun ValheimNavGraph(
 				onBack = {
 					valheimVikiNavController.popBackStack()
 				},
+				onItemClick = { destination ->
+					valheimVikiNavController.navigate(destination)
+				},
 			)
 		}
 		composable<MaterialDetailDestination.OfferingsDetail> {
@@ -818,12 +845,18 @@ fun ValheimNavGraph(
 				onBack = {
 					valheimVikiNavController.popBackStack()
 				},
+				onItemClick = { destination ->
+					valheimVikiNavController.navigate(destination)
+				},
 			)
 		}
 		composable<MaterialDetailDestination.GemstoneDetail> {
 			GemstoneDetailScreen(
 				onBack = {
 					valheimVikiNavController.popBackStack()
+				},
+				onItemClick = { destination ->
+					valheimVikiNavController.navigate(destination)
 				},
 			)
 		}
@@ -833,12 +866,18 @@ fun ValheimNavGraph(
 				onBack = {
 					valheimVikiNavController.popBackStack()
 				},
+				onItemClick = { destination ->
+					valheimVikiNavController.navigate(destination)
+				},
 			)
 		}
 		composable<MaterialDetailDestination.ShopMaterialDetail> {
 			ShopMaterialDetailScreen(
 				onBack = {
 					valheimVikiNavController.popBackStack()
+				},
+				onItemClick = { destination ->
+					valheimVikiNavController.navigate(destination)
 				},
 			)
 		}
@@ -847,6 +886,9 @@ fun ValheimNavGraph(
 				onBack = {
 					valheimVikiNavController.popBackStack()
 				},
+				onItemClick = { destination ->
+					valheimVikiNavController.navigate(destination)
+				},
 			)
 		}
 		composable<MaterialDetailDestination.WoodDetail> {
@@ -854,12 +896,18 @@ fun ValheimNavGraph(
 				onBack = {
 					valheimVikiNavController.popBackStack()
 				},
+				onItemClick = { destination ->
+					valheimVikiNavController.navigate(destination)
+				},
 			)
 		}
 		composable<BuildingDetailDestination.BuildingMaterialDetail> {
 			BuildingMaterialDetailScreen(
 				onBack = {
 					valheimVikiNavController.popBackStack()
+				},
+				onItemClick = { destination ->
+					valheimVikiNavController.navigate(destination)
 				},
 			)
 		}

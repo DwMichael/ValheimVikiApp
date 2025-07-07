@@ -15,9 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -37,6 +35,10 @@ import com.composables.icons.lucide.Skull
 import com.rabbitv.valheimviki.data.mappers.creatures.toAggressiveCreatures
 import com.rabbitv.valheimviki.data.mappers.creatures.toPassiveCreatures
 import com.rabbitv.valheimviki.domain.model.creature.Creature
+import com.rabbitv.valheimviki.navigation.BuildingDetailDestination
+import com.rabbitv.valheimviki.navigation.DetailDestination
+import com.rabbitv.valheimviki.navigation.NavigationHelper
+import com.rabbitv.valheimviki.navigation.WorldDetailDestination
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
@@ -57,13 +59,15 @@ import com.rabbitv.valheimviki.utils.FakeData
 @Composable
 fun OfferingsDetailScreen(
 	onBack: () -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	viewModel: OfferingsDetailViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
 	OfferingsDetailContent(
-		uiState = uiState,
 		onBack = onBack,
+		onItemClick = onItemClick,
+		uiState = uiState,
 	)
 
 }
@@ -72,13 +76,13 @@ fun OfferingsDetailScreen(
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun OfferingsDetailContent(
-	uiState: OfferingUiState,
 	onBack: () -> Unit,
-) {
+	onItemClick: (destination: DetailDestination) -> Unit,
+	uiState: OfferingUiState,
+
+	) {
 
 	val scrollState = rememberScrollState()
-	val previousScrollValue = remember { mutableIntStateOf(0) }
-
 	val isExpandable = remember { mutableStateOf(false) }
 
 	val aggressiveCreatureData = HorizontalPagerData(
@@ -158,6 +162,17 @@ fun OfferingsDetailContent(
 						HorizontalPagerSection(
 							list = uiState.aggressive,
 							data = aggressiveCreatureData,
+							onItemClick = { clickedItemId ->
+								val creature =
+									uiState.aggressive.find { it.id == clickedItemId }
+								creature?.let {
+									val destination = NavigationHelper.routeToCreature(
+										it.subCategory,
+										it.id
+									)
+									onItemClick(destination)
+								}
+							},
 						)
 					}
 					if (uiState.passive.isNotEmpty()) {
@@ -165,6 +180,17 @@ fun OfferingsDetailContent(
 						HorizontalPagerSection(
 							list = uiState.passive,
 							data = passiveCreatureData,
+							onItemClick = { clickedItemId ->
+								val creature =
+									uiState.passive.find { it.id == clickedItemId }
+								creature?.let {
+									val destination = NavigationHelper.routeToCreature(
+										it.subCategory,
+										it.id
+									)
+									onItemClick(destination)
+								}
+							},
 						)
 					}
 					if (uiState.pointsOfInterest.isNotEmpty()) {
@@ -172,6 +198,11 @@ fun OfferingsDetailContent(
 						HorizontalPagerSection(
 							list = uiState.pointsOfInterest,
 							data = pointsOfInterestData,
+							onItemClick = { clickedItemId ->
+								val destination =
+									WorldDetailDestination.PointOfInterestDetail(pointOfInterestId = clickedItemId)
+								onItemClick(destination)
+							}
 						)
 					}
 					if (uiState.altars.isNotEmpty()) {
@@ -179,13 +210,24 @@ fun OfferingsDetailContent(
 						HorizontalPagerSection(
 							list = uiState.altars,
 							data = altarsData,
+							onItemClick = { clickedItemId ->
+								val destination =
+									WorldDetailDestination.PointOfInterestDetail(pointOfInterestId = clickedItemId)
+								onItemClick(destination)
+							}
 						)
 					}
 					if (uiState.craftingStation.isNotEmpty()) {
 						TridentsDividedRow()
 						uiState.craftingStation.forEach { craftingStation ->
 							CardImageWithTopLabel(
-								onClickedItem = {},
+								onClickedItem = {
+									val destination =
+										BuildingDetailDestination.CraftingObjectDetail(
+											craftingObjectId = craftingStation.id
+										)
+									onItemClick(destination)
+								},
 								itemData = craftingStation,
 								subTitle = "Crafting station where you can produce this item ",
 								contentScale = ContentScale.Fit,
@@ -238,6 +280,7 @@ fun PreviewToolDetailContentCooked() {
 				error = null
 			),
 			onBack = {},
+			onItemClick = {}
 		)
 	}
 

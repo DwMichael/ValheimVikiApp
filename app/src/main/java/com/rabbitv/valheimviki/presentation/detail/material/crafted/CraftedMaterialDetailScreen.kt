@@ -17,9 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -33,6 +31,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.ScrollText
+import com.rabbitv.valheimviki.navigation.BuildingDetailDestination
+import com.rabbitv.valheimviki.navigation.DetailDestination
+import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
@@ -56,14 +57,17 @@ import com.rabbitv.valheimviki.utils.FakeData
 @Composable
 fun CraftedMaterialDetailScreen(
 	onBack: () -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	viewModel: CraftedMaterialDetailViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
 	CraftedMaterialDetailContent(
-		uiState = uiState,
 		onBack = onBack,
-	)
+		onItemClick = onItemClick,
+		uiState = uiState,
+
+		)
 
 }
 
@@ -71,12 +75,12 @@ fun CraftedMaterialDetailScreen(
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun CraftedMaterialDetailContent(
-	uiState: CraftedMaterialUiState,
 	onBack: () -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
+	uiState: CraftedMaterialUiState,
 ) {
 
 	val scrollState = rememberScrollState()
-	val previousScrollValue = remember { mutableIntStateOf(0) }
 	val isExpandable = remember { mutableStateOf(false) }
 
 	BgImage()
@@ -123,7 +127,13 @@ fun CraftedMaterialDetailContent(
 					if (uiState.requiredCraftingStation.isNotEmpty()) {
 						uiState.requiredCraftingStation.forEach { craftingStation ->
 							CardImageWithTopLabel(
-								onClickedItem = {},
+								onClickedItem = {
+									val destination =
+										BuildingDetailDestination.CraftingObjectDetail(
+											craftingStation.id
+										)
+									onItemClick(destination)
+								},
 								itemData = craftingStation,
 								subTitle = "Crafting station where you can produce this item ",
 								contentScale = ContentScale.Fit,
@@ -156,6 +166,14 @@ fun CraftedMaterialDetailContent(
 						TwoColumnGrid {
 							for (items in uiState.relatedMaterial) {
 								CustomItemCard(
+									onItemClick = {
+											val destination =
+												NavigationHelper.routeToMaterial(
+													items.itemDrop.subCategory,
+													items.itemDrop.id
+												)
+											onItemClick(destination)
+									},
 									fillWidth = CUSTOM_ITEM_CARD_FILL_WIDTH,
 									imageUrl = items.itemDrop.imageUrl,
 									name = items.itemDrop.name,
@@ -193,6 +211,7 @@ fun PreviewToolDetailContentCooked() {
 				error = null
 			),
 			onBack = {},
+			onItemClick = {}
 		)
 	}
 

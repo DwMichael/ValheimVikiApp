@@ -33,6 +33,10 @@ import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Skull
 import com.composables.icons.lucide.Swords
 import com.rabbitv.valheimviki.domain.model.biome.Biome
+import com.rabbitv.valheimviki.navigation.DetailDestination
+import com.rabbitv.valheimviki.navigation.EquipmentDetailDestination
+import com.rabbitv.valheimviki.navigation.NavigationHelper
+import com.rabbitv.valheimviki.navigation.WorldDetailDestination
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
@@ -53,11 +57,13 @@ import com.rabbitv.valheimviki.utils.FakeData
 @Composable
 fun PointOfInterestDetailScreen(
 	onBack: () -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	viewModel: PointOfInterestViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 	PointOfInterestDetailContent(
 		onBack = onBack,
+		onItemClick = onItemClick,
 		uiState = uiState
 	)
 }
@@ -66,10 +72,10 @@ fun PointOfInterestDetailScreen(
 @Composable
 fun PointOfInterestDetailContent(
 	onBack: () -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	uiState: PointOfInterestUiState,
 ) {
 	val scrollState = rememberScrollState()
-
 	val altarOfferings = HorizontalPagerData(
 		title = "Offerings",
 		subTitle = "List of offerings that are needed to summon boss",
@@ -86,7 +92,7 @@ fun PointOfInterestDetailContent(
 	)
 	val creatureData = HorizontalPagerData(
 		title = "Creatures",
-		subTitle = "Creatures that can be found in this place",
+		subTitle = "Creatures related to this place",
 		icon = Lucide.Skull,
 		iconRotationDegrees = 0f,
 		itemContentScale = ContentScale.Crop
@@ -130,6 +136,14 @@ fun PointOfInterestDetailContent(
 						)
 						uiState.relatedBiomes.forEach { biome ->
 							CardWithOverlayLabel(
+								onClickedItem = {
+									val destination =
+										WorldDetailDestination.BiomeDetail(
+											biomeId = biome.id
+										)
+									onItemClick(destination)
+
+								},
 								painter = rememberAsyncImagePainter(biome.imageUrl),
 								content = {
 									Box(
@@ -156,12 +170,29 @@ fun PointOfInterestDetailContent(
 						HorizontalPagerSection(
 							list = uiState.relatedOfferings,
 							data = altarOfferings,
+							onItemClick = { clickedItemId ->
+								val offering =
+									uiState.relatedOfferings.find { it.id == clickedItemId }
+								offering?.let {
+									val destination =
+										NavigationHelper.routeToMaterial(
+											offering.subCategory,
+											offering.id
+										)
+									onItemClick(destination)
+								}
+							},
 						)
 					}
 
 					if (uiState.relatedMaterialDrops.isNotEmpty()) {
 						TridentsDividedRow()
 						DroppedItemsSection(
+							onItemClick = { clickedItemId, subCategory ->
+								val destination =
+									NavigationHelper.routeToMaterial(subCategory, clickedItemId)
+								onItemClick(destination)
+							},
 							list = uiState.relatedMaterialDrops,
 							icon = Lucide.Gem,
 							starLevel = 0,
@@ -174,6 +205,11 @@ fun PointOfInterestDetailContent(
 						HorizontalPagerSection(
 							list = uiState.relatedWeapons,
 							data = weaponsData,
+							onItemClick = { clickedItemId ->
+								val destination =
+									EquipmentDetailDestination.WeaponDetail(clickedItemId)
+								onItemClick(destination)
+							},
 						)
 					}
 					if (uiState.relatedCreatures.isNotEmpty()) {
@@ -181,6 +217,17 @@ fun PointOfInterestDetailContent(
 						HorizontalPagerSection(
 							list = uiState.relatedCreatures,
 							data = creatureData,
+							onItemClick = { clickedItemId ->
+								val creature =
+									uiState.relatedCreatures.find { it.id == clickedItemId }
+								creature?.let {
+									val destination = NavigationHelper.routeToCreature(
+										it.subCategory.toString(),
+										it.id
+									)
+									onItemClick(destination)
+								}
+							},
 						)
 					}
 
@@ -211,7 +258,7 @@ fun PreviewPointOfInterestDetailScreen() {
 		order = 1
 	)
 
-	val uiState: PointOfInterestUiState = PointOfInterestUiState(
+	val uiState = PointOfInterestUiState(
 		pointOfInterest = FakeData.pointOfInterest[0],
 		relatedBiomes = listOf(fakeBiome),
 		relatedCreatures = FakeData.generateFakeCreatures(),
@@ -223,6 +270,7 @@ fun PreviewPointOfInterestDetailScreen() {
 	ValheimVikiAppTheme {
 		PointOfInterestDetailContent(
 			onBack = {},
+			onItemClick = {},
 			uiState = uiState
 		)
 	}

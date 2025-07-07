@@ -46,7 +46,12 @@ import com.composables.icons.lucide.Gem
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Pickaxe
 import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
+import com.rabbitv.valheimviki.navigation.BuildingDetailDestination
+import com.rabbitv.valheimviki.navigation.DetailDestination
+import com.rabbitv.valheimviki.navigation.EquipmentDetailDestination
 import com.rabbitv.valheimviki.navigation.LocalSharedTransitionScope
+import com.rabbitv.valheimviki.navigation.NavigationHelper
+import com.rabbitv.valheimviki.navigation.WorldDetailDestination
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
@@ -66,6 +71,7 @@ import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 @Composable
 fun OreDepositDetailScreen(
 	onBack: () -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	viewModel: OreDepositViewModel = hiltViewModel(),
 	animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
@@ -74,8 +80,9 @@ fun OreDepositDetailScreen(
 	val sharedTransitionScope = LocalSharedTransitionScope.current
 		?: throw IllegalStateException("No Scope found")
 	OreDepositDetailContent(
-		uiState = uiState,
 		onBack = onBack,
+		onItemClick = onItemClick,
+		uiState = uiState,
 		sharedTransitionScope = sharedTransitionScope,
 		animatedVisibilityScope = animatedVisibilityScope
 	)
@@ -85,8 +92,9 @@ fun OreDepositDetailScreen(
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun OreDepositDetailContent(
-	uiState: OreDepositUiState,
 	onBack: () -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
+	uiState: OreDepositUiState,
 	sharedTransitionScope: SharedTransitionScope,
 	animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
@@ -185,6 +193,14 @@ fun OreDepositDetailContent(
 							)
 							uiState.relatedBiomes.forEach { biome ->
 								CardWithOverlayLabel(
+									onClickedItem = {
+										val destination =
+											WorldDetailDestination.BiomeDetail(
+												biomeId = biome.id
+											)
+										onItemClick(destination)
+
+									},
 									painter = rememberAsyncImagePainter(biome.imageUrl),
 									content = {
 										Box(
@@ -212,6 +228,11 @@ fun OreDepositDetailContent(
 							HorizontalPagerSection(
 								list = uiState.relatedTools,
 								data = pickaxesData,
+								onItemClick = { clickedItemId ->
+									val destination =
+										EquipmentDetailDestination.ToolDetail(clickedItemId)
+									onItemClick(destination)
+								},
 							)
 						}
 						if (uiState.craftingStation.isNotEmpty()) {
@@ -219,11 +240,23 @@ fun OreDepositDetailContent(
 							HorizontalPagerSection(
 								list = uiState.craftingStation,
 								data = craftingObjectData,
+								onItemClick = { clickedItemId ->
+									val destination =
+										BuildingDetailDestination.CraftingObjectDetail(
+											clickedItemId
+										)
+									onItemClick(destination)
+								},
 							)
 						}
 						if (uiState.relatedMaterials.isNotEmpty()) {
 							TridentsDividedRow()
 							DroppedItemsSection(
+								onItemClick = { clickedItemId, subCategory ->
+									val destination =
+										NavigationHelper.routeToMaterial(subCategory, clickedItemId)
+									onItemClick(destination)
+								},
 								list = uiState.relatedMaterials,
 								icon = Lucide.Gem,
 								starLevel = 0,
@@ -300,8 +333,9 @@ fun PreviewOreDepositDetailContent() {
 				)
 
 				OreDepositDetailContent(
+					onBack = {},
+					onItemClick = {},
 					uiState = mockUiState,
-					onBack = { },
 					sharedTransitionScope = this@SharedTransitionLayout,
 					animatedVisibilityScope = this,
 				)

@@ -18,9 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -38,6 +36,9 @@ import com.composables.icons.lucide.MapPinned
 import com.composables.icons.lucide.Pickaxe
 import com.composables.icons.lucide.TreePine
 import com.composables.icons.lucide.Trees
+import com.rabbitv.valheimviki.navigation.BuildingDetailDestination
+import com.rabbitv.valheimviki.navigation.DetailDestination
+import com.rabbitv.valheimviki.navigation.WorldDetailDestination
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
@@ -60,13 +61,15 @@ import com.rabbitv.valheimviki.utils.FakeData
 @Composable
 fun GeneralMaterialDetailScreen(
 	onBack: () -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	viewModel: GeneralMaterialDetailViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
 	GeneralMaterialDetailContent(
-		uiState = uiState,
 		onBack = onBack,
+		onItemClick = onItemClick,
+		uiState = uiState,
 	)
 
 }
@@ -75,13 +78,12 @@ fun GeneralMaterialDetailScreen(
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun GeneralMaterialDetailContent(
-	uiState: GeneralMaterialUiState,
 	onBack: () -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
+	uiState: GeneralMaterialUiState,
 ) {
 
 	val scrollState = rememberScrollState()
-	val previousScrollValue = remember { mutableIntStateOf(0) }
-
 	val isExpandable = remember { mutableStateOf(false) }
 
 
@@ -151,6 +153,11 @@ fun GeneralMaterialDetailContent(
 					uiState.biomes.forEach { biome ->
 						SlavicDivider()
 						CardWithOverlayLabel(
+							onClickedItem = {
+								val destination =
+									WorldDetailDestination.BiomeDetail(biomeId = biome.id)
+								onItemClick(destination)
+							},
 							painter = rememberAsyncImagePainter(biome.imageUrl),
 							content = {
 								Row {
@@ -183,6 +190,10 @@ fun GeneralMaterialDetailContent(
 						HorizontalPagerSection(
 							list = uiState.pointOfInterests,
 							data = pointOfInterestData,
+							onItemClick = { clickedItemId ->
+								val destination = WorldDetailDestination.PointOfInterestDetail(pointOfInterestId = clickedItemId)
+								onItemClick(destination)
+							}
 						)
 					}
 					if (uiState.oreDeposits.isNotEmpty()) {
@@ -190,6 +201,10 @@ fun GeneralMaterialDetailContent(
 						HorizontalPagerSection(
 							list = uiState.oreDeposits,
 							data = oreDepositData,
+							onItemClick = { clickedItemId ->
+								val destination = WorldDetailDestination.OreDepositDetail(oreDepositId = clickedItemId)
+								onItemClick(destination)
+							},
 						)
 					}
 					if (uiState.trees.isNotEmpty()) {
@@ -197,13 +212,22 @@ fun GeneralMaterialDetailContent(
 						HorizontalPagerSection(
 							list = uiState.trees,
 							data = treesData,
+							onItemClick = { clickedItemId ->
+								val destination = WorldDetailDestination.TreeDetail(treeId = clickedItemId)
+								onItemClick(destination)
+							}
 						)
 					}
 					if (uiState.craftingStations.isNotEmpty()) {
 						TridentsDividedRow()
 						uiState.craftingStations.forEach { craftingStation ->
 							CardImageWithTopLabel(
-								onClickedItem = {},
+								onClickedItem = {
+									val destination = BuildingDetailDestination.CraftingObjectDetail(
+										craftingObjectId = craftingStation.id
+									)
+									onItemClick(destination)
+								},
 								itemData = craftingStation,
 								subTitle = "Crafting station where you can produce this item ",
 								contentScale = ContentScale.Fit,
@@ -240,6 +264,7 @@ fun PreviewToolDetailContentCooked() {
 				error = null
 			),
 			onBack = {},
+			onItemClick = {}
 		)
 	}
 

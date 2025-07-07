@@ -48,7 +48,11 @@ import com.composables.icons.lucide.Lucide
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.tree.Tree
+import com.rabbitv.valheimviki.navigation.DetailDestination
+import com.rabbitv.valheimviki.navigation.EquipmentDetailDestination
 import com.rabbitv.valheimviki.navigation.LocalSharedTransitionScope
+import com.rabbitv.valheimviki.navigation.NavigationHelper
+import com.rabbitv.valheimviki.navigation.WorldDetailDestination
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
@@ -70,6 +74,7 @@ import com.rabbitv.valheimviki.utils.FakeData
 @Composable
 fun TreeDetailScreen(
 	onBack: () -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	viewModel: TreeDetailScreenViewModel = hiltViewModel(),
 	animatedVisibilityScope: AnimatedVisibilityScope
 ) {
@@ -79,9 +84,10 @@ fun TreeDetailScreen(
 
 	TreeDetailContent(
 		onBack = onBack,
+		onItemClick = onItemClick,
+		uiState = uiState,
 		sharedTransitionScope = sharedTransitionScope,
 		animatedVisibilityScope = animatedVisibilityScope,
-		uiState = uiState
 	)
 
 }
@@ -91,6 +97,7 @@ fun TreeDetailScreen(
 @Composable
 fun TreeDetailContent(
 	onBack: () -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	uiState: TreeDetailUiState,
 	sharedTransitionScope: SharedTransitionScope,
 	animatedVisibilityScope: AnimatedVisibilityScope,
@@ -187,6 +194,14 @@ fun TreeDetailContent(
 								)
 								uiState.relatedBiomes.forEach { biome ->
 									CardWithOverlayLabel(
+										onClickedItem = {
+											val destination =
+												WorldDetailDestination.BiomeDetail(
+													biomeId = biome.id
+												)
+											onItemClick(destination)
+
+										},
 										painter = rememberAsyncImagePainter(biome.imageUrl),
 										content = {
 											Box(
@@ -214,12 +229,25 @@ fun TreeDetailContent(
 								HorizontalPagerSection(
 									list = uiState.relatedAxes,
 									data = axesData,
+									onItemClick = { clickedItemId ->
+										val destination =
+											EquipmentDetailDestination.WeaponDetail(clickedItemId)
+										onItemClick(destination)
+									},
 								)
 							}
 
 							if (uiState.relatedMaterials.isNotEmpty()) {
 								TridentsDividedRow()
 								DroppedItemsSection(
+									onItemClick = { clickedItemId, subCategory ->
+										val destination =
+											NavigationHelper.routeToMaterial(
+												subCategory,
+												clickedItemId
+											)
+										onItemClick(destination)
+									},
 									list = uiState.relatedMaterials,
 									icon = Lucide.Gem,
 									starLevel = 0,
@@ -287,9 +315,11 @@ fun PreviewBiomeDetailContent() {
 			AnimatedVisibility(visible = true) {
 				TreeDetailContent(
 					onBack = { },
+					onItemClick = {},
+					uiState = uiState,
 					sharedTransitionScope = this@SharedTransitionLayout,
 					animatedVisibilityScope = this,
-					uiState = uiState
+
 				)
 			}
 		}
