@@ -6,6 +6,7 @@ import com.rabbitv.valheimviki.data.local.dao.BiomeDao
 import com.rabbitv.valheimviki.data.local.dao.BuildingMaterialDao
 import com.rabbitv.valheimviki.data.local.dao.CraftingObjectDao
 import com.rabbitv.valheimviki.data.local.dao.CreatureDao
+import com.rabbitv.valheimviki.data.local.dao.FavoriteDao
 import com.rabbitv.valheimviki.data.local.dao.FoodDao
 import com.rabbitv.valheimviki.data.local.dao.MaterialDao
 import com.rabbitv.valheimviki.data.local.dao.MeadDao
@@ -36,6 +37,7 @@ import com.rabbitv.valheimviki.data.repository.biome.BiomeRepositoryImpl
 import com.rabbitv.valheimviki.data.repository.building_material.BuildingMaterialRepositoryImpl
 import com.rabbitv.valheimviki.data.repository.crafting_object.CraftingObjectRepositoryImpl
 import com.rabbitv.valheimviki.data.repository.creature.CreatureRepositoryImpl
+import com.rabbitv.valheimviki.data.repository.favorite.FavoriteRepositoryImpl
 import com.rabbitv.valheimviki.data.repository.food.FoodRepositoryImpl
 import com.rabbitv.valheimviki.data.repository.material.MaterialRepositoryImpl
 import com.rabbitv.valheimviki.data.repository.mead.MeadRepositoryImpl
@@ -51,6 +53,7 @@ import com.rabbitv.valheimviki.domain.repository.BuildingMaterialRepository
 import com.rabbitv.valheimviki.domain.repository.CraftingObjectRepository
 import com.rabbitv.valheimviki.domain.repository.CreatureRepository
 import com.rabbitv.valheimviki.domain.repository.DataStoreOperations
+import com.rabbitv.valheimviki.domain.repository.FavoriteRepository
 import com.rabbitv.valheimviki.domain.repository.FoodRepository
 import com.rabbitv.valheimviki.domain.repository.MaterialRepository
 import com.rabbitv.valheimviki.domain.repository.MeadRepository
@@ -102,6 +105,10 @@ import com.rabbitv.valheimviki.domain.use_cases.datastore.get_onboarding_state.R
 import com.rabbitv.valheimviki.domain.use_cases.datastore.language_state_provider.LanguageProvider
 import com.rabbitv.valheimviki.domain.use_cases.datastore.save_onboarding_state.SaveOnBoardingState
 import com.rabbitv.valheimviki.domain.use_cases.datastore.saved_language_state.SaveLanguageState
+import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
+import com.rabbitv.valheimviki.domain.use_cases.favorite.add_to_favorite.AddFavoriteUseCase
+import com.rabbitv.valheimviki.domain.use_cases.favorite.delete_from_favorite.DeleteFavoriteUseCase
+import com.rabbitv.valheimviki.domain.use_cases.favorite.get_all_favorite_items.GetAllFavoritesUseCase
 import com.rabbitv.valheimviki.domain.use_cases.food.FoodUseCases
 import com.rabbitv.valheimviki.domain.use_cases.food.get_food_by_id.GetFoodByIdUseCase
 import com.rabbitv.valheimviki.domain.use_cases.food.get_food_list_by_ids.GetFoodListByIdsUseCase
@@ -165,6 +172,14 @@ object RepositoryModule {
 		@ApplicationContext context: Context
 	): DataStoreOperations {
 		return DataStoreOperationsImpl(context = context)
+	}
+
+	@Provides
+	@Singleton
+	fun provideFavoriteRepositoryImpl(
+		favoriteDao: FavoriteDao
+	): FavoriteRepository {
+		return FavoriteRepositoryImpl(favoriteDao)
 	}
 
 	@Provides
@@ -337,6 +352,16 @@ object RepositoryModule {
 			toolRepository = toolRepository,
 			buildingMaterialRepository = buildingMaterialRepository,
 			craftingObjectRepository = craftingObjectRepository
+		)
+	}
+
+	@Provides
+	@Singleton
+	fun provideFavoriteUseCases(favoriteRepository: FavoriteRepository): FavoriteUseCases {
+		return FavoriteUseCases(
+			getAllFavoritesUseCase = GetAllFavoritesUseCase(favoriteRepository),
+			deleteFavoriteUseCase = DeleteFavoriteUseCase(favoriteRepository),
+			addFavoriteUseCase = AddFavoriteUseCase(favoriteRepository)
 		)
 	}
 
