@@ -1,6 +1,5 @@
 package com.rabbitv.valheimviki.presentation.detail.creature.components.horizontal_pager
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
