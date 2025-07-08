@@ -45,6 +45,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import androidx.wear.compose.material.ContentAlpha
@@ -76,15 +77,18 @@ fun HorizontalPagerSection(
 	list: List<ItemData>,
 	data: HorizontalPagerData,
 	onItemClick: (itemId: String) -> Unit = {},
+	maxHeight: Dp = 240.dp,
+	minHeight: Dp = 210.dp,
+	pageWidth: Dp = 160.dp,
+	itemSize: Dp = 150.dp
 ) {
 	val state = rememberPagerState(pageCount = { list.size })
-	val pageWidth = 160.dp
 	val screenWidth = LocalConfiguration.current.screenWidthDp.dp
 	val horizontalPadding = (screenWidth - pageWidth) / 2
 	Box(
 		modifier = Modifier
 			.fillMaxWidth()
-			.heightIn(min = 210.dp, max = 240.dp)
+			.heightIn(min = minHeight, max = maxHeight)
 			.padding(
 				start = BODY_CONTENT_PADDING.dp,
 				end = BODY_CONTENT_PADDING.dp,
@@ -116,8 +120,9 @@ fun HorizontalPagerSection(
 					list = list,
 					pageIndex = pageIndex,
 					contentScale = data.itemContentScale,
-					size = list.size,
-					onItemClick = onItemClick
+					totalSize = list.size,
+					onItemClick = onItemClick,
+					itemSize = itemSize
 				)
 			}
 		}
@@ -164,93 +169,98 @@ fun HorizontalPagerItem(
 	pagerState: PagerState,
 	list: List<ItemData>,
 	pageIndex: Int,
-	size: Int,
+	totalSize: Int,
 	contentScale: ContentScale,
 	onItemClick: (itemId: String) -> Unit,
+	modifier: Modifier = Modifier,
+	itemSize: Dp,
 ) {
-	list.let {
-		Card(
-			Modifier
-				.size(150.dp)
-				.graphicsLayer {
-					val pageOffset = (
-							(pagerState.currentPage - pageIndex) + pagerState
-								.currentPageOffsetFraction
-							).absoluteValue
-					val scale = lerp(
-						start = 0.8f,
-						stop = 1f,
-						fraction = 1f - pageOffset.coerceIn(0f, 1f)
-					)
-					scaleX = scale
-					scaleY = scale
+	val item = list.getOrNull(pageIndex) ?: return
 
-					alpha = lerp(
-						start = 0.5f,
-						stop = 1f,
-						fraction = 1f - pageOffset.coerceIn(0f, 1f)
-					)
-					cameraDistance = 8f * density
-				}
-				.shadow(
-					elevation = 8.dp,
-					shape = RoundedCornerShape(8.dp),
-					spotColor = Color.White.copy(alpha = 0.25f)
+	Card(
+		modifier = modifier
+			.size(itemSize)
+			.graphicsLayer {
+				val pageOffset = (
+						(pagerState.currentPage - pageIndex) + pagerState
+							.currentPageOffsetFraction
+						).absoluteValue
+
+				val scale = lerp(
+					start = 0.8f,
+					stop = 1f,
+					fraction = 1f - pageOffset.coerceIn(0f, 1f)
 				)
-				.clickable { onItemClick(it[pageIndex].id) },
+				scaleX = scale
+				scaleY = scale
+
+				alpha = lerp(
+					start = 0.5f,
+					stop = 1f,
+					fraction = 1f - pageOffset.coerceIn(0f, 1f)
+				)
+				cameraDistance = 8f * density
+			}
+			.shadow(
+				elevation = 8.dp,
+				shape = RoundedCornerShape(8.dp),
+				spotColor = Color.White.copy(alpha = 0.25f)
+			)
+			.clickable { onItemClick(item.id) },
+	) {
+		Box(
+			modifier = Modifier.fillMaxSize()
 		) {
-
-			Box(
+			// Background Image
+			AsyncImage(
 				modifier = Modifier
-					.height(150.dp),
+					.fillMaxSize()
+					.background(DarkGrey),
+				model = ImageRequest.Builder(LocalContext.current)
+					.data(item.imageUrl)
+					.crossfade(true)
+					.build(),
+				contentDescription = stringResource(R.string.item_grid_image),
+				contentScale = contentScale
+			)
+
+			// Page Counter
+			Surface(
+				modifier = Modifier
+					.height(18.dp)
+					.width(32.dp)
+					.align(Alignment.TopEnd)
+					.clip(RoundedCornerShape(2.dp)),
+				color = ForestGreen10Dark,
 			) {
-				AsyncImage(
-					modifier = Modifier
-						.fillMaxSize()
-						.background(DarkGrey),
-					model = ImageRequest.Builder(LocalContext.current)
-						.data(it[pageIndex].imageUrl)
-						.crossfade(true)
-						.build(),
-					contentDescription = stringResource(R.string.item_grid_image),
-					contentScale = contentScale
+				Text(
+					text = "${pageIndex + 1}/$totalSize",
+					modifier = Modifier.fillMaxWidth(),
+					textAlign = TextAlign.Center,
+					color = Color.White,
+					style = MaterialTheme.typography.labelSmall
 				)
-				Surface(
+			}
+
+			// Bottom Bar with Name
+			Surface(
+				modifier = Modifier
+					.align(Alignment.BottomStart)
+					.fillMaxHeight(0.2f)
+					.fillMaxWidth(),
+				tonalElevation = 0.dp,
+				color = Color.Black.copy(alpha = ContentAlpha.medium),
+			) {
+				Text(
 					modifier = Modifier
-						.height(18.dp)
-						.width(32.dp)
-						.align(Alignment.TopEnd)
-						.clip(RoundedCornerShape(2.dp)),
-					color = ForestGreen10Dark,
-				) {
-					Text(
-						text = "${pageIndex + 1}/${size}",
-						modifier = Modifier.fillMaxWidth(),
-						textAlign = TextAlign.Center,
-						color = Color.White,
-						style = MaterialTheme.typography.labelSmall
-					)
-				}
-				Surface(
-					modifier = Modifier
-						.align(Alignment.BottomStart)
-						.fillMaxHeight(0.2f)
-						.fillMaxWidth(),
-					tonalElevation = 0.dp,
-					color = Color.Black.copy(alpha = ContentAlpha.medium),
-				) {
-					Text(
-						modifier = Modifier
-							.padding
-								(horizontal = 5.dp)
-							.wrapContentHeight(align = Alignment.CenterVertically),
-						text = it[pageIndex]?.name.toString(),
-						maxLines = 1,
-						overflow = TextOverflow.Ellipsis,
-						color = Color.White,
-						style = MaterialTheme.typography.labelLarge,
-					)
-				}
+						.padding(horizontal = 5.dp)
+						.wrapContentHeight(align = Alignment.CenterVertically),
+					text = item.name,
+					maxLines = 1,
+					overflow = TextOverflow.Ellipsis,
+					color = Color.White,
+					style = MaterialTheme.typography.labelLarge,
+				)
 			}
 		}
 	}
@@ -268,9 +278,10 @@ fun PreviewHorizontalPagerItem() {
 		pagerState = pagerState,
 		list = creatureList,
 		pageIndex = 0,
-		size = 10,
+		totalSize = 10,
 		contentScale = ContentScale.Crop,
 		onItemClick = {},
+		itemSize =150.dp
 	)
 }
 
