@@ -50,6 +50,7 @@ import com.rabbitv.valheimviki.presentation.favorite.model.FavoriteCategory
 import com.rabbitv.valheimviki.presentation.favorite.model.UiStateFavorite
 import com.rabbitv.valheimviki.presentation.favorite.viewmodel.FavoriteViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
+import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_THREE_COLUMNS
 import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_TWO_COLUMNS
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import kotlinx.coroutines.launch
@@ -93,7 +94,7 @@ fun FavoriteScreenContent(
 		derivedStateOf { lazyGridState.firstVisibleItemIndex >= 2 }
 	}
 
-
+	val chips = remember { getChipsForCategory() }
 	Scaffold(
 		topBar = {
 			SimpleTopBar(
@@ -139,7 +140,7 @@ fun FavoriteScreenContent(
 					is UiState.Success<UiStateFavorite> -> {
 						item(span = { GridItemSpan(2) }) {
 							SearchFilterBar(
-								chips = getChipsForCategory(),
+								chips = chips,
 								selectedOption = uiState.data.selectedCategory,
 								onSelectedChange = { _, category ->
 									if (uiState.data.selectedCategory == category) {
@@ -160,12 +161,17 @@ fun FavoriteScreenContent(
 						item(span = { GridItemSpan(2) }, key = "SlavicDivider2") {
 							SlavicDivider()
 						}
-						items(uiState.data.favorites, key = { favorite -> favorite.id })
-						{ favorite ->
+						items(
+							items = uiState.data.favorites,
+							key = { favorite -> favorite.id },
+							contentType = { "favorite_item" }
+						) { favorite ->
 							FavoriteGridItem(
 								item = favorite,
-								onItemClick = {},
-								height = ITEM_HEIGHT_TWO_COLUMNS
+								onItemClick = { id ->
+//									onItemClick(destination)
+								},
+								height = if (favorite.category == "ARMOR") ITEM_HEIGHT_THREE_COLUMNS else ITEM_HEIGHT_TWO_COLUMNS
 							)
 						}
 					}

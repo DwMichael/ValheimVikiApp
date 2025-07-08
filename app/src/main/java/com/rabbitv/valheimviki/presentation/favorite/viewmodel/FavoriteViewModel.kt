@@ -26,7 +26,7 @@ class FavoriteViewModel @Inject constructor(
 	private val _selectedCategory = MutableStateFlow<FavoriteCategory?>(null)
 
 	val uiState: StateFlow<UiState<UiStateFavorite>> = combine(
-		favoriteUseCases.getAllFavoritesUseCase(),
+		favoriteUseCases.getAllFavoritesUseCase().flowOn(Dispatchers.IO),
 		_selectedCategory
 	) { favorites, selectedCategory ->
 		UiState.Success(
@@ -37,7 +37,7 @@ class FavoriteViewModel @Inject constructor(
 				selectedCategory = selectedCategory
 			)
 		)
-	}.flowOn(Dispatchers.IO)
+	}.flowOn(Dispatchers.Default)
 		.stateIn(
 			viewModelScope,
 			SharingStarted.WhileSubscribed(5000),

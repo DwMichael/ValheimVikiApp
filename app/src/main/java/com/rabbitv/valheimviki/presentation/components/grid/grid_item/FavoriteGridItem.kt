@@ -28,6 +28,7 @@ import androidx.wear.compose.material.ContentAlpha
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import coil3.size.Size
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.repository.ItemData
 import com.rabbitv.valheimviki.ui.theme.MEDIUM_PADDING
@@ -52,8 +53,9 @@ fun FavoriteGridItem(
 			modifier = Modifier
 				.fillMaxSize()
 				.clip(RoundedCornerShape(MEDIUM_PADDING)),
-			model = ImageRequest.Builder(context = LocalContext.current)
+			model = ImageRequest.Builder(LocalContext.current)
 				.data(item.imageUrl)
+				.size { Size(300, 300) }
 				.crossfade(true)
 				.build(),
 			error = painterResource(R.drawable.ic_placeholder),
@@ -72,13 +74,11 @@ fun FavoriteGridItem(
 						bottomEnd = SMALL_PADDING
 					)
 				),
-			tonalElevation = 0.dp,
 			color = Color.Black.copy(alpha = ContentAlpha.medium),
 		) {
 			Text(
 				modifier = Modifier
-					.padding
-						(horizontal = 8.dp)
+					.padding(horizontal = 8.dp)
 					.wrapContentHeight(align = Alignment.CenterVertically),
 				text = item.name,
 				color = PrimaryWhite,
