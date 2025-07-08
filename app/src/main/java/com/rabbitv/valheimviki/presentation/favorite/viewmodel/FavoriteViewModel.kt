@@ -67,7 +67,7 @@ class FavoriteViewModel @Inject constructor(
 ) : ViewModel() {
 
 	private val favorites: StateFlow<List<String>> = favoriteUseCases.getAllFavoritesUseCase()
-		.map { favorites -> favorites.map { it.itemId } }
+		.map { favorites -> favorites.map { it.id } }
 		.flowOn(Dispatchers.Default)
 		.stateIn(
 			viewModelScope,
