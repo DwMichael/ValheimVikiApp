@@ -47,7 +47,7 @@ import com.rabbitv.valheimviki.domain.model.weapon.Weapon
 		Tree::class, Food::class, Weapon::class,
 		Armor::class, Mead::class, ItemTool::class,
 		BuildingMaterial::class, CraftingObject::class],
-	version = 25,
+	version = 27,
 	exportSchema = false
 )
 @TypeConverters(Converters::class)

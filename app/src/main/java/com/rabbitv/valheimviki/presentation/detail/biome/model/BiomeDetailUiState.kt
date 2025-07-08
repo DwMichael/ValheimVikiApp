@@ -9,13 +9,14 @@ import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
 import com.rabbitv.valheimviki.domain.model.tree.Tree
 
 data class BiomeDetailUiState(
-    val biome: Biome? = null,
-    val mainBoss: MainBoss? = null,
-    val relatedCreatures: List<Creature> = emptyList(),
-    val relatedOreDeposits: List<OreDeposit> = emptyList(),
-    val relatedMaterials: List<Material> = emptyList(),
-    val relatedPointOfInterest: List<PointOfInterest> = emptyList(),
-    val relatedTrees: List<Tree> = emptyList(),
-    val isLoading: Boolean = false,
-    val error: String? = null
+	val biome: Biome? = null,
+	val mainBoss: MainBoss? = null,
+	val relatedCreatures: List<Creature> = emptyList(),
+	val relatedOreDeposits: List<OreDeposit> = emptyList(),
+	val relatedMaterials: List<Material> = emptyList(),
+	val relatedPointOfInterest: List<PointOfInterest> = emptyList(),
+	val relatedTrees: List<Tree> = emptyList(),
+	val isFavorite: Boolean = false,
+	val isLoading: Boolean = false,
+	val error: String? = null
 )

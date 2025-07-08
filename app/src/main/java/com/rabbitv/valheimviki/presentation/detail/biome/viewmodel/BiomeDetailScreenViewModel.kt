@@ -11,12 +11,14 @@ import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.model.creature.CreatureSubCategory
 import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
+import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
 import com.rabbitv.valheimviki.domain.model.tree.Tree
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
+import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.ore_deposit.OreDepositUseCases
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.PointOfInterestUseCases
@@ -34,6 +36,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -48,7 +51,8 @@ class BiomeDetailScreenViewModel @Inject constructor(
 	private val materialUseCases: MaterialUseCases,
 	private val pointOfInterestUseCases: PointOfInterestUseCases,
 	private val treeUseCases: TreeUseCases,
-	private val oreDepositUseCases: OreDepositUseCases
+	private val oreDepositUseCases: OreDepositUseCases,
+	private val favoriteUseCases: FavoriteUseCases,
 ) : ViewModel() {
 	private val _biomeId: String = checkNotNull(savedStateHandle[BIOME_ARGUMENT_KEY])
 	private val _biome = MutableStateFlow<Biome?>(null)
@@ -61,6 +65,13 @@ class BiomeDetailScreenViewModel @Inject constructor(
 	private val _isLoading = MutableStateFlow(true)
 	private val _error = MutableStateFlow<String?>(null)
 
+	private val _isFavorite = favoriteUseCases.isFavorite(_biomeId)
+		.flowOn(Dispatchers.IO)
+		.stateIn(
+			scope = viewModelScope,
+			started = SharingStarted.Eagerly,
+			initialValue = false
+		)
 	val biomeUiState: StateFlow<BiomeDetailUiState> = combine(
 		_biome,
 		_mainBoss,
@@ -69,6 +80,7 @@ class BiomeDetailScreenViewModel @Inject constructor(
 		_relatedMaterials,
 		_relatedPointOfInterest,
 		_relatedTrees,
+		_isFavorite,
 		_isLoading,
 		_error
 	) { values ->
@@ -80,8 +92,9 @@ class BiomeDetailScreenViewModel @Inject constructor(
 			relatedMaterials = values[4] as List<Material>,
 			relatedPointOfInterest = values[5] as List<PointOfInterest>,
 			relatedTrees = values[6] as List<Tree>,
-			isLoading = values[7] as Boolean,
-			error = values[8] as String?
+			isFavorite = values[7] as Boolean,
+			isLoading = values[8] as Boolean,
+			error = values[9] as String?
 		)
 	}.stateIn(
 		scope = viewModelScope,
@@ -172,6 +185,16 @@ class BiomeDetailScreenViewModel @Inject constructor(
 			} catch (e: Exception) {
 				Log.e("General fetch error BiomeDetailViewModel", e.message.toString())
 				_isLoading.value = false
+			}
+		}
+	}
+
+	fun toggleFavorite(favorite: Favorite, currentIsFavorite: Boolean) {
+		viewModelScope.launch {
+			if (currentIsFavorite) {
+				favoriteUseCases.deleteFavoriteUseCase(favorite)
+			} else {
+				favoriteUseCases.addFavoriteUseCase(favorite)
 			}
 		}
 	}

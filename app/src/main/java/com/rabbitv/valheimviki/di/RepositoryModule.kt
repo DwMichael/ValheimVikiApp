@@ -109,6 +109,7 @@ import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
 import com.rabbitv.valheimviki.domain.use_cases.favorite.add_to_favorite.AddFavoriteUseCase
 import com.rabbitv.valheimviki.domain.use_cases.favorite.delete_from_favorite.DeleteFavoriteUseCase
 import com.rabbitv.valheimviki.domain.use_cases.favorite.get_all_favorite_items.GetAllFavoritesUseCase
+import com.rabbitv.valheimviki.domain.use_cases.favorite.is_favorite.IsFavoriteUseCase
 import com.rabbitv.valheimviki.domain.use_cases.food.FoodUseCases
 import com.rabbitv.valheimviki.domain.use_cases.food.get_food_by_id.GetFoodByIdUseCase
 import com.rabbitv.valheimviki.domain.use_cases.food.get_food_list_by_ids.GetFoodListByIdsUseCase
@@ -361,7 +362,8 @@ object RepositoryModule {
 		return FavoriteUseCases(
 			getAllFavoritesUseCase = GetAllFavoritesUseCase(favoriteRepository),
 			deleteFavoriteUseCase = DeleteFavoriteUseCase(favoriteRepository),
-			addFavoriteUseCase = AddFavoriteUseCase(favoriteRepository)
+			addFavoriteUseCase = AddFavoriteUseCase(favoriteRepository),
+			isFavorite = IsFavoriteUseCase(favoriteRepository),
 		)
 	}
 

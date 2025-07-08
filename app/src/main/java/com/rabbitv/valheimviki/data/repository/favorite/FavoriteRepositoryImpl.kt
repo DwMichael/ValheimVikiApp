@@ -9,6 +9,10 @@ import javax.inject.Inject
 class FavoriteRepositoryImpl @Inject constructor(
 	private val favoriteDao: FavoriteDao
 ) : FavoriteRepository {
+	override fun isFavorite(id: String): Flow<Favorite?> {
+		return favoriteDao.isFavorite(id)
+	}
+
 	override fun getFavorites(): Flow<List<Favorite>> {
 		return favoriteDao.getAllFavorites()
 	}

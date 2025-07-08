@@ -39,16 +39,19 @@ import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.PawPrint
 import com.composables.icons.lucide.Pickaxe
 import com.composables.icons.lucide.Trees
+import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
+import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.LocalSharedTransitionScope
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.navigation.WorldDetailDestination
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
-import com.rabbitv.valheimviki.presentation.components.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
+import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
 import com.rabbitv.valheimviki.presentation.components.card.card_image.ImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerSection
@@ -70,6 +73,13 @@ fun BiomeDetailScreen(
 	animatedVisibilityScope: AnimatedVisibilityScope
 ) {
 	val biomeUiState by viewModel.biomeUiState.collectAsStateWithLifecycle()
+	val onToggleFavorite = { favorite: Favorite, isFavorite: Boolean ->
+		viewModel.toggleFavorite(
+			favorite = favorite,
+			currentIsFavorite = isFavorite
+		)
+	}
+
 	val sharedTransitionScope = LocalSharedTransitionScope.current
 		?: throw IllegalStateException("No Scope found")
 
@@ -78,7 +88,8 @@ fun BiomeDetailScreen(
 		onItemClick = onItemClick,
 		sharedTransitionScope = sharedTransitionScope,
 		animatedVisibilityScope = animatedVisibilityScope,
-		biomeUiState = biomeUiState
+		biomeUiState = biomeUiState,
+		onToggleFavorite = onToggleFavorite
 	)
 
 }
@@ -88,7 +99,8 @@ fun BiomeDetailScreen(
 @Composable
 fun BiomeDetailContent(
 	onBack: () -> Unit,
-	onItemClick:  (destination: DetailDestination) -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
+	onToggleFavorite: (favorite: Favorite, currentIsFavorite: Boolean) -> Unit,
 	biomeUiState: BiomeDetailUiState,
 	sharedTransitionScope: SharedTransitionScope,
 	animatedVisibilityScope: AnimatedVisibilityScope,
@@ -206,8 +218,11 @@ fun BiomeDetailContent(
 									itemData = mainBoss,
 									subTitle = "BOSS",
 									onItemClick = { clickedItemId ->
-										val destination = NavigationHelper.routeToCreature(biomeUiState.mainBoss.subCategory, biomeUiState.mainBoss.id)
-											onItemClick(destination)
+										val destination = NavigationHelper.routeToCreature(
+											biomeUiState.mainBoss.subCategory,
+											biomeUiState.mainBoss.id
+										)
+										onItemClick(destination)
 									},
 								)
 							}
@@ -217,9 +232,13 @@ fun BiomeDetailContent(
 									list = biomeUiState.relatedCreatures,
 									data = creatureData,
 									onItemClick = { clickedItemId ->
-										val creature = biomeUiState.relatedCreatures.find { it.id == clickedItemId }
+										val creature =
+											biomeUiState.relatedCreatures.find { it.id == clickedItemId }
 										creature?.let {
-											val destination = NavigationHelper.routeToCreature(it.subCategory.toString(), it.id)
+											val destination = NavigationHelper.routeToCreature(
+												it.subCategory.toString(),
+												it.id
+											)
 											onItemClick(destination)
 										}
 									},
@@ -232,7 +251,8 @@ fun BiomeDetailContent(
 									list = biomeUiState.relatedOreDeposits,
 									data = oreDepositData,
 									onItemClick = { clickedItemId ->
-										val destination = WorldDetailDestination.OreDepositDetail(oreDepositId = clickedItemId)
+										val destination =
+											WorldDetailDestination.OreDepositDetail(oreDepositId = clickedItemId)
 										onItemClick(destination)
 									},
 								)
@@ -244,9 +264,13 @@ fun BiomeDetailContent(
 									list = biomeUiState.relatedMaterials,
 									data = materialData,
 									onItemClick = { clickedItemId ->
-										val material = biomeUiState.relatedMaterials.find { it.id == clickedItemId }
+										val material =
+											biomeUiState.relatedMaterials.find { it.id == clickedItemId }
 										material?.let {
-											val destination = NavigationHelper.routeToMaterial(it.subCategory, it.id)
+											val destination = NavigationHelper.routeToMaterial(
+												it.subCategory,
+												it.id
+											)
 											onItemClick(destination)
 										}
 									}
@@ -259,7 +283,10 @@ fun BiomeDetailContent(
 									list = biomeUiState.relatedPointOfInterest,
 									data = pointOfInterestData,
 									onItemClick = { clickedItemId ->
-										val destination = WorldDetailDestination.PointOfInterestDetail(pointOfInterestId = clickedItemId)
+										val destination =
+											WorldDetailDestination.PointOfInterestDetail(
+												pointOfInterestId = clickedItemId
+											)
 										onItemClick(destination)
 									}
 								)
@@ -270,7 +297,8 @@ fun BiomeDetailContent(
 									list = biomeUiState.relatedTrees,
 									data = treeData,
 									onItemClick = { clickedItemId ->
-										val destination = WorldDetailDestination.TreeDetail(treeId = clickedItemId)
+										val destination =
+											WorldDetailDestination.TreeDetail(treeId = clickedItemId)
 										onItemClick(destination)
 									}
 								)
@@ -284,6 +312,15 @@ fun BiomeDetailContent(
 									.padding(16.dp),
 								scrollState = scrollState,
 								onBack = onBack,
+							)
+							FavoriteButton(
+								modifier = Modifier
+									.align(Alignment.TopEnd)
+									.padding(16.dp),
+								isFavorite = biomeUiState.isFavorite,
+								onToggleFavorite ={
+									onToggleFavorite(biomeUiState.biome.toFavorite(), biomeUiState.isFavorite)
+								} ,
 							)
 						}
 					}
@@ -348,6 +385,7 @@ fun PreviewBiomeDetailContent() {
 					animatedVisibilityScope = this,
 					biomeUiState = uiState,
 					onItemClick = { _ -> {} },
+					onToggleFavorite = {_,_ -> {}},
 				)
 			}
 		}
