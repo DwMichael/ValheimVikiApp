@@ -1,24 +1,17 @@
 package com.rabbitv.valheimviki.presentation.favorite.viewmodel
 
-import com.rabbitv.valheimviki.domain.model.armor.Armor
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.model.biome.Biome
-import com.rabbitv.valheimviki.domain.model.building_material.BuildingMaterial
-import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 import com.rabbitv.valheimviki.domain.model.creature.Creature
-import com.rabbitv.valheimviki.domain.model.food.Food
-import com.rabbitv.valheimviki.domain.model.item_tool.ItemTool
-import com.rabbitv.valheimviki.domain.model.material.Material
-import com.rabbitv.valheimviki.domain.model.mead.Mead
-import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
-import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
-import com.rabbitv.valheimviki.domain.model.tree.Tree
+import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.ui_state.ui_state.UiState
-import com.rabbitv.valheimviki.domain.model.weapon.Weapon
 import com.rabbitv.valheimviki.domain.use_cases.armor.ArmorUseCases
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.building_material.BuildMaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.CraftingObjectUseCases
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
+import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
 import com.rabbitv.valheimviki.domain.use_cases.food.FoodUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.mead.MeadUseCases
@@ -27,12 +20,22 @@ import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.PointOfInteres
 import com.rabbitv.valheimviki.domain.use_cases.tool.ToolUseCases
 import com.rabbitv.valheimviki.domain.use_cases.tree.TreeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.weapon.WeaponUseCases
+import com.rabbitv.valheimviki.presentation.favorite.model.UiStateFavorite
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class FavoriteViewModel @Inject constructor(
+	private val favoriteUseCases: FavoriteUseCases,
 	private val biomeUseCases: BiomeUseCases,
 	private val creatureUseCases: CreatureUseCases,
 	private val weaponUseCases: WeaponUseCases,
@@ -46,22 +49,57 @@ class FavoriteViewModel @Inject constructor(
 	private val oreDepositUseCases: OreDepositUseCases,
 	private val treeUseCases: TreeUseCases,
 	private val pointOfInterestUseCases: PointOfInterestUseCases
-) {
-	private val biomes = MutableStateFlow<UiState<List<Biome>>>(UiState.Loading())
-	private val creatures = MutableStateFlow<UiState<List<Creature>>>(UiState.Loading())
-	private val weapons = MutableStateFlow<UiState<List<Weapon>>>(UiState.Loading())
-	private val armors = MutableStateFlow<UiState<List<Armor>>>(UiState.Loading())
-	private val food = MutableStateFlow<UiState<List<Food>>>(UiState.Loading())
-	private val meads = MutableStateFlow<UiState<List<Mead>>>(UiState.Loading())
-	private val craftingObjects = MutableStateFlow<UiState<List<CraftingObject>>>(UiState.Loading())
-	private val tools = MutableStateFlow<UiState<List<ItemTool>>>(UiState.Loading())
-	private val materials = MutableStateFlow<UiState<List<Material>>>(UiState.Loading())
-	private val buildingMaterials =
-		MutableStateFlow<UiState<List<BuildingMaterial>>>(UiState.Loading())
-	private val oreDeposits = MutableStateFlow<UiState<List<OreDeposit>>>(UiState.Loading())
-	private val trees = MutableStateFlow<UiState<List<Tree>>>(UiState.Loading())
-	private val pointsOfInterest =
-		MutableStateFlow<UiState<List<PointOfInterest>>>(UiState.Loading())
+) : ViewModel() {
 
+	private val favorites: StateFlow<List<String>> = favoriteUseCases.getAllFavoritesUseCase()
+		.map { favorites -> favorites.map { it.itemId } }
+		.stateIn(
+			viewModelScope,
+			SharingStarted.WhileSubscribed(5000),
+			emptyList()
+		)
 
+	@OptIn(ExperimentalCoroutinesApi::class)
+	val uiState: StateFlow<UiStateFavorite> = combine(
+		// Biomes
+		favorites.flatMapLatest { favoriteIds ->
+			biomeUseCases.getBiomesByIdsUseCase(favoriteIds)
+				.map { UiState.Success(it) as UiState<List<Biome>> }
+				.catch { emit(UiState.Error(it.message ?: "Error loading biomes")) }
+		},
+
+		// Creatures
+		favorites.flatMapLatest { favoriteIds ->
+			creatureUseCases.getCreaturesByIds(favoriteIds)
+				.map { UiState.Success(it) as UiState<List<Creature>> }
+				.catch { emit(UiState.Error(it.message ?: "Error loading creatures")) }
+		}
+	) { biomes, creatures ->
+		UiStateFavorite(
+			biomes = biomes,
+			creatures = creatures,
+//          weapons = values[2] as UiState<List<Weapon>>,
+//          armors = values[3] as UiState<List<Armor>>,
+//          foods = values[4] as UiState<List<Food>>,
+//          meads = values[5] as UiState<List<Mead>>,
+//          craftingObjects = values[6] as UiState<List<CraftingObject>>,
+//          tools = values[7] as UiState<List<ItemTool>>,
+//          materials = values[8] as UiState<List<Material>>,
+//          buildingMaterials = values[9] as UiState<List<BuildingMaterial>>,
+//          oreDeposits = values[10] as UiState<List<OreDeposit>>,
+//          trees = values[11] as UiState<List<Tree>>,
+//          pointsOfInterest = values[12] as UiState<List<PointOfInterest>>
+		)
+	}.stateIn(
+		viewModelScope,
+		SharingStarted.WhileSubscribed(5000),
+		UiStateFavorite() // All fields default to Loading
+	)
+
+	fun removeFavorite(favorite: Favorite) {
+		viewModelScope.launch {
+			favoriteUseCases.deleteFavoriteUseCase(favorite)
+		}
+	}
 }
+
