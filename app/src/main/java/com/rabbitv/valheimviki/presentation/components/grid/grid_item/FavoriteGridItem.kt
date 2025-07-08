@@ -19,61 +19,59 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.ContentAlpha
 import coil3.compose.AsyncImage
+import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import coil3.request.crossfade
-import coil3.size.Size
-import com.rabbitv.valheimviki.R
+import coil3.size.Scale
 import com.rabbitv.valheimviki.domain.repository.ItemData
 import com.rabbitv.valheimviki.ui.theme.MEDIUM_PADDING
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
-import com.rabbitv.valheimviki.ui.theme.SMALL_PADDING
+import com.rabbitv.valheimviki.ui.theme.Shapes
 
 @Composable
 fun FavoriteGridItem(
+	imageModifier: Modifier = Modifier.fillMaxSize(),
 	item: ItemData,
 	onItemClick: (String) -> Unit,
 	height: Dp,
+	contentScale: ContentScale = ContentScale.Crop,
+	imageBg: @Composable () -> Unit = {}
 ) {
+
 	Box(
 		modifier = Modifier
 			.height(height)
-			.clickable {
-				onItemClick(item.id)
-			},
+			.clip(Shapes.large)
+			.clickable { onItemClick(item.id) },
 		contentAlignment = Alignment.BottomStart
 	) {
+		imageBg()
 		AsyncImage(
-			modifier = Modifier
-				.fillMaxSize()
+			modifier = imageModifier
 				.clip(RoundedCornerShape(MEDIUM_PADDING)),
 			model = ImageRequest.Builder(LocalContext.current)
 				.data(item.imageUrl)
-				.size { Size(300, 300) }
+				.memoryCacheKey(item.id)
+				.diskCacheKey(item.id)
+				.size(400)
 				.crossfade(true)
+				.scale(Scale.FILL)
+				.memoryCachePolicy(CachePolicy.ENABLED)
+				.diskCachePolicy(CachePolicy.ENABLED)
 				.build(),
-			error = painterResource(R.drawable.ic_placeholder),
-			placeholder = painterResource(R.drawable.ic_placeholder),
-			contentDescription = stringResource(R.string.item_grid_image),
-			contentScale = ContentScale.Crop,
+			contentDescription = null,
+			contentScale = contentScale,
 		)
 
 		Surface(
 			modifier = Modifier
 				.fillMaxHeight(0.2f)
-				.fillMaxWidth()
-				.clip(
-					RoundedCornerShape(
-						bottomStart = SMALL_PADDING,
-						bottomEnd = SMALL_PADDING
-					)
-				),
+				.fillMaxWidth(),
 			color = Color.Black.copy(alpha = ContentAlpha.medium),
 		) {
 			Text(
@@ -84,6 +82,7 @@ fun FavoriteGridItem(
 				color = PrimaryWhite,
 				style = MaterialTheme.typography.titleMedium,
 				overflow = TextOverflow.Ellipsis,
+				maxLines = 1
 			)
 		}
 	}

@@ -33,6 +33,7 @@ class FavoriteViewModel @Inject constructor(
 			UiStateFavorite(
 				favorites = favorites.asSequence()
 					.filter { selectedCategory == null || it.category == selectedCategory.toString() }
+					.sortedBy { it.name }
 					.toList(),
 				selectedCategory = selectedCategory
 			)
