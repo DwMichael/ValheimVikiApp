@@ -18,6 +18,10 @@ sealed interface TopLevelDestination : NavigationDestination {
 
 	@Serializable
 	data object Home : TopLevelDestination
+
+	@Serializable
+	data object Favorite : TopLevelDestination
+
 }
 
 @Serializable
