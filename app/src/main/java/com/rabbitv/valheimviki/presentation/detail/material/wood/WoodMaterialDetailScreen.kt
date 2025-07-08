@@ -35,7 +35,7 @@ import com.composables.icons.lucide.Trees
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.WorldDetailDestination
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
-import com.rabbitv.valheimviki.presentation.components.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData

@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
@@ -80,7 +79,8 @@ fun HorizontalPagerSection(
 	maxHeight: Dp = 240.dp,
 	minHeight: Dp = 210.dp,
 	pageWidth: Dp = 160.dp,
-	itemSize: Dp = 150.dp
+	itemHeight: Dp = 150.dp,
+	itemWidth: Dp = 150.dp
 ) {
 	val state = rememberPagerState(pageCount = { list.size })
 	val screenWidth = LocalConfiguration.current.screenWidthDp.dp
@@ -122,7 +122,8 @@ fun HorizontalPagerSection(
 					contentScale = data.itemContentScale,
 					totalSize = list.size,
 					onItemClick = onItemClick,
-					itemSize = itemSize
+					itemHeight = itemHeight,
+					itemWidth = itemWidth
 				)
 			}
 		}
@@ -173,13 +174,15 @@ fun HorizontalPagerItem(
 	contentScale: ContentScale,
 	onItemClick: (itemId: String) -> Unit,
 	modifier: Modifier = Modifier,
-	itemSize: Dp,
+	itemHeight: Dp = 150.dp,
+	itemWidth: Dp = 150.dp
 ) {
 	val item = list.getOrNull(pageIndex) ?: return
 
 	Card(
 		modifier = modifier
-			.size(itemSize)
+			.height(itemHeight)
+			.width(itemWidth)
 			.graphicsLayer {
 				val pageOffset = (
 						(pagerState.currentPage - pageIndex) + pagerState
@@ -281,7 +284,8 @@ fun PreviewHorizontalPagerItem() {
 		totalSize = 10,
 		contentScale = ContentScale.Crop,
 		onItemClick = {},
-		itemSize =150.dp
+		itemHeight = 150.dp,
+		itemWidth = 150.dp
 	)
 }
 

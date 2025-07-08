@@ -17,9 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -34,7 +32,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.composables.icons.lucide.Clock2
 import com.composables.icons.lucide.CookingPot
-import com.composables.icons.lucide.FlaskRound
 import com.composables.icons.lucide.Heart
 import com.composables.icons.lucide.Info
 import com.composables.icons.lucide.Layers2
@@ -45,14 +42,12 @@ import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 import com.rabbitv.valheimviki.domain.model.food.Food
 import com.rabbitv.valheimviki.domain.model.food.FoodSubCategory
-import com.rabbitv.valheimviki.domain.model.mead.MeadSubCategory
-import com.rabbitv.valheimviki.domain.repository.Droppable
 import com.rabbitv.valheimviki.navigation.BuildingDetailDestination
 import com.rabbitv.valheimviki.navigation.ConsumableDetailDestination
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
-import com.rabbitv.valheimviki.presentation.components.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
@@ -64,7 +59,6 @@ import com.rabbitv.valheimviki.presentation.components.horizontal_pager.Horizont
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
 import com.rabbitv.valheimviki.presentation.components.section_header.SectionHeader
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
-import com.rabbitv.valheimviki.presentation.detail.creature.components.horizontal_pager.DroppedItemsSection
 import com.rabbitv.valheimviki.presentation.detail.food.model.FoodDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.food.model.RecipeFoodData
 import com.rabbitv.valheimviki.presentation.detail.food.model.RecipeMaterialData

@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.components
+package com.rabbitv.valheimviki.presentation.components.dividers
 
 import android.graphics.Path
 import androidx.compose.foundation.Canvas
@@ -24,53 +24,58 @@ import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 
 @Composable
 fun SlavicDivider() {
-    val desiredHeight = 16.dp
-    Box(
-        modifier = Modifier.padding(vertical = BODY_CONTENT_PADDING.dp)
+	val desiredHeight = 16.dp
+	Box(
+		modifier = Modifier
+            .padding(vertical = BODY_CONTENT_PADDING.dp)
             .fillMaxWidth()
             .height(desiredHeight),
-        contentAlignment = Alignment.Center
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(modifier = Modifier.weight(1f).rotate(180f)) {
-                SharpWhiteLine()
-            }
-            Image(
-                painter = painterResource(id = R.drawable.divider_image),
-                contentDescription = "Divider Image",
-                contentScale = ContentScale.Fit,
-                modifier = Modifier.height(desiredHeight) // Adjust height as needed
-            )
-            Box(modifier = Modifier.weight(1f)) {
-                SharpWhiteLine()
-            }
-        }
-    }
+		contentAlignment = Alignment.Center
+	) {
+		Row(
+			verticalAlignment = Alignment.CenterVertically
+		) {
+			Box(modifier = Modifier
+                .weight(1f)
+                .rotate(180f)) {
+				SharpWhiteLine()
+			}
+			Image(
+				painter = painterResource(id = R.drawable.divider_image),
+				contentDescription = "Divider Image",
+				contentScale = ContentScale.Fit,
+				modifier = Modifier.height(desiredHeight) // Adjust height as needed
+			)
+			Box(modifier = Modifier.weight(1f)) {
+				SharpWhiteLine()
+			}
+		}
+	}
 }
 
 @Composable
 fun SharpWhiteLine() {
-    Canvas(
-        modifier = Modifier.fillMaxWidth().fillMaxHeight()
-    ) {
-        val path = Path()
-        val startPoint = Offset(0f, size.height / 2)
-        val endPoint = Offset(size.width, size.height / 2)
+	Canvas(
+		modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+	) {
+		Path()
+		val startPoint = Offset(0f, size.height / 2)
+		val endPoint = Offset(size.width, size.height / 2)
 
 
-        val gradientBrush = Brush.linearGradient(
-            colors = listOf(Color.White, Color.White.copy(alpha = 0f)),
-            start = startPoint,
-            end = endPoint
-        )
+		val gradientBrush = Brush.linearGradient(
+			colors = listOf(Color.White, Color.White.copy(alpha = 0f)),
+			start = startPoint,
+			end = endPoint
+		)
 
-        drawLine(
-            brush = gradientBrush,
-            start = startPoint,
-            end = endPoint,
-            strokeWidth = 2.dp.toPx()
-        )
-    }
+		drawLine(
+			brush = gradientBrush,
+			start = startPoint,
+			end = endPoint,
+			strokeWidth = 2.dp.toPx()
+		)
+	}
 }
