@@ -86,7 +86,6 @@ fun NavigationDrawer(
 	selectedItem: DrawerItem,
 	isDetailScreen: Boolean,
 	isTransitionActive: Boolean,
-	onItemSelected: (DrawerItem) -> Unit,
 	content: @Composable () -> Unit,
 ) {
 	ModalNavigationDrawer(
@@ -101,7 +100,6 @@ fun NavigationDrawer(
 				selectedItem = selectedItem,
 				onItemClick = { item ->
 					if (item != selectedItem) {
-						onItemSelected(item)
 						childNavController.navigate(item.navigationDestination) {
 							popUpTo(childNavController.graph.findStartDestination().id) {
 								saveState = true
@@ -353,7 +351,6 @@ private fun PreviewNavigationDrawer() {
 			content = {},
 			isDetailScreen = false,
 			isTransitionActive = false,
-			onItemSelected = {}
 		)
 	}
 }

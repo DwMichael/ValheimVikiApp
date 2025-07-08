@@ -189,9 +189,6 @@ fun MainContainer(
 		items = drawerItems,
 		selectedItem = selectedItem,
 		isDetailScreen = showTopAppBar,
-		onItemSelected = { item ->
-
-		},
 		isTransitionActive = running,
 	) {
 		Scaffold(
