@@ -7,11 +7,13 @@ import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.mapper.CreatureFactory
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.aggresive.AggressiveCreature
+import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.food.FoodDrop
 import com.rabbitv.valheimviki.domain.model.material.MaterialDrop
 import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
+import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
 import com.rabbitv.valheimviki.domain.use_cases.food.FoodUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
@@ -26,6 +28,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -37,6 +40,7 @@ class AggressiveCreatureDetailScreenViewModel @Inject constructor(
 	private val biomeUseCases: BiomeUseCases,
 	private val materialUseCases: MaterialUseCases,
 	private val foodUseCase: FoodUseCases,
+	private val favoriteUseCases: FavoriteUseCases,
 ) : ViewModel() {
 	private val _aggressiveCreatureId: String =
 		checkNotNull(savedStateHandle[AGGRESSIVE_CREATURE_KEY])
@@ -53,6 +57,8 @@ class AggressiveCreatureDetailScreenViewModel @Inject constructor(
 		_biome,
 		_materialDropItem,
 		_foodDropItem,
+		favoriteUseCases.isFavorite(_aggressiveCreatureId)
+			.flowOn(Dispatchers.IO),
 		_isLoading,
 		_error,
 	) { values ->
@@ -62,8 +68,9 @@ class AggressiveCreatureDetailScreenViewModel @Inject constructor(
 			biome = values[1] as Biome?,
 			materialDrops = values[2] as List<MaterialDrop>,
 			foodDrops = values[3] as List<FoodDrop>,
-			isLoading = values[4] as Boolean,
-			error = values[5] as String?
+			isFavorite = values[4] as Boolean,
+			isLoading = values[5] as Boolean,
+			error = values[6] as String?
 		))
 	}.stateIn(
 		scope = viewModelScope,
@@ -190,6 +197,16 @@ class AggressiveCreatureDetailScreenViewModel @Inject constructor(
 				_error.value = e.message ?: "Unknown error occurred"
 			} finally {
 				_isLoading.value = false
+			}
+		}
+	}
+
+	fun toggleFavorite(favorite: Favorite, currentIsFavorite: Boolean) {
+		viewModelScope.launch {
+			if (currentIsFavorite) {
+				favoriteUseCases.deleteFavoriteUseCase(favorite)
+			} else {
+				favoriteUseCases.addFavoriteUseCase(favorite)
 			}
 		}
 	}

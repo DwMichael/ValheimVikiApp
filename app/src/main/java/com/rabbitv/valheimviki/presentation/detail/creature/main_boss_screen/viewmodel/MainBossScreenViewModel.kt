@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.mapper.CreatureFactory
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
+import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.material.MaterialSubCategory
 import com.rabbitv.valheimviki.domain.model.material.MaterialSubType
@@ -14,6 +15,7 @@ import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterestSubCategory
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
+import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.PointOfInterestUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
@@ -27,6 +29,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -38,7 +41,8 @@ class MainBossScreenViewModel @Inject constructor(
 	private val pointOfInterestUseCases: PointOfInterestUseCases,
 	private val materialUseCases: MaterialUseCases,
 	private val biomeUseCases: BiomeUseCases,
-	private val relationUseCases: RelationUseCases
+	private val relationUseCases: RelationUseCases,
+	private val favoriteUseCases: FavoriteUseCases,
 ) : ViewModel() {
 	private val mainBossId: String =
 		checkNotNull(savedStateHandle[MAIN_BOSS_ARGUMENT_KEY])
@@ -62,6 +66,8 @@ class MainBossScreenViewModel @Inject constructor(
 		_relatedSummoningItems,
 		_relatedBiome,
 		_trophy,
+		favoriteUseCases.isFavorite(mainBossId)
+			.flowOn(Dispatchers.IO),
 		_isLoading,
 		_error
 	) { values ->
@@ -74,8 +80,9 @@ class MainBossScreenViewModel @Inject constructor(
 			relatedSummoningItems = values[4] as List<Material>,
 			relatedBiome = values[5] as Biome?,
 			trophy = values[6] as Material?,
-			isLoading = values[7] as Boolean,
-			error = values[8] as String?
+			isFavorite = values[7] as Boolean,
+			isLoading = values[8] as Boolean,
+			error = values[9] as String?
 		))
 	}.stateIn(
 		scope = viewModelScope,
@@ -172,6 +179,16 @@ class MainBossScreenViewModel @Inject constructor(
 			Log.e("General fetch error BiomeDetailViewModel", e.message.toString())
 			_isLoading.value = false
 			_error.value = e.message
+		}
+	}
+
+	fun toggleFavorite(favorite: Favorite, currentIsFavorite: Boolean) {
+		viewModelScope.launch {
+			if (currentIsFavorite) {
+				favoriteUseCases.deleteFavoriteUseCase(favorite)
+			} else {
+				favoriteUseCases.addFavoriteUseCase(favorite)
+			}
 		}
 	}
 }

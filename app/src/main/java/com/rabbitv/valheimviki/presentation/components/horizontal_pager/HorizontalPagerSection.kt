@@ -80,7 +80,8 @@ fun HorizontalPagerSection(
 	minHeight: Dp = 210.dp,
 	pageWidth: Dp = 160.dp,
 	itemHeight: Dp = 150.dp,
-	itemWidth: Dp = 150.dp
+	itemWidth: Dp = 150.dp,
+	imagePadding: Dp = 0.dp
 ) {
 	val state = rememberPagerState(pageCount = { list.size })
 	val screenWidth = LocalConfiguration.current.screenWidthDp.dp
@@ -123,7 +124,8 @@ fun HorizontalPagerSection(
 					totalSize = list.size,
 					onItemClick = onItemClick,
 					itemHeight = itemHeight,
-					itemWidth = itemWidth
+					itemWidth = itemWidth,
+					imagePadding = imagePadding
 				)
 			}
 		}
@@ -167,15 +169,16 @@ fun HorizontalHeader(
 
 @Composable
 fun HorizontalPagerItem(
+	modifier: Modifier = Modifier,
 	pagerState: PagerState,
 	list: List<ItemData>,
 	pageIndex: Int,
 	totalSize: Int,
 	contentScale: ContentScale,
 	onItemClick: (itemId: String) -> Unit,
-	modifier: Modifier = Modifier,
 	itemHeight: Dp = 150.dp,
-	itemWidth: Dp = 150.dp
+	itemWidth: Dp = 150.dp,
+	imagePadding: Dp
 ) {
 	val item = list.getOrNull(pageIndex) ?: return
 
@@ -218,7 +221,9 @@ fun HorizontalPagerItem(
 			AsyncImage(
 				modifier = Modifier
 					.fillMaxSize()
-					.background(DarkGrey),
+					.background(DarkGrey)
+					.padding(imagePadding)
+				,
 				model = ImageRequest.Builder(LocalContext.current)
 					.data(item.imageUrl)
 					.crossfade(true)
@@ -285,7 +290,8 @@ fun PreviewHorizontalPagerItem() {
 		contentScale = ContentScale.Crop,
 		onItemClick = {},
 		itemHeight = 150.dp,
-		itemWidth = 150.dp
+		itemWidth = 150.dp,
+		imagePadding = 0.dp
 	)
 }
 

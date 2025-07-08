@@ -65,13 +65,7 @@ class BiomeDetailScreenViewModel @Inject constructor(
 	private val _isLoading = MutableStateFlow(true)
 	private val _error = MutableStateFlow<String?>(null)
 
-	private val _isFavorite = favoriteUseCases.isFavorite(_biomeId)
-		.flowOn(Dispatchers.IO)
-		.stateIn(
-			scope = viewModelScope,
-			started = SharingStarted.Eagerly,
-			initialValue = false
-		)
+
 	val biomeUiState: StateFlow<BiomeDetailUiState> = combine(
 		_biome,
 		_mainBoss,
@@ -80,7 +74,8 @@ class BiomeDetailScreenViewModel @Inject constructor(
 		_relatedMaterials,
 		_relatedPointOfInterest,
 		_relatedTrees,
-		_isFavorite,
+		favoriteUseCases.isFavorite(_biomeId)
+			.flowOn(Dispatchers.IO),
 		_isLoading,
 		_error
 	) { values ->

@@ -57,6 +57,8 @@ import com.composables.icons.lucide.TreePine
 import com.composables.icons.lucide.Trophy
 import com.composables.icons.lucide.Unlink
 import com.rabbitv.valheimviki.R
+import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
+import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.LocalSharedTransitionScope
 import com.rabbitv.valheimviki.navigation.NavigationHelper
@@ -65,6 +67,7 @@ import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
+import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
 import com.rabbitv.valheimviki.presentation.components.card.card_image.ImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCard
 import com.rabbitv.valheimviki.presentation.components.dividers.GreenTorchesDivider
@@ -91,11 +94,19 @@ fun MainBossDetailScreen(
 	animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
 	val mainBossUiState by viewModel.uiState.collectAsStateWithLifecycle()
+	val onToggleFavorite = { favorite: Favorite, isFavorite: Boolean ->
+		viewModel.toggleFavorite(
+			favorite = favorite,
+			currentIsFavorite = isFavorite
+		)
+	}
 	val sharedTransitionScope = LocalSharedTransitionScope.current
 		?: throw IllegalStateException("No Scope found")
+
 	MainBossContent(
 		onBack = onBack,
 		onItemClick = onItemClick,
+		onToggleFavorite = onToggleFavorite,
 		animatedVisibilityScope = animatedVisibilityScope,
 		sharedTransitionScope = sharedTransitionScope,
 		mainBossUiState = mainBossUiState
@@ -109,6 +120,7 @@ fun MainBossDetailScreen(
 fun MainBossContent(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
+	onToggleFavorite: (favorite: Favorite, currentIsFavorite: Boolean) -> Unit,
 	sharedTransitionScope: SharedTransitionScope,
 	animatedVisibilityScope: AnimatedVisibilityScope,
 	mainBossUiState: MainBossDetailUiState,
@@ -451,6 +463,15 @@ fun MainBossContent(
 								scrollState = scrollState,
 								onBack = onBack,
 							)
+							FavoriteButton(
+								modifier = Modifier
+									.align(Alignment.TopEnd)
+									.padding(16.dp),
+								isFavorite = mainBossUiState.isFavorite,
+								onToggleFavorite = {
+									onToggleFavorite(mainBossUiState.mainBoss.toFavorite(), mainBossUiState.isFavorite)
+								},
+							)
 						}
 					}
 
@@ -478,8 +499,8 @@ private fun PreviewCreatureDetail() {
 				animatedVisibilityScope = this,
 				sharedTransitionScope = this@SharedTransitionLayout,
 				mainBossUiState = MainBossDetailUiState(),
-
-				)
+				onToggleFavorite = {_,_->{}},
+			)
 		}
 	}
 

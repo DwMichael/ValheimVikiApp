@@ -8,6 +8,7 @@ data class BuildingMaterialUiState(
 	val materials: List<RequiredMaterial> = emptyList(),
 	val foods: List<RequiredFood> = emptyList(),
 	val craftingStation: List<CraftingObject> = emptyList(),
+	val isFavorite: Boolean = false,
 	val isLoading: Boolean = false,
 	val error: String? = null
 )

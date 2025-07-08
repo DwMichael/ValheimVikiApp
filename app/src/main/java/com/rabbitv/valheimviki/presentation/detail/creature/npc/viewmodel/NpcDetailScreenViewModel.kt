@@ -7,11 +7,13 @@ import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.mapper.CreatureFactory
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.npc.NPC
+import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.material.MaterialSubCategory
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
+import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.PointOfInterestUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
@@ -26,6 +28,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -37,6 +40,7 @@ class NpcDetailScreenViewModel @Inject constructor(
 	private val biomeUseCases: BiomeUseCases,
 	private val materialUseCases: MaterialUseCases,
 	private val pointOfInterestUseCases: PointOfInterestUseCases,
+	private val favoriteUseCases: FavoriteUseCases,
 ) : ViewModel() {
 	private val _npcId: String =
 		checkNotNull(savedStateHandle[NPC_KEY])
@@ -57,6 +61,8 @@ class NpcDetailScreenViewModel @Inject constructor(
 		_shopSellItems,
 		_hildirChests,
 		_chestsLocation,
+		favoriteUseCases.isFavorite(_npcId)
+			.flowOn(Dispatchers.IO),
 		_isLoading,
 		_error,
 	) { values ->
@@ -68,8 +74,9 @@ class NpcDetailScreenViewModel @Inject constructor(
 			shopSellItems = values[3] as List<Material>,
 			hildirChests = values[4] as List<Material>,
 			chestsLocation = values[5] as List<PointOfInterest>,
-			isLoading = values[6] as Boolean,
-			error = values[7] as String?
+			isFavorite = values[6] as Boolean,
+			isLoading = values[7] as Boolean,
+			error = values[8] as String?
 		))
 	}.stateIn(
 		scope = viewModelScope,
@@ -165,6 +172,16 @@ class NpcDetailScreenViewModel @Inject constructor(
 			Log.e("General fetch error PassiveDetailViewModel", e.message.toString())
 			_isLoading.value = false
 			_error.value = e.message
+		}
+	}
+
+	fun toggleFavorite(favorite: Favorite, currentIsFavorite: Boolean) {
+		viewModelScope.launch {
+			if (currentIsFavorite) {
+				favoriteUseCases.deleteFavoriteUseCase(favorite)
+			} else {
+				favoriteUseCases.addFavoriteUseCase(favorite)
+			}
 		}
 	}
 }

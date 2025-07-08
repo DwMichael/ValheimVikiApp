@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.model.armor.Armor
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 import com.rabbitv.valheimviki.domain.model.favorite.Favorite
-import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.material.MaterialUpgrade
 import com.rabbitv.valheimviki.domain.use_cases.armor.ArmorUseCases
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.CraftingObjectUseCases
@@ -52,19 +51,13 @@ class ArmorDetailViewModel @Inject constructor(
 	private val _isLoading: MutableStateFlow<Boolean> = MutableStateFlow(true)
 	private val _error: MutableStateFlow<String?> = MutableStateFlow(null)
 
-	private val _isFavorite = favoriteUseCases.isFavorite(_armorId)
-		.flowOn(Dispatchers.IO)
-		.stateIn(
-			scope = viewModelScope,
-			started = SharingStarted.Eagerly,
-			initialValue = false
-		)
 
 	val uiState: StateFlow<ArmorUiState> = combine(
 		_armor,
 		_relatedMaterials,
 		_relatedCraftingObjects,
-		_isFavorite,
+		favoriteUseCases.isFavorite(_armorId)
+			.flowOn(Dispatchers.IO),
 		_isLoading,
 		_error
 	) { values ->

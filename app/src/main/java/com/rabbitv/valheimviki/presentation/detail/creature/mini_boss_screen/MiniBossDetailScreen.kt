@@ -51,15 +51,18 @@ import com.composables.icons.lucide.Swords
 import com.composables.icons.lucide.Trophy
 import com.composables.icons.lucide.Unlink
 import com.rabbitv.valheimviki.R
+import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
+import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.LocalSharedTransitionScope
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.navigation.WorldDetailDestination
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
-import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
+import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
 import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCard
+import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDetailImageAnimated
@@ -80,12 +83,19 @@ fun MiniBossDetailScreen(
 	animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
 	val miniBossUiState by viewModel.uiState.collectAsStateWithLifecycle()
+	val onToggleFavorite = { favorite: Favorite, isFavorite: Boolean ->
+		viewModel.toggleFavorite(
+			favorite = favorite,
+			currentIsFavorite = isFavorite
+		)
+	}
 	val sharedTransitionScope = LocalSharedTransitionScope.current
 		?: throw IllegalStateException("No Scope found")
 
 	MiniBossContent(
 		onBack = onBack,
 		onItemClick = onItemClick,
+		onToggleFavorite = onToggleFavorite,
 		miniBossUiSate = miniBossUiState,
 		sharedTransitionScope = sharedTransitionScope,
 		animatedVisibilityScope = animatedVisibilityScope
@@ -98,6 +108,7 @@ fun MiniBossDetailScreen(
 fun MiniBossContent(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
+	onToggleFavorite: (favorite: Favorite, currentIsFavorite: Boolean) -> Unit,
 	miniBossUiSate: MiniBossDetailUiState,
 	sharedTransitionScope: SharedTransitionScope,
 	animatedVisibilityScope: AnimatedVisibilityScope
@@ -351,6 +362,18 @@ fun MiniBossContent(
 									.padding(16.dp),
 								scrollState = scrollState,
 								onBack = onBack,
+							)
+							FavoriteButton(
+								modifier = Modifier
+									.align(Alignment.TopEnd)
+									.padding(16.dp),
+								isFavorite = miniBossUiSate.isFavorite,
+								onToggleFavorite = {
+									onToggleFavorite(
+										miniBossUiSate.miniBoss.toFavorite(),
+										miniBossUiSate.isFavorite
+									)
+								},
 							)
 						}
 					}

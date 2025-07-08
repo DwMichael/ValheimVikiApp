@@ -38,16 +38,19 @@ import com.composables.icons.lucide.Shield
 import com.composables.icons.lucide.Swords
 import com.composables.icons.lucide.TrendingUp
 import com.composables.icons.lucide.Utensils
+import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingSubCategory
+import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.navigation.BuildingDetailDestination
 import com.rabbitv.valheimviki.navigation.ConsumableDetailDestination
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.EquipmentDetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
-import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
+import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
+import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.flow_row.flow_as_grid.TwoColumnGrid
 import com.rabbitv.valheimviki.presentation.components.grid.grid_item.CustomItemCard
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerWithHeaderData
@@ -69,13 +72,19 @@ import com.rabbitv.valheimviki.utils.FakeData
 fun CraftingDetailScreen(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
-	viewmodel: CraftingDetailViewModel = hiltViewModel()
+	viewModel: CraftingDetailViewModel = hiltViewModel()
 ) {
-	val uiState by viewmodel.uiState.collectAsStateWithLifecycle()
-
+	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+	val onToggleFavorite = { favorite: Favorite, isFavorite: Boolean ->
+		viewModel.toggleFavorite(
+			favorite = favorite,
+			currentIsFavorite = isFavorite
+		)
+	}
 	CraftingDetailContent(
 		onBack = onBack,
 		onItemClick = onItemClick,
+		onToggleFavorite = onToggleFavorite,
 		uiState = uiState
 	)
 
@@ -86,6 +95,7 @@ fun CraftingDetailScreen(
 fun CraftingDetailContent(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
+	onToggleFavorite: (favorite: Favorite, currentIsFavorite: Boolean) -> Unit,
 	uiState: CraftingDetailUiState,
 ) {
 	val scrollState = rememberScrollState()
@@ -420,6 +430,17 @@ fun CraftingDetailContent(
 				scrollState = scrollState,
 				onBack = onBack
 			)
+			FavoriteButton(
+				modifier = Modifier
+					.align(Alignment.TopEnd)
+					.padding(16.dp),
+				isFavorite = uiState.isFavorite,
+				onToggleFavorite = {
+					uiState.craftingObject?.let {
+						onToggleFavorite(uiState.craftingObject.toFavorite(), uiState.isFavorite)
+					}
+				},
+			)
 		}
 	}
 }
@@ -432,6 +453,7 @@ fun PreviewCraftingDetailContent() {
 		CraftingDetailContent(
 			onBack = {},
 			onItemClick = {},
+			onToggleFavorite = { _, _ -> {} },
 			uiState = CraftingDetailUiState(
 				craftingObject = FakeData.fakeCraftingObjectList()[0],
 				craftingUpgraderObjects = FakeData.fakeCraftingProductsList(),

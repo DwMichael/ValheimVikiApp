@@ -7,11 +7,13 @@ import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.mapper.CreatureFactory
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.passive.PassiveCreature
+import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.material.MaterialDrop
 import com.rabbitv.valheimviki.domain.model.material.MaterialSubCategory
 import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
+import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.presentation.detail.creature.passive_screen.model.PassiveCreatureDetailUiState
@@ -25,6 +27,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -35,6 +38,7 @@ class PassiveCreatureDetailScreenViewModel @Inject constructor(
 	private val relationUseCases: RelationUseCases,
 	private val biomeUseCases: BiomeUseCases,
 	private val materialUseCases: MaterialUseCases,
+	private val favoriteUseCases: FavoriteUseCases,
 ) : ViewModel() {
 	private val _passiveCreatureId: String =
 		checkNotNull(savedStateHandle[PASSIVE_CREATURE_KEY])
@@ -49,6 +53,8 @@ class PassiveCreatureDetailScreenViewModel @Inject constructor(
 		_creature,
 		_biome,
 		_materialDropItem,
+		favoriteUseCases.isFavorite(_passiveCreatureId)
+			.flowOn(Dispatchers.IO),
 		_isLoading,
 		_error,
 	) { values ->
@@ -57,8 +63,9 @@ class PassiveCreatureDetailScreenViewModel @Inject constructor(
 			passiveCreature = values[0] as PassiveCreature?,
 			biome = values[1] as Biome?,
 			materialDrops = values[2] as List<MaterialDrop>,
-			isLoading = values[3] as Boolean,
-			error = values[4] as String?
+			isFavorite = values[3] as Boolean,
+			isLoading = values[4] as Boolean,
+			error = values[5] as String?
 		))
 	}.stateIn(
 		scope = viewModelScope,
@@ -135,6 +142,16 @@ class PassiveCreatureDetailScreenViewModel @Inject constructor(
 			Log.e("General fetch error PassiveDetailViewModel", e.message.toString())
 			_isLoading.value = false
 			_error.value = e.message
+		}
+	}
+
+	fun toggleFavorite(favorite: Favorite, currentIsFavorite: Boolean) {
+		viewModelScope.launch {
+			if (currentIsFavorite) {
+				favoriteUseCases.deleteFavoriteUseCase(favorite)
+			} else {
+				favoriteUseCases.addFavoriteUseCase(favorite)
+			}
 		}
 	}
 }

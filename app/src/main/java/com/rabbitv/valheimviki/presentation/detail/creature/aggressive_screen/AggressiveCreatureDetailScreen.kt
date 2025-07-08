@@ -49,9 +49,11 @@ import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Swords
 import com.composables.icons.lucide.Unlink
 import com.rabbitv.valheimviki.R
+import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.aggresive.AggressiveCreature
 import com.rabbitv.valheimviki.domain.model.creature.aggresive.LevelCreatureData
+import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.food.Food
 import com.rabbitv.valheimviki.domain.model.food.FoodDrop
 import com.rabbitv.valheimviki.domain.model.material.Material
@@ -63,6 +65,7 @@ import com.rabbitv.valheimviki.navigation.WorldDetailDestination
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
+import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
 import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCard
 import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDetailImage
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
@@ -85,10 +88,16 @@ fun AggressiveCreatureDetailScreen(
 ) {
 
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
+	val onToggleFavorite = { favorite: Favorite, isFavorite: Boolean ->
+		viewModel.toggleFavorite(
+			favorite = favorite,
+			currentIsFavorite = isFavorite
+		)
+	}
 	AggressiveCreatureDetailContent(
 		onBack = onBack,
 		onItemClick = onItemClick,
+		onToggleFavorite = onToggleFavorite,
 		uiState = uiState,
 	)
 
@@ -99,6 +108,7 @@ fun AggressiveCreatureDetailScreen(
 fun AggressiveCreatureDetailContent(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
+	onToggleFavorite: (favorite: Favorite, currentIsFavorite: Boolean) -> Unit,
 	uiState: AggressiveCreatureDetailUiState,
 ) {
 
@@ -243,6 +253,15 @@ fun AggressiveCreatureDetailContent(
 							.padding(16.dp),
 						scrollState = sharedScrollState,
 						onBack = onBack
+					)
+					FavoriteButton(
+						modifier = Modifier
+							.align(Alignment.TopEnd)
+							.padding(16.dp),
+						isFavorite = uiState.isFavorite,
+						onToggleFavorite = {
+							onToggleFavorite(uiState.aggressiveCreature.toFavorite(), uiState.isFavorite)
+						},
 					)
 				}
 			}
@@ -545,6 +564,7 @@ fun PreviewCreaturePage() {
 		AggressiveCreatureDetailContent(
 			onBack = {},
 			onItemClick = {},
+			onToggleFavorite = {_,_->{}},
 			uiState = exampleUiState
 		)
 	}
