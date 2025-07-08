@@ -1,11 +1,24 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package com.rabbitv.valheimviki.presentation.favorite.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rabbitv.valheimviki.domain.model.armor.Armor
 import com.rabbitv.valheimviki.domain.model.biome.Biome
+import com.rabbitv.valheimviki.domain.model.building_material.BuildingMaterial
+import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.model.favorite.Favorite
+import com.rabbitv.valheimviki.domain.model.food.Food
+import com.rabbitv.valheimviki.domain.model.item_tool.ItemTool
+import com.rabbitv.valheimviki.domain.model.material.Material
+import com.rabbitv.valheimviki.domain.model.mead.Mead
+import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
+import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
+import com.rabbitv.valheimviki.domain.model.tree.Tree
 import com.rabbitv.valheimviki.domain.model.ui_state.ui_state.UiState
+import com.rabbitv.valheimviki.domain.model.weapon.Weapon
 import com.rabbitv.valheimviki.domain.use_cases.armor.ArmorUseCases
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.building_material.BuildMaterialUseCases
@@ -22,12 +35,14 @@ import com.rabbitv.valheimviki.domain.use_cases.tree.TreeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.weapon.WeaponUseCases
 import com.rabbitv.valheimviki.presentation.favorite.model.UiStateFavorite
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -53,6 +68,7 @@ class FavoriteViewModel @Inject constructor(
 
 	private val favorites: StateFlow<List<String>> = favoriteUseCases.getAllFavoritesUseCase()
 		.map { favorites -> favorites.map { it.itemId } }
+		.flowOn(Dispatchers.Default)
 		.stateIn(
 			viewModelScope,
 			SharingStarted.WhileSubscribed(5000),
@@ -73,27 +89,104 @@ class FavoriteViewModel @Inject constructor(
 			creatureUseCases.getCreaturesByIds(favoriteIds)
 				.map { UiState.Success(it) as UiState<List<Creature>> }
 				.catch { emit(UiState.Error(it.message ?: "Error loading creatures")) }
+		},
+
+		// Weapons
+		favorites.flatMapLatest { favoriteIds ->
+			weaponUseCases.getWeaponsByIdsUseCase(favoriteIds)
+				.map { UiState.Success(it) as UiState<List<Weapon>> }
+				.catch { emit(UiState.Error(it.message ?: "Error loading weapons")) }
+		},
+
+		// Armors
+		favorites.flatMapLatest { favoriteIds ->
+			armorUseCases.getArmorsByIdsUseCase(favoriteIds)
+				.map { UiState.Success(it) as UiState<List<Armor>> }
+				.catch { emit(UiState.Error(it.message ?: "Error loading armors")) }
+		},
+
+		// Foods
+		favorites.flatMapLatest { favoriteIds ->
+			foodUseCases.getFoodListByIdsUseCase(favoriteIds)
+				.map { UiState.Success(it) as UiState<List<Food>> }
+				.catch { emit(UiState.Error(it.message ?: "Error loading foods")) }
+		},
+
+		// Meads
+		favorites.flatMapLatest { favoriteIds ->
+			meadUseCases.getMeadsByIdsUseCase(favoriteIds)
+				.map { UiState.Success(it) as UiState<List<Mead>> }
+				.catch { emit(UiState.Error(it.message ?: "Error loading meads")) }
+		},
+
+		// Crafting Objects
+		favorites.flatMapLatest { favoriteIds ->
+			craftingObjectUseCases.getCraftingObjectsByIds(favoriteIds)
+				.map { UiState.Success(it) as UiState<List<CraftingObject>> }
+				.catch { emit(UiState.Error(it.message ?: "Error loading crafting objects")) }
+		},
+
+		// Tools
+		favorites.flatMapLatest { favoriteIds ->
+			toolUseCases.getToolsByIdsUseCase(favoriteIds)
+				.map { UiState.Success(it) as UiState<List<ItemTool>> }
+				.catch { emit(UiState.Error(it.message ?: "Error loading tools")) }
+		},
+
+		// Materials
+		favorites.flatMapLatest { favoriteIds ->
+			materialUseCases.getMaterialsByIds(favoriteIds)
+				.map { UiState.Success(it) as UiState<List<Material>> }
+				.catch { emit(UiState.Error(it.message ?: "Error loading materials")) }
+		},
+
+		// Building Materials
+		favorites.flatMapLatest { favoriteIds ->
+			buildingMaterialUseCases.getBuildMaterialByIds(favoriteIds)
+				.map { UiState.Success(it) as UiState<List<BuildingMaterial>> }
+				.catch { emit(UiState.Error(it.message ?: "Error loading building materials")) }
+		},
+
+		// Ore Deposits
+		favorites.flatMapLatest { favoriteIds ->
+			oreDepositUseCases.getOreDepositsByIdsUseCase(favoriteIds)
+				.map { UiState.Success(it) as UiState<List<OreDeposit>> }
+				.catch { emit(UiState.Error(it.message ?: "Error loading ore deposits")) }
+		},
+
+		// Trees
+		favorites.flatMapLatest { favoriteIds ->
+			treeUseCases.getTreesByIdsUseCase(favoriteIds)
+				.map { UiState.Success(it) as UiState<List<Tree>> }
+				.catch { emit(UiState.Error(it.message ?: "Error loading trees")) }
+		},
+
+		// Points of Interest
+		favorites.flatMapLatest { favoriteIds ->
+			pointOfInterestUseCases.getPointsOfInterestByIdsUseCase(favoriteIds)
+				.map { UiState.Success(it) as UiState<List<PointOfInterest>> }
+				.catch { emit(UiState.Error(it.message ?: "Error loading points of interest")) }
 		}
-	) { biomes, creatures ->
+	) { values ->
 		UiStateFavorite(
-			biomes = biomes,
-			creatures = creatures,
-//          weapons = values[2] as UiState<List<Weapon>>,
-//          armors = values[3] as UiState<List<Armor>>,
-//          foods = values[4] as UiState<List<Food>>,
-//          meads = values[5] as UiState<List<Mead>>,
-//          craftingObjects = values[6] as UiState<List<CraftingObject>>,
-//          tools = values[7] as UiState<List<ItemTool>>,
-//          materials = values[8] as UiState<List<Material>>,
-//          buildingMaterials = values[9] as UiState<List<BuildingMaterial>>,
-//          oreDeposits = values[10] as UiState<List<OreDeposit>>,
-//          trees = values[11] as UiState<List<Tree>>,
-//          pointsOfInterest = values[12] as UiState<List<PointOfInterest>>
+			biomes = values[0] as UiState<List<Biome>>,
+			creatures = values[1] as UiState<List<Creature>>,
+			weapons = values[2] as UiState<List<Weapon>>,
+			armors = values[3] as UiState<List<Armor>>,
+			foods = values[4] as UiState<List<Food>>,
+			meads = values[5] as UiState<List<Mead>>,
+			craftingObjects = values[6] as UiState<List<CraftingObject>>,
+			tools = values[7] as UiState<List<ItemTool>>,
+			materials = values[8] as UiState<List<Material>>,
+			buildingMaterials = values[9] as UiState<List<BuildingMaterial>>,
+			oreDeposits = values[10] as UiState<List<OreDeposit>>,
+			trees = values[11] as UiState<List<Tree>>,
+			pointsOfInterest = values[12] as UiState<List<PointOfInterest>>
 		)
 	}.stateIn(
 		viewModelScope,
 		SharingStarted.WhileSubscribed(5000),
-		UiStateFavorite() // All fields default to Loading
+		UiStateFavorite()
 	)
 
 	fun removeFavorite(favorite: Favorite) {
