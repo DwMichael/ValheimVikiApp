@@ -82,6 +82,7 @@ class FavoriteViewModel @Inject constructor(
 			biomeUseCases.getBiomesByIdsUseCase(favoriteIds)
 				.map { UiState.Success(it) as UiState<List<Biome>> }
 				.catch { emit(UiState.Error(it.message ?: "Error loading biomes")) }
+				.flowOn(Dispatchers.IO)
 		},
 
 		// Creatures
@@ -89,6 +90,7 @@ class FavoriteViewModel @Inject constructor(
 			creatureUseCases.getCreaturesByIds(favoriteIds)
 				.map { UiState.Success(it) as UiState<List<Creature>> }
 				.catch { emit(UiState.Error(it.message ?: "Error loading creatures")) }
+				.flowOn(Dispatchers.IO)
 		},
 
 		// Weapons
@@ -96,6 +98,7 @@ class FavoriteViewModel @Inject constructor(
 			weaponUseCases.getWeaponsByIdsUseCase(favoriteIds)
 				.map { UiState.Success(it) as UiState<List<Weapon>> }
 				.catch { emit(UiState.Error(it.message ?: "Error loading weapons")) }
+				.flowOn(Dispatchers.IO)
 		},
 
 		// Armors
@@ -103,6 +106,7 @@ class FavoriteViewModel @Inject constructor(
 			armorUseCases.getArmorsByIdsUseCase(favoriteIds)
 				.map { UiState.Success(it) as UiState<List<Armor>> }
 				.catch { emit(UiState.Error(it.message ?: "Error loading armors")) }
+				.flowOn(Dispatchers.IO)
 		},
 
 		// Foods
@@ -110,6 +114,7 @@ class FavoriteViewModel @Inject constructor(
 			foodUseCases.getFoodListByIdsUseCase(favoriteIds)
 				.map { UiState.Success(it) as UiState<List<Food>> }
 				.catch { emit(UiState.Error(it.message ?: "Error loading foods")) }
+				.flowOn(Dispatchers.IO)
 		},
 
 		// Meads
@@ -117,6 +122,7 @@ class FavoriteViewModel @Inject constructor(
 			meadUseCases.getMeadsByIdsUseCase(favoriteIds)
 				.map { UiState.Success(it) as UiState<List<Mead>> }
 				.catch { emit(UiState.Error(it.message ?: "Error loading meads")) }
+				.flowOn(Dispatchers.IO)
 		},
 
 		// Crafting Objects
@@ -124,6 +130,7 @@ class FavoriteViewModel @Inject constructor(
 			craftingObjectUseCases.getCraftingObjectsByIds(favoriteIds)
 				.map { UiState.Success(it) as UiState<List<CraftingObject>> }
 				.catch { emit(UiState.Error(it.message ?: "Error loading crafting objects")) }
+				.flowOn(Dispatchers.IO)
 		},
 
 		// Tools
@@ -131,6 +138,7 @@ class FavoriteViewModel @Inject constructor(
 			toolUseCases.getToolsByIdsUseCase(favoriteIds)
 				.map { UiState.Success(it) as UiState<List<ItemTool>> }
 				.catch { emit(UiState.Error(it.message ?: "Error loading tools")) }
+				.flowOn(Dispatchers.IO)
 		},
 
 		// Materials
@@ -138,6 +146,7 @@ class FavoriteViewModel @Inject constructor(
 			materialUseCases.getMaterialsByIds(favoriteIds)
 				.map { UiState.Success(it) as UiState<List<Material>> }
 				.catch { emit(UiState.Error(it.message ?: "Error loading materials")) }
+				.flowOn(Dispatchers.IO)
 		},
 
 		// Building Materials
@@ -145,6 +154,7 @@ class FavoriteViewModel @Inject constructor(
 			buildingMaterialUseCases.getBuildMaterialByIds(favoriteIds)
 				.map { UiState.Success(it) as UiState<List<BuildingMaterial>> }
 				.catch { emit(UiState.Error(it.message ?: "Error loading building materials")) }
+				.flowOn(Dispatchers.IO)
 		},
 
 		// Ore Deposits
@@ -152,6 +162,7 @@ class FavoriteViewModel @Inject constructor(
 			oreDepositUseCases.getOreDepositsByIdsUseCase(favoriteIds)
 				.map { UiState.Success(it) as UiState<List<OreDeposit>> }
 				.catch { emit(UiState.Error(it.message ?: "Error loading ore deposits")) }
+				.flowOn(Dispatchers.IO)
 		},
 
 		// Trees
@@ -159,6 +170,7 @@ class FavoriteViewModel @Inject constructor(
 			treeUseCases.getTreesByIdsUseCase(favoriteIds)
 				.map { UiState.Success(it) as UiState<List<Tree>> }
 				.catch { emit(UiState.Error(it.message ?: "Error loading trees")) }
+				.flowOn(Dispatchers.IO)
 		},
 
 		// Points of Interest
@@ -166,6 +178,7 @@ class FavoriteViewModel @Inject constructor(
 			pointOfInterestUseCases.getPointsOfInterestByIdsUseCase(favoriteIds)
 				.map { UiState.Success(it) as UiState<List<PointOfInterest>> }
 				.catch { emit(UiState.Error(it.message ?: "Error loading points of interest")) }
+				.flowOn(Dispatchers.IO)
 		}
 	) { values ->
 		UiStateFavorite(
