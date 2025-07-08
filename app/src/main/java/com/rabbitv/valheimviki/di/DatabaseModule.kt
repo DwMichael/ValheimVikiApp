@@ -14,60 +14,63 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
 
-    @Singleton
-    @Provides
-    fun provideDatabase(application: Application): ValheimVikiDatabase {
-        return Room.databaseBuilder(
-            application,
-            ValheimVikiDatabase::class.java,
-            "valheimViki_database"
-        )
-            .fallbackToDestructiveMigration(true)//for migration only
-            .build()
-    }
+	@Singleton
+	@Provides
+	fun provideDatabase(application: Application): ValheimVikiDatabase {
+		return Room.databaseBuilder(
+			application,
+			ValheimVikiDatabase::class.java,
+			"valheimViki_database"
+		)
+			.fallbackToDestructiveMigration(true)//for migration only
+			.build()
+	}
 
-    @Provides
-    fun provideBiomeDao(appDatabase: ValheimVikiDatabase) = appDatabase.biomeDao()
+	@Provides
+	fun provideFavoriteDao(appDatabase: ValheimVikiDatabase) = appDatabase.favoriteDao()
 
-    @Provides
-    fun provideCreatureDao(appDatabase: ValheimVikiDatabase) = appDatabase.creatureDao()
+	@Provides
+	fun provideBiomeDao(appDatabase: ValheimVikiDatabase) = appDatabase.biomeDao()
 
-    @Provides
-    fun provideRelationDao(appDatabase: ValheimVikiDatabase) = appDatabase.relationDao()
+	@Provides
+	fun provideCreatureDao(appDatabase: ValheimVikiDatabase) = appDatabase.creatureDao()
 
-    @Provides
-    fun provideOreDepositDao(appDatabase: ValheimVikiDatabase) = appDatabase.oreDepositDao()
+	@Provides
+	fun provideRelationDao(appDatabase: ValheimVikiDatabase) = appDatabase.relationDao()
 
-    @Provides
-    fun provideMaterialDao(appDatabase: ValheimVikiDatabase) = appDatabase.materialDao()
+	@Provides
+	fun provideOreDepositDao(appDatabase: ValheimVikiDatabase) = appDatabase.oreDepositDao()
 
-    @Provides
-    fun providePointOfInterestDao(appDatabase: ValheimVikiDatabase) =
-        appDatabase.pointOfInterestDao()
+	@Provides
+	fun provideMaterialDao(appDatabase: ValheimVikiDatabase) = appDatabase.materialDao()
 
-    @Provides
-    fun provideTreeDao(appDatabase: ValheimVikiDatabase) = appDatabase.treeDao()
+	@Provides
+	fun providePointOfInterestDao(appDatabase: ValheimVikiDatabase) =
+		appDatabase.pointOfInterestDao()
 
-    @Provides
-    fun provideFoodDao(appDatabase: ValheimVikiDatabase) = appDatabase.foodDao()
+	@Provides
+	fun provideTreeDao(appDatabase: ValheimVikiDatabase) = appDatabase.treeDao()
 
-    @Provides
-    fun provideWeaponDao(appDatabase: ValheimVikiDatabase) = appDatabase.weaponDao()
+	@Provides
+	fun provideFoodDao(appDatabase: ValheimVikiDatabase) = appDatabase.foodDao()
 
-    @Provides
-    fun provideArmorDao(appDatabase: ValheimVikiDatabase) = appDatabase.armorDao()
+	@Provides
+	fun provideWeaponDao(appDatabase: ValheimVikiDatabase) = appDatabase.weaponDao()
+
+	@Provides
+	fun provideArmorDao(appDatabase: ValheimVikiDatabase) = appDatabase.armorDao()
 
 
-    @Provides
-    fun provideMeadDao(appDatabase: ValheimVikiDatabase) = appDatabase.meadDao()
+	@Provides
+	fun provideMeadDao(appDatabase: ValheimVikiDatabase) = appDatabase.meadDao()
 
-    @Provides
-    fun provideToolDao(appDatabase: ValheimVikiDatabase) = appDatabase.toolDao()
+	@Provides
+	fun provideToolDao(appDatabase: ValheimVikiDatabase) = appDatabase.toolDao()
 
-    @Provides
-    fun provideBuildingMaterialDao(appDatabase: ValheimVikiDatabase) =
-        appDatabase.buildingMaterialDao()
+	@Provides
+	fun provideBuildingMaterialDao(appDatabase: ValheimVikiDatabase) =
+		appDatabase.buildingMaterialDao()
 
-    @Provides
-    fun provideCraftingObjectDao(appDatabase: ValheimVikiDatabase) = appDatabase.craftingObjectDao()
+	@Provides
+	fun provideCraftingObjectDao(appDatabase: ValheimVikiDatabase) = appDatabase.craftingObjectDao()
 }
