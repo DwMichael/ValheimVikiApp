@@ -71,6 +71,8 @@ import com.rabbitv.valheimviki.ui.theme.CUSTOM_ITEM_CARD_FILL_WIDTH
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
+import com.rabbitv.valheimviki.utils.toFoodSubCategory
+import com.rabbitv.valheimviki.utils.toMeadSubCategory
 
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
@@ -217,11 +219,9 @@ fun MeadDetailContent(
 							for (item in uiState.foodForRecipe) {
 								CustomItemCard(
 									onItemClick = {
-										val subCategory =
-											NavigationHelper.stringToFoodSubCategory(item.itemDrop.subCategory)
 										val destination = ConsumableDetailDestination.FoodDetail(
 											item.itemDrop.id,
-											subCategory
+											item.itemDrop.subCategory.toFoodSubCategory()
 										)
 										onItemClick(destination)
 									},
@@ -234,11 +234,10 @@ fun MeadDetailContent(
 							for (item in uiState.meadForRecipe) {
 								CustomItemCard(
 									onItemClick = {
-										val subCategory =
-											NavigationHelper.stringToMeadSubCategory(item.itemDrop.subCategory)
+
 										val destination = ConsumableDetailDestination.MeadDetail(
 											item.itemDrop.id,
-											subCategory
+											item.itemDrop.subCategory.toMeadSubCategory()
 										)
 										onItemClick(destination)
 									},

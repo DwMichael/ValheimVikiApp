@@ -37,7 +37,7 @@ import com.rabbitv.valheimviki.ui.theme.Shapes
 fun FavoriteGridItem(
 	imageModifier: Modifier = Modifier.fillMaxSize(),
 	item: ItemData,
-	onItemClick: (String) -> Unit,
+	onItemClick: (itemData: ItemData) -> Unit,
 	height: Dp,
 	contentScale: ContentScale = ContentScale.Crop,
 	imageBg: @Composable () -> Unit = {}
@@ -47,7 +47,7 @@ fun FavoriteGridItem(
 		modifier = Modifier
 			.height(height)
 			.clip(Shapes.large)
-			.clickable { onItemClick(item.id) },
+			.clickable { onItemClick(item) },
 		contentAlignment = Alignment.BottomStart
 	) {
 		imageBg()

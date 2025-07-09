@@ -78,6 +78,7 @@ import com.rabbitv.valheimviki.presentation.detail.creature.components.rows.Star
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
+import com.rabbitv.valheimviki.utils.toFoodSubCategory
 import kotlinx.coroutines.launch
 
 @Composable
@@ -224,9 +225,7 @@ fun AggressiveCreatureDetailContent(
 								onItemClick = { clickedItemId, subCategory ->
 									val destination = ConsumableDetailDestination.FoodDetail(
 										foodId = clickedItemId,
-										category = NavigationHelper.stringToFoodSubCategory(
-											subCategory
-										)
+										category = subCategory.toFoodSubCategory()
 									)
 									onItemClick(destination)
 								},

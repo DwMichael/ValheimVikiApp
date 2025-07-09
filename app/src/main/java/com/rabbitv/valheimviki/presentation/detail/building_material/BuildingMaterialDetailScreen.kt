@@ -59,6 +59,7 @@ import com.rabbitv.valheimviki.presentation.detail.building_material.model.Build
 import com.rabbitv.valheimviki.presentation.detail.building_material.viewmodel.BuildingMaterialDetailViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
+import com.rabbitv.valheimviki.utils.toFoodSubCategory
 
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
@@ -230,12 +231,10 @@ fun BuildingMaterialDetailContent(
 								CustomItemCard(
 									onItemClick = {
 										food.itemDrop.subCategory?.let {
-											val subCategory =
-												NavigationHelper.stringToFoodSubCategory(it)
 											val destination =
 												ConsumableDetailDestination.FoodDetail(
 													food.itemDrop.id,
-													subCategory
+													it.toFoodSubCategory()
 												)
 											onItemClick(destination)
 										}

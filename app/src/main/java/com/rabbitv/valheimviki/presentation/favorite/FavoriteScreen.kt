@@ -44,15 +44,17 @@ import com.composables.icons.lucide.Swords
 import com.composables.icons.lucide.Trees
 import com.composables.icons.lucide.Utensils
 import com.rabbitv.valheimviki.R
+import com.rabbitv.valheimviki.domain.model.category.AppCategory
 import com.rabbitv.valheimviki.domain.model.ui_state.ui_state.UiState
+import com.rabbitv.valheimviki.domain.repository.ItemData
 import com.rabbitv.valheimviki.navigation.DetailDestination
+import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.chip.ChipData
 import com.rabbitv.valheimviki.presentation.components.chip.SearchFilterBar
 import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.floating_action_button.CustomFloatingActionButton
 import com.rabbitv.valheimviki.presentation.components.grid.grid_item.FavoriteGridItem
 import com.rabbitv.valheimviki.presentation.components.topbar.SimpleTopBar
-import com.rabbitv.valheimviki.presentation.favorite.model.FavoriteCategory
 import com.rabbitv.valheimviki.presentation.favorite.model.UiStateFavorite
 import com.rabbitv.valheimviki.presentation.favorite.viewmodel.FavoriteViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
@@ -60,14 +62,14 @@ import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_SMALL_IMAGES
 import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_TWO_COLUMNS
 import com.rabbitv.valheimviki.ui.theme.Shapes
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
-import com.rabbitv.valheimviki.utils.toFavoriteCategory
+import com.rabbitv.valheimviki.utils.toAppCategory
 import kotlinx.coroutines.launch
 
 class FavoriteChip(
-	override val option: FavoriteCategory,
+	override val option: AppCategory,
 	override val icon: ImageVector,
 	override val label: String
-) : ChipData<FavoriteCategory>
+) : ChipData<AppCategory>
 
 enum class FavoriteGridItemTypes {
 	SMALL, MEDIUM, DEFAULT
@@ -80,7 +82,7 @@ fun FavoriteScreen(
 	viewModel: FavoriteViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-	val onCategorySelected = { category: FavoriteCategory? ->
+	val onCategorySelected = { category: AppCategory? ->
 		viewModel.onCategorySelected(category)
 	}
 	FavoriteScreenContent(
@@ -97,7 +99,7 @@ fun FavoriteScreen(
 fun FavoriteScreenContent(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
-	onCategorySelected: (category: FavoriteCategory?) -> Unit,
+	onCategorySelected: (category: AppCategory?) -> Unit,
 	uiState: UiState<UiStateFavorite>
 ) {
 	val lazyGridState = rememberLazyStaggeredGridState()
@@ -106,20 +108,31 @@ fun FavoriteScreenContent(
 		derivedStateOf { lazyGridState.firstVisibleItemIndex >= 2 }
 	}
 	val painter = painterResource(R.drawable.bg_favorite_item_grid)
-	val imageBg = @Composable {
-		Image(
-			painter = painter,
-			contentDescription = "bg",
-			contentScale = ContentScale.FillBounds,
-			modifier = Modifier
-				.clip(Shapes.large)
-				.fillMaxSize()
-		)
+	val imageBg = remember {
+		@Composable {
+			Image(
+				painter = painter,
+				contentDescription = "bg",
+				contentScale = ContentScale.FillBounds,
+				modifier = Modifier
+					.clip(Shapes.large)
+					.fillMaxSize()
+			)
+		}
+	}
+	val handleFavoriteItemClick = remember {
+		{ itemData: ItemData ->
+			val destination = NavigationHelper.routeToDetailScreen(
+				itemData = itemData,
+				appCategory = itemData.category.toAppCategory()
+			)
+			onItemClick(destination)
+		}
 	}
 
 	val typeOfItemGrid = remember {
-		{ favoriteCategory: FavoriteCategory ->
-			determineFavoriteGridType(favoriteCategory)
+		{ appCategory: AppCategory ->
+			determineFavoriteGridType(appCategory)
 		}
 	}
 
@@ -195,15 +208,13 @@ fun FavoriteScreenContent(
 							key = { favorite -> favorite.id },
 							contentType = { favorite -> favorite.category }
 						) { favorite ->
-							when (typeOfItemGrid(favorite.category.toFavoriteCategory())) {
+							when (typeOfItemGrid(favorite.category.toAppCategory())) {
 								FavoriteGridItemTypes.SMALL -> FavoriteGridItem(
 									imageModifier = Modifier
 										.fillMaxSize()
 										.scale(0.7f),
 									item = favorite,
-									onItemClick = { id ->
-//									onItemClick(destination)
-									},
+									onItemClick = handleFavoriteItemClick,
 									height = ITEM_HEIGHT_SMALL_IMAGES,
 									contentScale = ContentScale.Fit,
 									imageBg = imageBg
@@ -211,9 +222,7 @@ fun FavoriteScreenContent(
 
 								FavoriteGridItemTypes.MEDIUM -> FavoriteGridItem(
 									item = favorite,
-									onItemClick = { id ->
-//									onItemClick(destination)
-									},
+									onItemClick = handleFavoriteItemClick,
 									height = ITEM_HEIGHT_TWO_COLUMNS,
 									contentScale = ContentScale.Fit,
 									imageBg = imageBg
@@ -221,9 +230,7 @@ fun FavoriteScreenContent(
 
 								FavoriteGridItemTypes.DEFAULT -> FavoriteGridItem(
 									item = favorite,
-									onItemClick = { id ->
-//									onItemClick(destination)
-									},
+									onItemClick = handleFavoriteItemClick,
 									height = ITEM_HEIGHT_TWO_COLUMNS,
 								)
 
@@ -237,89 +244,89 @@ fun FavoriteScreenContent(
 	)
 }
 
-private fun determineFavoriteGridType(favoriteCategory: FavoriteCategory): FavoriteGridItemTypes {
+private fun determineFavoriteGridType(appCategory: AppCategory): FavoriteGridItemTypes {
 
-	return when (favoriteCategory) {
-		FavoriteCategory.BIOME -> FavoriteGridItemTypes.DEFAULT
-		FavoriteCategory.CREATURE -> FavoriteGridItemTypes.DEFAULT
-		FavoriteCategory.FOOD -> FavoriteGridItemTypes.SMALL
-		FavoriteCategory.ARMOR -> FavoriteGridItemTypes.SMALL
-		FavoriteCategory.WEAPON -> FavoriteGridItemTypes.SMALL
-		FavoriteCategory.BUILDING_MATERIAL -> FavoriteGridItemTypes.MEDIUM
-		FavoriteCategory.MATERIAL -> FavoriteGridItemTypes.SMALL
-		FavoriteCategory.CRAFTING -> FavoriteGridItemTypes.MEDIUM
-		FavoriteCategory.TOOL -> FavoriteGridItemTypes.SMALL
-		FavoriteCategory.MEAD -> FavoriteGridItemTypes.SMALL
-		FavoriteCategory.POINTOFINTEREST -> FavoriteGridItemTypes.DEFAULT
-		FavoriteCategory.TREE -> FavoriteGridItemTypes.DEFAULT
-		FavoriteCategory.OREDEPOSITE -> FavoriteGridItemTypes.DEFAULT
+	return when (appCategory) {
+		AppCategory.BIOME -> FavoriteGridItemTypes.DEFAULT
+		AppCategory.CREATURE -> FavoriteGridItemTypes.DEFAULT
+		AppCategory.FOOD -> FavoriteGridItemTypes.SMALL
+		AppCategory.ARMOR -> FavoriteGridItemTypes.SMALL
+		AppCategory.WEAPON -> FavoriteGridItemTypes.SMALL
+		AppCategory.BUILDING_MATERIAL -> FavoriteGridItemTypes.MEDIUM
+		AppCategory.MATERIAL -> FavoriteGridItemTypes.SMALL
+		AppCategory.CRAFTING -> FavoriteGridItemTypes.MEDIUM
+		AppCategory.TOOL -> FavoriteGridItemTypes.SMALL
+		AppCategory.MEAD -> FavoriteGridItemTypes.SMALL
+		AppCategory.POINTOFINTEREST -> FavoriteGridItemTypes.DEFAULT
+		AppCategory.TREE -> FavoriteGridItemTypes.DEFAULT
+		AppCategory.OREDEPOSITE -> FavoriteGridItemTypes.DEFAULT
 	}
 }
 
 private fun getChipsForCategory(): List<FavoriteChip> {
 	return listOf(
 		FavoriteChip(
-			option = FavoriteCategory.BIOME,
+			option = AppCategory.BIOME,
 			icon = Lucide.MountainSnow,
 			label = "Biomes"
 		),
 		FavoriteChip(
-			option = FavoriteCategory.CREATURE,
+			option = AppCategory.CREATURE,
 			icon = Lucide.Rabbit,
 			label = "Creatures"
 		),
 		FavoriteChip(
-			option = FavoriteCategory.FOOD,
+			option = AppCategory.FOOD,
 			icon = Lucide.Utensils,
 			label = "Food"
 		),
 		FavoriteChip(
-			option = FavoriteCategory.ARMOR,
+			option = AppCategory.ARMOR,
 			icon = Lucide.Shield,
 			label = "Armor"
 		),
 		FavoriteChip(
-			option = FavoriteCategory.WEAPON,
+			option = AppCategory.WEAPON,
 			icon = Lucide.Swords,
 			label = "Weapons"
 		),
 		FavoriteChip(
-			option = FavoriteCategory.BUILDING_MATERIAL,
+			option = AppCategory.BUILDING_MATERIAL,
 			icon = Lucide.House,
 			label = "Building Materials"
 		),
 		FavoriteChip(
-			option = FavoriteCategory.MATERIAL,
+			option = AppCategory.MATERIAL,
 			icon = Lucide.Cuboid,
 			label = "Materials"
 		),
 		FavoriteChip(
-			option = FavoriteCategory.CRAFTING,
+			option = AppCategory.CRAFTING,
 			icon = Lucide.Anvil,
 			label = "Crafting Stations"
 		),
 		FavoriteChip(
-			option = FavoriteCategory.TOOL,
+			option = AppCategory.TOOL,
 			icon = Lucide.Gavel,
 			label = "Tools"
 		),
 		FavoriteChip(
-			option = FavoriteCategory.MEAD,
+			option = AppCategory.MEAD,
 			icon = Lucide.FlaskRound,
 			label = "Meads"
 		),
 		FavoriteChip(
-			option = FavoriteCategory.POINTOFINTEREST,
+			option = AppCategory.POINTOFINTEREST,
 			icon = Lucide.MapPinned,
 			label = "Points Of Interest"
 		),
 		FavoriteChip(
-			option = FavoriteCategory.TREE,
+			option = AppCategory.TREE,
 			icon = Lucide.Trees,
 			label = "Trees"
 		),
 		FavoriteChip(
-			option = FavoriteCategory.OREDEPOSITE,
+			option = AppCategory.OREDEPOSITE,
 			icon = Lucide.Pickaxe,
 			label = "Ore Deposits"
 		)

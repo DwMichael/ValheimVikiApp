@@ -71,6 +71,7 @@ import com.rabbitv.valheimviki.ui.theme.CUSTOM_ITEM_CARD_FILL_WIDTH
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
+import com.rabbitv.valheimviki.utils.toFoodSubCategory
 
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
@@ -374,11 +375,9 @@ fun FoodDetailContent(
 							for (item in uiState.foodForRecipe) {
 								CustomItemCard(
 									onItemClick = {
-										val subCategory =
-											NavigationHelper.stringToFoodSubCategory(item.itemDrop.subCategory)
 										val destination = ConsumableDetailDestination.FoodDetail(
 											item.itemDrop.id,
-											subCategory
+											item.itemDrop.subCategory.toFoodSubCategory()
 										)
 										onItemClick(destination)
 									},

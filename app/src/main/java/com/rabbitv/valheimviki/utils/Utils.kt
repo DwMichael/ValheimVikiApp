@@ -23,40 +23,55 @@ import com.composables.icons.lucide.Target
 import com.composables.icons.lucide.Trees
 import com.composables.icons.lucide.Zap
 import com.rabbitv.valheimviki.domain.model.armor.UpgradeArmorInfo
+import com.rabbitv.valheimviki.domain.model.category.AppCategory
+import com.rabbitv.valheimviki.domain.model.food.FoodSubCategory
 import com.rabbitv.valheimviki.domain.model.item_tool.tool_upgrade_info.ToolsUpgradeInfo
+import com.rabbitv.valheimviki.domain.model.mead.MeadSubCategory
 import com.rabbitv.valheimviki.domain.model.weapon.UpgradeInfo
 import com.rabbitv.valheimviki.presentation.components.card.GridLevelInfo
 import com.rabbitv.valheimviki.presentation.detail.armor.model.StatArmorVisuals
 import com.rabbitv.valheimviki.presentation.detail.tool.model.StatToolsVisuals
 import com.rabbitv.valheimviki.presentation.detail.weapon.model.StatWeaponVisuals
-import com.rabbitv.valheimviki.presentation.favorite.model.FavoriteCategory
-import retrofit2.Response
 
-fun <T> Response<List<T>>.bodyList(): List<T> {
-	return body() ?: emptyList()
-}
 
 fun String?.valid() =
 	takeIf { !isNullOrBlank() && !equals("null", ignoreCase = true) }
 
-fun String?.toFavoriteCategory(): FavoriteCategory {
-	return when(this) {
-		"BIOME" -> FavoriteCategory.BIOME
-		"CREATURE" -> FavoriteCategory.CREATURE
-		"FOOD" -> FavoriteCategory.FOOD
-		"ARMOR" -> FavoriteCategory.ARMOR
-		"WEAPON" -> FavoriteCategory.WEAPON
-		"BUILDING_MATERIAL" -> FavoriteCategory.BUILDING_MATERIAL
-		"MATERIAL" -> FavoriteCategory.MATERIAL
-		"CRAFTING" -> FavoriteCategory.CRAFTING
-		"TOOL" -> FavoriteCategory.TOOL
-		"MEAD" -> FavoriteCategory.MEAD
-		"POINTOFINTEREST" -> FavoriteCategory.POINTOFINTEREST
-		"TREE" -> FavoriteCategory.TREE
-		"OREDEPOSITE" -> FavoriteCategory.OREDEPOSITE
+fun String?.toAppCategory(): AppCategory {
+	return when (this) {
+		"BIOME" -> AppCategory.BIOME
+		"CREATURE" -> AppCategory.CREATURE
+		"FOOD" -> AppCategory.FOOD
+		"ARMOR" -> AppCategory.ARMOR
+		"WEAPON" -> AppCategory.WEAPON
+		"BUILDING_MATERIAL" -> AppCategory.BUILDING_MATERIAL
+		"MATERIAL" -> AppCategory.MATERIAL
+		"CRAFTING" -> AppCategory.CRAFTING
+		"TOOL" -> AppCategory.TOOL
+		"MEAD" -> AppCategory.MEAD
+		"POINTOFINTEREST" -> AppCategory.POINTOFINTEREST
+		"TREE" -> AppCategory.TREE
+		"OREDEPOSITE" -> AppCategory.OREDEPOSITE
 		else -> error("Unknown Favorite Category: $this")
 	}
 }
+
+fun String?.toMeadSubCategory(): MeadSubCategory {
+	return when (this) {
+		"MEAD_BASE" -> MeadSubCategory.MEAD_BASE
+		"POTION" -> MeadSubCategory.POTION
+		else -> throw IllegalArgumentException("Unknown category: $this")
+	}
+}
+
+fun String?.toFoodSubCategory(): FoodSubCategory {
+	return when (this) {
+		"UNCOOKED_FOOD" -> FoodSubCategory.UNCOOKED_FOOD
+		"COOKED_FOOD" -> FoodSubCategory.COOKED_FOOD
+		else -> throw IllegalArgumentException("Unknown category: $this")
+	}
+}
+
 
 fun mapUpgradeInfoToGridList(upgradeInfo: UpgradeInfo): List<GridLevelInfo> {
 	val gridList = mutableListOf<GridLevelInfo>()

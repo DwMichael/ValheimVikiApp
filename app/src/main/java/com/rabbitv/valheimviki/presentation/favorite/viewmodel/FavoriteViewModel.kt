@@ -4,9 +4,9 @@ package com.rabbitv.valheimviki.presentation.favorite.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rabbitv.valheimviki.domain.model.category.AppCategory
 import com.rabbitv.valheimviki.domain.model.ui_state.ui_state.UiState
 import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
-import com.rabbitv.valheimviki.presentation.favorite.model.FavoriteCategory
 import com.rabbitv.valheimviki.presentation.favorite.model.UiStateFavorite
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -20,10 +20,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FavoriteViewModel @Inject constructor(
-	private val favoriteUseCases: FavoriteUseCases,
+	favoriteUseCases: FavoriteUseCases,
 ) : ViewModel() {
 
-	private val _selectedCategory = MutableStateFlow<FavoriteCategory?>(null)
+	private val _selectedCategory = MutableStateFlow<AppCategory?>(null)
 
 	val uiState: StateFlow<UiState<UiStateFavorite>> = combine(
 		favoriteUseCases.getAllFavoritesUseCase().flowOn(Dispatchers.IO),
@@ -45,7 +45,7 @@ class FavoriteViewModel @Inject constructor(
 			UiState.Loading()
 		)
 
-	fun onCategorySelected(cat: FavoriteCategory?) {
+	fun onCategorySelected(cat: AppCategory?) {
 		_selectedCategory.value = cat
 	}
 }

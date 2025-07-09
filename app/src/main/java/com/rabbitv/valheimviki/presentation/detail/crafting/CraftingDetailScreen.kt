@@ -65,6 +65,8 @@ import com.rabbitv.valheimviki.ui.theme.CUSTOM_ITEM_CARD_FILL_WIDTH
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
+import com.rabbitv.valheimviki.utils.toFoodSubCategory
+import com.rabbitv.valheimviki.utils.toMeadSubCategory
 
 //TODO OPTIMALIZE IT
 
@@ -270,11 +272,9 @@ fun CraftingDetailContent(
 						TridentsDividedRow()
 						DroppedItemsSection(
 							onItemClick = { clickedItemId, subCategory ->
-								val subCategory =
-									NavigationHelper.stringToFoodSubCategory(subCategory)
 								val destination = ConsumableDetailDestination.FoodDetail(
 									clickedItemId,
-									subCategory
+									subCategory.toFoodSubCategory()
 								)
 								onItemClick(destination)
 							},
@@ -292,11 +292,9 @@ fun CraftingDetailContent(
 						TridentsDividedRow()
 						DroppedItemsSection(
 							onItemClick = { clickedItemId, subCategory ->
-								val subCategory =
-									NavigationHelper.stringToMeadSubCategory(subCategory)
 								val destination = ConsumableDetailDestination.MeadDetail(
 									clickedItemId,
-									subCategory
+									subCategory.toMeadSubCategory()
 								)
 								onItemClick(destination)
 							},

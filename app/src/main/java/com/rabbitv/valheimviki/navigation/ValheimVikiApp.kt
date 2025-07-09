@@ -272,7 +272,9 @@ fun ValheimNavGraph(
 		composable<TopLevelDestination.Favorite> {
 			FavoriteScreen(
 				onBack = { valheimVikiNavController.popBackStack() },
-				onItemClick = {},
+				onItemClick = { destination ->
+					valheimVikiNavController.navigate(destination)
+				},
 			)
 		}
 

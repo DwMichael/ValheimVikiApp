@@ -1,6 +1,6 @@
-package com.rabbitv.valheimviki.presentation.favorite.model
+package com.rabbitv.valheimviki.domain.model.category
 
-enum class FavoriteCategory {
+enum class AppCategory {
 	BIOME,
 	CREATURE,
 	FOOD,
