@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
+import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
@@ -13,6 +14,7 @@ import com.rabbitv.valheimviki.domain.model.relation.RelationType
 import com.rabbitv.valheimviki.domain.model.tree.Tree
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.CraftingObjectUseCases
+import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.ore_deposit.OreDepositUseCases
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.PointOfInterestUseCases
@@ -27,6 +29,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -42,6 +45,7 @@ class GeneralMaterialDetailViewModel @Inject constructor(
 	private val oreDepositUseCases: OreDepositUseCases,
 	private val treeUseCases: TreeUseCases,
 	private val relationUseCases: RelationUseCases,
+	private val favoriteUseCases: FavoriteUseCases,
 	savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -62,6 +66,8 @@ class GeneralMaterialDetailViewModel @Inject constructor(
 		_pointOfInterests,
 		_oreDeposits,
 		_trees,
+		favoriteUseCases.isFavorite(_materialId)
+			.flowOn(Dispatchers.IO),
 		_isLoading,
 		_error
 	) { values ->
@@ -72,8 +78,9 @@ class GeneralMaterialDetailViewModel @Inject constructor(
 			pointOfInterests = values[3] as List<PointOfInterest>,
 			oreDeposits = values[4] as List<OreDeposit>,
 			trees = values[5] as List<Tree>,
-			isLoading = values[6] as Boolean,
-			error = values[7] as String?,
+			isFavorite = values[6] as Boolean,
+			isLoading = values[7] as Boolean,
+			error = values[8] as String?,
 		)
 	}.stateIn(
 		viewModelScope,
@@ -149,7 +156,15 @@ class GeneralMaterialDetailViewModel @Inject constructor(
 			}
 
 		}
+	}
 
-
+	fun toggleFavorite(favorite: Favorite, currentIsFavorite: Boolean) {
+		viewModelScope.launch {
+			if (currentIsFavorite) {
+				favoriteUseCases.deleteFavoriteUseCase(favorite)
+			} else {
+				favoriteUseCases.addFavoriteUseCase(favorite)
+			}
+		}
 	}
 }
