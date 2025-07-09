@@ -6,8 +6,9 @@ import com.rabbitv.valheimviki.presentation.detail.material.model.MaterialToCraf
 
 data class CraftedMaterialUiState(
 	val material: Material? = null,
-	val requiredCraftingStation: List<CraftingObject> = emptyList(),
+	val requiredCraftingStations: List<CraftingObject> = emptyList(),
 	val relatedMaterial: List<MaterialToCraft> = emptyList(),
+	val isFavorite: Boolean = false,
 	val isLoading: Boolean = false,
 	val error: String? = null,
 )
