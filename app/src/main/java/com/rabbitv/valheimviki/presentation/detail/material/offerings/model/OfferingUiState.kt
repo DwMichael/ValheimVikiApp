@@ -13,6 +13,7 @@ data class OfferingUiState(
 	val pointsOfInterest: List<PointOfInterest> = emptyList(),
 	val altars: List<PointOfInterest> = emptyList(),
 	val craftingStation: List<CraftingObject> = emptyList(),
+	val isFavorite: Boolean = false,
 	val isLoading: Boolean = false,
 	val error: String? = null,
 )

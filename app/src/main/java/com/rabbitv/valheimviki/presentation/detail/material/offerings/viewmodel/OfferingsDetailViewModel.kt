@@ -10,11 +10,13 @@ import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 import com.rabbitv.valheimviki.domain.model.creature.CreatureSubCategory
 import com.rabbitv.valheimviki.domain.model.creature.aggresive.AggressiveCreature
 import com.rabbitv.valheimviki.domain.model.creature.passive.PassiveCreature
+import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterestSubCategory
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.CraftingObjectUseCases
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
+import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.PointOfInterestUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
@@ -27,6 +29,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -40,6 +43,7 @@ class OfferingsDetailViewModel @Inject constructor(
 	private val pointOfInterestUseCases: PointOfInterestUseCases,
 	private val craftingObjectUseCases: CraftingObjectUseCases,
 	private val relationUseCases: RelationUseCases,
+	private val favoriteUseCases: FavoriteUseCases,
 	savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 	private val _materialId: String = checkNotNull(savedStateHandle[OFFERINGS_MATERIAL_KEY])
@@ -59,6 +63,8 @@ class OfferingsDetailViewModel @Inject constructor(
 		_pointsOfInterest,
 		_altars,
 		_craftingStation,
+		favoriteUseCases.isFavorite(_materialId)
+			.flowOn(Dispatchers.IO),
 		_isLoading,
 		_error
 	) { values ->
@@ -69,8 +75,9 @@ class OfferingsDetailViewModel @Inject constructor(
 			pointsOfInterest = values[3] as List<PointOfInterest>,
 			altars = values[4] as List<PointOfInterest>,
 			craftingStation = values[5] as List<CraftingObject>,
-			isLoading = values[6] as Boolean,
-			error = values[7] as String?
+			isFavorite = values[6] as Boolean,
+			isLoading = values[7] as Boolean,
+			error = values[8] as String?
 		)
 
 	}.stateIn(
@@ -154,9 +161,16 @@ class OfferingsDetailViewModel @Inject constructor(
 			} finally {
 				_isLoading.value = false
 			}
-
 		}
+	}
 
-
+	fun toggleFavorite(favorite: Favorite, currentIsFavorite: Boolean) {
+		viewModelScope.launch {
+			if (currentIsFavorite) {
+				favoriteUseCases.deleteFavoriteUseCase(favorite)
+			} else {
+				favoriteUseCases.addFavoriteUseCase(favorite)
+			}
+		}
 	}
 }
