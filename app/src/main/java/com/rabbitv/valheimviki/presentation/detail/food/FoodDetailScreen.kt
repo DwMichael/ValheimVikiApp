@@ -39,7 +39,9 @@ import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Wand
 import com.composables.icons.lucide.Weight
 import com.rabbitv.valheimviki.R
+import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
+import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.food.Food
 import com.rabbitv.valheimviki.domain.model.food.FoodSubCategory
 import com.rabbitv.valheimviki.navigation.BuildingDetailDestination
@@ -47,12 +49,13 @@ import com.rabbitv.valheimviki.navigation.ConsumableDetailDestination
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
-import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
+import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCard
 import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCardPainter
+import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.flow_row.flow_as_grid.TwoColumnGrid
 import com.rabbitv.valheimviki.presentation.components.grid.grid_item.CustomItemCard
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerWithHeaderData
@@ -78,11 +81,17 @@ fun FoodDetailScreen(
 	viewModel: FoodDetailViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
+	val onToggleFavorite = { favorite: Favorite, isFavorite: Boolean ->
+		viewModel.toggleFavorite(
+			favorite = favorite,
+			currentIsFavorite = isFavorite
+		)
+	}
 	FoodDetailContent(
 		uiState = uiState,
 		onBack = onBack,
 		onItemClick = onItemClick,
+		onToggleFavorite = onToggleFavorite,
 		category = category
 	)
 
@@ -94,6 +103,7 @@ fun FoodDetailScreen(
 fun FoodDetailContent(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
+	onToggleFavorite: (favorite: Favorite, currentIsFavorite: Boolean) -> Unit,
 	uiState: FoodDetailUiState,
 	category: FoodSubCategory
 ) {
@@ -164,9 +174,11 @@ fun FoodDetailContent(
 							SlavicDivider()
 							DarkGlassStatCard(
 								icon = Lucide.Heart,
-								label =  "Health",
-								value =  food.health.toString(),
-								expand = { isStatInfoExpanded[0].value = !isStatInfoExpanded[0].value },
+								label = "Health",
+								value = food.health.toString(),
+								expand = {
+									isStatInfoExpanded[0].value = !isStatInfoExpanded[0].value
+								},
 								isExpanded = isStatInfoExpanded[0].value
 							)
 							AnimatedVisibility(isStatInfoExpanded[0].value) {
@@ -182,7 +194,9 @@ fun FoodDetailContent(
 								healingPainter,
 								"Healing",
 								food.healing.toString(),
-								expand = { isStatInfoExpanded[1].value = !isStatInfoExpanded[1].value },
+								expand = {
+									isStatInfoExpanded[1].value = !isStatInfoExpanded[1].value
+								},
 								isExpanded = isStatInfoExpanded[1].value
 							)
 							AnimatedVisibility(isStatInfoExpanded[1].value) {
@@ -198,7 +212,9 @@ fun FoodDetailContent(
 								staminaPainter,
 								"Stamina",
 								food.stamina.toString(),
-								expand = { isStatInfoExpanded[2].value = !isStatInfoExpanded[2].value },
+								expand = {
+									isStatInfoExpanded[2].value = !isStatInfoExpanded[2].value
+								},
 								isExpanded = isStatInfoExpanded[2].value
 							)
 							AnimatedVisibility(isStatInfoExpanded[2].value) {
@@ -214,7 +230,9 @@ fun FoodDetailContent(
 								icon = Lucide.Clock2,
 								label = "Duration",
 								value = "${food.duration.toString()} min",
-								expand = { isStatInfoExpanded[3].value = !isStatInfoExpanded[3].value },
+								expand = {
+									isStatInfoExpanded[3].value = !isStatInfoExpanded[3].value
+								},
 								isExpanded = isStatInfoExpanded[3].value
 							)
 							AnimatedVisibility(isStatInfoExpanded[3].value) {
@@ -227,10 +245,12 @@ fun FoodDetailContent(
 						}
 						if (shouldShowValue(food.eitr)) {
 							DarkGlassStatCard(
-								icon = 	Lucide.Wand,
+								icon = Lucide.Wand,
 								label = "Eitr",
-								value =  food.eitr.toString(),
-								expand = { isStatInfoExpanded[4].value = !isStatInfoExpanded[4].value },
+								value = food.eitr.toString(),
+								expand = {
+									isStatInfoExpanded[4].value = !isStatInfoExpanded[4].value
+								},
 								isExpanded = isStatInfoExpanded[4].value
 							)
 							AnimatedVisibility(isStatInfoExpanded[4].value) {
@@ -243,10 +263,12 @@ fun FoodDetailContent(
 						}
 						if (shouldShowValue(food.weight)) {
 							DarkGlassStatCard(
-								icon = 	Lucide.Weight,
+								icon = Lucide.Weight,
 								label = "Weight",
 								value = food.weight.toString(),
-								expand = { isStatInfoExpanded[5].value = !isStatInfoExpanded[5].value },
+								expand = {
+									isStatInfoExpanded[5].value = !isStatInfoExpanded[5].value
+								},
 								isExpanded = isStatInfoExpanded[5].value
 							)
 							AnimatedVisibility(isStatInfoExpanded[5].value) {
@@ -260,9 +282,11 @@ fun FoodDetailContent(
 						if (shouldShowValue(food.forkType)) {
 							DarkGlassStatCard(
 								icon = Lucide.Info,
-								label =  "Fork Type",
-								value =  food.forkType.toString(),
-								expand = { isStatInfoExpanded[6].value = !isStatInfoExpanded[6].value },
+								label = "Fork Type",
+								value = food.forkType.toString(),
+								expand = {
+									isStatInfoExpanded[6].value = !isStatInfoExpanded[6].value
+								},
 								isExpanded = isStatInfoExpanded[6].value
 							)
 							AnimatedVisibility(isStatInfoExpanded[6].value) {
@@ -275,10 +299,12 @@ fun FoodDetailContent(
 						}
 						if (shouldShowValue(food.stackSize)) {
 							DarkGlassStatCard(
-								icon = 	Lucide.Layers2,
+								icon = Lucide.Layers2,
 								label = "Stack Size",
-								value =  food.stackSize.toString(),
-								expand = { isStatInfoExpanded[7].value = !isStatInfoExpanded[7].value },
+								value = food.stackSize.toString(),
+								expand = {
+									isStatInfoExpanded[7].value = !isStatInfoExpanded[7].value
+								},
 								isExpanded = isStatInfoExpanded[7].value
 							)
 							AnimatedVisibility(isStatInfoExpanded[7].value) {
@@ -294,7 +320,7 @@ fun FoodDetailContent(
 					uiState.craftingCookingStation?.let { craftingStation ->
 						SlavicDivider()
 						CardImageWithTopLabel(
-							onClickedItem ={
+							onClickedItem = {
 								val destination = BuildingDetailDestination.CraftingObjectDetail(
 									craftingObjectId = craftingStation.id
 								)
@@ -333,7 +359,10 @@ fun FoodDetailContent(
 								CustomItemCard(
 									onItemClick = {
 										val destination =
-											NavigationHelper.routeToMaterial(item.itemDrop.subCategory, item.itemDrop.id)
+											NavigationHelper.routeToMaterial(
+												item.itemDrop.subCategory,
+												item.itemDrop.id
+											)
 										onItemClick(destination)
 									},
 									fillWidth = CUSTOM_ITEM_CARD_FILL_WIDTH,
@@ -345,8 +374,12 @@ fun FoodDetailContent(
 							for (item in uiState.foodForRecipe) {
 								CustomItemCard(
 									onItemClick = {
-										val subCategory = NavigationHelper.stringToFoodSubCategory(item.itemDrop.subCategory)
-										val destination = ConsumableDetailDestination.FoodDetail(item.itemDrop.id,subCategory)
+										val subCategory =
+											NavigationHelper.stringToFoodSubCategory(item.itemDrop.subCategory)
+										val destination = ConsumableDetailDestination.FoodDetail(
+											item.itemDrop.id,
+											subCategory
+										)
 										onItemClick(destination)
 									},
 									fillWidth = CUSTOM_ITEM_CARD_FILL_WIDTH,
@@ -367,6 +400,17 @@ fun FoodDetailContent(
 				scrollState = scrollState,
 				onBack = onBack
 			)
+			uiState.food?.let { food ->
+				FavoriteButton(
+					modifier = Modifier
+						.align(Alignment.TopEnd)
+						.padding(16.dp),
+					isFavorite = uiState.isFavorite,
+					onToggleFavorite = {
+						onToggleFavorite(food.toFavorite(), uiState.isFavorite)
+					}
+				)
+			}
 		}
 	}
 }
@@ -445,6 +489,7 @@ fun PreviewFoodDetailContentCooked() {
 		FoodDetailContent(
 			onBack = {},
 			onItemClick = {},
+			onToggleFavorite = { _, _ -> {} },
 			uiState = FoodDetailUiState(
 				food = fakeFood,
 				craftingCookingStation = craftingStation,
