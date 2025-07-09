@@ -7,12 +7,13 @@ import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.data.mappers.creatures.toNPC
 import com.rabbitv.valheimviki.domain.model.creature.CreatureSubCategory
 import com.rabbitv.valheimviki.domain.model.creature.npc.NPC
+import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
+import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.presentation.detail.material.shop.model.ShopUiState
-import com.rabbitv.valheimviki.utils.Constants.SEED_MATERIAL_KEY
 import com.rabbitv.valheimviki.utils.Constants.SHOP_MATERIAL_KEY
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -21,6 +22,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -32,6 +34,7 @@ class ShopMaterialDetailViewModel @Inject constructor(
 	private val materialUseCases: MaterialUseCases,
 	private val creatureUseCases: CreatureUseCases,
 	private val relationUseCases: RelationUseCases,
+	private val favoriteUseCases: FavoriteUseCases,
 	savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 	private val _materialId: String = checkNotNull(savedStateHandle[SHOP_MATERIAL_KEY])
@@ -43,12 +46,15 @@ class ShopMaterialDetailViewModel @Inject constructor(
 	val uiState = combine(
 		_material,
 		_npc,
+		favoriteUseCases.isFavorite(_materialId)
+			.flowOn(Dispatchers.IO),
 		_isLoading,
 		_error
-	) { material, npc, isLoading, error ->
+	) { material, npc, isFavorite, isLoading, error ->
 		ShopUiState(
 			material = material,
 			npc = npc,
+			isFavorite = isFavorite,
 			isLoading = isLoading,
 			error = error
 		)
@@ -105,9 +111,16 @@ class ShopMaterialDetailViewModel @Inject constructor(
 			} finally {
 				_isLoading.value = false
 			}
-
 		}
+	}
 
-
+	fun toggleFavorite(favorite: Favorite, currentIsFavorite: Boolean) {
+		viewModelScope.launch {
+			if (currentIsFavorite) {
+				favoriteUseCases.deleteFavoriteUseCase(favorite)
+			} else {
+				favoriteUseCases.addFavoriteUseCase(favorite)
+			}
+		}
 	}
 }

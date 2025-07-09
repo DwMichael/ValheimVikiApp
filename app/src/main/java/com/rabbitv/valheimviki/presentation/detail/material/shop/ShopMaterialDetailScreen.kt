@@ -26,12 +26,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
+import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
+import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
@@ -49,10 +52,16 @@ fun ShopMaterialDetailScreen(
 	viewModel: ShopMaterialDetailViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
+	val onToggleFavorite = { favorite: Favorite, isFavorite: Boolean ->
+		viewModel.toggleFavorite(
+			favorite = favorite,
+			currentIsFavorite = isFavorite
+		)
+	}
 	ShopMaterialDetailContent(
 		onBack = onBack,
 		onItemClick = onItemClick,
+		onToggleFavorite = onToggleFavorite,
 		uiState = uiState,
 	)
 
@@ -64,6 +73,7 @@ fun ShopMaterialDetailScreen(
 fun ShopMaterialDetailContent(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
+	onToggleFavorite: (favorite: Favorite, currentIsFavorite: Boolean) -> Unit,
 	uiState: ShopUiState,
 ) {
 	val scrollState = rememberScrollState()
@@ -142,6 +152,17 @@ fun ShopMaterialDetailContent(
 				scrollState = scrollState,
 				onBack = onBack
 			)
+			uiState.material?.let { material ->
+				FavoriteButton(
+					modifier = Modifier
+						.align(Alignment.TopEnd)
+						.padding(16.dp),
+					isFavorite = uiState.isFavorite,
+					onToggleFavorite = {
+						onToggleFavorite(material.toFavorite(), uiState.isFavorite)
+					}
+				)
+			}
 		}
 	}
 }
@@ -157,7 +178,8 @@ fun PreviewToolDetailContentCooked() {
 		ShopMaterialDetailContent(
 			uiState = ShopUiState(),
 			onBack = {},
-			onItemClick = {}
+			onItemClick = {},
+			onToggleFavorite = {_,_->{}}
 			)
 	}
 

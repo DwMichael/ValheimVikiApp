@@ -6,6 +6,7 @@ import com.rabbitv.valheimviki.domain.model.material.Material
 data class ShopUiState(
 	val material: Material? = null,
 	val npc: NPC? = null,
+	val isFavorite: Boolean = false,
 	val isLoading: Boolean = false,
 	val error: String? = null,
 )
