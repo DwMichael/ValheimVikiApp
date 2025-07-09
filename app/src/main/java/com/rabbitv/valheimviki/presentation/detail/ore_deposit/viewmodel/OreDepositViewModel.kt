@@ -6,11 +6,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
+import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.item_tool.ItemTool
 import com.rabbitv.valheimviki.domain.model.material.MaterialDrop
 import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.CraftingObjectUseCases
+import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.ore_deposit.OreDepositUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
@@ -25,6 +27,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -38,6 +41,7 @@ class OreDepositViewModel @Inject constructor(
 	private val relationUseCases: RelationUseCases,
 	private val toolUseCases: ToolUseCases,
 	private val craftingStation: CraftingObjectUseCases,
+	private val favoriteUseCases: FavoriteUseCases,
 	val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 	private val _oreDepositId: String = checkNotNull(savedStateHandle[ORE_DEPOSIT_KEY])
@@ -57,6 +61,8 @@ class OreDepositViewModel @Inject constructor(
 		_materials,
 		_tools,
 		_craftingStation,
+		favoriteUseCases.isFavorite(_oreDepositId)
+			.flowOn(Dispatchers.IO),
 		_isLoading,
 		_error
 	) { values ->
@@ -66,8 +72,9 @@ class OreDepositViewModel @Inject constructor(
 			relatedMaterials = values[2] as List<MaterialDrop>,
 			relatedTools = values[3] as List<ItemTool>,
 			craftingStation = values[4] as List<CraftingObject>,
-			isLoading = values[5] as Boolean,
-			error = values[6] as String?,
+			isFavorite = values[5] as Boolean,
+			isLoading = values[6] as Boolean,
+			error = values[7] as String?,
 		)
 
 	}.stateIn(
@@ -148,6 +155,16 @@ class OreDepositViewModel @Inject constructor(
 				_error.value = e.message
 			} finally {
 				_isLoading.value = false
+			}
+		}
+	}
+
+	fun toggleFavorite(favorite: Favorite, currentIsFavorite: Boolean) {
+		viewModelScope.launch {
+			if (currentIsFavorite) {
+				favoriteUseCases.deleteFavoriteUseCase(favorite)
+			} else {
+				favoriteUseCases.addFavoriteUseCase(favorite)
 			}
 		}
 	}
