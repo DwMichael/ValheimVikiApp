@@ -7,6 +7,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,6 +44,7 @@ fun SearchScreenContent(
 	onItemClick: (destination: DetailDestination) -> Unit,
 	onCategorySelected: (category: AppCategory?) -> Unit,
 ) {
+	var searchQuery by rememberSaveable { mutableStateOf("") }
 	val lazyListState = rememberLazyListState()
 	Scaffold(
 		topBar = {
@@ -60,7 +65,9 @@ fun SearchScreenContent(
 
 		)
 		{
-			SearchTopBar()
+			SearchTopBar(
+				searchQuery = searchQuery
+			)
 
 
 			ListContent(

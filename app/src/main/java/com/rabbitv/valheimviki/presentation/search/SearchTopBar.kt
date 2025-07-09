@@ -4,7 +4,6 @@ import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,9 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -29,7 +26,6 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -69,12 +65,13 @@ import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchTopBar(
-	modifier: Modifier = Modifier
+	modifier: Modifier = Modifier,
+	searchQuery: String
 ) {
-	var expanded by rememberSaveable { mutableStateOf(false) }
-	var searchQuery by remember { mutableStateOf("") }
 
-	val exampleItem: ItemData = Biome(
+
+
+	Biome(
 		id = "1",
 		category = "BIOME",
 		name = "Meadowns Meadowns Meadowns Meadowns",
@@ -83,9 +80,6 @@ fun SearchTopBar(
 		order = 1
 	)
 
-	val onActiveChange: (Boolean) -> Unit = { newActive ->
-		expanded = newActive
-	}
 
 	SearchBar(
 		modifier = modifier
@@ -94,16 +88,15 @@ fun SearchTopBar(
 			.padding(top = 8.dp)
 			.clip(Shapes.medium),
 		shape = Shapes.medium,
+
+
 		inputField = {
 			SearchBarDefaults.InputField(
 				query = searchQuery,
 				onQueryChange = { searchQuery = it },
-				onSearch = {
-					expanded = false
-					println("Search submitted: $searchQuery")
-				},
-				expanded = expanded,
-				onExpandedChange = onActiveChange,
+				onSearch = {},
+				expanded = false,
+				onExpandedChange = {},
 				enabled = true,
 				placeholder = {
 					Text(
@@ -120,9 +113,7 @@ fun SearchTopBar(
 				},
 				trailingIcon = {
 					IconButton(
-						onClick = {
-							expanded = !expanded
-						}
+						onClick = { searchQuery = "" }
 					) {
 						Icon(
 							Lucide.X,
@@ -143,27 +134,13 @@ fun SearchTopBar(
 				interactionSource = null,
 			)
 		},
-		expanded = expanded,
-		onExpandedChange = onActiveChange,
+		expanded = false,
+		onExpandedChange = { },
 		colors = SearchBarDefaults.colors(),
 		tonalElevation = SearchBarDefaults.TonalElevation,
 		shadowElevation = SearchBarDefaults.ShadowElevation,
 		windowInsets = WindowInsets(0.dp),
-		content = {
-			Column(
-				modifier = Modifier
-					.fillMaxWidth()
-					.verticalScroll(rememberScrollState())
-			) {
-				repeat(4) { idx ->
-					SearchListItem(
-						exampleItem,
-						{},
-						ITEM_HEIGHT_ONE_COLUMNS
-					)
-				}
-			}
-		},
+		content = {},
 	)
 }
 
