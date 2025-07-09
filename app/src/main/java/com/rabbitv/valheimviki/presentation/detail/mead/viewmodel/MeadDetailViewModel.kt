@@ -5,9 +5,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
+import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.mead.Mead
 import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.CraftingObjectUseCases
+import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
 import com.rabbitv.valheimviki.domain.use_cases.food.FoodUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.mead.MeadUseCases
@@ -27,6 +29,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -39,6 +42,7 @@ class MeadDetailViewModel @Inject constructor(
 	private val craftingObjectUseCases: CraftingObjectUseCases,
 	private val materialUseCases: MaterialUseCases,
 	private val relationUseCases: RelationUseCases,
+	private val favoriteUseCases: FavoriteUseCases,
 	private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 	private val _meadId: String = checkNotNull(savedStateHandle[MEAD_KEY])
@@ -57,6 +61,8 @@ class MeadDetailViewModel @Inject constructor(
 		_foodForRecipe,
 		_meadForRecipe,
 		_materialsForRecipe,
+		favoriteUseCases.isFavorite(_meadId)
+			.flowOn(Dispatchers.IO),
 		_isLoading,
 		_error
 	) { values ->
@@ -66,8 +72,9 @@ class MeadDetailViewModel @Inject constructor(
 			foodForRecipe = values[2] as List<RecipeFoodData>,
 			meadForRecipe = values[3] as List<RecipeMeadData>,
 			materialsForRecipe = values[4] as List<RecipeMaterialData>,
-			isLoading = values[5] as Boolean,
-			error = values[6] as String?
+			isFavorite = values[5] as Boolean,
+			isLoading = values[6] as Boolean,
+			error = values[7] as String?
 		)
 	}.stateIn(
 		scope = viewModelScope,
@@ -188,6 +195,15 @@ class MeadDetailViewModel @Inject constructor(
 				_error.value = e.message
 			} finally {
 				_isLoading.value = false
+			}
+		}
+	}
+	fun toggleFavorite(favorite: Favorite, currentIsFavorite: Boolean) {
+		viewModelScope.launch {
+			if (currentIsFavorite) {
+				favoriteUseCases.deleteFavoriteUseCase(favorite)
+			} else {
+				favoriteUseCases.addFavoriteUseCase(favorite)
 			}
 		}
 	}
