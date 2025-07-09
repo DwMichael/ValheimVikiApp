@@ -8,10 +8,12 @@ import com.rabbitv.valheimviki.data.mappers.creatures.toNPC
 import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.model.creature.CreatureSubCategory
 import com.rabbitv.valheimviki.domain.model.creature.npc.NPC
+import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterestSubCategory
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
+import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.PointOfInterestUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
@@ -24,6 +26,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -36,6 +39,7 @@ class ValuableMaterialDetailViewModel @Inject constructor(
 	private val pointOfInterestUseCases: PointOfInterestUseCases,
 	private val creatureUseCases: CreatureUseCases,
 	private val relationUseCases: RelationUseCases,
+	private val favoriteUseCases: FavoriteUseCases,
 	savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 	private val _materialId: String = checkNotNull(savedStateHandle[VALUABLE_MATERIAL_KEY])
@@ -51,6 +55,8 @@ class ValuableMaterialDetailViewModel @Inject constructor(
 		_pointsOfInterest,
 		_npc,
 		_creatures,
+		favoriteUseCases.isFavorite(_materialId)
+			.flowOn(Dispatchers.IO),
 		_isLoading,
 		_error
 	) { values ->
@@ -59,8 +65,9 @@ class ValuableMaterialDetailViewModel @Inject constructor(
 			pointsOfInterest = values[1] as List<PointOfInterest>,
 			npc = values[2] as List<NPC>,
 			creatures = values[3] as List<Creature>,
-			isLoading = values[4] as Boolean,
-			error = values[5] as String?,
+			isFavorite = values[4] as Boolean,
+			isLoading = values[5] as Boolean,
+			error = values[6] as String?,
 		)
 
 	}.stateIn(
@@ -101,11 +108,9 @@ class ValuableMaterialDetailViewModel @Inject constructor(
 					).first()
 				}
 
-
 				val creaturesDeferred = async {
 					creatureUseCases.getCreaturesByIds(relationIds).first()
 				}
-
 
 				_pointsOfInterest.value = pointOfInterestDeferred.await()
 					.filter { it.subCategory == PointOfInterestSubCategory.STRUCTURE.toString() }
@@ -121,9 +126,15 @@ class ValuableMaterialDetailViewModel @Inject constructor(
 			} finally {
 				_isLoading.value = false
 			}
-
 		}
-
-
+	}
+	fun toggleFavorite(favorite: Favorite, currentIsFavorite: Boolean) {
+		viewModelScope.launch {
+			if (currentIsFavorite) {
+				favoriteUseCases.deleteFavoriteUseCase(favorite)
+			} else {
+				favoriteUseCases.addFavoriteUseCase(favorite)
+			}
+		}
 	}
 }
