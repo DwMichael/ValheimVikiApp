@@ -105,15 +105,17 @@ fun FavoriteScreenContent(
 	val backButtonVisibleState by remember {
 		derivedStateOf { lazyGridState.firstVisibleItemIndex >= 2 }
 	}
-	val painter = painterResource(R.drawable.bg_food_second)
-	val imageBg = @Composable { Image(
-		painter = painter,
-		contentDescription = "bg",
-		contentScale = ContentScale.FillBounds,
-		modifier = Modifier
-			.clip(Shapes.large)
-			.fillMaxSize()
-	) }
+	val painter = painterResource(R.drawable.bg_favorite_item_grid)
+	val imageBg = @Composable {
+		Image(
+			painter = painter,
+			contentDescription = "bg",
+			contentScale = ContentScale.FillBounds,
+			modifier = Modifier
+				.clip(Shapes.large)
+				.fillMaxSize()
+		)
+	}
 
 	val typeOfItemGrid = remember {
 		{ favoriteCategory: FavoriteCategory ->
