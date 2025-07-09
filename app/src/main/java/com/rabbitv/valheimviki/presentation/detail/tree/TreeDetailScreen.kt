@@ -46,7 +46,9 @@ import com.composables.icons.lucide.Axe
 import com.composables.icons.lucide.Gem
 import com.composables.icons.lucide.Lucide
 import com.rabbitv.valheimviki.R
+import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.biome.Biome
+import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.tree.Tree
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.EquipmentDetailDestination
@@ -54,9 +56,10 @@ import com.rabbitv.valheimviki.navigation.LocalSharedTransitionScope
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.navigation.WorldDetailDestination
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
-import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
+import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
+import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDetailImageAnimated
@@ -81,10 +84,16 @@ fun TreeDetailScreen(
 	val uiState by viewModel.treeUiState.collectAsStateWithLifecycle()
 	val sharedTransitionScope = LocalSharedTransitionScope.current
 		?: throw IllegalStateException("No Scope found")
-
+	val onToggleFavorite = { favorite: Favorite, isFavorite: Boolean ->
+		viewModel.toggleFavorite(
+			favorite = favorite,
+			currentIsFavorite = isFavorite
+		)
+	}
 	TreeDetailContent(
 		onBack = onBack,
 		onItemClick = onItemClick,
+		onToggleFavorite = onToggleFavorite,
 		uiState = uiState,
 		sharedTransitionScope = sharedTransitionScope,
 		animatedVisibilityScope = animatedVisibilityScope,
@@ -98,6 +107,7 @@ fun TreeDetailScreen(
 fun TreeDetailContent(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
+	onToggleFavorite: (favorite: Favorite, currentIsFavorite: Boolean) -> Unit,
 	uiState: TreeDetailUiState,
 	sharedTransitionScope: SharedTransitionScope,
 	animatedVisibilityScope: AnimatedVisibilityScope,
@@ -265,6 +275,16 @@ fun TreeDetailContent(
 								scrollState = scrollState,
 								onBack = onBack,
 							)
+							FavoriteButton(
+								modifier = Modifier
+									.align(Alignment.TopEnd)
+									.padding(16.dp),
+								isFavorite = uiState.isFavorite,
+								onToggleFavorite = {
+									onToggleFavorite(uiState.tree.toFavorite(), uiState.isFavorite)
+								},
+							)
+
 						}
 					}
 				} else {
@@ -316,11 +336,12 @@ fun PreviewBiomeDetailContent() {
 				TreeDetailContent(
 					onBack = { },
 					onItemClick = {},
+					onToggleFavorite = { _, _ -> {} },
 					uiState = uiState,
 					sharedTransitionScope = this@SharedTransitionLayout,
 					animatedVisibilityScope = this,
 
-				)
+					)
 			}
 		}
 	}
