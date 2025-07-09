@@ -32,15 +32,18 @@ import com.composables.icons.lucide.HandCoins
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Skull
 import com.composables.icons.lucide.Swords
+import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.biome.Biome
+import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.EquipmentDetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.navigation.WorldDetailDestination
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
-import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
+import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
+import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDetailImage
@@ -61,9 +64,16 @@ fun PointOfInterestDetailScreen(
 	viewModel: PointOfInterestViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+	val onToggleFavorite = { favorite: Favorite, isFavorite: Boolean ->
+		viewModel.toggleFavorite(
+			favorite = favorite,
+			currentIsFavorite = isFavorite
+		)
+	}
 	PointOfInterestDetailContent(
 		onBack = onBack,
 		onItemClick = onItemClick,
+		onToggleFavorite = onToggleFavorite,
 		uiState = uiState
 	)
 }
@@ -73,6 +83,7 @@ fun PointOfInterestDetailScreen(
 fun PointOfInterestDetailContent(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
+	onToggleFavorite: (favorite: Favorite, currentIsFavorite: Boolean) -> Unit,
 	uiState: PointOfInterestUiState,
 ) {
 	val scrollState = rememberScrollState()
@@ -241,6 +252,17 @@ fun PointOfInterestDetailContent(
 				scrollState = scrollState,
 				onBack = onBack,
 			)
+			uiState.pointOfInterest?.let { pointOfInterest ->
+				FavoriteButton(
+					modifier = Modifier
+						.align(Alignment.TopEnd)
+						.padding(16.dp),
+					isFavorite = uiState.isFavorite,
+					onToggleFavorite = {
+						onToggleFavorite(pointOfInterest.toFavorite(), uiState.isFavorite)
+					},
+				)
+			}
 		}
 	}
 }
@@ -271,6 +293,7 @@ fun PreviewPointOfInterestDetailScreen() {
 		PointOfInterestDetailContent(
 			onBack = {},
 			onItemClick = {},
+			onToggleFavorite = { _, _ -> {} },
 			uiState = uiState
 		)
 	}

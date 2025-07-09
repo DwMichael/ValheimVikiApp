@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.Creature
+import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.food.Food
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.material.MaterialDrop
@@ -16,6 +17,7 @@ import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
 import com.rabbitv.valheimviki.domain.model.weapon.Weapon
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
+import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
 import com.rabbitv.valheimviki.domain.use_cases.food.FoodUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.ore_deposit.OreDepositUseCases
@@ -32,6 +34,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -47,6 +50,7 @@ class PointOfInterestViewModel @Inject constructor(
 	private val _weaponUseCases: WeaponUseCases,
 	private val _foodUseCases: FoodUseCases,
 	private val _oreDepositUseCase: OreDepositUseCases,
+	private val favoriteUseCases: FavoriteUseCases,
 	val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -73,6 +77,8 @@ class PointOfInterestViewModel @Inject constructor(
 		_relatedOreDeposits,
 		_relatedOfferings,
 		_relatedMaterialDrops,
+		favoriteUseCases.isFavorite(_pointOfInterestId)
+			.flowOn(Dispatchers.IO),
 		_isLoading,
 		_error
 	) { values ->
@@ -85,8 +91,9 @@ class PointOfInterestViewModel @Inject constructor(
 			relatedOreDeposits = values[5] as List<OreDeposit>,
 			relatedOfferings = values[6] as List<Material>,
 			relatedMaterialDrops = values[7] as List<MaterialDrop>,
-			isLoading = values[8] as Boolean,
-			error = values[9] as String?
+			isFavorite = values[8] as Boolean,
+			isLoading = values[9] as Boolean,
+			error = values[10] as String?
 		)
 
 	}.stateIn(
@@ -169,6 +176,16 @@ class PointOfInterestViewModel @Inject constructor(
 			Log.e("General fetch error PointOfInterestDetailViewModel", e.message.toString())
 			_isLoading.value = false
 			_error.value = e.message
+		}
+	}
+
+	fun toggleFavorite(favorite: Favorite, currentIsFavorite: Boolean) {
+		viewModelScope.launch {
+			if (currentIsFavorite) {
+				favoriteUseCases.deleteFavoriteUseCase(favorite)
+			} else {
+				favoriteUseCases.addFavoriteUseCase(favorite)
+			}
 		}
 	}
 }
