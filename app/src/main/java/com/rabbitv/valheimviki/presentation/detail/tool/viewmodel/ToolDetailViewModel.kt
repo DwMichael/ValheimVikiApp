@@ -6,12 +6,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 import com.rabbitv.valheimviki.domain.model.creature.Creature
+import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.item_tool.ItemTool
 import com.rabbitv.valheimviki.domain.model.material.MaterialUpgrade
 import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
 import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.CraftingObjectUseCases
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
+import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.ore_deposit.OreDepositUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
@@ -27,6 +29,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -40,6 +43,7 @@ class ToolDetailViewModel @Inject constructor(
 	private val relationUseCases: RelationUseCases,
 	private val oreDepositUseCases: OreDepositUseCases,
 	private val creatureUseCases: CreatureUseCases,
+	private val favoriteUseCases: FavoriteUseCases,
 	private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 	private val _toolId: String = checkNotNull(savedStateHandle[TOOL_KEY])
@@ -58,6 +62,8 @@ class ToolDetailViewModel @Inject constructor(
 		_relatedMaterials,
 		_relatedOreDeposits,
 		_relatedNpc,
+		favoriteUseCases.isFavorite(_toolId)
+			.flowOn(Dispatchers.IO),
 		_isLoading,
 		_error
 	) { values ->
@@ -67,8 +73,9 @@ class ToolDetailViewModel @Inject constructor(
 			relatedMaterials = values[2] as List<MaterialUpgrade>,
 			relatedOreDeposits = values[3] as List<OreDeposit>,
 			relatedNpc = values[4] as Creature?,
-			isLoading = values[5] as Boolean,
-			error = values[6] as String?
+			isFavorite = values[5] as Boolean,
+			isLoading = values[6] as Boolean,
+			error = values[7] as String?
 		)
 	}.stateIn(
 		scope = viewModelScope,
@@ -152,6 +159,16 @@ class ToolDetailViewModel @Inject constructor(
 				_error.value = e.message
 			} finally {
 				_isLoading.value = false
+			}
+		}
+	}
+
+	fun toggleFavorite(favorite: Favorite, currentIsFavorite: Boolean) {
+		viewModelScope.launch {
+			if (currentIsFavorite) {
+				favoriteUseCases.deleteFavoriteUseCase(favorite)
+			} else {
+				favoriteUseCases.addFavoriteUseCase(favorite)
 			}
 		}
 	}
