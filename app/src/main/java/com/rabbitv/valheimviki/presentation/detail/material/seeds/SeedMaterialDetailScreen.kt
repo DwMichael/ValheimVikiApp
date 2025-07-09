@@ -44,16 +44,19 @@ import com.composables.icons.lucide.Gavel
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.MapPinned
 import com.composables.icons.lucide.Trees
+import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
+import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.EquipmentDetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.navigation.WorldDetailDestination
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
-import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
+import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCard
+import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
@@ -73,10 +76,16 @@ fun SeedMaterialDetailScreen(
 	viewModel: SeedMaterialDetailViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
+	val onToggleFavorite = { favorite: Favorite, isFavorite: Boolean ->
+		viewModel.toggleFavorite(
+			favorite = favorite,
+			currentIsFavorite = isFavorite
+		)
+	}
 	SeedMaterialDetailContent(
 		onBack = onBack,
 		onItemClick = onItemClick,
+		onToggleFavorite = onToggleFavorite,
 		uiState = uiState,
 	)
 
@@ -88,6 +97,7 @@ fun SeedMaterialDetailScreen(
 fun SeedMaterialDetailContent(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
+	onToggleFavorite: (favorite: Favorite, currentIsFavorite: Boolean) -> Unit,
 	uiState: SeedUiState,
 ) {
 
@@ -249,7 +259,8 @@ fun SeedMaterialDetailContent(
 							list = uiState.trees,
 							data = treesData,
 							onItemClick = { clickedItemId ->
-								val destination = WorldDetailDestination.TreeDetail(treeId = clickedItemId)
+								val destination =
+									WorldDetailDestination.TreeDetail(treeId = clickedItemId)
 								onItemClick(destination)
 							}
 						)
@@ -261,7 +272,8 @@ fun SeedMaterialDetailContent(
 							list = uiState.pointsOfInterest,
 							data = pointsOfInterestData,
 							onItemClick = { clickedItemId ->
-								val destination = WorldDetailDestination.PointOfInterestDetail(pointOfInterestId = clickedItemId)
+								val destination =
+									WorldDetailDestination.PointOfInterestDetail(pointOfInterestId = clickedItemId)
 								onItemClick(destination)
 							}
 
@@ -303,6 +315,17 @@ fun SeedMaterialDetailContent(
 				scrollState = scrollState,
 				onBack = onBack
 			)
+			uiState.material?.let { material ->
+				FavoriteButton(
+					modifier = Modifier
+						.align(Alignment.TopEnd)
+						.padding(16.dp),
+					isFavorite = uiState.isFavorite,
+					onToggleFavorite = {
+						onToggleFavorite(material.toFavorite(), uiState.isFavorite)
+					}
+				)
+			}
 		}
 	}
 }
@@ -318,9 +341,9 @@ fun PreviewToolDetailContentCooked() {
 		SeedMaterialDetailContent(
 			uiState = SeedUiState(),
 			onBack = {},
-			onItemClick = {}
-
-			)
+			onItemClick = {},
+			onToggleFavorite = {_,_->{}}
+		)
 	}
 
 }
