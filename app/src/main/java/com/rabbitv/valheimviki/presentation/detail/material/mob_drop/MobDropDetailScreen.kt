@@ -32,14 +32,17 @@ import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.PawPrint
 import com.rabbitv.valheimviki.data.mappers.creatures.toAggressiveCreatures
 import com.rabbitv.valheimviki.data.mappers.creatures.toPassiveCreatures
+import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.creature.Creature
+import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.navigation.WorldDetailDestination
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
-import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
+import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
+import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
@@ -59,10 +62,16 @@ fun MobDropDetailScreen(
 	viewModel: MobDropDetailViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
+	val onToggleFavorite = { favorite: Favorite, isFavorite: Boolean ->
+		viewModel.toggleFavorite(
+			favorite = favorite,
+			currentIsFavorite = isFavorite
+		)
+	}
 	MobDropDetailContent(
 		onBack = onBack,
 		onItemClick = onItemClick,
+		onToggleFavorite = onToggleFavorite,
 		uiState = uiState,
 	)
 
@@ -74,6 +83,7 @@ fun MobDropDetailScreen(
 fun MobDropDetailContent(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
+	onToggleFavorite: (favorite: Favorite, currentIsFavorite: Boolean) -> Unit,
 	uiState: MobDropUiState,
 ) {
 
@@ -202,6 +212,17 @@ fun MobDropDetailContent(
 				scrollState = scrollState,
 				onBack = onBack
 			)
+			uiState.material?.let { material ->
+				FavoriteButton(
+					modifier = Modifier
+						.align(Alignment.TopEnd)
+						.padding(16.dp),
+					isFavorite = uiState.isFavorite,
+					onToggleFavorite = {
+						onToggleFavorite(material.toFavorite(), uiState.isFavorite)
+					}
+				)
+			}
 		}
 	}
 }
@@ -238,7 +259,8 @@ fun PreviewToolDetailContentCooked() {
 				error = null
 			),
 			onBack = {},
-			onItemClick = {}
+			onItemClick = {},
+			onToggleFavorite = { _, _ -> {} }
 		)
 	}
 
