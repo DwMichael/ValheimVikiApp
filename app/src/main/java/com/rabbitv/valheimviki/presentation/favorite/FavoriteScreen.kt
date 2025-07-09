@@ -251,7 +251,6 @@ private fun determineFavoriteGridType(favoriteCategory: FavoriteCategory): Favor
 		FavoriteCategory.POINTOFINTEREST -> FavoriteGridItemTypes.DEFAULT
 		FavoriteCategory.TREE -> FavoriteGridItemTypes.DEFAULT
 		FavoriteCategory.OREDEPOSITE -> FavoriteGridItemTypes.DEFAULT
-		else -> FavoriteGridItemTypes.DEFAULT
 	}
 }
 
