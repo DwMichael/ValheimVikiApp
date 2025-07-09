@@ -1,5 +1,6 @@
-package com.rabbitv.valheimviki.presentation.home
+package com.rabbitv.valheimviki.presentation.components.topbar
 
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
@@ -77,7 +78,7 @@ fun MainAppBar(
                 )
             }
             IconButton(
-                onClick = { /*TODO*/ },
+                onClick = { onSearchBarClick() },
                 modifier = Modifier
                     .size(ICON_CLICK_DIM)
             ) {
@@ -94,7 +95,7 @@ fun MainAppBar(
 
 @Preview(
     name = "HomeTopBar",
-    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES
+    uiMode = Configuration.UI_MODE_NIGHT_YES
 )
 @Composable
 private fun PreviewHomeTopBar() {

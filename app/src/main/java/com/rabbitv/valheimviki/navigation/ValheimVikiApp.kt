@@ -109,7 +109,7 @@ import com.rabbitv.valheimviki.presentation.detail.tree.TreeDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.weapon.WeaponDetailScreen
 import com.rabbitv.valheimviki.presentation.favorite.FavoriteScreen
 import com.rabbitv.valheimviki.presentation.food.FoodListScreen
-import com.rabbitv.valheimviki.presentation.home.MainAppBar
+import com.rabbitv.valheimviki.presentation.components.topbar.MainAppBar
 import com.rabbitv.valheimviki.presentation.intro.WelcomeScreen
 import com.rabbitv.valheimviki.presentation.material.MaterialCategoryScreen
 import com.rabbitv.valheimviki.presentation.material.MaterialListScreen
@@ -117,6 +117,7 @@ import com.rabbitv.valheimviki.presentation.material.viewmodel.MaterialListViewM
 import com.rabbitv.valheimviki.presentation.mead.MeadListScreen
 import com.rabbitv.valheimviki.presentation.ore_deposit.OreDepositScreen
 import com.rabbitv.valheimviki.presentation.points_of_interest.PoiListScreen
+import com.rabbitv.valheimviki.presentation.search.SearchScreen
 import com.rabbitv.valheimviki.presentation.splash.SplashScreen
 import com.rabbitv.valheimviki.presentation.tool.ToolListScreen
 import com.rabbitv.valheimviki.presentation.tree.TreeScreen
@@ -202,6 +203,9 @@ fun MainContainer(
 						scope = scope,
 						drawerState = drawerState,
 						enabled = running,
+						onSearchBarClick = {
+							valheimVikiNavController.navigate(TopLevelDestination.Search)
+						},
 						onBookMarkClick = {
 							valheimVikiNavController.navigate(TopLevelDestination.Favorite)
 						}
@@ -271,6 +275,15 @@ fun ValheimNavGraph(
 		}
 		composable<TopLevelDestination.Favorite> {
 			FavoriteScreen(
+				onBack = { valheimVikiNavController.popBackStack() },
+				onItemClick = { destination ->
+					valheimVikiNavController.navigate(destination)
+				},
+			)
+		}
+
+		composable<TopLevelDestination.Search> {
+			SearchScreen(
 				onBack = { valheimVikiNavController.popBackStack() },
 				onItemClick = { destination ->
 					valheimVikiNavController.navigate(destination)

@@ -11,6 +11,7 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.rabbitv.valheimviki.presentation.components.topbar.MainAppBar
 import com.rabbitv.valheimviki.ui.theme.ICON_CLICK_DIM
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -24,53 +25,53 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class HomeTopBarKtTest {
 
-    @get:Rule(order = 0)
-    val hiltRule = HiltAndroidRule(this)
+	@get:Rule(order = 0)
+	val hiltRule = HiltAndroidRule(this)
 
-    @get:Rule(order = 1)
-    val composeTestRule = createComposeRule()
+	@get:Rule(order = 1)
+	val composeTestRule = createComposeRule()
 
-    @Before
-    fun setUp() {
-        hiltRule.inject()
-        composeTestRule.setContent {
-            ValheimVikiAppTheme {
-                MainAppBar(
-                    onSearchBarClick = {},
-                    onMenuClick = {},
-                    onBookMarkClick = {},
-                    scope = rememberCoroutineScope(),
-                    drawerState = rememberDrawerState(DrawerValue.Closed),
-                )
-            }
-        }
-    }
+	@Before
+	fun setUp() {
+		hiltRule.inject()
+		composeTestRule.setContent {
+			ValheimVikiAppTheme {
+				MainAppBar(
+					onSearchBarClick = {},
+					onMenuClick = {},
+					onBookMarkClick = {},
+					scope = rememberCoroutineScope(),
+					drawerState = rememberDrawerState(DrawerValue.Closed),
+				)
+			}
+		}
+	}
 
-    @Test
-    fun testHomeTopAppBarIsDisplayed() {
-        composeTestRule.onNodeWithTag("HomeTopAppBar").assertIsDisplayed()
-    }
+	@Test
+	fun testHomeTopAppBarIsDisplayed() {
+		composeTestRule.onNodeWithTag("HomeTopAppBar").assertIsDisplayed()
+	}
 
-    @Test
-    fun testHomeTopAppBarIconsAreDisplayed() {
-        composeTestRule.onNodeWithContentDescription("Menu section Icon").assertIsDisplayed()
-        composeTestRule.onNodeWithContentDescription("Bookmarks section Icon").assertIsDisplayed()
-        composeTestRule.onNodeWithContentDescription("Search section Icon").assertIsDisplayed()
-    }
+	@Test
+	fun testHomeTopAppBarIconsAreDisplayed() {
+		composeTestRule.onNodeWithContentDescription("Menu section Icon").assertIsDisplayed()
+		composeTestRule.onNodeWithContentDescription("Bookmarks section Icon").assertIsDisplayed()
+		composeTestRule.onNodeWithContentDescription("Search section Icon").assertIsDisplayed()
+	}
 
-    @Test
-    fun testIconButtonPaddingAndSize() {
-        composeTestRule.onNodeWithContentDescription("Menu section Icon")
-            .assertWidthIsEqualTo(ICON_CLICK_DIM).assertHeightIsEqualTo(ICON_CLICK_DIM)
-        composeTestRule.onNodeWithContentDescription("Bookmarks section Icon")
-            .assertWidthIsEqualTo(ICON_CLICK_DIM).assertHeightIsEqualTo(ICON_CLICK_DIM)
-        composeTestRule.onNodeWithContentDescription("Search section Icon")
-            .assertWidthIsEqualTo(ICON_CLICK_DIM).assertHeightIsEqualTo(ICON_CLICK_DIM)
-    }
+	@Test
+	fun testIconButtonPaddingAndSize() {
+		composeTestRule.onNodeWithContentDescription("Menu section Icon")
+			.assertWidthIsEqualTo(ICON_CLICK_DIM).assertHeightIsEqualTo(ICON_CLICK_DIM)
+		composeTestRule.onNodeWithContentDescription("Bookmarks section Icon")
+			.assertWidthIsEqualTo(ICON_CLICK_DIM).assertHeightIsEqualTo(ICON_CLICK_DIM)
+		composeTestRule.onNodeWithContentDescription("Search section Icon")
+			.assertWidthIsEqualTo(ICON_CLICK_DIM).assertHeightIsEqualTo(ICON_CLICK_DIM)
+	}
 
-    @Test
-    fun testHomeTopAppBarTitleIsDisplayed() {
-        composeTestRule.onNodeWithText("ValheimViki")
-    }
-    
+	@Test
+	fun testHomeTopAppBarTitleIsDisplayed() {
+		composeTestRule.onNodeWithText("ValheimViki")
+	}
+
 }
