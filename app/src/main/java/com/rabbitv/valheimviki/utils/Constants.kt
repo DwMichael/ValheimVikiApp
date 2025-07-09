@@ -53,14 +53,6 @@ object Constants {
 
 	const val BUILDING_MATERIAL_DETAIL_KEY = "buildingMaterialId"
 
-	//Creature Order map
-	val CreatureSubCategory_ORDER_MAP = mapOf(
-		CreatureSubCategory.BOSS.toString() to 1,
-		CreatureSubCategory.MINI_BOSS.toString() to 2,
-		CreatureSubCategory.AGGRESSIVE_CREATURE.toString() to 3,
-		CreatureSubCategory.PASSIVE_CREATURE.toString() to 4,
-		CreatureSubCategory.NPC.toString() to 5,
-	)
 
 
 }

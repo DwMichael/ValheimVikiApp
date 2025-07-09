@@ -29,6 +29,7 @@ import com.rabbitv.valheimviki.presentation.components.card.GridLevelInfo
 import com.rabbitv.valheimviki.presentation.detail.armor.model.StatArmorVisuals
 import com.rabbitv.valheimviki.presentation.detail.tool.model.StatToolsVisuals
 import com.rabbitv.valheimviki.presentation.detail.weapon.model.StatWeaponVisuals
+import com.rabbitv.valheimviki.presentation.favorite.model.FavoriteCategory
 import retrofit2.Response
 
 fun <T> Response<List<T>>.bodyList(): List<T> {
@@ -38,6 +39,24 @@ fun <T> Response<List<T>>.bodyList(): List<T> {
 fun String?.valid() =
 	takeIf { !isNullOrBlank() && !equals("null", ignoreCase = true) }
 
+fun String?.toFavoriteCategory(): FavoriteCategory {
+	return when(this) {
+		"BIOME" -> FavoriteCategory.BIOME
+		"CREATURE" -> FavoriteCategory.CREATURE
+		"FOOD" -> FavoriteCategory.FOOD
+		"ARMOR" -> FavoriteCategory.ARMOR
+		"WEAPON" -> FavoriteCategory.WEAPON
+		"BUILDING_MATERIAL" -> FavoriteCategory.BUILDING_MATERIAL
+		"MATERIAL" -> FavoriteCategory.MATERIAL
+		"CRAFTING" -> FavoriteCategory.CRAFTING
+		"TOOL" -> FavoriteCategory.TOOL
+		"MEAD" -> FavoriteCategory.MEAD
+		"POINTOFINTEREST" -> FavoriteCategory.POINTOFINTEREST
+		"TREE" -> FavoriteCategory.TREE
+		"OREDEPOSITE" -> FavoriteCategory.OREDEPOSITE
+		else -> error("Unknown Favorite Category: $this")
+	}
+}
 
 fun mapUpgradeInfoToGridList(upgradeInfo: UpgradeInfo): List<GridLevelInfo> {
 	val gridList = mutableListOf<GridLevelInfo>()
