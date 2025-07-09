@@ -58,18 +58,20 @@ import coil3.request.crossfade
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.TreePine
 import com.rabbitv.valheimviki.R
+import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.npc.NPC
+import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
 import com.rabbitv.valheimviki.domain.repository.ItemData
 import com.rabbitv.valheimviki.navigation.DetailDestination
-import com.rabbitv.valheimviki.navigation.EquipmentDetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.navigation.WorldDetailDestination
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
-import com.rabbitv.valheimviki.presentation.components.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
+import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
 import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDetailImage
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
@@ -91,10 +93,16 @@ fun NpcDetailScreen(
 	viewModel: NpcDetailScreenViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
+	val onToggleFavorite = { favorite: Favorite, isFavorite: Boolean ->
+		viewModel.toggleFavorite(
+			favorite = favorite,
+			currentIsFavorite = isFavorite
+		)
+	}
 	NpcDetailContent(
 		onBack = onBack,
 		onItemClick = onItemClick,
+		onToggleFavorite = onToggleFavorite,
 		uiState = uiState,
 	)
 
@@ -105,6 +113,7 @@ fun NpcDetailScreen(
 fun NpcDetailContent(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
+	onToggleFavorite: (favorite: Favorite, currentIsFavorite: Boolean) -> Unit,
 	uiState: NpcDetailUiState,
 ) {
 	val isExpandable = remember { mutableStateOf(false) }
@@ -313,6 +322,15 @@ fun NpcDetailContent(
 						.padding(16.dp),
 					scrollState = scrollState,
 					onBack = onBack
+				)
+				FavoriteButton(
+					modifier = Modifier
+						.align(Alignment.TopEnd)
+						.padding(16.dp),
+					isFavorite = uiState.isFavorite,
+					onToggleFavorite = {
+						onToggleFavorite(uiState.npc.toFavorite(), uiState.isFavorite)
+					},
 				)
 			}
 		}
@@ -803,7 +821,8 @@ fun PreviewNPCPage() {
 		NpcDetailContent(
 			onBack = {},
 			onItemClick = {},
-			uiState = fakeNpcDetailUiState
+			uiState = fakeNpcDetailUiState,
+			onToggleFavorite = {_,_->{}}
 		)
 	}
 }
@@ -828,6 +847,7 @@ fun PreviewNPCPageSmal() {
 		NpcDetailContent(
 			onBack = {},
 			onItemClick = {},
+			onToggleFavorite = {_,_->{}},
 			uiState = NpcDetailUiState(
 				npc = NPC(
 					id = "npc_blacksmith",

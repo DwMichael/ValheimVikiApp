@@ -5,9 +5,10 @@ import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
 
 data class MiniBossDetailUiState(
-    val miniBoss: MiniBoss? = null,
-    val primarySpawn: PointOfInterest? = null,
-    val dropItems: List<Material> = emptyList(),
-    val isLoading: Boolean = false,
-    val error: String? = null
+	val miniBoss: MiniBoss? = null,
+	val primarySpawn: PointOfInterest? = null,
+	val dropItems: List<Material> = emptyList(),
+	val isFavorite: Boolean = false,
+	val isLoading: Boolean = false,
+	val error: String? = null
 )

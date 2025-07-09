@@ -12,6 +12,7 @@ data class ToolDetailUiState(
 	val relatedMaterials: List<MaterialUpgrade> = emptyList(),
 	val relatedOreDeposits: List<OreDeposit> = emptyList(),
 	val relatedNpc: Creature? = null,
+	val isFavorite: Boolean = false,
 	val isLoading: Boolean = false,
 	val error: String? = null
 )

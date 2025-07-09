@@ -11,6 +11,7 @@ data class MobDropUiState(
 	val passive: List<PassiveCreature> = emptyList(),
 	val aggressive: List<AggressiveCreature> = emptyList(),
 	val pointsOfInterest: List<PointOfInterest> = emptyList(),
+	val isFavorite: Boolean = false,
 	val isLoading: Boolean = false,
 	val error: String? = null,
 )

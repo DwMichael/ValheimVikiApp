@@ -45,6 +45,8 @@ import com.composables.icons.lucide.Combine
 import com.composables.icons.lucide.Gem
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Pickaxe
+import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
+import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
 import com.rabbitv.valheimviki.navigation.BuildingDetailDestination
 import com.rabbitv.valheimviki.navigation.DetailDestination
@@ -53,9 +55,10 @@ import com.rabbitv.valheimviki.navigation.LocalSharedTransitionScope
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.navigation.WorldDetailDestination
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
-import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
+import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
+import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDetailImageAnimated
@@ -79,9 +82,16 @@ fun OreDepositDetailScreen(
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 	val sharedTransitionScope = LocalSharedTransitionScope.current
 		?: throw IllegalStateException("No Scope found")
+	val onToggleFavorite = { favorite: Favorite, isFavorite: Boolean ->
+		viewModel.toggleFavorite(
+			favorite = favorite,
+			currentIsFavorite = isFavorite
+		)
+	}
 	OreDepositDetailContent(
 		onBack = onBack,
 		onItemClick = onItemClick,
+		onToggleFavorite = onToggleFavorite,
 		uiState = uiState,
 		sharedTransitionScope = sharedTransitionScope,
 		animatedVisibilityScope = animatedVisibilityScope
@@ -94,6 +104,7 @@ fun OreDepositDetailScreen(
 fun OreDepositDetailContent(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
+	onToggleFavorite: (favorite: Favorite, currentIsFavorite: Boolean) -> Unit,
 	uiState: OreDepositUiState,
 	sharedTransitionScope: SharedTransitionScope,
 	animatedVisibilityScope: AnimatedVisibilityScope,
@@ -274,6 +285,19 @@ fun OreDepositDetailContent(
 							scrollState = scrollState,
 							onBack = onBack,
 						)
+						FavoriteButton(
+							modifier = Modifier
+								.align(Alignment.TopEnd)
+								.padding(16.dp),
+							isFavorite = uiState.isFavorite,
+							onToggleFavorite = {
+								onToggleFavorite(
+									uiState.oreDeposit.toFavorite(),
+									uiState.isFavorite
+								)
+							}
+						)
+
 					}
 				}
 			} else {
@@ -335,6 +359,7 @@ fun PreviewOreDepositDetailContent() {
 				OreDepositDetailContent(
 					onBack = {},
 					onItemClick = {},
+					onToggleFavorite = { _, _ -> {} },
 					uiState = mockUiState,
 					sharedTransitionScope = this@SharedTransitionLayout,
 					animatedVisibilityScope = this,

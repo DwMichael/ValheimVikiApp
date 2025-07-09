@@ -12,6 +12,7 @@ data class MeadDetailUiState(
 	val foodForRecipe: List<RecipeFoodData> = emptyList(),
 	val meadForRecipe: List<RecipeMeadData> = emptyList(),
 	val materialsForRecipe: List<RecipeMaterialData> = emptyList(),
+	val isFavorite: Boolean = false,
 	val isLoading: Boolean = false,
 	val error: String? = null
 )

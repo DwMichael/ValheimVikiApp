@@ -5,9 +5,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
+import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.food.Food
 import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.CraftingObjectUseCases
+import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
 import com.rabbitv.valheimviki.domain.use_cases.food.FoodUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
@@ -24,6 +26,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -35,6 +38,7 @@ class FoodDetailViewModel @Inject constructor(
 	private val craftingObjectUseCases: CraftingObjectUseCases,
 	private val materialUseCases: MaterialUseCases,
 	private val relationUseCases: RelationUseCases,
+	private val favoriteUseCases: FavoriteUseCases,
 	private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 	private val _foodId: String = checkNotNull(savedStateHandle[FOOD_KEY])
@@ -51,6 +55,8 @@ class FoodDetailViewModel @Inject constructor(
 		_craftingCookingStation,
 		_foodForRecipe,
 		_materialsForRecipe,
+		favoriteUseCases.isFavorite(_foodId)
+			.flowOn(Dispatchers.IO),
 		_isLoading,
 		_error
 	) { values ->
@@ -59,8 +65,9 @@ class FoodDetailViewModel @Inject constructor(
 			craftingCookingStation = values[1] as CraftingObject?,
 			foodForRecipe = values[2] as List<RecipeFoodData>,
 			materialsForRecipe = values[3] as List<RecipeMaterialData>,
-			isLoading = values[4] as Boolean,
-			error = values[5] as String?
+			isFavorite = values[4] as Boolean,
+			isLoading = values[5] as Boolean,
+			error = values[6] as String?
 		)
 	}.stateIn(
 		scope = viewModelScope,
@@ -142,6 +149,16 @@ class FoodDetailViewModel @Inject constructor(
 				_error.value = e.message
 			} finally {
 				_isLoading.value = false
+			}
+		}
+	}
+
+	fun toggleFavorite(favorite: Favorite, currentIsFavorite: Boolean) {
+		viewModelScope.launch {
+			if (currentIsFavorite) {
+				favoriteUseCases.deleteFavoriteUseCase(favorite)
+			} else {
+				favoriteUseCases.addFavoriteUseCase(favorite)
 			}
 		}
 	}

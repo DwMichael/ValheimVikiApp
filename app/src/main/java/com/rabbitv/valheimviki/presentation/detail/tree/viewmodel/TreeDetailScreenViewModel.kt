@@ -7,11 +7,13 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.model.biome.Biome
+import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.material.MaterialDrop
 import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
 import com.rabbitv.valheimviki.domain.model.tree.Tree
 import com.rabbitv.valheimviki.domain.model.weapon.Weapon
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
+import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.domain.use_cases.tree.TreeUseCases
@@ -28,6 +30,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -40,6 +43,7 @@ class TreeDetailScreenViewModel @Inject constructor(
 	private val biomeUseCases: BiomeUseCases,
 	private val relationsUseCase: RelationUseCases,
 	private val materialUseCases: MaterialUseCases,
+	private val favoriteUseCases: FavoriteUseCases,
 	private val weaponUseCase: WeaponUseCases
 ) : ViewModel() {
 	private val _treeId: String = checkNotNull(savedStateHandle[TREE_KEY])
@@ -55,6 +59,8 @@ class TreeDetailScreenViewModel @Inject constructor(
 		_relatedBiomes,
 		_relatedMaterials,
 		_relatedAxes,
+		favoriteUseCases.isFavorite(_treeId)
+			.flowOn(Dispatchers.IO),
 		_isLoading,
 		_error
 	) { values ->
@@ -63,8 +69,9 @@ class TreeDetailScreenViewModel @Inject constructor(
 			relatedBiomes = values[1] as List<Biome>,
 			relatedMaterials = values[2] as List<MaterialDrop>,
 			relatedAxes = values[3] as List<Weapon>,
-			isLoading = values[4] as Boolean,
-			error = values[5] as String?
+			isFavorite = values[4] as Boolean,
+			isLoading = values[5] as Boolean,
+			error = values[6] as String?
 		)
 	}.stateIn(
 		scope = viewModelScope,
@@ -74,10 +81,10 @@ class TreeDetailScreenViewModel @Inject constructor(
 
 
 	init {
-		initialtreeData()
+		initialTreeData()
 	}
 
-	internal fun initialtreeData() {
+	internal fun initialTreeData() {
 		viewModelScope.launch(Dispatchers.IO) {
 			_isLoading.value = true
 			try {
@@ -134,6 +141,16 @@ class TreeDetailScreenViewModel @Inject constructor(
 			} catch (e: Exception) {
 				Log.e("General fetch error treeDetailViewModel", e.message.toString())
 				_isLoading.value = false
+			}
+		}
+	}
+
+	fun toggleFavorite(favorite: Favorite, currentIsFavorite: Boolean) {
+		viewModelScope.launch {
+			if (currentIsFavorite) {
+				favoriteUseCases.deleteFavoriteUseCase(favorite)
+			} else {
+				favoriteUseCases.addFavoriteUseCase(favorite)
 			}
 		}
 	}

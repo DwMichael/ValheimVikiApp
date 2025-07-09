@@ -12,6 +12,7 @@ data class OreDepositUiState(
 	val relatedMaterials: List<MaterialDrop> = emptyList(),
 	val relatedTools: List<ItemTool> = emptyList(),
 	val craftingStation: List<CraftingObject> = emptyList(),
+	val isFavorite: Boolean = false,
 	val isLoading: Boolean = false,
 	val error: String? = null
 )

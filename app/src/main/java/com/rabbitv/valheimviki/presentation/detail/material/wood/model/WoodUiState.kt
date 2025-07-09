@@ -8,6 +8,7 @@ data class WoodUiState(
 	val material: Material? = null,
 	val biomes: List<Biome> = emptyList(),
 	val trees: List<Tree> = emptyList(),
+	val isFavorite: Boolean = false,
 	val isLoading: Boolean = false,
 	val error: String? = null,
 )

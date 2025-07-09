@@ -5,9 +5,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
+import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.relation.RelationType
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.CraftingObjectUseCases
+import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.presentation.detail.material.crafted.model.CraftedMaterialUiState
@@ -20,6 +22,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -31,6 +34,7 @@ class CraftedMaterialDetailViewModel @Inject constructor(
 	private val materialUseCases: MaterialUseCases,
 	private val craftingUseCases: CraftingObjectUseCases,
 	private val relationUseCases: RelationUseCases,
+	private val favoriteUseCases: FavoriteUseCases,
 	savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -45,15 +49,18 @@ class CraftedMaterialDetailViewModel @Inject constructor(
 		_material,
 		_requiredCraftingStation,
 		_relatedMaterial,
+		favoriteUseCases.isFavorite(_materialId)
+			.flowOn(Dispatchers.IO),
 		_isLoading,
 		_error
-	) { material, requiredCraftingStation, relatedMaterial, isLoading, error ->
+	) { values ->
 		CraftedMaterialUiState(
-			material = material,
-			requiredCraftingStation = requiredCraftingStation,
-			relatedMaterial = relatedMaterial,
-			isLoading = isLoading,
-			error = error
+			material = values[0] as Material?,
+			requiredCraftingStations = values[1] as List<CraftingObject>,
+			relatedMaterial = values[2] as List<MaterialToCraft>,
+			isFavorite = values[3] as Boolean,
+			isLoading = values[4] as Boolean,
+			error = values[5] as String?
 		)
 	}.stateIn(
 		viewModelScope,
@@ -133,9 +140,16 @@ class CraftedMaterialDetailViewModel @Inject constructor(
 			} finally {
 				_isLoading.value = false
 			}
-
 		}
+	}
 
-
+	fun toggleFavorite(favorite: Favorite, currentIsFavorite: Boolean) {
+		viewModelScope.launch {
+			if (currentIsFavorite) {
+				favoriteUseCases.deleteFavoriteUseCase(favorite)
+			} else {
+				favoriteUseCases.addFavoriteUseCase(favorite)
+			}
+		}
 	}
 }

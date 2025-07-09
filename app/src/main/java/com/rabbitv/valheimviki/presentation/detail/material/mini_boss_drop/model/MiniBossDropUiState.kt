@@ -8,6 +8,7 @@ data class MiniBossDropUiState(
 	val material: Material? = null,
 	val miniBoss: MiniBoss? = null,
 	val npc: NPC? = null,
+	val isFavorite: Boolean = false,
 	val isLoading: Boolean = false,
 	val error: String? = null,
 )

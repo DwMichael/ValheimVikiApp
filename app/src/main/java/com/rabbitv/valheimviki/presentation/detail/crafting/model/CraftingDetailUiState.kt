@@ -14,6 +14,7 @@ data class CraftingDetailUiState(
 	val craftingArmorProducts: List<CraftingProducts> = emptyList(),
 	val craftingToolProducts: List<CraftingProducts> = emptyList(),
 	val craftingBuildingMaterialProducts: List<CraftingProducts> = emptyList(),
+	val isFavorite: Boolean = false,
 	val isLoading: Boolean = false,
 	val error: String? = null
 )

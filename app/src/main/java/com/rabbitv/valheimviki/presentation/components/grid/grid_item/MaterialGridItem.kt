@@ -41,8 +41,8 @@ import com.rabbitv.valheimviki.ui.theme.YellowDTIconColor
 
 @Composable
 fun <T> MaterialGridItem(
-    item: GridCategoryOption<T>,
     onClick: () -> Unit,
+    item: GridCategoryOption<T>,
     modifier: Modifier = Modifier,
     height: Dp = 150.dp,
 ) {

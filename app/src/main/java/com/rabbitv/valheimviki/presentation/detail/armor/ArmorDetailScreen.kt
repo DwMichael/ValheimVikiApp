@@ -1,7 +1,6 @@
 package com.rabbitv.valheimviki.presentation.detail.armor
 
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -26,7 +25,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,24 +32,26 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.rabbitv.valheimviki.R
+import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.armor.Armor
 import com.rabbitv.valheimviki.domain.model.armor.UpgradeArmorInfo
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
+import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.navigation.BuildingDetailDestination
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
-import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
+import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
 import com.rabbitv.valheimviki.presentation.components.card.LevelInfoCard
 import com.rabbitv.valheimviki.presentation.components.card.RequiredMaterialColumn
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
+import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
+import com.rabbitv.valheimviki.presentation.detail.armor.model.ArmorUiState
 import com.rabbitv.valheimviki.presentation.detail.armor.viewmodel.ArmorDetailViewModel
-import com.rabbitv.valheimviki.presentation.detail.weapon.model.ArmorUiState
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ForestGreen20Dark
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
@@ -68,10 +68,16 @@ fun ArmorDetailScreen(
 	viewModel: ArmorDetailViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
+	val onToggleFavorite = { favorite: Favorite, isFavorite: Boolean ->
+		viewModel.toggleFavorite(
+			favorite = favorite,
+			currentIsFavorite = isFavorite
+		)
+	}
 	ArmorDetailContent(
 		onBack = onBack,
 		onItemClick = onItemClick,
+		onToggleFavorite = onToggleFavorite,
 		uiState = uiState
 	)
 }
@@ -80,6 +86,7 @@ fun ArmorDetailScreen(
 fun ArmorDetailContent(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
+	onToggleFavorite: (favorite: Favorite, currentIsFavorite: Boolean) -> Unit,
 	uiState: ArmorUiState
 ) {
 
@@ -186,7 +193,7 @@ fun ArmorDetailContent(
 							)
 						}
 					}
-					uiState.craftingObjects?.let { craftingStation ->
+					uiState.craftingObject?.let { craftingStation ->
 						TridentsDividedRow()
 						CardImageWithTopLabel(
 							onClickedItem = {
@@ -209,6 +216,15 @@ fun ArmorDetailContent(
 						.padding(16.dp),
 					scrollState = scrollState,
 					onBack = onBack
+				)
+				FavoriteButton(
+					modifier = Modifier
+						.align(Alignment.TopEnd)
+						.padding(16.dp),
+					isFavorite = uiState.isFavorite,
+					onToggleFavorite = {
+						onToggleFavorite(uiState.armor.toFavorite(), uiState.isFavorite)
+					},
 				)
 			}
 
@@ -281,10 +297,11 @@ private fun PreviewArmorDetailScreen() {
 		ArmorDetailContent(
 			onBack = {},
 			onItemClick = {},
+			onToggleFavorite = { _, _ -> {} },
 			uiState = ArmorUiState(
 				armor = testArmor,
 				materials = emptyList(),
-				craftingObjects = CraftingObject(
+				craftingObject = CraftingObject(
 					id = "1",
 					imageUrl = "",
 					category = "",

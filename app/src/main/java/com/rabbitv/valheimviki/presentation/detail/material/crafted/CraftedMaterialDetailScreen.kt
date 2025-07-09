@@ -31,14 +31,17 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.ScrollText
+import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
+import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.navigation.BuildingDetailDestination
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
-import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
+import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
+import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.flow_row.flow_as_grid.TwoColumnGrid
 import com.rabbitv.valheimviki.presentation.components.grid.grid_item.CustomItemCard
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerWithHeaderData
@@ -61,14 +64,18 @@ fun CraftedMaterialDetailScreen(
 	viewModel: CraftedMaterialDetailViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
+	val onToggleFavorite = { favorite: Favorite, isFavorite: Boolean ->
+		viewModel.toggleFavorite(
+			favorite = favorite,
+			currentIsFavorite = isFavorite
+		)
+	}
 	CraftedMaterialDetailContent(
 		onBack = onBack,
 		onItemClick = onItemClick,
-		uiState = uiState,
-
-		)
-
+		onToggleFavorite = onToggleFavorite,
+		uiState = uiState
+	)
 }
 
 
@@ -77,6 +84,7 @@ fun CraftedMaterialDetailScreen(
 fun CraftedMaterialDetailContent(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
+	onToggleFavorite: (favorite: Favorite, currentIsFavorite: Boolean) -> Unit,
 	uiState: CraftedMaterialUiState,
 ) {
 
@@ -124,8 +132,8 @@ fun CraftedMaterialDetailContent(
 						)
 						SlavicDivider()
 					}
-					if (uiState.requiredCraftingStation.isNotEmpty()) {
-						uiState.requiredCraftingStation.forEach { craftingStation ->
+					if (uiState.requiredCraftingStations.isNotEmpty()) {
+						uiState.requiredCraftingStations.forEach { craftingStation ->
 							CardImageWithTopLabel(
 								onClickedItem = {
 									val destination =
@@ -167,12 +175,12 @@ fun CraftedMaterialDetailContent(
 							for (items in uiState.relatedMaterial) {
 								CustomItemCard(
 									onItemClick = {
-											val destination =
-												NavigationHelper.routeToMaterial(
-													items.itemDrop.subCategory,
-													items.itemDrop.id
-												)
-											onItemClick(destination)
+										val destination =
+											NavigationHelper.routeToMaterial(
+												items.itemDrop.subCategory,
+												items.itemDrop.id
+											)
+										onItemClick(destination)
 									},
 									fillWidth = CUSTOM_ITEM_CARD_FILL_WIDTH,
 									imageUrl = items.itemDrop.imageUrl,
@@ -191,6 +199,17 @@ fun CraftedMaterialDetailContent(
 				scrollState = scrollState,
 				onBack = onBack
 			)
+			uiState.material?.let { material ->
+				FavoriteButton(
+					modifier = Modifier
+						.align(Alignment.TopEnd)
+						.padding(16.dp),
+					isFavorite = uiState.isFavorite,
+					onToggleFavorite = {
+						onToggleFavorite(material.toFavorite(), uiState.isFavorite)
+					}
+				)
+			}
 		}
 	}
 }
@@ -206,12 +225,13 @@ fun PreviewToolDetailContentCooked() {
 		CraftedMaterialDetailContent(
 			uiState = CraftedMaterialUiState(
 				material = FakeData.generateFakeMaterials()[0],
-				requiredCraftingStation = FakeData.fakeCraftingObjectList(),
+				requiredCraftingStations = FakeData.fakeCraftingObjectList(),
 				isLoading = false,
 				error = null
 			),
 			onBack = {},
-			onItemClick = {}
+			onItemClick = {},
+			onToggleFavorite = { _, _ -> {} }
 		)
 	}
 

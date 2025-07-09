@@ -39,16 +39,19 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.composables.icons.lucide.Gauge
 import com.composables.icons.lucide.Lucide
 import com.rabbitv.valheimviki.R
+import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
+import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.navigation.BuildingDetailDestination
 import com.rabbitv.valheimviki.navigation.ConsumableDetailDestination
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
-import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
+import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCard
+import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.flow_row.flow_as_grid.TwoColumnGrid
 import com.rabbitv.valheimviki.presentation.components.grid.grid_item.CustomItemCard
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
@@ -56,6 +59,7 @@ import com.rabbitv.valheimviki.presentation.detail.building_material.model.Build
 import com.rabbitv.valheimviki.presentation.detail.building_material.viewmodel.BuildingMaterialDetailViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
+import com.rabbitv.valheimviki.utils.toFoodSubCategory
 
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
@@ -65,10 +69,17 @@ fun BuildingMaterialDetailScreen(
 	viewModel: BuildingMaterialDetailViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+	val onToggleFavorite = { favorite: Favorite, isFavorite: Boolean ->
+		viewModel.toggleFavorite(
+			favorite = favorite,
+			currentIsFavorite = isFavorite
+		)
+	}
 
 	BuildingMaterialDetailContent(
 		onBack = onBack,
 		onItemClick = onItemClick,
+		onToggleFavorite = onToggleFavorite,
 		uiState = uiState,
 	)
 
@@ -80,6 +91,7 @@ fun BuildingMaterialDetailScreen(
 fun BuildingMaterialDetailContent(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
+	onToggleFavorite: (favorite: Favorite, currentIsFavorite: Boolean) -> Unit,
 	uiState: BuildingMaterialUiState,
 
 	) {
@@ -219,12 +231,10 @@ fun BuildingMaterialDetailContent(
 								CustomItemCard(
 									onItemClick = {
 										food.itemDrop.subCategory?.let {
-											val subCategory =
-												NavigationHelper.stringToFoodSubCategory(it)
 											val destination =
 												ConsumableDetailDestination.FoodDetail(
 													food.itemDrop.id,
-													subCategory
+													it.toFoodSubCategory()
 												)
 											onItemClick(destination)
 										}
@@ -244,6 +254,15 @@ fun BuildingMaterialDetailContent(
 						.padding(16.dp),
 					scrollState = scrollState,
 					onBack = onBack
+				)
+				FavoriteButton(
+					modifier = Modifier
+						.align(Alignment.TopEnd)
+						.padding(16.dp),
+					isFavorite = uiState.isFavorite,
+					onToggleFavorite = {
+						onToggleFavorite(uiState.buildingMaterial.toFavorite(), uiState.isFavorite)
+					},
 				)
 			}
 		}

@@ -6,6 +6,7 @@ import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
 data class GemstoneDetailUiState(
 	val material: Material? = null,
 	val pointsOfInterest: List<PointOfInterest> = emptyList(),
+	val isFavorite: Boolean = false,
 	val isLoading: Boolean = false,
 	val error: String? = null,
 )

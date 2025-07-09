@@ -8,6 +8,7 @@ import com.rabbitv.valheimviki.data.mappers.creatures.toNPC
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.CreatureSubCategory
 import com.rabbitv.valheimviki.domain.model.creature.npc.NPC
+import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.item_tool.ItemTool
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
@@ -15,6 +16,7 @@ import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterestSub
 import com.rabbitv.valheimviki.domain.model.tree.Tree
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
+import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.PointOfInterestUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
@@ -29,6 +31,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -44,6 +47,7 @@ class SeedMaterialDetailViewModel @Inject constructor(
 	private val toolUseCases: ToolUseCases,
 	private val creatureUseCases: CreatureUseCases,
 	private val relationUseCases: RelationUseCases,
+	private val favoriteUseCases: FavoriteUseCases,
 	savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 	private val _materialId: String = checkNotNull(savedStateHandle[SEED_MATERIAL_KEY])
@@ -63,6 +67,8 @@ class SeedMaterialDetailViewModel @Inject constructor(
 		_npc,
 		_tools,
 		_trees,
+		favoriteUseCases.isFavorite(_materialId)
+			.flowOn(Dispatchers.IO),
 		_isLoading,
 		_error
 	) { values ->
@@ -73,8 +79,9 @@ class SeedMaterialDetailViewModel @Inject constructor(
 			npc = values[3] as NPC?,
 			tools = values[4] as List<ItemTool>,
 			trees = values[5] as List<Tree>,
-			isLoading = values[6] as Boolean,
-			error = values[7] as String?
+			isFavorite = values[6] as Boolean,
+			isLoading = values[7] as Boolean,
+			error = values[8] as String?
 		)
 
 	}.stateIn(
@@ -155,9 +162,16 @@ class SeedMaterialDetailViewModel @Inject constructor(
 			} finally {
 				_isLoading.value = false
 			}
-
 		}
+	}
 
-
+	fun toggleFavorite(favorite: Favorite, currentIsFavorite: Boolean) {
+		viewModelScope.launch {
+			if (currentIsFavorite) {
+				favoriteUseCases.deleteFavoriteUseCase(favorite)
+			} else {
+				favoriteUseCases.addFavoriteUseCase(favorite)
+			}
+		}
 	}
 }

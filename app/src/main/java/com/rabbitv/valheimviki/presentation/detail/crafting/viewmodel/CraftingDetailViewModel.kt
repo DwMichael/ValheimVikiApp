@@ -4,12 +4,14 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
+import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.presentation.DroppableType
 import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
 import com.rabbitv.valheimviki.domain.model.relation.RelationType
 import com.rabbitv.valheimviki.domain.use_cases.armor.ArmorUseCases
 import com.rabbitv.valheimviki.domain.use_cases.building_material.BuildMaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.CraftingObjectUseCases
+import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
 import com.rabbitv.valheimviki.domain.use_cases.food.FoodUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.mead.MeadUseCases
@@ -28,6 +30,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -45,7 +48,8 @@ class CraftingDetailViewModel @Inject constructor(
 	private val _armorUseCase: ArmorUseCases,
 	private val _toolsUseCase: ToolUseCases,
 	private val _buildIngMaterials: BuildMaterialUseCases,
-	private val _savedStateHandle: SavedStateHandle
+	private val favoriteUseCases: FavoriteUseCases,
+	private val _savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 	//TODO MUST FIND THE WAY TO OPTIMALIZE IT
 	private val _craftingObjectId: String = checkNotNull(_savedStateHandle[CRAFTING_KEY])
@@ -77,6 +81,8 @@ class CraftingDetailViewModel @Inject constructor(
 		_craftingArmorProducts,
 		_craftingToolProducts,
 		_craftingBuildingMaterialProducts,
+		favoriteUseCases.isFavorite(_craftingObjectId)
+			.flowOn(Dispatchers.IO),
 		_isLoading,
 		_error
 	) { values ->
@@ -92,8 +98,9 @@ class CraftingDetailViewModel @Inject constructor(
 			craftingArmorProducts = values[8] as List<CraftingProducts>,
 			craftingToolProducts = values[9] as List<CraftingProducts>,
 			craftingBuildingMaterialProducts = values[10] as List<CraftingProducts>,
-			isLoading = values[11] as Boolean,
-			error = values[12] as String?
+			isFavorite = values[11] as Boolean,
+			isLoading = values[12] as Boolean,
+			error = values[13] as String?
 		)
 	}.stateIn(
 		scope = viewModelScope,
@@ -307,5 +314,15 @@ class CraftingDetailViewModel @Inject constructor(
 		_craftingMaterialRequired.value = required
 		_craftingMaterialToBuild.value = build
 		_craftingBuildingMaterialProducts.value = buildingMaterialDeferred.await()
+	}
+
+	fun toggleFavorite(favorite: Favorite, currentIsFavorite: Boolean) {
+		viewModelScope.launch {
+			if (currentIsFavorite) {
+				favoriteUseCases.deleteFavoriteUseCase(favorite)
+			} else {
+				favoriteUseCases.addFavoriteUseCase(favorite)
+			}
+		}
 	}
 }

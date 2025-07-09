@@ -14,6 +14,7 @@ data class GeneralMaterialUiState(
 	val pointOfInterests: List<PointOfInterest> = emptyList(),
 	val oreDeposits: List<OreDeposit> = emptyList(),
 	val trees: List<Tree> = emptyList(),
+	val isFavorite: Boolean = false,
 	val isLoading: Boolean = false,
 	val error: String? = null,
 )

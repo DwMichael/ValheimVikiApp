@@ -36,7 +36,9 @@ import com.composables.icons.lucide.Hammer
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Pickaxe
 import com.rabbitv.valheimviki.R
+import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
+import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.item_tool.ItemTool
 import com.rabbitv.valheimviki.domain.model.material.MaterialUpgrade
 import com.rabbitv.valheimviki.navigation.BuildingDetailDestination
@@ -44,11 +46,12 @@ import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.navigation.WorldDetailDestination
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
-import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
+import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
 import com.rabbitv.valheimviki.presentation.components.card.LevelInfoCard
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
+import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.flow_row.flow_as_grid.TwoColumnGrid
 import com.rabbitv.valheimviki.presentation.components.grid.grid_item.CustomItemCard
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData
@@ -74,10 +77,16 @@ fun ToolDetailScreen(
 	viewModel: ToolDetailViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
+	val onToggleFavorite = { favorite: Favorite, isFavorite: Boolean ->
+		viewModel.toggleFavorite(
+			favorite = favorite,
+			currentIsFavorite = isFavorite
+		)
+	}
 	ToolDetailContent(
 		onBack = onBack,
 		onItemClick = onItemClick,
+		onToggleFavorite = onToggleFavorite,
 		uiState = uiState,
 	)
 
@@ -89,6 +98,7 @@ fun ToolDetailScreen(
 fun ToolDetailContent(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
+	onToggleFavorite: (favorite: Favorite, currentIsFavorite: Boolean) -> Unit,
 	uiState: ToolDetailUiState,
 
 	) {
@@ -292,6 +302,17 @@ fun ToolDetailContent(
 				scrollState = scrollState,
 				onBack = onBack
 			)
+			uiState.tool?.let { tool ->
+				FavoriteButton(
+					modifier = Modifier
+						.align(Alignment.TopEnd)
+						.padding(16.dp),
+					isFavorite = uiState.isFavorite,
+					onToggleFavorite = {
+						onToggleFavorite(tool.toFavorite(), uiState.isFavorite)
+					},
+				)
+			}
 		}
 	}
 }
@@ -344,8 +365,8 @@ fun PreviewToolDetailContentCooked() {
 		ToolDetailContent(
 			onBack = {},
 			onItemClick = {},
+			onToggleFavorite = { _, _ -> {} },
 			uiState = ToolDetailUiState(
-
 				isLoading = false,
 				error = null,
 				tool = exampleTool,
@@ -353,7 +374,7 @@ fun PreviewToolDetailContentCooked() {
 				relatedMaterials = fakeMaterialsList
 			),
 
-		)
+			)
 	}
 
 }

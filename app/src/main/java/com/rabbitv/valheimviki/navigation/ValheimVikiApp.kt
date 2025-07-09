@@ -107,6 +107,7 @@ import com.rabbitv.valheimviki.presentation.detail.point_of_interest.PointOfInte
 import com.rabbitv.valheimviki.presentation.detail.tool.ToolDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.tree.TreeDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.weapon.WeaponDetailScreen
+import com.rabbitv.valheimviki.presentation.favorite.FavoriteScreen
 import com.rabbitv.valheimviki.presentation.food.FoodListScreen
 import com.rabbitv.valheimviki.presentation.home.MainAppBar
 import com.rabbitv.valheimviki.presentation.intro.WelcomeScreen
@@ -188,9 +189,6 @@ fun MainContainer(
 		items = drawerItems,
 		selectedItem = selectedItem,
 		isDetailScreen = showTopAppBar,
-		onItemSelected = { item ->
-
-		},
 		isTransitionActive = running,
 	) {
 		Scaffold(
@@ -203,7 +201,10 @@ fun MainContainer(
 					MainAppBar(
 						scope = scope,
 						drawerState = drawerState,
-						enabled = running
+						enabled = running,
+						onBookMarkClick = {
+							valheimVikiNavController.navigate(TopLevelDestination.Favorite)
+						}
 					)
 				}
 			},
@@ -267,6 +268,14 @@ fun ValheimNavGraph(
 		}
 		composable<TopLevelDestination.Welcome> {
 			WelcomeScreen(valheimVikiNavController)
+		}
+		composable<TopLevelDestination.Favorite> {
+			FavoriteScreen(
+				onBack = { valheimVikiNavController.popBackStack() },
+				onItemClick = { destination ->
+					valheimVikiNavController.navigate(destination)
+				},
+			)
 		}
 
 		composable<GridDestination.WorldDestinations.BiomeGrid> {
@@ -700,7 +709,7 @@ fun ValheimNavGraph(
 				},
 				category = args.category,
 
-			)
+				)
 		}
 		composable<BuildingDetailDestination.CraftingObjectDetail> {
 			CraftingDetailScreen(

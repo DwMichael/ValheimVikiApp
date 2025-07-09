@@ -6,10 +6,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.model.building_material.BuildingMaterial
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
+import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.presentation.DroppableType
 import com.rabbitv.valheimviki.domain.model.relation.RelationType
 import com.rabbitv.valheimviki.domain.use_cases.building_material.BuildMaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.CraftingObjectUseCases
+import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
 import com.rabbitv.valheimviki.domain.use_cases.food.FoodUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
@@ -24,6 +26,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -35,8 +38,9 @@ class BuildingMaterialDetailViewModel @Inject constructor(
 	private val buildingMaterialUseCases: BuildMaterialUseCases,
 	private val materialUseCases: MaterialUseCases,
 	private val craftingUseCases: CraftingObjectUseCases,
-	private val foodUseCases: FoodUseCases,//TODO ADD new list of food needed for specific item to be constructed
+	private val foodUseCases: FoodUseCases,
 	private val relationUseCases: RelationUseCases,
+	private val favoriteUseCases: FavoriteUseCases,
 	savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -54,6 +58,8 @@ class BuildingMaterialDetailViewModel @Inject constructor(
 		_materials,
 		_foods,
 		_requiredCraftingStation,
+		favoriteUseCases.isFavorite(_buildingMaterialId)
+			.flowOn(Dispatchers.IO),
 		_isLoading,
 		_error
 	) { values ->
@@ -62,8 +68,9 @@ class BuildingMaterialDetailViewModel @Inject constructor(
 			materials = values[1] as List<RequiredMaterial>,
 			foods = values[2] as List<RequiredFood>,
 			craftingStation = values[3] as List<CraftingObject>,
-			isLoading = values[4] as Boolean,
-			error = values[5] as String?,
+			isFavorite = values[4] as Boolean,
+			isLoading = values[5] as Boolean,
+			error = values[6] as String?,
 		)
 	}.stateIn(
 		viewModelScope,
@@ -180,7 +187,15 @@ class BuildingMaterialDetailViewModel @Inject constructor(
 			}
 
 		}
+	}
 
-
+	fun toggleFavorite(favorite: Favorite, currentIsFavorite: Boolean) {
+		viewModelScope.launch {
+			if (currentIsFavorite) {
+				favoriteUseCases.deleteFavoriteUseCase(favorite)
+			} else {
+				favoriteUseCases.addFavoriteUseCase(favorite)
+			}
+		}
 	}
 }

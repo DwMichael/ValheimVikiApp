@@ -38,7 +38,9 @@ import com.composables.icons.lucide.FlaskRound
 import com.composables.icons.lucide.Layers2
 import com.composables.icons.lucide.Lucide
 import com.rabbitv.valheimviki.R
+import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
+import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.food.Food
 import com.rabbitv.valheimviki.domain.model.mead.Mead
 import com.rabbitv.valheimviki.domain.model.mead.MeadSubCategory
@@ -47,9 +49,10 @@ import com.rabbitv.valheimviki.navigation.ConsumableDetailDestination
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
-import com.rabbitv.valheimviki.presentation.components.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
+import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCard
 import com.rabbitv.valheimviki.presentation.components.flow_row.flow_as_grid.TwoColumnGrid
@@ -68,6 +71,8 @@ import com.rabbitv.valheimviki.ui.theme.CUSTOM_ITEM_CARD_FILL_WIDTH
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
+import com.rabbitv.valheimviki.utils.toFoodSubCategory
+import com.rabbitv.valheimviki.utils.toMeadSubCategory
 
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
@@ -78,10 +83,16 @@ fun MeadDetailScreen(
 	viewModel: MeadDetailViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
+	val onToggleFavorite = { favorite: Favorite, isFavorite: Boolean ->
+		viewModel.toggleFavorite(
+			favorite = favorite,
+			currentIsFavorite = isFavorite
+		)
+	}
 	MeadDetailContent(
 		onBack = onBack,
 		onItemClick = onItemClick,
+		onToggleFavorite = onToggleFavorite,
 		uiState = uiState,
 		category = category
 	)
@@ -94,13 +105,14 @@ fun MeadDetailScreen(
 fun MeadDetailContent(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
+	onToggleFavorite: (favorite: Favorite, currentIsFavorite: Boolean) -> Unit,
 	uiState: MeadDetailUiState,
 
 	category: MeadSubCategory
 ) {
-	val isStatInfoExpanded1 = remember { mutableStateOf(false) }
-	val isStatInfoExpanded2 = remember { mutableStateOf(false) }
-	val isStatInfoExpanded3 = remember { mutableStateOf(false) }
+	val isStatInfoExpanded = remember {
+		List(3) { mutableStateOf(false) }
+	}
 	val scrollState = rememberScrollState()
 	val craftingStationPainter = painterResource(R.drawable.food_bg)
 
@@ -207,11 +219,9 @@ fun MeadDetailContent(
 							for (item in uiState.foodForRecipe) {
 								CustomItemCard(
 									onItemClick = {
-										val subCategory =
-											NavigationHelper.stringToFoodSubCategory(item.itemDrop.subCategory)
 										val destination = ConsumableDetailDestination.FoodDetail(
 											item.itemDrop.id,
-											subCategory
+											item.itemDrop.subCategory.toFoodSubCategory()
 										)
 										onItemClick(destination)
 									},
@@ -224,11 +234,10 @@ fun MeadDetailContent(
 							for (item in uiState.meadForRecipe) {
 								CustomItemCard(
 									onItemClick = {
-										val subCategory =
-											NavigationHelper.stringToMeadSubCategory(item.itemDrop.subCategory)
+
 										val destination = ConsumableDetailDestination.MeadDetail(
 											item.itemDrop.id,
-											subCategory
+											item.itemDrop.subCategory.toMeadSubCategory()
 										)
 										onItemClick(destination)
 									},
@@ -254,11 +263,11 @@ fun MeadDetailContent(
 									label = "Duration",
 									value = "${mead.duration.toString()} min",
 									expand = {
-										isStatInfoExpanded2.value = !isStatInfoExpanded2.value
+										isStatInfoExpanded[0].value = !isStatInfoExpanded[0].value
 									},
-									isExpanded = isStatInfoExpanded2.value
+									isExpanded = isStatInfoExpanded[0].value
 								)
-								AnimatedVisibility(isStatInfoExpanded2.value) {
+								AnimatedVisibility(isStatInfoExpanded[0].value) {
 									Text(
 										text = "How long this potion's effects remain active after consumption. The timer begins immediately upon eating and cannot be paused or extended.",
 										modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
@@ -272,11 +281,11 @@ fun MeadDetailContent(
 									label = "Cooldown",
 									value = mead.cooldown.toString(),
 									expand = {
-										isStatInfoExpanded3.value = !isStatInfoExpanded3.value
+										isStatInfoExpanded[1].value = !isStatInfoExpanded[1].value
 									},
-									isExpanded = isStatInfoExpanded3.value
+									isExpanded = isStatInfoExpanded[1].value
 								)
-								AnimatedVisibility(isStatInfoExpanded3.value) {
+								AnimatedVisibility(isStatInfoExpanded[1].value) {
 									Text(
 										text = "The cooldown is the time you must wait before consuming another potion or mead of the same type. It prevents immediate re-use and encourages strategic planning in combat or exploration.",
 										modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
@@ -290,11 +299,11 @@ fun MeadDetailContent(
 									label = "Stack size",
 									value = mead.recipeOutput.toString(),
 									expand = {
-										isStatInfoExpanded1.value = !isStatInfoExpanded1.value
+										isStatInfoExpanded[2].value = !isStatInfoExpanded[2].value
 									},
-									isExpanded = isStatInfoExpanded1.value
+									isExpanded = isStatInfoExpanded[2].value
 								)
-								AnimatedVisibility(isStatInfoExpanded1.value) {
+								AnimatedVisibility(isStatInfoExpanded[2].value) {
 									Text(
 										text = "The amount of meads produced by fermenting the mead base for two in-game days.",
 										modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
@@ -331,6 +340,17 @@ fun MeadDetailContent(
 				scrollState = scrollState,
 				onBack = onBack
 			)
+			uiState.mead?.let { mead ->
+				FavoriteButton(
+					modifier = Modifier
+						.align(Alignment.TopEnd)
+						.padding(16.dp),
+					isFavorite = uiState.isFavorite,
+					onToggleFavorite = {
+						onToggleFavorite(mead.toFavorite(), uiState.isFavorite)
+					}
+				)
+			}
 		}
 	}
 }
@@ -446,6 +466,7 @@ fun PreviewMeadDetailContentCooked() {
 			onBack = {},
 			onItemClick = {},
 			category = MeadSubCategory.MEAD_BASE,
+			onToggleFavorite = {_,_->{}}
 		)
 	}
 

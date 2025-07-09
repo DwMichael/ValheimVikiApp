@@ -3,6 +3,7 @@ package com.rabbitv.valheimviki.presentation.components.grid.grid_item
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
@@ -28,6 +30,7 @@ import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.DarkWood
 import com.rabbitv.valheimviki.ui.theme.LightDark
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
+import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
 @Composable
 fun CustomItemCard(
@@ -92,6 +95,50 @@ fun CustomItemCard(
 					)
 				}
 			}
+		}
+	}
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewCustomItemCard() {
+	ValheimVikiAppTheme {
+		CustomItemCard(
+			onItemClick = {},
+			fillWidth = 1.0f,
+			imageUrl = "https://example.com/item.png",
+			name = "Iron Sword",
+			quantity = 5
+		)
+	}
+}
+
+@Preview(showBackground = true, name = "CustomItemCard - No Quantity")
+@Composable
+fun PreviewCustomItemCardNoQuantity() {
+	ValheimVikiAppTheme {
+		CustomItemCard(
+			onItemClick = {},
+			fillWidth = 1.0f,
+			imageUrl = "https://example.com/item.png",
+			name = "Very Long Item Name That Should Be Truncated",
+			quantity = null
+		)
+	}
+}
+
+@Preview(showBackground = true, name = "CustomItemCard - Half Width")
+@Composable
+fun PreviewCustomItemCardHalfWidth() {
+	ValheimVikiAppTheme {
+		Box(modifier = Modifier.fillMaxWidth()) {
+			CustomItemCard(
+				onItemClick = {},
+				fillWidth = 0.5f,
+				imageUrl = "https://example.com/item.png",
+				name = "Shield",
+				quantity = 1
+			)
 		}
 	}
 }

@@ -66,7 +66,7 @@ fun MainAppBar(
         },
         actions = {
             IconButton(
-                onClick = { /*TODO*/ },
+                onClick = { onBookMarkClick() },
                 modifier = Modifier
                     .size(ICON_CLICK_DIM)
             ) {

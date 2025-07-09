@@ -10,6 +10,7 @@ data class AggressiveCreatureDetailUiState(
 	val biome: Biome? = null,
 	val materialDrops: List<MaterialDrop> = emptyList(),
 	val foodDrops: List<FoodDrop> = emptyList(),
+	val isFavorite: Boolean = false,
 	val isLoading: Boolean = false,
 	val error: String? = null
 )

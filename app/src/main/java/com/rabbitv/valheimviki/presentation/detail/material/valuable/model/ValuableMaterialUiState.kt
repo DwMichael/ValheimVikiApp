@@ -12,6 +12,7 @@ data class ValuableMaterialUiState(
 	val pointsOfInterest: List<PointOfInterest> = emptyList(),
 	val npc: List<NPC> = emptyList(),
 	val creatures: List<Creature> = emptyList(),
+	val isFavorite: Boolean = false,
 	val isLoading: Boolean = false,
 	val error: String? = null,
 )

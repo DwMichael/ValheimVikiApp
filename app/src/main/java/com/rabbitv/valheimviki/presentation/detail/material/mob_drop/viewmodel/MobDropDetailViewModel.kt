@@ -9,9 +9,11 @@ import com.rabbitv.valheimviki.data.mappers.creatures.toPassiveCreatures
 import com.rabbitv.valheimviki.domain.model.creature.CreatureSubCategory
 import com.rabbitv.valheimviki.domain.model.creature.aggresive.AggressiveCreature
 import com.rabbitv.valheimviki.domain.model.creature.passive.PassiveCreature
+import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
+import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.PointOfInterestUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
@@ -24,6 +26,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -36,6 +39,7 @@ class MobDropDetailViewModel @Inject constructor(
 	private val creatureUseCases: CreatureUseCases,
 	private val pointOfInterestUseCases: PointOfInterestUseCases,
 	private val relationUseCases: RelationUseCases,
+	private val favoriteUseCases: FavoriteUseCases,
 	savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 	private val _materialId: String = checkNotNull(savedStateHandle[MOB_DROP_KEY])
@@ -51,6 +55,8 @@ class MobDropDetailViewModel @Inject constructor(
 		_passiveCreatures,
 		_aggressiveCreature,
 		_pointsOfInterest,
+		favoriteUseCases.isFavorite(_materialId)
+			.flowOn(Dispatchers.IO),
 		_isLoading,
 		_error
 	) { values ->
@@ -59,8 +65,9 @@ class MobDropDetailViewModel @Inject constructor(
 			passive = values[1] as List<PassiveCreature>,
 			aggressive = values[2] as List<AggressiveCreature>,
 			pointsOfInterest = values[3] as List<PointOfInterest>,
-			isLoading = values[4] as Boolean,
-			error = values[5] as String?
+			isFavorite = values[4] as Boolean,
+			isLoading = values[5] as Boolean,
+			error = values[6] as String?
 		)
 
 	}.stateIn(
@@ -133,9 +140,16 @@ class MobDropDetailViewModel @Inject constructor(
 			} finally {
 				_isLoading.value = false
 			}
-
 		}
+	}
 
-
+	fun toggleFavorite(favorite: Favorite, currentIsFavorite: Boolean) {
+		viewModelScope.launch {
+			if (currentIsFavorite) {
+				favoriteUseCases.deleteFavoriteUseCase(favorite)
+			} else {
+				favoriteUseCases.addFavoriteUseCase(favorite)
+			}
+		}
 	}
 }

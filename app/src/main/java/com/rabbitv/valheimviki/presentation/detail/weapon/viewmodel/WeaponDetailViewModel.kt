@@ -5,10 +5,12 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
+import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.food.FoodAsMaterialUpgrade
 import com.rabbitv.valheimviki.domain.model.material.MaterialUpgrade
 import com.rabbitv.valheimviki.domain.model.weapon.Weapon
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.CraftingObjectUseCases
+import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
 import com.rabbitv.valheimviki.domain.use_cases.food.FoodUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
@@ -25,6 +27,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -36,7 +39,8 @@ class WeaponDetailViewModel @Inject constructor(
 	private val relationUseCase: RelationUseCases,
 	private val materialUseCases: MaterialUseCases,
 	private val foodUseCases: FoodUseCases,
-	private val craftingObjectUseCases: CraftingObjectUseCases
+	private val craftingObjectUseCases: CraftingObjectUseCases,
+	private val favoriteUseCases: FavoriteUseCases,
 ) : ViewModel() {
 	private val _weaponId: String = checkNotNull(savedStateHandle[WEAPON_KEY])
 	private val _weapon: MutableStateFlow<Weapon?> = MutableStateFlow(null)
@@ -56,6 +60,8 @@ class WeaponDetailViewModel @Inject constructor(
 		_relatedMaterials,
 		_relatedFoodAsMaterials,
 		_relatedCraftingObjects,
+		favoriteUseCases.isFavorite(_weaponId)
+			.flowOn(Dispatchers.IO),
 		_isLoading,
 		_error
 	) { value ->
@@ -64,8 +70,9 @@ class WeaponDetailViewModel @Inject constructor(
 			materials = value[1] as List<MaterialUpgrade>,
 			foodAsMaterials = value[2] as List<FoodAsMaterialUpgrade>,
 			craftingObjects = value[3] as CraftingObject?,
-			isLoading = value[4] as Boolean,
-			error = value[5] as String?
+			isFavorite = value[4] as Boolean,
+			isLoading = value[5] as Boolean,
+			error = value[6] as String?
 		)
 	}.stateIn(
 		scope = viewModelScope,
@@ -156,7 +163,16 @@ class WeaponDetailViewModel @Inject constructor(
 			} finally {
 				_isLoading.value = false
 			}
+		}
+	}
 
+	fun toggleFavorite(favorite: Favorite, currentIsFavorite: Boolean) {
+		viewModelScope.launch {
+			if (currentIsFavorite) {
+				favoriteUseCases.deleteFavoriteUseCase(favorite)
+			} else {
+				favoriteUseCases.addFavoriteUseCase(favorite)
+			}
 		}
 	}
 

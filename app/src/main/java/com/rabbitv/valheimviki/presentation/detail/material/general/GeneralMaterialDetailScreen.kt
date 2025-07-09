@@ -36,14 +36,17 @@ import com.composables.icons.lucide.MapPinned
 import com.composables.icons.lucide.Pickaxe
 import com.composables.icons.lucide.TreePine
 import com.composables.icons.lucide.Trees
+import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
+import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.navigation.BuildingDetailDestination
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.WorldDetailDestination
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
-import com.rabbitv.valheimviki.presentation.components.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
+import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
+import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
@@ -65,10 +68,16 @@ fun GeneralMaterialDetailScreen(
 	viewModel: GeneralMaterialDetailViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
+	val onToggleFavorite = { favorite: Favorite, isFavorite: Boolean ->
+		viewModel.toggleFavorite(
+			favorite = favorite,
+			currentIsFavorite = isFavorite
+		)
+	}
 	GeneralMaterialDetailContent(
 		onBack = onBack,
 		onItemClick = onItemClick,
+		onToggleFavorite = onToggleFavorite,
 		uiState = uiState,
 	)
 
@@ -80,6 +89,7 @@ fun GeneralMaterialDetailScreen(
 fun GeneralMaterialDetailContent(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
+	onToggleFavorite: (favorite: Favorite, currentIsFavorite: Boolean) -> Unit,
 	uiState: GeneralMaterialUiState,
 ) {
 
@@ -191,7 +201,8 @@ fun GeneralMaterialDetailContent(
 							list = uiState.pointOfInterests,
 							data = pointOfInterestData,
 							onItemClick = { clickedItemId ->
-								val destination = WorldDetailDestination.PointOfInterestDetail(pointOfInterestId = clickedItemId)
+								val destination =
+									WorldDetailDestination.PointOfInterestDetail(pointOfInterestId = clickedItemId)
 								onItemClick(destination)
 							}
 						)
@@ -202,7 +213,8 @@ fun GeneralMaterialDetailContent(
 							list = uiState.oreDeposits,
 							data = oreDepositData,
 							onItemClick = { clickedItemId ->
-								val destination = WorldDetailDestination.OreDepositDetail(oreDepositId = clickedItemId)
+								val destination =
+									WorldDetailDestination.OreDepositDetail(oreDepositId = clickedItemId)
 								onItemClick(destination)
 							},
 						)
@@ -213,7 +225,8 @@ fun GeneralMaterialDetailContent(
 							list = uiState.trees,
 							data = treesData,
 							onItemClick = { clickedItemId ->
-								val destination = WorldDetailDestination.TreeDetail(treeId = clickedItemId)
+								val destination =
+									WorldDetailDestination.TreeDetail(treeId = clickedItemId)
 								onItemClick(destination)
 							}
 						)
@@ -223,9 +236,10 @@ fun GeneralMaterialDetailContent(
 						uiState.craftingStations.forEach { craftingStation ->
 							CardImageWithTopLabel(
 								onClickedItem = {
-									val destination = BuildingDetailDestination.CraftingObjectDetail(
-										craftingObjectId = craftingStation.id
-									)
+									val destination =
+										BuildingDetailDestination.CraftingObjectDetail(
+											craftingObjectId = craftingStation.id
+										)
 									onItemClick(destination)
 								},
 								itemData = craftingStation,
@@ -245,6 +259,17 @@ fun GeneralMaterialDetailContent(
 				scrollState = scrollState,
 				onBack = onBack
 			)
+			uiState.material?.let { material ->
+				FavoriteButton(
+					modifier = Modifier
+						.align(Alignment.TopEnd)
+						.padding(16.dp),
+					isFavorite = uiState.isFavorite,
+					onToggleFavorite = {
+						onToggleFavorite(material.toFavorite(), uiState.isFavorite)
+					}
+				)
+			}
 		}
 	}
 }
@@ -264,7 +289,8 @@ fun PreviewToolDetailContentCooked() {
 				error = null
 			),
 			onBack = {},
-			onItemClick = {}
+			onItemClick = {},
+			onToggleFavorite = { _, _ -> {} }
 		)
 	}
 

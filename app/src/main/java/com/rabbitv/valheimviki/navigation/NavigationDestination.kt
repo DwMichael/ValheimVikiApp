@@ -1,8 +1,12 @@
 package com.rabbitv.valheimviki.navigation
 
 
+import com.rabbitv.valheimviki.domain.model.category.AppCategory
 import com.rabbitv.valheimviki.domain.model.food.FoodSubCategory
 import com.rabbitv.valheimviki.domain.model.mead.MeadSubCategory
+import com.rabbitv.valheimviki.domain.repository.ItemData
+import com.rabbitv.valheimviki.utils.toFoodSubCategory
+import com.rabbitv.valheimviki.utils.toMeadSubCategory
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -16,8 +20,12 @@ sealed interface TopLevelDestination : NavigationDestination {
 	@Serializable
 	data object Welcome : TopLevelDestination
 
+//	@Serializable
+//	data object Home : TopLevelDestination
+
 	@Serializable
-	data object Home : TopLevelDestination
+	data object Favorite : TopLevelDestination
+
 }
 
 @Serializable
@@ -283,23 +291,6 @@ sealed interface NavigationGraph : NavigationDestination {
 
 object NavigationHelper {
 
-	fun foodCategoryToString(category: FoodSubCategory): String = category.toString()
-	fun meadCategoryToString(category: MeadSubCategory): String = category.toString()
-
-	fun stringToFoodSubCategory(category: String): FoodSubCategory =
-		when (category) {
-			"UNCOOKED_FOOD" -> FoodSubCategory.UNCOOKED_FOOD
-			"COOKED_FOOD" -> FoodSubCategory.COOKED_FOOD
-			else -> throw IllegalArgumentException("Unknown category: $category")
-		}
-
-	fun stringToMeadSubCategory(category: String): MeadSubCategory =
-		when (category) {
-			"MEAD_BASE" -> MeadSubCategory.MEAD_BASE
-			"POTION" -> MeadSubCategory.POTION
-			else -> throw IllegalArgumentException("Unknown category: $category")
-		}
-
 	fun routeToCreature(creatureType: String, itemId: String): CreatureDetailDestination {
 		return when (creatureType) {
 			"BOSS" -> CreatureDetailDestination.MainBossDetail(mainBossId = itemId)
@@ -333,6 +324,62 @@ object NavigationHelper {
 			"WOOD" -> MaterialDetailDestination.WoodDetail(woodMaterialId = itemId)
 
 			else -> throw IllegalArgumentException("Unknown material type: $materialType")
+		}
+	}
+	
+
+	fun routeToDetailScreen(
+		itemData: ItemData,
+		appCategory: AppCategory
+	): DetailDestination {
+		return when (appCategory) {
+			AppCategory.BIOME -> WorldDetailDestination.BiomeDetail(biomeId = itemData.id)
+
+			AppCategory.CREATURE -> {
+				val subCategory = itemData.subCategory
+				requireNotNull(subCategory) {
+					"Creature items must have a subCategory"
+				}
+				routeToCreature(
+					creatureType = subCategory,
+					itemId = itemData.id
+				)
+			}
+
+			AppCategory.FOOD -> ConsumableDetailDestination.FoodDetail(
+				foodId = itemData.id,
+				category = itemData.subCategory.toFoodSubCategory()
+			)
+
+			AppCategory.ARMOR -> EquipmentDetailDestination.ArmorDetail(armorId = itemData.id)
+			AppCategory.WEAPON -> EquipmentDetailDestination.WeaponDetail(weaponId = itemData.id)
+
+			AppCategory.BUILDING_MATERIAL -> BuildingDetailDestination.BuildingMaterialDetail(
+				buildingMaterialId = itemData.id
+			)
+
+			AppCategory.MATERIAL -> {
+				val subCategory = itemData.subCategory
+				requireNotNull(subCategory) {
+					"Material items must have a subCategory"
+				}
+				routeToMaterial(
+					materialType = subCategory,
+					itemId = itemData.id
+				)
+			}
+
+			AppCategory.CRAFTING -> BuildingDetailDestination.CraftingObjectDetail(itemData.id)
+			AppCategory.TOOL -> EquipmentDetailDestination.ToolDetail(itemData.id)
+
+			AppCategory.MEAD -> ConsumableDetailDestination.MeadDetail(
+				meadId = itemData.id,
+				category = itemData.subCategory.toMeadSubCategory()
+			)
+
+			AppCategory.POINTOFINTEREST -> WorldDetailDestination.PointOfInterestDetail(itemData.id)
+			AppCategory.TREE -> WorldDetailDestination.TreeDetail(itemData.id)
+			AppCategory.OREDEPOSITE -> WorldDetailDestination.OreDepositDetail(itemData.id)
 		}
 	}
 }

@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 
 @HiltViewModel
@@ -35,18 +34,33 @@ class MaterialListViewModel @Inject constructor(
 
 	private val _selectedSubType =
 		MutableStateFlow<MaterialSubType?>(null)
-
-	private val _materialList: StateFlow<List<Material>> =
-		combine(
-			materialUseCases.getLocalMaterials(),
-			_selectedSubCategory,
-			_selectedSubType
-		) { all, category, type ->
-			all.filter { category == null || it.subCategory == category.toString() }
+	private val _isConnected = connectivityObserver.isConnected
+		.stateIn(
+			viewModelScope,
+			SharingStarted.WhileSubscribed(5000),
+			false
+		)
+	
+	private val _materialList = combine(
+		materialUseCases.getLocalMaterials(),
+		_selectedSubCategory,
+		_selectedSubType,
+	) { materials, category, type ->
+		if (category == null && type == null) {
+			materials
+		} else {
+			materials.asSequence()
+				.filter { category == null || it.subCategory == category.toString() }
 				.filter { type == null || it.subType == type.toString() }
 				.sortedBy { it.name }
-		}.flowOn(Dispatchers.Default)
-			.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5000), emptyList())
+				.toList()
+		}
+	}.flowOn(Dispatchers.Default)
+		.stateIn(
+			viewModelScope,
+			SharingStarted.WhileSubscribed(5000),
+			emptyList()
+		)
 
 
 	val uiState: StateFlow<UiCategoryChipState<MaterialSubCategory?, MaterialSubType?, Material>> =
@@ -54,30 +68,25 @@ class MaterialListViewModel @Inject constructor(
 			_materialList,
 			_selectedSubCategory,
 			_selectedSubType,
-			connectivityObserver.isConnected.stateIn(
-				scope = viewModelScope,
-				started = SharingStarted.WhileSubscribed(5000),
-				initialValue = false
-			)
+			_isConnected
 		) { materials, selectedSubCategory, selectedSubType, isConnected ->
-			if (isConnected) {
-				if (materials.isNotEmpty()) {
-					UiCategoryChipState.Success(selectedSubCategory, selectedSubType, materials)
-				} else {
-					UiCategoryChipState.Loading(selectedSubCategory, selectedSubType)
-				}
-			} else {
-				if (materials.isNotEmpty()) {
-					UiCategoryChipState.Success(selectedSubCategory, selectedSubType, materials)
-				} else {
+			when {
+				selectedSubCategory == null && materials.isEmpty() && isConnected ->
+					UiCategoryChipState.Success(null, null, emptyList())
+
+				materials.isEmpty() && !isConnected ->
 					UiCategoryChipState.Error(
-						selectedSubCategory, selectedSubType,
-						"No internet connection and no local data available. Try to connect to the internet again.",
+						selectedSubCategory,
+						selectedSubType,
+						"No internet connection and no local data available."
 					)
-				}
+
+				materials.isEmpty() ->
+					UiCategoryChipState.Loading(selectedSubCategory, selectedSubType)
+
+				else ->
+					UiCategoryChipState.Success(selectedSubCategory, selectedSubType, materials)
 			}
-		}.onStart {
-			emit(UiCategoryChipState.Loading(_selectedSubCategory.value, _selectedSubType.value))
 		}.catch { e ->
 			Log.e("MaterialListVM", "Error in uiState flow", e)
 			emit(
@@ -89,8 +98,8 @@ class MaterialListViewModel @Inject constructor(
 			)
 		}.stateIn(
 			viewModelScope,
-			SharingStarted.Companion.WhileSubscribed(5000),
-			UiCategoryChipState.Loading(_selectedSubCategory.value, _selectedSubType.value)
+			SharingStarted.WhileSubscribed(5000),
+			UiCategoryChipState.Loading(null, null)
 		)
 
 	fun onCategorySelected(cat: MaterialSubCategory?) {

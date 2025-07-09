@@ -9,8 +9,10 @@ import com.rabbitv.valheimviki.data.mappers.creatures.toNPC
 import com.rabbitv.valheimviki.domain.model.creature.CreatureSubCategory
 import com.rabbitv.valheimviki.domain.model.creature.mini_boss.MiniBoss
 import com.rabbitv.valheimviki.domain.model.creature.npc.NPC
+import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
+import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.presentation.detail.material.mini_boss_drop.model.MiniBossDropUiState
@@ -22,6 +24,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -32,6 +35,7 @@ class MiniBossDropDetailViewModel @Inject constructor(
 	private val materialUseCases: MaterialUseCases,
 	private val creatureUseCases: CreatureUseCases,
 	private val relationUseCases: RelationUseCases,
+	private val favoriteUseCases: FavoriteUseCases,
 	savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 	private val _materialId: String = checkNotNull(savedStateHandle[MINI_BOSS_DROP_KEY])
@@ -45,15 +49,18 @@ class MiniBossDropDetailViewModel @Inject constructor(
 		_material,
 		_boss,
 		_npc,
+		favoriteUseCases.isFavorite(_materialId)
+			.flowOn(Dispatchers.IO),
 		_isLoading,
 		_error
-	) { material, boss, npc, isLoading, error ->
+	) { values ->
 		MiniBossDropUiState(
-			material = material,
-			miniBoss = boss,
-			npc = npc,
-			isLoading = isLoading,
-			error = error
+			material = values[0] as Material?,
+			miniBoss = values[1] as MiniBoss?,
+			npc = values[2] as NPC?,
+			isFavorite = values[3] as Boolean,
+			isLoading = values[4] as Boolean,
+			error = values[5] as String?,
 		)
 
 	}.stateIn(
@@ -115,9 +122,16 @@ class MiniBossDropDetailViewModel @Inject constructor(
 			} finally {
 				_isLoading.value = false
 			}
-
 		}
+	}
 
-
+	fun toggleFavorite(favorite: Favorite, currentIsFavorite: Boolean) {
+		viewModelScope.launch {
+			if (currentIsFavorite) {
+				favoriteUseCases.deleteFavoriteUseCase(favorite)
+			} else {
+				favoriteUseCases.addFavoriteUseCase(favorite)
+			}
+		}
 	}
 }

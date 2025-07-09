@@ -8,10 +8,12 @@ import com.rabbitv.valheimviki.domain.exceptions.MaterialsFetchLocalException
 import com.rabbitv.valheimviki.domain.exceptions.PointOfInterestByIdsFetchLocalException
 import com.rabbitv.valheimviki.domain.mapper.CreatureFactory
 import com.rabbitv.valheimviki.domain.model.creature.mini_boss.MiniBoss
+import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.material.MaterialSubCategory
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
+import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.PointOfInterestUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
@@ -25,6 +27,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -36,6 +39,7 @@ class MiniBossDetailScreenViewModel @Inject constructor(
 	private val pointOfInterestUseCases: PointOfInterestUseCases,
 	private val materialUseCases: MaterialUseCases,
 	private val relationUseCases: RelationUseCases,
+	private val favoriteUseCases: FavoriteUseCases,
 ) : ViewModel() {
 	private val miniBossId: String =
 		checkNotNull(savedStateHandle[MINI_BOSS_ARGUMENT_KEY])
@@ -49,6 +53,8 @@ class MiniBossDetailScreenViewModel @Inject constructor(
 		_miniBoss,
 		_primarySpawn,
 		_dropItems,
+		favoriteUseCases.isFavorite(miniBossId)
+			.flowOn(Dispatchers.IO),
 		_isLoading,
 		_error,
 	) { values ->
@@ -57,8 +63,9 @@ class MiniBossDetailScreenViewModel @Inject constructor(
 			miniBoss = values[0] as MiniBoss?,
 			primarySpawn = values[1] as PointOfInterest?,
 			dropItems = values[2] as List<Material>,
-			isLoading = values[3] as Boolean,
-			error = values[4] as String?
+			isFavorite = values[3] as Boolean,
+			isLoading = values[4] as Boolean,
+			error = values[5] as String?
 		))
 	}.stateIn(
 		scope = viewModelScope,
@@ -115,7 +122,6 @@ class MiniBossDetailScreenViewModel @Inject constructor(
 						} catch (e: MaterialsFetchLocalException) {
 							_dropItems.value = emptyList()
 						}
-						//TODO: FOR LORD RETO MAYBE ADD AS MATERIALS fragments for DYRNWYN
 					}
 				)
 				deferred.awaitAll()
@@ -125,6 +131,16 @@ class MiniBossDetailScreenViewModel @Inject constructor(
 			Log.e("General fetch error BiomeDetailViewModel", e.message.toString())
 			_isLoading.value = false
 			_error.value = e.message
+		}
+	}
+
+	fun toggleFavorite(favorite: Favorite, currentIsFavorite: Boolean) {
+		viewModelScope.launch {
+			if (currentIsFavorite) {
+				favoriteUseCases.deleteFavoriteUseCase(favorite)
+			} else {
+				favoriteUseCases.addFavoriteUseCase(favorite)
+			}
 		}
 	}
 }

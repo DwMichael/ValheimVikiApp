@@ -18,6 +18,7 @@ data class PointOfInterestUiState(
 	val relatedOreDeposits: List<OreDeposit> = emptyList(),
 	val relatedOfferings: List<Material> = emptyList(),
 	val relatedMaterialDrops: List<MaterialDrop> = emptyList(),
+	val isFavorite: Boolean = false,
 	val isLoading: Boolean = false,
 	val error: String? = null,
 )

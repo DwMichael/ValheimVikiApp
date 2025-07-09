@@ -8,6 +8,7 @@ data class FoodDetailUiState(
 	val craftingCookingStation: CraftingObject? = null,
 	val foodForRecipe: List<RecipeFoodData> = emptyList(),
 	val materialsForRecipe: List<RecipeMaterialData> = emptyList(),
+	val isFavorite: Boolean = false,
 	val isLoading: Boolean = false,
 	val error: String? = null
 )
