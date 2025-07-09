@@ -45,7 +45,7 @@ import com.composables.icons.lucide.Trees
 import com.composables.icons.lucide.Utensils
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.ui_state.ui_state.UiState
-import com.rabbitv.valheimviki.navigation.TopLevelDestination
+import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.presentation.components.chip.ChipData
 import com.rabbitv.valheimviki.presentation.components.chip.SearchFilterBar
 import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
@@ -60,6 +60,7 @@ import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_SMALL_IMAGES
 import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_TWO_COLUMNS
 import com.rabbitv.valheimviki.ui.theme.Shapes
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
+import com.rabbitv.valheimviki.utils.toFavoriteCategory
 import kotlinx.coroutines.launch
 
 class FavoriteChip(
@@ -68,10 +69,14 @@ class FavoriteChip(
 	override val label: String
 ) : ChipData<FavoriteCategory>
 
+enum class FavoriteGridItemTypes {
+	SMALL, MEDIUM, DEFAULT
+}
+
 @Composable
 fun FavoriteScreen(
 	onBack: () -> Unit,
-	onItemClick: (destination: TopLevelDestination) -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	viewModel: FavoriteViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -91,7 +96,7 @@ fun FavoriteScreen(
 @Composable
 fun FavoriteScreenContent(
 	onBack: () -> Unit,
-	onItemClick: (destination: TopLevelDestination) -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	onCategorySelected: (category: FavoriteCategory?) -> Unit,
 	uiState: UiState<UiStateFavorite>
 ) {
@@ -100,7 +105,21 @@ fun FavoriteScreenContent(
 	val backButtonVisibleState by remember {
 		derivedStateOf { lazyGridState.firstVisibleItemIndex >= 2 }
 	}
-	val painter = painterResource(R.drawable.bg_food)
+	val painter = painterResource(R.drawable.bg_food_second)
+	val imageBg = @Composable { Image(
+		painter = painter,
+		contentDescription = "bg",
+		contentScale = ContentScale.FillBounds,
+		modifier = Modifier
+			.clip(Shapes.large)
+			.fillMaxSize()
+	) }
+
+	val typeOfItemGrid = remember {
+		{ favoriteCategory: FavoriteCategory ->
+			determineFavoriteGridType(favoriteCategory)
+		}
+	}
 
 	val chips = remember { getChipsForCategory() }
 	Scaffold(
@@ -174,8 +193,8 @@ fun FavoriteScreenContent(
 							key = { favorite -> favorite.id },
 							contentType = { favorite -> favorite.category }
 						) { favorite ->
-							when (favorite.category) {
-								"ARMOR" -> FavoriteGridItem(
+							when (typeOfItemGrid(favorite.category.toFavoriteCategory())) {
+								FavoriteGridItemTypes.SMALL -> FavoriteGridItem(
 									imageModifier = Modifier
 										.fillMaxSize()
 										.scale(0.7f),
@@ -185,44 +204,27 @@ fun FavoriteScreenContent(
 									},
 									height = ITEM_HEIGHT_SMALL_IMAGES,
 									contentScale = ContentScale.Fit,
-									imageBg = {
-										Image(
-											painter = painter,
-											contentDescription = "bg",
-											contentScale = ContentScale.FillBounds,
-											modifier = Modifier
-												.clip(Shapes.large)
-												.fillMaxSize()
-										)
-									}
+									imageBg = imageBg
 								)
 
-								"CRAFTING" -> FavoriteGridItem(
+								FavoriteGridItemTypes.MEDIUM -> FavoriteGridItem(
 									item = favorite,
 									onItemClick = { id ->
 //									onItemClick(destination)
 									},
 									height = ITEM_HEIGHT_TWO_COLUMNS,
 									contentScale = ContentScale.Fit,
-									imageBg = {
-										Image(
-											painter = painter,
-											contentDescription = "bg",
-											contentScale = ContentScale.FillBounds,
-											modifier = Modifier
-												.clip(Shapes.large)
-												.fillMaxSize()
-										)
-									}
+									imageBg = imageBg
 								)
 
-								else -> FavoriteGridItem(
+								FavoriteGridItemTypes.DEFAULT -> FavoriteGridItem(
 									item = favorite,
 									onItemClick = { id ->
 //									onItemClick(destination)
 									},
 									height = ITEM_HEIGHT_TWO_COLUMNS,
 								)
+
 							}
 
 						}
@@ -233,6 +235,25 @@ fun FavoriteScreenContent(
 	)
 }
 
+private fun determineFavoriteGridType(favoriteCategory: FavoriteCategory): FavoriteGridItemTypes {
+
+	return when (favoriteCategory) {
+		FavoriteCategory.BIOME -> FavoriteGridItemTypes.DEFAULT
+		FavoriteCategory.CREATURE -> FavoriteGridItemTypes.DEFAULT
+		FavoriteCategory.FOOD -> FavoriteGridItemTypes.SMALL
+		FavoriteCategory.ARMOR -> FavoriteGridItemTypes.SMALL
+		FavoriteCategory.WEAPON -> FavoriteGridItemTypes.SMALL
+		FavoriteCategory.BUILDING_MATERIAL -> FavoriteGridItemTypes.MEDIUM
+		FavoriteCategory.MATERIAL -> FavoriteGridItemTypes.SMALL
+		FavoriteCategory.CRAFTING -> FavoriteGridItemTypes.MEDIUM
+		FavoriteCategory.TOOL -> FavoriteGridItemTypes.SMALL
+		FavoriteCategory.MEAD -> FavoriteGridItemTypes.SMALL
+		FavoriteCategory.POINTOFINTEREST -> FavoriteGridItemTypes.DEFAULT
+		FavoriteCategory.TREE -> FavoriteGridItemTypes.DEFAULT
+		FavoriteCategory.OREDEPOSITE -> FavoriteGridItemTypes.DEFAULT
+		else -> FavoriteGridItemTypes.DEFAULT
+	}
+}
 
 private fun getChipsForCategory(): List<FavoriteChip> {
 	return listOf(
