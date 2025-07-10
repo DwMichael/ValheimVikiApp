@@ -10,7 +10,7 @@ data class AggressiveCreature(
 	override val subCategory: String,
 	override val imageUrl: String,
 	override val name: String,
-	val description: String,
+	override val description: String,
 	val order: Int,
 	val weakness: String?,
 	val resistance: String?,

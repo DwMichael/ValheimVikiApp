@@ -16,7 +16,7 @@ data class Armor(
 	override val category: String,
 	override val subCategory: String,
 	override val name: String,
-	val description: String?,
+	override val description: String?,
 	@SerializedName("UpgradeInfo") val upgradeInfoList: List<UpgradeArmorInfo>? = emptyList(),
 	@SerializedName("Effects")
 	val effects: String? = null,

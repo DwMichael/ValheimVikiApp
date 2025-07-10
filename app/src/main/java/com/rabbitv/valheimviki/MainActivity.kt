@@ -30,8 +30,8 @@ class MainActivity() : ComponentActivity() {
         val workRequest = OneTimeWorkRequestBuilder<FetchWorker>()
             .setInitialDelay(5, TimeUnit.SECONDS)
             .setBackoffCriteria(
-                backoffPolicy = BackoffPolicy.LINEAR,
-                duration = Duration.ofSeconds(5)
+                backoffPolicy = BackoffPolicy.EXPONENTIAL,
+                duration = Duration.ofSeconds(10)
             )
             .build()
         WorkManager.getInstance(applicationContext).enqueue(workRequest)

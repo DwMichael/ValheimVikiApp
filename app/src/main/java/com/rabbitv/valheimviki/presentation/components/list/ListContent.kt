@@ -51,13 +51,14 @@ fun <T> ListContent(
 	lazyListState: LazyListState,
 	subCategoryNumber: T,
 	imageScale: ContentScale = ContentScale.Crop,
+	verticalPadding :Dp = 0.dp,
 	horizontalPadding: Dp = BODY_CONTENT_PADDING.dp,
 	bottomBosPadding: Dp = 24.dp,
 ) {
 	LazyColumn(
 		state = lazyListState,
 		modifier = Modifier
-			.padding(horizontal = horizontalPadding)
+			.padding(horizontal = horizontalPadding , vertical =  verticalPadding)
 			.lazyVerticalScrollbar(lazyListState)
 			.fillMaxSize()
 	) {
