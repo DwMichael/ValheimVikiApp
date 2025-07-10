@@ -9,5 +9,6 @@ import javax.inject.Inject
 class GetAllSearchObjectsUseCase @Inject constructor(
 	private val searchRepository: SearchRepository
 ) {
-	operator fun invoke(): Flow<List<Search>> = searchRepository.getAllSearchObjects()
+	operator fun invoke(limit: Int, offset: Int): Flow<List<Search>> =
+		searchRepository.getAllSearchObjects(limit, offset)
 }

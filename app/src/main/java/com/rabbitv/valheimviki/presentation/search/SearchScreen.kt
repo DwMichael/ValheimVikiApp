@@ -11,8 +11,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -22,11 +20,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rabbitv.valheimviki.domain.model.category.AppCategory
-import com.rabbitv.valheimviki.domain.model.search.Search
 import com.rabbitv.valheimviki.domain.model.ui_state.ui_state.UiState
 import com.rabbitv.valheimviki.navigation.DetailDestination
+import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.list.ListContent
 import com.rabbitv.valheimviki.presentation.components.topbar.SimpleTopBar
+import com.rabbitv.valheimviki.presentation.search.model.SearchState
 import com.rabbitv.valheimviki.presentation.search.viewmodel.SearchViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.PrimaryOrange
@@ -44,6 +43,10 @@ fun SearchScreen(
 		onBack = onBack,
 		onItemClick = { _ -> {} },
 		onCategorySelected = { _ -> {} },
+		updateSearchQuery = { query -> viewModel.updateSearchQuery(query) },
+		loadNextPage = { viewModel.loadNextPage() },
+	loadPreviousPage = { viewModel.loadPreviousPage() },
+	loadSpecificPage = { page -> viewModel.loadSpecificPage(page) },
 		uiState = uiState,
 	)
 }
@@ -52,10 +55,14 @@ fun SearchScreen(
 fun SearchScreenContent(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
+	updateSearchQuery: (query: String) -> Unit,
 	onCategorySelected: (category: AppCategory?) -> Unit,
-	uiState: UiState<List<Search>>,
+	loadNextPage: () -> Unit,
+	loadPreviousPage: () -> Unit,
+	loadSpecificPage: (pageNumber: Int) -> Unit,
+	uiState: UiState<SearchState>,
 ) {
-	val searchQuery = rememberSaveable { mutableStateOf("") }
+
 	val lazyListState = rememberLazyListState()
 	Scaffold(
 		topBar = {
@@ -69,52 +76,66 @@ fun SearchScreenContent(
 		},
 	)
 	{ innerPadding ->
-		Column(
-			modifier = Modifier
-				.fillMaxSize()
-				.padding(innerPadding)
 
-		)
-		{
-			SearchTopBar(
-				searchQuery = searchQuery
-			)
-
-			when (val state = uiState) {
-				is UiState.Error -> {
-					Box(
-						modifier = Modifier.fillMaxSize(),
-						contentAlignment = Alignment.Center
-					) {
-						Text(
-							text = state.message ?: "An error occurred",
-							style = MaterialTheme.typography.bodyLarge,
-							textAlign = TextAlign.Center,
-							modifier = Modifier.padding(16.dp)
-						)
-					}
+		when (val state = uiState) {
+			is UiState.Error -> {
+				Box(
+					modifier = Modifier.fillMaxSize(),
+					contentAlignment = Alignment.Center
+				) {
+					Text(
+						text = state.message ?: "An error occurred",
+						style = MaterialTheme.typography.bodyLarge,
+						textAlign = TextAlign.Center,
+						modifier = Modifier.padding(16.dp)
+					)
 				}
-				is UiState.Loading -> {
-					Box(
-						modifier = Modifier.fillMaxSize(),
-						contentAlignment = Alignment.Center
-					) {
-						CircularProgressIndicator(
-							color = PrimaryOrange
-						)
-					}
-				}
-				is UiState.Success<List<Search>> -> ListContent(
-					items = state.data,
-					clickToNavigate = { _, _ -> {} },
-					lazyListState = lazyListState,
-					subCategoryNumber = null,
-					verticalPadding =  BODY_CONTENT_PADDING.dp,
-					horizontalPadding = BODY_CONTENT_PADDING.dp,
-					imageScale = ContentScale.Crop,
-					bottomBosPadding = 50.dp
-				)
 			}
+
+			is UiState.Loading -> {
+				Box(
+					modifier = Modifier.fillMaxSize(),
+					contentAlignment = Alignment.Center
+				) {
+					CircularProgressIndicator(
+						color = PrimaryOrange
+					)
+				}
+			}
+
+			is UiState.Success<SearchState> ->
+				Column(
+					modifier = Modifier
+						.fillMaxSize()
+						.padding(innerPadding)
+
+				)
+				{
+					SearchTopBar(
+						searchQuery = state.data.query,
+						updateSearchQuery = updateSearchQuery,
+					)
+					SlavicDivider()
+					PaginatePageSection(
+						pages = state.data.results.size,
+						loadNextPage = loadNextPage,
+						loadPreviousPage = loadPreviousPage,
+						loadSpecificPage = loadSpecificPage,
+						currentPage = state.data.currentPage,
+						hasMorePages = state.data.hasMorePages,
+					)
+					SlavicDivider()
+					ListContent(
+						items = state.data.results,
+						clickToNavigate = { _, _ -> {} },
+						lazyListState = lazyListState,
+						subCategoryNumber = null,
+						topPadding = BODY_CONTENT_PADDING.dp,
+						horizontalPadding = BODY_CONTENT_PADDING.dp,
+						imageScale = ContentScale.Crop,
+						bottomBosPadding = 50.dp
+					)
+				}
 
 		}
 
@@ -129,7 +150,11 @@ private fun PreviewSearchScreen() {
 			onBack = {},
 			onItemClick = {},
 			onCategorySelected = {},
-			uiState = UiState.Loading()
+			uiState = UiState.Loading(),
+			updateSearchQuery = {},
+			loadNextPage = {},
+			loadPreviousPage = {},
+			loadSpecificPage = {},
 		)
 	}
 }

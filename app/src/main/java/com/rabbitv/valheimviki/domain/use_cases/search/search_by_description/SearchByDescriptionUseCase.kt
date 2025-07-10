@@ -9,6 +9,6 @@ import javax.inject.Inject
 class SearchByDescriptionUseCase @Inject constructor(
 	private val searchRepository: SearchRepository
 ) {
-	operator fun invoke(query: String): Flow<List<Search>> =
-		searchRepository.searchByDescription(query)
+	operator fun invoke(query: String, limit: Int, offset: Int): Flow<List<Search>> =
+		searchRepository.searchByDescription(query, limit, offset)
 }
