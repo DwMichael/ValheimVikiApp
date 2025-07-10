@@ -16,7 +16,7 @@ data class ItemTool(
 	override val category: String,
 	override val subCategory: String,
 	override val name: String,
-	val description: String,
+	override val description: String,
 	@SerializedName("HowToUse") val howToUse: String? = null,
 	@SerializedName("GeneralInfo") val generalInfo: String? = null,
 	@SerializedName("UpgradeInfo") val upgradeInfoList: List<ToolsUpgradeInfo>? = emptyList(),

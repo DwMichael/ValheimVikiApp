@@ -13,7 +13,7 @@ data class OreDeposit(
 	override val category: String,
 	override val subCategory: String? = null,
 	override val name: String,
-	val description: String,
+	override val description: String,
 	val order: Int,
 	override val imageUrl: String,
 ) : ItemData

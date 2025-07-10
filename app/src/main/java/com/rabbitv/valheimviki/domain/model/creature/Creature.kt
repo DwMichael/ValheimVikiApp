@@ -17,7 +17,7 @@ data class Creature(
 	override val subCategory: String? = null,
 	override val imageUrl: String,
 	override val name: String,
-	val description: String? = null,
+	override val description: String? = null,
 	val order: Int,
 	// Common stats fields
 	val levels: Int? = null,

@@ -36,6 +36,7 @@ import com.rabbitv.valheimviki.domain.repository.ItemData
 data class SearchView(
 	override val id: String,
 	override val name: String,
+	override val description: String?,
 	override val imageUrl: String,
 	override val category: String,
 	override val subCategory: String?

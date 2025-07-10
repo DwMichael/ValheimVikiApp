@@ -10,6 +10,7 @@ data class Favorite(
 	@PrimaryKey
 	@Serializable override val id: String,
 	@Serializable override val name: String,
+	@Serializable override val description: String?,
 	@Serializable override val imageUrl: String,
 	@Serializable override val category: String,
 	@Serializable override val subCategory: String?

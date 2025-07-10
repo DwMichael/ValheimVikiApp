@@ -15,7 +15,7 @@ data class Weapon(
 	override val category: String,
 	override val subCategory: String,
 	override val name: String,
-	val description: String? = null,
+	override val description: String? = null,
 	val order: Int,
 	@SerializedName("UpgradeInfo") val upgradeInfoList: List<UpgradeInfo>? = emptyList(),
 	val subType: String? = null

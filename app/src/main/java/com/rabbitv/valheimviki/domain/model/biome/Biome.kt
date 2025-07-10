@@ -22,7 +22,7 @@ data class Biome(
 	@SerializedName("name")
 	override val name: String,
 	@SerializedName("description")
-	val description: String,
+	override val description: String,
 	@SerializedName("order")
 	val order: Int,
 ) : ItemData
