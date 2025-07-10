@@ -35,6 +35,8 @@ import com.rabbitv.valheimviki.domain.model.mead.Mead
 import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
 import com.rabbitv.valheimviki.domain.model.relation.Relation
+import com.rabbitv.valheimviki.domain.model.search.SearchFTS
+import com.rabbitv.valheimviki.domain.model.search.SearchView
 import com.rabbitv.valheimviki.domain.model.tree.Tree
 import com.rabbitv.valheimviki.domain.model.weapon.Weapon
 
@@ -46,8 +48,10 @@ import com.rabbitv.valheimviki.domain.model.weapon.Weapon
 		Material::class, PointOfInterest::class,
 		Tree::class, Food::class, Weapon::class,
 		Armor::class, Mead::class, ItemTool::class,
-		BuildingMaterial::class, CraftingObject::class],
-	version = 27,
+		BuildingMaterial::class, CraftingObject::class,
+		SearchFTS::class],
+	views = [SearchView::class],
+	version = 1,
 	exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -60,8 +64,9 @@ abstract class ValheimVikiDatabase : RoomDatabase() {
 			} else {
 				Room.databaseBuilder(context, ValheimVikiDatabase::class.java, "valheimviki.db")
 			}
-			return databaseBuilder.fallbackToDestructiveMigration(false).build()
+			return databaseBuilder.fallbackToDestructiveMigration(true).build()
 		}
+
 	}
 
 	abstract fun favoriteDao(): FavoriteDao

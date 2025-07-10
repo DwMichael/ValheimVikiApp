@@ -24,8 +24,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -66,7 +68,7 @@ import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 @Composable
 fun SearchTopBar(
 	modifier: Modifier = Modifier,
-	searchQuery: String
+	searchQuery: MutableState<String>
 ) {
 
 
@@ -92,8 +94,8 @@ fun SearchTopBar(
 
 		inputField = {
 			SearchBarDefaults.InputField(
-				query = searchQuery,
-				onQueryChange = { searchQuery = it },
+				query = searchQuery.value,
+				onQueryChange = { searchQuery.value = it },
 				onSearch = {},
 				expanded = false,
 				onExpandedChange = {},
@@ -113,7 +115,7 @@ fun SearchTopBar(
 				},
 				trailingIcon = {
 					IconButton(
-						onClick = { searchQuery = "" }
+						onClick = { searchQuery.value = "" }
 					) {
 						Icon(
 							Lucide.X,
@@ -246,7 +248,10 @@ private fun PreviewSearchListItem() {
 @Composable
 private fun PreviewSearchTopBar() {
 	NavHostController(LocalContext.current)
+	val rr = remember{mutableStateOf("")} 
 	ValheimVikiAppTheme {
-		SearchTopBar()
+		SearchTopBar(
+			searchQuery = rr
+		)
 	}
 }

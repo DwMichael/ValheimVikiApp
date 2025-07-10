@@ -44,7 +44,7 @@ fun SearchScreenContent(
 	onItemClick: (destination: DetailDestination) -> Unit,
 	onCategorySelected: (category: AppCategory?) -> Unit,
 ) {
-	var searchQuery by rememberSaveable { mutableStateOf("") }
+	val searchQuery = rememberSaveable { mutableStateOf("") }
 	val lazyListState = rememberLazyListState()
 	Scaffold(
 		topBar = {
