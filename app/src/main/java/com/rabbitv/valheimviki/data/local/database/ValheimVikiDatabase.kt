@@ -19,6 +19,7 @@ import com.rabbitv.valheimviki.data.local.dao.MeadDao
 import com.rabbitv.valheimviki.data.local.dao.OreDepositDao
 import com.rabbitv.valheimviki.data.local.dao.PointOfInterestDao
 import com.rabbitv.valheimviki.data.local.dao.RelationDao
+import com.rabbitv.valheimviki.data.local.dao.SearchDao
 import com.rabbitv.valheimviki.data.local.dao.ToolDao
 import com.rabbitv.valheimviki.data.local.dao.TreeDao
 import com.rabbitv.valheimviki.data.local.dao.WeaponDao
@@ -35,8 +36,8 @@ import com.rabbitv.valheimviki.domain.model.mead.Mead
 import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
 import com.rabbitv.valheimviki.domain.model.relation.Relation
+import com.rabbitv.valheimviki.domain.model.search.Search
 import com.rabbitv.valheimviki.domain.model.search.SearchFTS
-import com.rabbitv.valheimviki.domain.model.search.SearchView
 import com.rabbitv.valheimviki.domain.model.tree.Tree
 import com.rabbitv.valheimviki.domain.model.weapon.Weapon
 
@@ -49,8 +50,8 @@ import com.rabbitv.valheimviki.domain.model.weapon.Weapon
 		Tree::class, Food::class, Weapon::class,
 		Armor::class, Mead::class, ItemTool::class,
 		BuildingMaterial::class, CraftingObject::class,
+		Search::class,
 		SearchFTS::class],
-	views = [SearchView::class],
 	version = 1,
 	exportSchema = false
 )
@@ -69,6 +70,7 @@ abstract class ValheimVikiDatabase : RoomDatabase() {
 
 	}
 
+	abstract fun searchDao(): SearchDao
 	abstract fun favoriteDao(): FavoriteDao
 	abstract fun biomeDao(): BiomeDao
 	abstract fun creatureDao(): CreatureDao

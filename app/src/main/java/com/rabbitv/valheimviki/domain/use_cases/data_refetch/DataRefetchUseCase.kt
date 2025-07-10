@@ -1,5 +1,6 @@
 package com.rabbitv.valheimviki.domain.use_cases.data_refetch
 
+import com.rabbitv.valheimviki.data.mappers.search.toSearchList
 import com.rabbitv.valheimviki.domain.exceptions.FetchException
 import com.rabbitv.valheimviki.domain.model.armor.Armor
 import com.rabbitv.valheimviki.domain.model.biome.Biome
@@ -14,6 +15,7 @@ import com.rabbitv.valheimviki.domain.model.mead.Mead
 import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
 import com.rabbitv.valheimviki.domain.model.relation.Relation
+import com.rabbitv.valheimviki.domain.model.search.Search
 import com.rabbitv.valheimviki.domain.model.tree.Tree
 import com.rabbitv.valheimviki.domain.model.weapon.Weapon
 import com.rabbitv.valheimviki.domain.repository.ArmorRepository
@@ -27,6 +29,7 @@ import com.rabbitv.valheimviki.domain.repository.MeadRepository
 import com.rabbitv.valheimviki.domain.repository.OreDepositRepository
 import com.rabbitv.valheimviki.domain.repository.PointOfInterestRepository
 import com.rabbitv.valheimviki.domain.repository.RelationRepository
+import com.rabbitv.valheimviki.domain.repository.SearchRepository
 import com.rabbitv.valheimviki.domain.repository.ToolRepository
 import com.rabbitv.valheimviki.domain.repository.TreeRepository
 import com.rabbitv.valheimviki.domain.repository.WeaponRepository
@@ -55,6 +58,7 @@ class DataRefetchUseCase @Inject constructor(
 	private val toolRepository: ToolRepository,
 	private val buildingMaterialRepository: BuildingMaterialRepository,
 	private val craftingObjectRepository: CraftingObjectRepository,
+	private val searchRepository: SearchRepository,
 	val dataStoreUseCases: DataStoreUseCases,
 ) {
 	suspend fun refetchAllData(): DataRefetchResult {
@@ -97,10 +101,12 @@ class DataRefetchUseCase @Inject constructor(
 				craftingObjectResponse.isSuccessful &&
 				relationResponse.isSuccessful
 			) {
+				val allSearchableItems = mutableListOf<Search>()
 
 				biomeResponse.body()?.let { biomes ->
 					if (biomes.isNotEmpty()) {
 						biomeRepository.storeBiomes(biomes)
+						allSearchableItems.addAll(biomes.toSearchList())
 					} else {
 						return DataRefetchResult.Error("Empty biome data received")
 					}
@@ -109,6 +115,7 @@ class DataRefetchUseCase @Inject constructor(
 				creatureResponse.body()?.let { creatures ->
 					if (creatures.isNotEmpty()) {
 						creatureRepository.insertCreatures(creatures)
+						allSearchableItems.addAll(creatures.toSearchList())
 					} else {
 						return DataRefetchResult.Error("Empty creature data received")
 					}
@@ -117,6 +124,7 @@ class DataRefetchUseCase @Inject constructor(
 				oreDepositResponse.body()?.let {
 					if (it.isNotEmpty()) {
 						oreDepositRepository.insertOreDeposit(it)
+						allSearchableItems.addAll(it.toSearchList())
 					} else {
 						return DataRefetchResult.Error("Empty ore deposit data received")
 					}
@@ -125,6 +133,7 @@ class DataRefetchUseCase @Inject constructor(
 				materialsResponse.body()?.let {
 					if (it.isNotEmpty()) {
 						materialsRepository.insertMaterials(it)
+						allSearchableItems.addAll(it.toSearchList())
 					} else {
 						return DataRefetchResult.Error("Empty materials data received")
 					}
@@ -133,6 +142,7 @@ class DataRefetchUseCase @Inject constructor(
 				pointOfInterestResponse.body()?.let {
 					if (it.isNotEmpty()) {
 						pointOfInterestRepository.insertPointOfInterest(it)
+						allSearchableItems.addAll(it.toSearchList())
 					} else {
 						return DataRefetchResult.Error("Empty pointOfInterest data received")
 					}
@@ -141,6 +151,7 @@ class DataRefetchUseCase @Inject constructor(
 				treeResponse.body()?.let {
 					if (it.isNotEmpty()) {
 						treeRepository.insertTrees(it)
+						allSearchableItems.addAll(it.toSearchList())
 					} else {
 						return DataRefetchResult.Error("Empty trees data received")
 					}
@@ -149,6 +160,7 @@ class DataRefetchUseCase @Inject constructor(
 				foodResponse.body()?.let { foodList ->
 					if (foodList.isNotEmpty()) {
 						foodRepository.insertFoodList(foodList)
+						allSearchableItems.addAll(foodList.toSearchList())
 					} else {
 						return DataRefetchResult.Error("Empty food data received")
 					}
@@ -157,6 +169,7 @@ class DataRefetchUseCase @Inject constructor(
 				weaponResponse.body()?.let { weaponList ->
 					if (weaponList.isNotEmpty()) {
 						weaponRepository.insertWeapons(weaponList)
+						allSearchableItems.addAll(weaponList.toSearchList())
 					} else {
 						return DataRefetchResult.Error("Empty weapons data received")
 					}
@@ -165,6 +178,7 @@ class DataRefetchUseCase @Inject constructor(
 				armorResponse.body()?.let { armorList ->
 					if (armorList.isNotEmpty()) {
 						armorRepository.insertArmors(armorList)
+						allSearchableItems.addAll(armorList.toSearchList())
 					} else {
 						return DataRefetchResult.Error("Empty armors data received")
 					}
@@ -173,6 +187,7 @@ class DataRefetchUseCase @Inject constructor(
 				meadResponse.body()?.let { meadList ->
 					if (meadList.isNotEmpty()) {
 						meadRepository.insertMeads(meadList)
+						allSearchableItems.addAll(meadList.toSearchList())
 					} else {
 						return DataRefetchResult.Error("Empty meads data received")
 					}
@@ -181,6 +196,7 @@ class DataRefetchUseCase @Inject constructor(
 				toolResponse.body()?.let { tools ->
 					if (tools.isNotEmpty()) {
 						toolRepository.insertTools(tools)
+						allSearchableItems.addAll(tools.toSearchList())
 					} else {
 						return DataRefetchResult.Error("Empty tools data received")
 					}
@@ -189,6 +205,7 @@ class DataRefetchUseCase @Inject constructor(
 				buildingMaterialResponse.body()?.let { buildingMaterials ->
 					if (buildingMaterials.isNotEmpty()) {
 						buildingMaterialRepository.insertBuildingMaterial(buildingMaterials)
+						allSearchableItems.addAll(buildingMaterials.toSearchList())
 					} else {
 						return DataRefetchResult.Error("Empty buildingMaterials data received")
 					}
@@ -197,6 +214,7 @@ class DataRefetchUseCase @Inject constructor(
 				craftingObjectResponse.body()?.let { craftingObjects ->
 					if (craftingObjects.isNotEmpty()) {
 						craftingObjectRepository.insertCraftingObjects(craftingObjects)
+						allSearchableItems.addAll(craftingObjects.toSearchList())
 					} else {
 						return DataRefetchResult.Error("Empty craftingObjects data received")
 					}
@@ -209,6 +227,12 @@ class DataRefetchUseCase @Inject constructor(
 						return DataRefetchResult.Error("Empty relation data received")
 					}
 				} ?: return DataRefetchResult.Error("Null relation data received")
+
+				try {
+					searchRepository.deleteAllAndInsertNew(allSearchableItems)
+				} catch (e: Exception) {
+					println("Failed to populate search table: ${e.message}")
+				}
 
 				DataRefetchResult.Success
 			} else {
