@@ -1,71 +1,62 @@
 package com.rabbitv.valheimviki.presentation.search
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.composables.icons.lucide.ArrowLeft
-import com.composables.icons.lucide.ArrowRight
-import com.composables.icons.lucide.Lucide
 import com.rabbitv.valheimviki.ui.theme.ICON_CLICK_DIM
 import com.rabbitv.valheimviki.ui.theme.ICON_SIZE
+import com.rabbitv.valheimviki.ui.theme.ICON_SIZE_SECOND
+import com.rabbitv.valheimviki.ui.theme.ICON_SIZE_THIRD
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
-import kotlinx.coroutines.launch
 
 
 @Composable
 fun PaginatePageSection(
 	modifier: Modifier = Modifier,
-	pages: Int,
+	totalPages: Int,
 	currentPage: Int,
 	hasMorePages: Boolean,
 	loadNextPage: () -> Unit,
 	loadPreviousPage: () -> Unit,
 	loadSpecificPage: (pageNumber: Int) -> Unit,
-
-	) {
-	val scope = rememberCoroutineScope()
-	val lazyRowState = rememberLazyListState()
-
-	with(LocalDensity.current) { ICON_CLICK_DIM.toPx() }
+) {
+	val lazyRowState = rememberLazyListState(
+		initialFirstVisibleItemIndex = (currentPage - 2).coerceAtLeast(0)
+	)
 
 	Row(
 		modifier = modifier
 			.fillMaxWidth()
-			.wrapContentHeight(),
+			.height(40.dp),
 		verticalAlignment = Alignment.CenterVertically,
 		horizontalArrangement = Arrangement.SpaceBetween
 	) {
 		IconButton(
-			onClick = {
-				scope.launch {
-					loadPreviousPage()
-				}
-			},
-			enabled = pages > 0,
-			modifier = Modifier.size(ICON_CLICK_DIM),
+			onClick = loadPreviousPage,
+			enabled = currentPage > 0,
+			modifier = Modifier.size(ICON_SIZE_SECOND),
 			colors = IconButtonDefaults.iconButtonColors(
 				containerColor = Color.Transparent,
 				contentColor = PrimaryWhite,
@@ -73,57 +64,46 @@ fun PaginatePageSection(
 			)
 		) {
 			Icon(
-				Lucide.ArrowLeft,
-				contentDescription = "Prev",
+				Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+				contentDescription = "Previous",
 				modifier = Modifier.size(ICON_SIZE)
 			)
 		}
+
 		LazyRow(
-			modifier = Modifier.weight(1f),
+			modifier = Modifier.weight(1f).height(35.dp),
 			state = lazyRowState,
 			horizontalArrangement = Arrangement.Center,
 			verticalAlignment = Alignment.CenterVertically,
-			contentPadding = PaddingValues(top = 5.dp, bottom = 5.dp),
+			contentPadding = PaddingValues(horizontal = 8.dp),
 			userScrollEnabled = true,
 		) {
-			items(pages, key = { page -> page }) { page ->
+			items(
+				count = totalPages,
+				key = { page -> page }
+			) { page ->
+				val isSelected = remember(currentPage) { page == currentPage }
+
 				TextButton(
-					onClick = {
-						scope.launch {
-							loadSpecificPage(page)
-							lazyRowState.animateScrollToItem(page)
-						}
+					onClick = remember(page, currentPage) {
+						{ if (page != currentPage) loadSpecificPage(page) }
 					},
 					colors = ButtonDefaults.textButtonColors(
-						contentColor = if (page == currentPage) PrimaryWhite else PrimaryWhite,
-						containerColor = if (page == currentPage ) Color(0xFF333333) else Color.Transparent
-					),
-					modifier = Modifier
-						.padding(horizontal = 5.dp)
-						.size(ICON_CLICK_DIM)
-						.background(
-							color = if (page == currentPage ) Color(0xFF333333) else Color.Transparent,
-							shape = MaterialTheme.shapes.medium
-						)
+						contentColor = if (isSelected) PrimaryWhite else PrimaryWhite.copy(alpha = 0.7f),
+						containerColor = if (isSelected) Color(0xFF333333) else Color.Transparent
+					)
 				) {
-					Text((page + 1).toString())
+					Text(
+						text = (page + 1).toString(),
+					)
 				}
 			}
 		}
 
-
 		IconButton(
-			onClick = {
-				scope.launch {
-					loadNextPage()
-				}
-
-//				scope.launch {
-//					lazyRowState.animateScrollToItem(page)
-//				}
-			},
+			onClick = loadNextPage,
 			enabled = hasMorePages,
-			modifier = Modifier.size(ICON_CLICK_DIM),
+			modifier = Modifier.size(ICON_SIZE_SECOND),
 			colors = IconButtonDefaults.iconButtonColors(
 				containerColor = Color.Transparent,
 				contentColor = PrimaryWhite,
@@ -131,7 +111,7 @@ fun PaginatePageSection(
 			)
 		) {
 			Icon(
-				Lucide.ArrowRight,
+				Icons.AutoMirrored.Filled.KeyboardArrowRight,
 				contentDescription = "Next",
 				modifier = Modifier.size(ICON_SIZE)
 			)
@@ -150,8 +130,9 @@ fun PreviewPaginatePageSectionFirstPage() {
 			loadNextPage = {},
 			loadPreviousPage = {},
 			loadSpecificPage = {},
-			pages = 744
-		)
+			totalPages = 744,
+
+			)
 	}
 }
 
@@ -165,7 +146,7 @@ fun PreviewPaginatePageSectionMiddlePage() {
 			loadNextPage = {},
 			loadPreviousPage = {},
 			loadSpecificPage = {},
-			pages = 744
+			totalPages = 744
 		)
 	}
 }
@@ -180,7 +161,7 @@ fun PreviewPaginatePageSectionLastPage() {
 			loadNextPage = {},
 			loadPreviousPage = {},
 			loadSpecificPage = {},
-			pages = 744
+			totalPages = 744
 		)
 	}
 }
@@ -195,7 +176,7 @@ fun PreviewPaginatePageSectionSinglePage() {
 			loadNextPage = {},
 			loadPreviousPage = {},
 			loadSpecificPage = {},
-			pages = 1
+			totalPages = 1
 		)
 	}
 }
