@@ -3,7 +3,7 @@ package com.rabbitv.valheimviki.domain.model.creature
 import com.rabbitv.valheimviki.domain.repository.ItemData
 
 abstract class CombatCreature : ItemData {
-	abstract val description: String?
+	abstract override val description: String?
 	abstract val order: Int
 	abstract val baseHP: Int?
 	abstract val weakness: String?

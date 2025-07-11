@@ -27,6 +27,9 @@ object DatabaseModule {
 	}
 
 	@Provides
+	fun provideSearchDao(appDatabase: ValheimVikiDatabase) = appDatabase.searchDao()
+
+	@Provides
 	fun provideFavoriteDao(appDatabase: ValheimVikiDatabase) = appDatabase.favoriteDao()
 
 	@Provides

@@ -14,7 +14,7 @@ data class PointOfInterest(
 	override val category: String,
 	override val subCategory: String,
 	override val name: String,
-	val description: String,
+	override val description: String,
 	val order: Int,
 ) : ItemData
 

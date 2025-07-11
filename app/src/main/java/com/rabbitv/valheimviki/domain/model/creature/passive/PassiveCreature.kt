@@ -11,7 +11,7 @@ data class PassiveCreature(
 	override val subCategory: String,
 	override val imageUrl: String,
 	override val name: String,
-	val description: String,
+	override val description: String,
 	val notes: String,
 	val order: Int,
 	val levels: List<LevelCreatureData>,

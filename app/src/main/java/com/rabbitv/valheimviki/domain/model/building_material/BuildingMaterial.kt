@@ -15,7 +15,7 @@ data class BuildingMaterial(
 	override val category: String,
 	override val subCategory: String,
 	override val name: String,
-	val description: String,
+	override val description: String,
 	@SerializedName("comfort_level") val comfortLevel: Int? = null,
 	val order: Int,
 	val subType: String? = null,

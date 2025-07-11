@@ -15,7 +15,7 @@ data class Mead(
 	override val category: String,
 	override val subCategory: String,
 	override val name: String,
-	val description: String? = null,
+	override val description: String? = null,
 	@SerializedName("recipe_output") val recipeOutput: String? = null,
 	@SerializedName("effect") val effect: String? = null,
 	@SerializedName("duration") val duration: String? = null,

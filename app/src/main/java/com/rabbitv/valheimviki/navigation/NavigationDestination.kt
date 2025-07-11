@@ -26,6 +26,9 @@ sealed interface TopLevelDestination : NavigationDestination {
 	@Serializable
 	data object Favorite : TopLevelDestination
 
+	@Serializable
+	data object Search : TopLevelDestination
+
 }
 
 @Serializable
@@ -326,7 +329,7 @@ object NavigationHelper {
 			else -> throw IllegalArgumentException("Unknown material type: $materialType")
 		}
 	}
-	
+
 
 	fun routeToDetailScreen(
 		itemData: ItemData,

@@ -64,10 +64,6 @@ import com.composables.icons.lucide.Swords
 import com.composables.icons.lucide.Trees
 import com.composables.icons.lucide.Utensils
 import com.rabbitv.valheimviki.R
-import com.rabbitv.valheimviki.domain.model.creature.CreatureSubCategory
-import com.rabbitv.valheimviki.domain.model.food.FoodSubCategory
-import com.rabbitv.valheimviki.domain.model.material.MaterialSubCategory
-import com.rabbitv.valheimviki.domain.model.mead.MeadSubCategory
 import com.rabbitv.valheimviki.presentation.armor.ArmorListScreen
 import com.rabbitv.valheimviki.presentation.biome.BiomeScreen
 import com.rabbitv.valheimviki.presentation.building_material.BuildingMaterialCategoryScreen
@@ -75,6 +71,7 @@ import com.rabbitv.valheimviki.presentation.building_material.BuildingMaterialLi
 import com.rabbitv.valheimviki.presentation.building_material.viewmodel.BuildingMaterialListViewModel
 import com.rabbitv.valheimviki.presentation.components.DrawerItem
 import com.rabbitv.valheimviki.presentation.components.NavigationDrawer
+import com.rabbitv.valheimviki.presentation.components.topbar.MainAppBar
 import com.rabbitv.valheimviki.presentation.crafting.CraftingListScreen
 import com.rabbitv.valheimviki.presentation.creatures.bosses.BossScreen
 import com.rabbitv.valheimviki.presentation.creatures.mini_bosses.MiniBossScreen
@@ -109,7 +106,6 @@ import com.rabbitv.valheimviki.presentation.detail.tree.TreeDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.weapon.WeaponDetailScreen
 import com.rabbitv.valheimviki.presentation.favorite.FavoriteScreen
 import com.rabbitv.valheimviki.presentation.food.FoodListScreen
-import com.rabbitv.valheimviki.presentation.home.MainAppBar
 import com.rabbitv.valheimviki.presentation.intro.WelcomeScreen
 import com.rabbitv.valheimviki.presentation.material.MaterialCategoryScreen
 import com.rabbitv.valheimviki.presentation.material.MaterialListScreen
@@ -117,6 +113,7 @@ import com.rabbitv.valheimviki.presentation.material.viewmodel.MaterialListViewM
 import com.rabbitv.valheimviki.presentation.mead.MeadListScreen
 import com.rabbitv.valheimviki.presentation.ore_deposit.OreDepositScreen
 import com.rabbitv.valheimviki.presentation.points_of_interest.PoiListScreen
+import com.rabbitv.valheimviki.presentation.search.SearchScreen
 import com.rabbitv.valheimviki.presentation.splash.SplashScreen
 import com.rabbitv.valheimviki.presentation.tool.ToolListScreen
 import com.rabbitv.valheimviki.presentation.tree.TreeScreen
@@ -202,6 +199,9 @@ fun MainContainer(
 						scope = scope,
 						drawerState = drawerState,
 						enabled = running,
+						onSearchBarClick = {
+							valheimVikiNavController.navigate(TopLevelDestination.Search)
+						},
 						onBookMarkClick = {
 							valheimVikiNavController.navigate(TopLevelDestination.Favorite)
 						}
@@ -278,6 +278,15 @@ fun ValheimNavGraph(
 			)
 		}
 
+		composable<TopLevelDestination.Search> {
+			SearchScreen(
+				onBack = { valheimVikiNavController.popBackStack() },
+				onItemClick = { destination ->
+					valheimVikiNavController.navigate(destination)
+				},
+			)
+		}
+
 		composable<GridDestination.WorldDestinations.BiomeGrid> {
 			BiomeScreen(
 				modifier = Modifier.padding(10.dp),
@@ -336,23 +345,8 @@ fun ValheimNavGraph(
 		composable<ListDestination.CreatureDestinations.MobList> {
 			MobListScreen(
 				modifier = Modifier.padding(10.dp),
-				onItemClick = { creatureId, creatureSubCategory: CreatureSubCategory ->
-					when (creatureSubCategory) {
-						CreatureSubCategory.PASSIVE_CREATURE -> valheimVikiNavController.navigate(
-							CreatureDetailDestination.PassiveCreatureDetail(passiveCreatureId = creatureId)
-						)
-
-						CreatureSubCategory.AGGRESSIVE_CREATURE -> valheimVikiNavController.navigate(
-							CreatureDetailDestination.AggressiveCreatureDetail(aggressiveCreatureId = creatureId)
-						)
-
-						CreatureSubCategory.NPC -> valheimVikiNavController.navigate(
-							CreatureDetailDestination.NpcDetail(npcId = creatureId)
-						)
-
-						CreatureSubCategory.BOSS -> null
-						CreatureSubCategory.MINI_BOSS -> null
-					}
+				onItemClick = { destination ->
+					valheimVikiNavController.navigate(destination)
 				},
 				paddingValues = innerPadding,
 			)
@@ -361,10 +355,8 @@ fun ValheimNavGraph(
 		composable<ListDestination.ItemDestinations.WeaponList> {
 			WeaponListScreen(
 				modifier = Modifier.padding(10.dp),
-				onItemClick = { weaponId, _ ->
-					valheimVikiNavController.navigate(
-						EquipmentDetailDestination.WeaponDetail(weaponId = weaponId)
-					)
+				onItemClick = { destination ->
+					valheimVikiNavController.navigate(destination)
 				},
 				paddingValues = innerPadding,
 			)
@@ -373,10 +365,8 @@ fun ValheimNavGraph(
 		composable<ListDestination.ItemDestinations.ArmorList> {
 			ArmorListScreen(
 				modifier = Modifier.padding(10.dp),
-				onItemClick = { armorId, _ ->
-					valheimVikiNavController.navigate(
-						EquipmentDetailDestination.ArmorDetail(armorId = armorId)
-					)
+				onItemClick = { destination ->
+					valheimVikiNavController.navigate(destination)
 				},
 				paddingValues = innerPadding,
 			)
@@ -384,13 +374,8 @@ fun ValheimNavGraph(
 		composable<ListDestination.FoodDestinations.FoodList> {
 			FoodListScreen(
 				modifier = Modifier.padding(10.dp),
-				onItemClick = { foodId, foodSubCategory: FoodSubCategory ->
-					valheimVikiNavController.navigate(
-						ConsumableDetailDestination.FoodDetail(
-							foodId = foodId,
-							category = foodSubCategory
-						)
-					)
+				onItemClick = { destination ->
+					valheimVikiNavController.navigate(destination)
 				},
 				paddingValues = innerPadding,
 			)
@@ -399,13 +384,8 @@ fun ValheimNavGraph(
 		composable<ListDestination.FoodDestinations.MeadList> {
 			MeadListScreen(
 				modifier = Modifier.padding(10.dp),
-				onItemClick = { meadId, meadSubCategory: MeadSubCategory ->
-					valheimVikiNavController.navigate(
-						ConsumableDetailDestination.MeadDetail(
-							meadId = meadId,
-							category = meadSubCategory
-						)
-					)
+				onItemClick = { destination ->
+					valheimVikiNavController.navigate(destination)
 				},
 				paddingValues = innerPadding,
 			)
@@ -414,10 +394,8 @@ fun ValheimNavGraph(
 		composable<ListDestination.CraftingDestinations.CraftingObjectsList> {
 			CraftingListScreen(
 				modifier = Modifier.padding(10.dp),
-				onItemClick = { craftingObjectId, _ ->
-					valheimVikiNavController.navigate(
-						BuildingDetailDestination.CraftingObjectDetail(craftingObjectId = craftingObjectId)
-					)
+				onItemClick = { destination ->
+					valheimVikiNavController.navigate(destination)
 				},
 				paddingValues = innerPadding,
 			)
@@ -426,11 +404,8 @@ fun ValheimNavGraph(
 		composable<ListDestination.ItemDestinations.ToolList> {
 			ToolListScreen(
 				modifier = Modifier.padding(10.dp),
-				onItemClick = { toolId, _ ->
-					valheimVikiNavController.navigate(
-						EquipmentDetailDestination.ToolDetail(toolId = toolId)
-					)
-
+				onItemClick = { destination ->
+					valheimVikiNavController.navigate(destination)
 				},
 				paddingValues = innerPadding,
 			)
@@ -460,57 +435,8 @@ fun ValheimNavGraph(
 				}
 				val vm = hiltViewModel<MaterialListViewModel>(parentEntry)
 				MaterialListScreen(
-					onItemClick = { itemId, itemCategory: MaterialSubCategory ->
-
-						when (itemCategory) {
-							MaterialSubCategory.BOSS_DROP -> valheimVikiNavController.navigate(
-								MaterialDetailDestination.BossDropDetail(bossDropId = itemId)
-							)
-
-							MaterialSubCategory.MINI_BOSS_DROP -> valheimVikiNavController.navigate(
-								MaterialDetailDestination.MiniBossDropDetail(miniBossDropId = itemId)
-							)
-
-							MaterialSubCategory.CREATURE_DROP -> valheimVikiNavController.navigate(
-								MaterialDetailDestination.MobDropDetail(mobDropId = itemId)
-							)
-
-							MaterialSubCategory.FORSAKEN_ALTAR_OFFERING -> valheimVikiNavController.navigate(
-								MaterialDetailDestination.OfferingsDetail(offeringsMaterialId = itemId)
-							)
-
-							MaterialSubCategory.CRAFTED -> valheimVikiNavController.navigate(
-								MaterialDetailDestination.CraftedMaterialDetail(craftedMaterialId = itemId)
-							)
-
-							MaterialSubCategory.METAL -> valheimVikiNavController.navigate(
-								MaterialDetailDestination.MetalMaterialDetail(metalMaterialId = itemId)
-							)
-
-							MaterialSubCategory.MISCELLANEOUS -> valheimVikiNavController.navigate(
-								MaterialDetailDestination.GeneralMaterialDetail(generalMaterialId = itemId)
-							)
-
-							MaterialSubCategory.GEMSTONE -> valheimVikiNavController.navigate(
-								MaterialDetailDestination.GemstoneDetail(gemstoneId = itemId)
-							)
-
-							MaterialSubCategory.SEED -> valheimVikiNavController.navigate(
-								MaterialDetailDestination.SeedDetail(seedMaterialId = itemId)
-							)
-
-							MaterialSubCategory.SHOP -> valheimVikiNavController.navigate(
-								MaterialDetailDestination.ShopMaterialDetail(shopMaterialId = itemId)
-							)
-
-							MaterialSubCategory.VALUABLE -> valheimVikiNavController.navigate(
-								MaterialDetailDestination.ValuableDetail(valuableMaterialId = itemId)
-							)
-
-							MaterialSubCategory.WOOD -> valheimVikiNavController.navigate(
-								MaterialDetailDestination.WoodDetail(woodMaterialId = itemId)
-							)
-						}
+					onItemClick = { destination ->
+						valheimVikiNavController.navigate(destination)
 					},
 					onBackClick = {
 						valheimVikiNavController.popBackStack()
@@ -545,10 +471,8 @@ fun ValheimNavGraph(
 				}
 				val vm = hiltViewModel<BuildingMaterialListViewModel>(parentEntry)
 				BuildingMaterialListScreen(
-					onItemClick = { buildingMaterialId, _ ->
-						valheimVikiNavController.navigate(
-							BuildingDetailDestination.BuildingMaterialDetail(buildingMaterialId = buildingMaterialId)
-						)
+					onItemClick = { destination ->
+						valheimVikiNavController.navigate(destination)
 					},
 					onBackClick = {
 						valheimVikiNavController.popBackStack()
@@ -599,11 +523,8 @@ fun ValheimNavGraph(
 		composable<ListDestination.WorldDestinations.PointOfInterestList> {
 			PoiListScreen(
 				modifier = Modifier.padding(10.dp),
-				onItemClick = { pointOfInterestId, _ ->
-					valheimVikiNavController.navigate(
-						WorldDetailDestination.PointOfInterestDetail(pointOfInterestId = pointOfInterestId)
-					)
-
+				onItemClick = { destination ->
+					valheimVikiNavController.navigate(destination)
 				},
 				paddingValues = innerPadding,
 			)

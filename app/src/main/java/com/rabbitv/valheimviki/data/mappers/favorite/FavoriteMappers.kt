@@ -9,7 +9,8 @@ fun ItemData.toFavorite(): Favorite {
 		name = this.name,
 		imageUrl = this.imageUrl,
 		category = this.category,
-		subCategory = this.subCategory
+		subCategory = this.subCategory,
+		description = this.description
 	)
 }
 

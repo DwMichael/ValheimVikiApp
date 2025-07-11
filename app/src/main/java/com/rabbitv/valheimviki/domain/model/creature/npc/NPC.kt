@@ -10,7 +10,7 @@ data class NPC(
 	override val subCategory: String,
 	override val imageUrl: String,
 	override val name: String,
-	val description: String,
+	override val description: String,
 	val biography: String,
 	val location: String,
 	val order: Int,

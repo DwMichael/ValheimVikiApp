@@ -15,7 +15,7 @@ data class Food(
 	override val category: String,
 	override val subCategory: String,
 	override val name: String,
-	val description: String,
+	override val description: String,
 	val order: Int,
 	@SerializedName("Eitr") val eitr: Int? = null,
 	@SerializedName("Health") val health: Int? = null,

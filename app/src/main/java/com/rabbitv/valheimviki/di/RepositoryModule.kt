@@ -13,6 +13,7 @@ import com.rabbitv.valheimviki.data.local.dao.MeadDao
 import com.rabbitv.valheimviki.data.local.dao.OreDepositDao
 import com.rabbitv.valheimviki.data.local.dao.PointOfInterestDao
 import com.rabbitv.valheimviki.data.local.dao.RelationDao
+import com.rabbitv.valheimviki.data.local.dao.SearchDao
 import com.rabbitv.valheimviki.data.local.dao.ToolDao
 import com.rabbitv.valheimviki.data.local.dao.TreeDao
 import com.rabbitv.valheimviki.data.local.dao.WeaponDao
@@ -44,6 +45,7 @@ import com.rabbitv.valheimviki.data.repository.mead.MeadRepositoryImpl
 import com.rabbitv.valheimviki.data.repository.ore_deposit.OreDepositRepositoryImpl
 import com.rabbitv.valheimviki.data.repository.point_of_interest.PointOfInterestRepositoryImpl
 import com.rabbitv.valheimviki.data.repository.relation.RelationRepositoryImpl
+import com.rabbitv.valheimviki.data.repository.search.SearchRepositoryImpl
 import com.rabbitv.valheimviki.data.repository.tool.ToolRepositoryImpl
 import com.rabbitv.valheimviki.data.repository.tree.TreeRepositoryImpl
 import com.rabbitv.valheimviki.data.repository.weapon.WeaponRepositoryImplementation
@@ -61,6 +63,7 @@ import com.rabbitv.valheimviki.domain.repository.NetworkConnectivity
 import com.rabbitv.valheimviki.domain.repository.OreDepositRepository
 import com.rabbitv.valheimviki.domain.repository.PointOfInterestRepository
 import com.rabbitv.valheimviki.domain.repository.RelationRepository
+import com.rabbitv.valheimviki.domain.repository.SearchRepository
 import com.rabbitv.valheimviki.domain.repository.ToolRepository
 import com.rabbitv.valheimviki.domain.repository.TreeRepository
 import com.rabbitv.valheimviki.domain.repository.WeaponRepository
@@ -141,6 +144,14 @@ import com.rabbitv.valheimviki.domain.use_cases.relation.get_item_id_in_relation
 import com.rabbitv.valheimviki.domain.use_cases.relation.get_item_related_by_id.GetItemRelatedById
 import com.rabbitv.valheimviki.domain.use_cases.relation.get_local_relations.GetLocalRelationsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.relation.get_related_ids_for.GetRelatedIdsForUseCase
+import com.rabbitv.valheimviki.domain.use_cases.search.SearchUseCases
+import com.rabbitv.valheimviki.domain.use_cases.search.count_search_objects.CountSearchObjectsUseCase
+import com.rabbitv.valheimviki.domain.use_cases.search.count_search_objects_by_name.CountSearchObjectsByNameUseCase
+import com.rabbitv.valheimviki.domain.use_cases.search.delete_all_and_insert.DeleteAllAndInsertNewUseCase
+import com.rabbitv.valheimviki.domain.use_cases.search.get_all_search_objects.GetAllSearchObjectsUseCase
+import com.rabbitv.valheimviki.domain.use_cases.search.search_by_description.SearchByDescriptionUseCase
+import com.rabbitv.valheimviki.domain.use_cases.search.search_by_name.SearchByNameUseCase
+import com.rabbitv.valheimviki.domain.use_cases.search.search_by_name_and_description.SearchByNameAndDescriptionUseCase
 import com.rabbitv.valheimviki.domain.use_cases.tool.ToolUseCases
 import com.rabbitv.valheimviki.domain.use_cases.tool.get_local_tools_use_case.GetLocalToolsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.tool.get_tool_by_id.GetToolByIdUseCase
@@ -173,6 +184,14 @@ object RepositoryModule {
 		@ApplicationContext context: Context
 	): DataStoreOperations {
 		return DataStoreOperationsImpl(context = context)
+	}
+
+	@Provides
+	@Singleton
+	fun provideSearchRepositoryImpl(
+		searchDao: SearchDao
+	): SearchRepository {
+		return SearchRepositoryImpl(searchDao)
 	}
 
 	@Provides
@@ -335,6 +354,7 @@ object RepositoryModule {
 		toolRepository: ToolRepository,
 		buildingMaterialRepository: BuildingMaterialRepository,
 		craftingObjectRepository: CraftingObjectRepository,
+		searchRepository: SearchRepository,
 		dataStoreUseCases: DataStoreUseCases
 	): DataRefetchUseCase {
 		return DataRefetchUseCase(
@@ -352,7 +372,22 @@ object RepositoryModule {
 			meadRepository = meadRepository,
 			toolRepository = toolRepository,
 			buildingMaterialRepository = buildingMaterialRepository,
-			craftingObjectRepository = craftingObjectRepository
+			craftingObjectRepository = craftingObjectRepository,
+			searchRepository = searchRepository
+		)
+	}
+
+	@Provides
+	@Singleton
+	fun provideSearchUseCases(searchRepository: SearchRepository): SearchUseCases {
+		return SearchUseCases(
+			countSearchObjectsByNameUseCase = CountSearchObjectsByNameUseCase(searchRepository),
+			countSearchObjectsUseCase = CountSearchObjectsUseCase(searchRepository),
+			getAllSearchObjectsUseCase = GetAllSearchObjectsUseCase(searchRepository),
+			searchByDescriptionUseCase = SearchByDescriptionUseCase(searchRepository),
+			searchByNameUseCase = SearchByNameUseCase(searchRepository),
+			searchByNameAndDescriptionUseCase = SearchByNameAndDescriptionUseCase(searchRepository),
+			deleteAllAndInsertNewUseCase = DeleteAllAndInsertNewUseCase(searchRepository)
 		)
 	}
 

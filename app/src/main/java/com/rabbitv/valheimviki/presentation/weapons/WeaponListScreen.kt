@@ -34,10 +34,12 @@ import com.rabbitv.valheimviki.domain.model.ui_state.category_chip_state.UiCateg
 import com.rabbitv.valheimviki.domain.model.weapon.Weapon
 import com.rabbitv.valheimviki.domain.model.weapon.WeaponSubCategory
 import com.rabbitv.valheimviki.domain.model.weapon.WeaponSubType
+import com.rabbitv.valheimviki.navigation.DetailDestination
+import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
-import com.rabbitv.valheimviki.presentation.components.list.ListContent
 import com.rabbitv.valheimviki.presentation.components.chip.ChipData
 import com.rabbitv.valheimviki.presentation.components.chip.SearchFilterBar
+import com.rabbitv.valheimviki.presentation.components.list.ListContent
 import com.rabbitv.valheimviki.presentation.components.segmented.SegmentedButtonSingleSelect
 import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerListEffect
 import com.rabbitv.valheimviki.presentation.weapons.model.WeaponSegmentOption
@@ -45,6 +47,7 @@ import com.rabbitv.valheimviki.presentation.weapons.viewmodel.WeaponListViewMode
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
+import com.rabbitv.valheimviki.utils.toAppCategory
 
 
 data class WeaponChip(
@@ -56,7 +59,7 @@ data class WeaponChip(
 @Composable
 fun WeaponListScreen(
 	modifier: Modifier = Modifier,
-	onItemClick: (weaponId: String, _: Int) -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	paddingValues: PaddingValues,
 	viewModel: WeaponListViewModel = hiltViewModel()
 ) {
@@ -82,7 +85,7 @@ fun WeaponListStateRenderer(
 	onChipSelected: (WeaponSubType?) -> Unit,
 	paddingValues: PaddingValues,
 	modifier: Modifier,
-	onItemClick: (weaponId: String, _: Int) -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 ) {
 	Surface(
 		color = Color.Transparent,
@@ -108,11 +111,11 @@ fun WeaponListDisplay(
 	weaponListUiState: UiCategoryChipState<WeaponSubCategory, WeaponSubType?, Weapon>,
 	onCategorySelected: (WeaponSubCategory) -> Unit,
 	onChipSelected: (WeaponSubType?) -> Unit,
-	onItemClick: (weaponId: String, _: Int) -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 ) {
 	val lazyListState = rememberLazyListState()
 
-	val selectedChipIndex = getWeaponCategoryIndex(category = weaponListUiState.selectedCategory)
+	getWeaponCategoryIndex(category = weaponListUiState.selectedCategory)
 
 	Column(
 		horizontalAlignment = Alignment.Start
@@ -165,9 +168,14 @@ fun WeaponListDisplay(
 			is UiCategoryChipState.Success<WeaponSubCategory, WeaponSubType?, Weapon> -> {
 				ListContent(
 					items = state.list,
-					clickToNavigate = onItemClick,
+					clickToNavigate = { itemData ->
+						val destination = NavigationHelper.routeToDetailScreen(
+							itemData,
+							itemData.category.toAppCategory()
+						)
+						onItemClick(destination)
+					},
 					lazyListState = lazyListState,
-					subCategoryNumber = selectedChipIndex,
 					imageScale = ContentScale.Fit,
 					horizontalPadding = 0.dp
 				)
@@ -323,7 +331,7 @@ fun PreviewWeaponListStateRenderer() {
 			modifier = Modifier,
 			onCategorySelected = {},
 			onChipSelected = {},
-			onItemClick = { _, _ -> {} },
+			onItemClick = { _ -> {} },
 		)
 	}
 }
@@ -338,11 +346,4 @@ private fun getWeaponCategoryIndex(category: WeaponSubCategory): Int {
 	}
 }
 
-private fun getWeaponCategory(index: Int): WeaponSubCategory {
-	return when (index) {
-		0 -> WeaponSubCategory.MELEE_WEAPON
-		1 -> WeaponSubCategory.RANGED_WEAPON
-		2 -> WeaponSubCategory.MAGIC_WEAPON
-		else -> WeaponSubCategory.AMMO
-	}
-}
+

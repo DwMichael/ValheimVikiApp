@@ -15,7 +15,7 @@ data class Material(
 	override val category: String,
 	override val subCategory: String,
 	override val name: String,
-	val description: String? = null,
+	override val description: String? = null,
 	@SerializedName("usage") val usage: String? = null,
 	@SerializedName("growth_time") val growthTime: String? = null,
 	@SerializedName("NeedCultivatorGround") val needCultivatorGround: String? = null,

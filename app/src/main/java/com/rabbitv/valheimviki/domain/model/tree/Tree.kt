@@ -14,6 +14,6 @@ data class Tree(
 	override val category: String,
 	override val subCategory: String? = null,
 	override val name: String,
-	val description: String,
+	override val description: String,
 	val order: Int,
 ) : ItemData

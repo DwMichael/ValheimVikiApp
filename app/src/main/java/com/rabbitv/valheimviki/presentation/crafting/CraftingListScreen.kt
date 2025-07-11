@@ -31,17 +31,19 @@ import com.rabbitv.valheimviki.domain.model.armor.ArmorSubCategory
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingSubCategory
 import com.rabbitv.valheimviki.domain.model.ui_state.category_state.UiCategoryState
+import com.rabbitv.valheimviki.navigation.DetailDestination
+import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
-import com.rabbitv.valheimviki.presentation.components.list.ListContent
-
 import com.rabbitv.valheimviki.presentation.components.chip.ChipData
 import com.rabbitv.valheimviki.presentation.components.chip.CustomElevatedFilterChip
 import com.rabbitv.valheimviki.presentation.components.chip.SearchFilterBar
+import com.rabbitv.valheimviki.presentation.components.list.ListContent
 import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerListEffect
 import com.rabbitv.valheimviki.presentation.crafting.viewmodel.CraftingListViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
+import com.rabbitv.valheimviki.utils.toAppCategory
 
 
 data class CraftingChip(
@@ -54,7 +56,7 @@ data class CraftingChip(
 @Composable
 fun CraftingListScreen(
 	modifier: Modifier = Modifier,
-	onItemClick: (armorId: String, _: Int) -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	paddingValues: PaddingValues,
 	viewModel: CraftingListViewModel = hiltViewModel()
 ) {
@@ -76,18 +78,18 @@ fun CraftingListStateRenderer(
 	onChipSelected: (CraftingSubCategory?) -> Unit,
 	paddingValues: PaddingValues,
 	modifier: Modifier,
-	onItemClick: (armorId: String, _: Int) -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 ) {
 	Surface(
 		color = Color.Transparent,
 		modifier = Modifier
-            .testTag("WeaponListSurface")
-            .fillMaxSize()
-            .padding(paddingValues)
-            .then(modifier)
+			.testTag("WeaponListSurface")
+			.fillMaxSize()
+			.padding(paddingValues)
+			.then(modifier)
 	) {
 
-		ArmorListDisplay(
+		CraftingStationListDisplay(
 			craftingObjectListUiState = craftingObjectListUiState,
 			onChipSelected = onChipSelected,
 			onItemClick = onItemClick
@@ -97,18 +99,12 @@ fun CraftingListStateRenderer(
 
 
 @Composable
-fun ArmorListDisplay(
+fun CraftingStationListDisplay(
 	craftingObjectListUiState: UiCategoryState<CraftingSubCategory?, CraftingObject>,
 	onChipSelected: (CraftingSubCategory?) -> Unit,
-	onItemClick: (armorId: String, _: Int) -> Unit
+	onItemClick: (destination: DetailDestination) -> Unit
 ) {
-
-
 	val lazyListState = rememberLazyListState()
-
-
-
-
 	Column(
 		horizontalAlignment = Alignment.Start
 	) {
@@ -130,13 +126,18 @@ fun ArmorListDisplay(
 			is UiCategoryState.Loading<CraftingSubCategory?> -> ShimmerListEffect()
 			is UiCategoryState.Success<CraftingSubCategory?, CraftingObject> ->
 				ListContent(
-				items = state.list,
-				clickToNavigate = onItemClick,
-				lazyListState = lazyListState,
-				subCategoryNumber = 0,
-				imageScale = ContentScale.Fit,
-				horizontalPadding = 0.dp
-			)
+					items = state.list,
+					clickToNavigate = { itemData ->
+						val destination = NavigationHelper.routeToDetailScreen(
+							itemData,
+							itemData.category.toAppCategory()
+						)
+						onItemClick(destination)
+					},
+					lazyListState = lazyListState,
+					imageScale = ContentScale.Fit,
+					horizontalPadding = 0.dp
+				)
 		}
 	}
 }
@@ -240,7 +241,7 @@ fun PreviewWeaponListStateRenderer() {
 			paddingValues = PaddingValues(),
 			modifier = Modifier,
 			onChipSelected = {},
-			onItemClick = { _, _ -> {} }
+			onItemClick = { _ -> {} }
 		)
 	}
 }
