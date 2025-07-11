@@ -45,15 +45,18 @@ import com.composables.icons.lucide.Table
 import com.rabbitv.valheimviki.domain.model.building_material.BuildingMaterialSubCategory
 import com.rabbitv.valheimviki.domain.model.building_material.BuildingMaterialSubType
 import com.rabbitv.valheimviki.domain.model.ui_state.category_chip_state.UiCategoryChipState
+import com.rabbitv.valheimviki.navigation.DetailDestination
+import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.building_material.viewmodel.BuildingMaterialListViewModel
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
-import com.rabbitv.valheimviki.presentation.components.list.ListContent
 import com.rabbitv.valheimviki.presentation.components.chip.ChipData
 import com.rabbitv.valheimviki.presentation.components.chip.SearchFilterBar
+import com.rabbitv.valheimviki.presentation.components.list.ListContent
 import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerListEffect
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
+import com.rabbitv.valheimviki.utils.toAppCategory
 
 class BuildingMaterialChip(
 	override val option: BuildingMaterialSubType,
@@ -65,7 +68,7 @@ class BuildingMaterialChip(
 @Composable
 fun BuildingMaterialListScreen(
 	onBackClick: () -> Unit,
-	onItemClick: (String, Int) -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	viewModel: BuildingMaterialListViewModel,
 ) {
 
@@ -93,8 +96,8 @@ fun BuildingMaterialListScreen(
 		topBar = {
 			Box(
 				modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 40.dp)
+					.fillMaxWidth()
+					.padding(top = 40.dp)
 			) {
 				IconButton(
 					onClick = {
@@ -103,11 +106,11 @@ fun BuildingMaterialListScreen(
 						onBackClick()
 					},
 					modifier = Modifier
-                        .align(Alignment.BottomStart)
-                        .padding(
-                            start = BODY_CONTENT_PADDING.dp,
-                            end = BODY_CONTENT_PADDING.dp
-                        ),
+						.align(Alignment.BottomStart)
+						.padding(
+							start = BODY_CONTENT_PADDING.dp,
+							end = BODY_CONTENT_PADDING.dp
+						),
 					colors = IconButtonColors(
 						containerColor = ForestGreen10Dark,
 						contentColor = PrimaryWhite,
@@ -137,15 +140,15 @@ fun BuildingMaterialListScreen(
 				is UiCategoryChipState.Loading -> {
 					Column(
 						modifier = Modifier
-                            .fillMaxSize()
-                            .padding(innerScaffoldPadding),
+							.fillMaxSize()
+							.padding(innerScaffoldPadding),
 						horizontalAlignment = Alignment.CenterHorizontally,
 						verticalArrangement = Arrangement.Top
 					) {
 						Box(
 							modifier = Modifier
-                                .fillMaxSize()
-                                .padding(BODY_CONTENT_PADDING.dp)
+								.fillMaxSize()
+								.padding(BODY_CONTENT_PADDING.dp)
 						) {
 
 							Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
@@ -157,15 +160,15 @@ fun BuildingMaterialListScreen(
 				is UiCategoryChipState.Success -> {
 					Column(
 						modifier = Modifier
-                            .fillMaxSize()
-                            .padding(innerScaffoldPadding),
+							.fillMaxSize()
+							.padding(innerScaffoldPadding),
 						horizontalAlignment = Alignment.CenterHorizontally,
 						verticalArrangement = Arrangement.Top
 					) {
 						Box(
 							modifier = Modifier
-                                .fillMaxSize()
-                                .padding(BODY_CONTENT_PADDING.dp)
+								.fillMaxSize()
+								.padding(BODY_CONTENT_PADDING.dp)
 						) {
 							Column(
 								horizontalAlignment = Alignment.CenterHorizontally
@@ -192,9 +195,14 @@ fun BuildingMaterialListScreen(
 								}
 								ListContent(
 									items = currentState.list,
-									clickToNavigate = onItemClick,
+									clickToNavigate = { itemData ->
+										val destination = NavigationHelper.routeToDetailScreen(
+											itemData,
+											itemData.category.toAppCategory()
+										)
+										onItemClick(destination)
+									},
 									lazyListState = lazyListState,
-									subCategoryNumber = 0,
 									imageScale = ContentScale.Fit,
 									horizontalPadding = 0.dp
 								)

@@ -27,23 +27,25 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.composables.icons.lucide.FlaskConical
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Soup
-import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterestSubCategory
 import com.rabbitv.valheimviki.domain.model.ui_state.category_state.UiCategoryState
+import com.rabbitv.valheimviki.navigation.DetailDestination
+import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
-import com.rabbitv.valheimviki.presentation.components.list.ListContent
 import com.rabbitv.valheimviki.presentation.components.floating_action_button.CustomFloatingActionButton
+import com.rabbitv.valheimviki.presentation.components.list.ListContent
 import com.rabbitv.valheimviki.presentation.components.segmented.SegmentedButtonSingleSelect
 import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerListEffect
 import com.rabbitv.valheimviki.presentation.points_of_interest.model.PoiSegmentOption
 import com.rabbitv.valheimviki.presentation.points_of_interest.viewmodel.PoiListViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
+import com.rabbitv.valheimviki.utils.toAppCategory
 import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PoiListScreen(
-	onItemClick: (String, PointOfInterestSubCategory) -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	modifier: Modifier, paddingValues: PaddingValues,
 	viewModel: PoiListViewModel = hiltViewModel()
 ) {
@@ -95,9 +97,14 @@ fun PoiListScreen(
 						is UiCategoryState.Error -> EmptyScreen(errorMessage = state.message.toString())
 						is UiCategoryState.Success -> ListContent(
 							items = state.list,
-							clickToNavigate = onItemClick,
+							clickToNavigate = { itemData ->
+								val destination = NavigationHelper.routeToDetailScreen(
+									itemData,
+									itemData.category.toAppCategory()
+								)
+								onItemClick(destination)
+							},
 							lazyListState = lazyListState,
-							subCategoryNumber = state.selectedCategory,
 							horizontalPadding = 0.dp,
 							imageScale = ContentScale.Crop,
 							bottomBosPadding = 50.dp
@@ -114,7 +121,7 @@ fun PoiListScreen(
 								lazyListState.animateScrollToItem(0)
 							}
 						},
-						)
+					)
 				}
 			}
 		}

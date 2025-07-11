@@ -38,6 +38,8 @@ import com.composables.icons.lucide.Trophy
 import com.rabbitv.valheimviki.domain.model.material.MaterialSubCategory
 import com.rabbitv.valheimviki.domain.model.material.MaterialSubType
 import com.rabbitv.valheimviki.domain.model.ui_state.category_chip_state.UiCategoryChipState
+import com.rabbitv.valheimviki.navigation.DetailDestination
+import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.chip.ChipData
 import com.rabbitv.valheimviki.presentation.components.chip.SearchFilterBar
@@ -47,6 +49,7 @@ import com.rabbitv.valheimviki.presentation.components.shimmering_effect.Shimmer
 import com.rabbitv.valheimviki.presentation.components.topbar.SimpleTopBar
 import com.rabbitv.valheimviki.presentation.material.viewmodel.MaterialListViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
+import com.rabbitv.valheimviki.utils.toAppCategory
 import kotlinx.coroutines.launch
 
 class MaterialChip(
@@ -59,7 +62,7 @@ class MaterialChip(
 @Composable
 fun MaterialListScreen(
 	onBackClick: () -> Unit,
-	onItemClick: (String, MaterialSubCategory) -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	viewModel: MaterialListViewModel,
 ) {
 
@@ -163,9 +166,14 @@ fun MaterialListScreen(
 								if (currentState.selectedCategory != null) {
 									ListContent(
 										items = currentState.list,
-										clickToNavigate = onItemClick,
+										clickToNavigate = { itemData ->
+											val destination = NavigationHelper.routeToDetailScreen(
+												itemData,
+												itemData.category.toAppCategory()
+											)
+											onItemClick(destination)
+										},
 										lazyListState = lazyListState,
-										subCategoryNumber = currentState.selectedCategory,
 										imageScale = ContentScale.Fit,
 										horizontalPadding = 0.dp,
 										bottomBosPadding = 30.dp

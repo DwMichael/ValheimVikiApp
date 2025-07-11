@@ -21,9 +21,11 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -33,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.biome.Biome
+import com.rabbitv.valheimviki.domain.model.category.AppCategory
 import com.rabbitv.valheimviki.domain.repository.ItemData
 import com.rabbitv.valheimviki.presentation.modifiers.lazyVerticalScrollbar
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
@@ -42,20 +45,29 @@ import com.rabbitv.valheimviki.ui.theme.DETAIL_ITEM_SHAPE_PADDING
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ShimmerDarkGray
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
+import com.rabbitv.valheimviki.utils.toAppCategory
+
+enum class ListItemTypes {
+	SMALL, MEDIUM, DEFAULT
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun <T> ListContent(
+fun ListContent(
 	items: List<ItemData>,
-	clickToNavigate: (String, T) -> Unit,
+	clickToNavigate: (itemData: ItemData) -> Unit,
 	lazyListState: LazyListState,
-	subCategoryNumber: T,
 	imageScale: ContentScale = ContentScale.Crop,
-	topPadding :Dp = 0.dp,
-	bottomPadding:Dp = 0.dp,
+	topPadding: Dp = 0.dp,
+	bottomPadding: Dp = 0.dp,
 	horizontalPadding: Dp = BODY_CONTENT_PADDING.dp,
 	bottomBosPadding: Dp = 24.dp,
 ) {
+	val typeOfItemList = remember {
+		{ appCategory: AppCategory ->
+			determineFavoriteListType(appCategory)
+		}
+	}
 	LazyColumn(
 		state = lazyListState,
 		modifier = Modifier
@@ -65,12 +77,28 @@ fun <T> ListContent(
 			.fillMaxSize()
 	) {
 		items(items) { item ->
-			ListItem(
-				item = item, clickToNavigate = {
-					clickToNavigate(item.id, subCategoryNumber)
-				},
-				imageScale = imageScale
-			)
+			when (typeOfItemList(item.category.toAppCategory())) {
+				ListItemTypes.SMALL -> ListItem(
+					item = item,
+					modifier = Modifier.scale(0.9f),
+					clickToNavigate = { clickToNavigate(item) },
+					imageScale = ContentScale.Fit
+				)
+
+				ListItemTypes.MEDIUM -> ListItem(
+					item = item,
+					clickToNavigate = { clickToNavigate(item) },
+					imageScale = ContentScale.Fit
+				)
+
+				ListItemTypes.DEFAULT -> ListItem(
+					item = item,
+					clickToNavigate = { clickToNavigate(item) },
+					imageScale = imageScale
+				)
+
+			}
+
 			Spacer(modifier = Modifier.height(16.dp))
 		}
 		item {
@@ -119,6 +147,24 @@ fun ListItem(
 	}
 }
 
+private fun determineFavoriteListType(appCategory: AppCategory): ListItemTypes {
+
+	return when (appCategory) {
+		AppCategory.BIOME -> ListItemTypes.DEFAULT
+		AppCategory.CREATURE -> ListItemTypes.DEFAULT
+		AppCategory.FOOD -> ListItemTypes.SMALL
+		AppCategory.ARMOR -> ListItemTypes.SMALL
+		AppCategory.WEAPON -> ListItemTypes.SMALL
+		AppCategory.BUILDING_MATERIAL -> ListItemTypes.MEDIUM
+		AppCategory.MATERIAL -> ListItemTypes.SMALL
+		AppCategory.CRAFTING -> ListItemTypes.MEDIUM
+		AppCategory.TOOL -> ListItemTypes.SMALL
+		AppCategory.MEAD -> ListItemTypes.SMALL
+		AppCategory.POINTOFINTEREST -> ListItemTypes.DEFAULT
+		AppCategory.TREE -> ListItemTypes.DEFAULT
+		AppCategory.OREDEPOSITE -> ListItemTypes.DEFAULT
+	}
+}
 
 @Preview(name = "ListItem", showBackground = true)
 @Composable
@@ -167,11 +213,9 @@ private fun PreviewContentList2() {
 	ValheimVikiAppTheme {
 		ListContent(
 			items = sampleBiomes,
-			clickToNavigate = { string1, intValue ->
-				println("Navigating with: $string1, $intValue")
-			},
+			clickToNavigate = { _ -> {} },
 			lazyListState = rememberLazyListState(),
-			0,
+
 		)
 	}
 }

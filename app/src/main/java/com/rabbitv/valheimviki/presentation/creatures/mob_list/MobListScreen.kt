@@ -30,14 +30,17 @@ import com.composables.icons.lucide.User
 import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.model.creature.CreatureSubCategory
 import com.rabbitv.valheimviki.domain.model.ui_state.category_state.UiCategoryState
+import com.rabbitv.valheimviki.navigation.DetailDestination
+import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
-import com.rabbitv.valheimviki.presentation.components.list.ListContent
 import com.rabbitv.valheimviki.presentation.components.floating_action_button.CustomFloatingActionButton
+import com.rabbitv.valheimviki.presentation.components.list.ListContent
 import com.rabbitv.valheimviki.presentation.components.segmented.SegmentedButtonSingleSelect
 import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerGridEffect
 import com.rabbitv.valheimviki.presentation.creatures.mob_list.model.MobSegmentOption
 import com.rabbitv.valheimviki.presentation.creatures.mob_list.viewmodel.MobListViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
+import com.rabbitv.valheimviki.utils.toAppCategory
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.launch
 
@@ -45,7 +48,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class, FlowPreview::class)
 @Composable
 fun MobListScreen(
-	onItemClick: (String, CreatureSubCategory) -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	modifier: Modifier,
 	paddingValues: PaddingValues,
 	viewModel: MobListViewModel = hiltViewModel()
@@ -65,9 +68,9 @@ fun MobListScreen(
 	Surface(
 		color = Color.Transparent,
 		modifier = Modifier
-            .testTag("MobListSurface")
-            .fillMaxSize()
-            .padding(paddingValues)
+			.testTag("MobListSurface")
+			.fillMaxSize()
+			.padding(paddingValues)
 	) {
 		Box(modifier = Modifier.fillMaxSize()) {
 			Column(
@@ -93,9 +96,14 @@ fun MobListScreen(
 						is UiCategoryState.Loading<CreatureSubCategory> -> ShimmerGridEffect()
 						is UiCategoryState.Success<CreatureSubCategory, Creature> -> ListContent(
 							items = state.list,
-							clickToNavigate = onItemClick,
+							clickToNavigate = { itemData ->
+								val destination = NavigationHelper.routeToDetailScreen(
+									itemData,
+									itemData.category.toAppCategory()
+								)
+								onItemClick(destination)
+							},
 							lazyListState = lazyListState,
-							subCategoryNumber = state.selectedCategory,
 							horizontalPadding = 0.dp,
 						)
 					}
@@ -109,8 +117,8 @@ fun MobListScreen(
 					}
 				},
 				modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(BODY_CONTENT_PADDING.dp)
+					.align(Alignment.BottomEnd)
+					.padding(BODY_CONTENT_PADDING.dp)
 			)
 		}
 	}

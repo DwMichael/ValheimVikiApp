@@ -34,22 +34,25 @@ import com.composables.icons.lucide.Wrench
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.item_tool.ToolSubCategory
 import com.rabbitv.valheimviki.domain.model.ui_state.category_state.UiCategoryState
+import com.rabbitv.valheimviki.navigation.DetailDestination
+import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
-import com.rabbitv.valheimviki.presentation.components.list.ListContent
 import com.rabbitv.valheimviki.presentation.components.chip.SearchFilterBar
 import com.rabbitv.valheimviki.presentation.components.floating_action_button.CustomFloatingActionButton
+import com.rabbitv.valheimviki.presentation.components.list.ListContent
 import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerListEffect
 import com.rabbitv.valheimviki.presentation.tool.model.ToolChip
 import com.rabbitv.valheimviki.presentation.tool.viewmodel.ToolListViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
+import com.rabbitv.valheimviki.utils.toAppCategory
 import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ToolListScreen(
-	onItemClick: (String, _: Int) -> Unit,
 	modifier: Modifier,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	paddingValues: PaddingValues,
 	viewModel: ToolListViewModel = hiltViewModel()
 ) {
@@ -97,9 +100,14 @@ fun ToolListScreen(
 
 						is UiCategoryState.Success -> ListContent(
 							items = state.list,
-							clickToNavigate = onItemClick,
+							clickToNavigate = { itemData ->
+								val destination = NavigationHelper.routeToDetailScreen(
+									itemData,
+									itemData.category.toAppCategory()
+								)
+								onItemClick(destination)
+							},
 							lazyListState = lazyListState,
-							subCategoryNumber = 0,
 							imageScale = ContentScale.Fit,
 							horizontalPadding = 0.dp
 						)

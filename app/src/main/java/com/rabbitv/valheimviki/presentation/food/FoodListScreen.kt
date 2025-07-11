@@ -27,23 +27,25 @@ import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Rat
 import com.composables.icons.lucide.Skull
 import com.composables.icons.lucide.User
-import com.rabbitv.valheimviki.domain.model.food.FoodSubCategory
 import com.rabbitv.valheimviki.domain.model.ui_state.category_state.UiCategoryState
+import com.rabbitv.valheimviki.navigation.DetailDestination
+import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
-import com.rabbitv.valheimviki.presentation.components.list.ListContent
 import com.rabbitv.valheimviki.presentation.components.floating_action_button.CustomFloatingActionButton
+import com.rabbitv.valheimviki.presentation.components.list.ListContent
 import com.rabbitv.valheimviki.presentation.components.segmented.SegmentedButtonSingleSelect
 import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerListEffect
 import com.rabbitv.valheimviki.presentation.food.model.FoodSegmentOption
 import com.rabbitv.valheimviki.presentation.food.viewmodel.FoodListViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
+import com.rabbitv.valheimviki.utils.toAppCategory
 import kotlinx.coroutines.launch
 
 
 @Composable
 fun FoodListScreen(
 	modifier: Modifier, paddingValues: PaddingValues,
-	onItemClick: (String, FoodSubCategory) -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	viewModel: FoodListViewModel = hiltViewModel()
 ) {
 	val icons: List<ImageVector> = listOf(
@@ -61,9 +63,9 @@ fun FoodListScreen(
 	Surface(
 		color = Color.Transparent,
 		modifier = Modifier
-            .testTag("FoodListSurface")
-            .fillMaxSize()
-            .padding(paddingValues)
+			.testTag("FoodListSurface")
+			.fillMaxSize()
+			.padding(paddingValues)
 	) {
 		Box(modifier = Modifier.fillMaxSize()) {
 			Column(
@@ -92,9 +94,14 @@ fun FoodListScreen(
 						is UiCategoryState.Error -> EmptyScreen(errorMessage = state.message.toString())
 						is UiCategoryState.Success -> ListContent(
 							items = state.list,
-							clickToNavigate = onItemClick,
+							clickToNavigate = { itemData ->
+								val destination = NavigationHelper.routeToDetailScreen(
+									itemData,
+									itemData.category.toAppCategory()
+								)
+								onItemClick(destination)
+							},
 							lazyListState = lazyListState,
-							subCategoryNumber = state.selectedCategory,
 							horizontalPadding = 0.dp,
 							imageScale = ContentScale.Fit
 						)
@@ -108,8 +115,8 @@ fun FoodListScreen(
 							}
 						},
 						modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .padding(BODY_CONTENT_PADDING.dp)
+							.align(Alignment.BottomEnd)
+							.padding(BODY_CONTENT_PADDING.dp)
 					)
 				}
 			}
