@@ -26,7 +26,8 @@ class SearchRepositoryImpl @Inject constructor(
 	}
 
 	override fun searchByDescription(query: String, limit: Int, offset: Int): Flow<List<Search>> {
-		return searchDao.searchByDescription(query, limit, offset)
+//		return searchDao.searchByDescription(query, limit, offset)
+		return searchDao.searchByName(query, limit, offset)
 	}
 
 	override fun searchByNameAndDescription(
@@ -34,7 +35,8 @@ class SearchRepositoryImpl @Inject constructor(
 		limit: Int,
 		offset: Int
 	): Flow<List<Search>> {
-		return searchDao.searchByNameAndDescription(query, limit, offset)
+//		return searchDao.searchByNameAndDescription(query, limit, offset)
+		return searchDao.searchByName(query, limit, offset)
 	}
 
 	override suspend fun deleteAllAndInsertNew(searchData: List<Search>) {

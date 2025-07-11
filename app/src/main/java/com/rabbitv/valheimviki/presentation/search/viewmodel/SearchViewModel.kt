@@ -1,5 +1,6 @@
 package com.rabbitv.valheimviki.presentation.search.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.model.search.Search
@@ -55,21 +56,28 @@ class SearchViewModel @Inject constructor(
 		_currentPage.value = page
 	}
 
+
 	@OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 	private val _totalOfPages: StateFlow<Int> = _searchQuery
 		.debounce(300L)
 		.mapLatest { query ->
-			val totalResult = if (query.isBlank()) {
+			val totalResults = if (query.isBlank()) {
 				searchUseCases.countSearchObjectsUseCase()
 			} else {
 				searchUseCases.countSearchObjectsByNameUseCase(query)
 			}
-			ceil((totalResult / PAGE_SIZE).toDouble()).toInt()
+			Log.d("SearchViewModel", "Query: $query, Total results: $totalResults")
+			val totalPages = if (totalResults > 0) {
+				ceil(totalResults.toDouble() / PAGE_SIZE).toInt()
+			} else {
+				0
+			}
+			totalPages
 		}.flowOn(Dispatchers.IO)
 		.stateIn(
 			scope = viewModelScope,
 			started = SharingStarted.WhileSubscribed(5000),
-			initialValue = 1
+			initialValue = 0  // Zmienione z 1 na 0
 		)
 
 	@OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)

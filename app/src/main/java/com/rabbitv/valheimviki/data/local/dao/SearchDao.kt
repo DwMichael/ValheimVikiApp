@@ -13,7 +13,7 @@ interface SearchDao {
 	@Query(
 		""" SELECT COUNT(search_fts.rowid) FROM search 
 		JOIN search_fts ON search_fts.name == search.name
-        WHERE search_fts.name MATCH :query """
+        WHERE search_fts.name MATCH :query || '*' """
 	)
 	suspend fun countSearchObjectsByName(query: String): Int
 
@@ -25,35 +25,37 @@ interface SearchDao {
 
 	@Query(
 		"""
-        SELECT * FROM search 
-		JOIN search_fts ON search_fts.name == search.name
-        WHERE search_fts.name MATCH :query
-		ORDER BY search.name ASC LIMIT :limit OFFSET :offset
-    """
+           SELECT * FROM search 
+           JOIN search_fts ON search_fts.name == search.name
+           WHERE search_fts.name MATCH :query || '*' 
+           ORDER BY search.name ASC 
+           LIMIT :limit 
+           OFFSET :offset
+        """
 	)
 	fun searchByName(query: String, limit: Int, offset: Int): Flow<List<Search>>
 
-	@Query(
-		"""
-        SELECT * FROM search 
-		JOIN search_fts ON search_fts.description == search.description
-        WHERE search_fts.description MATCH :query
-		ORDER BY search.name ASC LIMIT :limit OFFSET :offset
-    """
-	)
-	fun searchByDescription(query: String, limit: Int, offset: Int): Flow<List<Search>>
+//	@Query(
+//		"""
+//        SELECT * FROM search
+//		JOIN search_fts ON search_fts.description == search.description
+//        WHERE search_fts.description MATCH :query
+//		ORDER BY search.name ASC LIMIT :limit OFFSET :offset
+//    """
+//	)
+//	fun searchByDescription(query: String, limit: Int, offset: Int): Flow<List<Search>>
 
 
-	@Query(
-		"""
-		SELECT DISTINCT search.* FROM search
-		JOIN search_fts ON	(search_fts.name == search.name 
-		AND search_fts.description == search.description)
-		WHERE search_fts.name MATCH :query OR search_fts.description MATCH :query
-		ORDER BY search.name ASC LIMIT :limit OFFSET :offset
-    """
-	)
-	fun searchByNameAndDescription(query: String, limit: Int, offset: Int): Flow<List<Search>>
+//	@Query(
+//		"""
+//		SELECT DISTINCT search.* FROM search
+//		JOIN search_fts ON	(search_fts.name == search.name
+//		AND search_fts.description == search.description)
+//		WHERE search_fts.name MATCH :query OR search_fts.description MATCH :query
+//		ORDER BY search.name ASC LIMIT :limit OFFSET :offset
+//    """
+//	)
+//	fun searchByNameAndDescription(query: String, limit: Int, offset: Int): Flow<List<Search>>
 
 	@Query("DELETE FROM search")
 	suspend fun deleteAllSearchData()

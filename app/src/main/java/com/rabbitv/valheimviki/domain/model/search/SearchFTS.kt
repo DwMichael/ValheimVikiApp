@@ -11,5 +11,5 @@ data class SearchFTS(
 	@ColumnInfo(name = "rowid")
 	@PrimaryKey val rowid: Int,
 	val name: String,
-	val description: String,
+//	val description: String,
 )
