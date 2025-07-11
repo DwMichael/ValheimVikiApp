@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -40,6 +41,7 @@ fun SearchTopBar(
 	searchQuery: String,
 	updateSearchQuery: (query: String) -> Unit,
 ) {
+	val keyboardController = LocalSoftwareKeyboardController.current
 	SearchBar(
 		modifier = modifier
 			.fillMaxWidth()
@@ -51,7 +53,7 @@ fun SearchTopBar(
 			SearchBarDefaults.InputField(
 				query = searchQuery,
 				onQueryChange = updateSearchQuery,
-				onSearch = { },
+				onSearch = { keyboardController?.hide() },
 				expanded = false,
 				onExpandedChange = {},
 				enabled = true,

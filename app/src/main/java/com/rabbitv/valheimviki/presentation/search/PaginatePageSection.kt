@@ -44,7 +44,7 @@ fun PaginatePageSection(
 	val lazyRowState = rememberLazyListState()
 	LaunchedEffect(currentPage) {
 		if (totalPages > 0 && currentPage > 0) {
-			val indexToScroll = (currentPage - 4).coerceAtLeast(0).coerceAtMost(totalPages - 1)
+			val indexToScroll = (currentPage - 3).coerceAtLeast(0).coerceAtMost(totalPages - 1)
 			lazyRowState.animateScrollToItem(indexToScroll)
 		}
 	}
