@@ -77,7 +77,7 @@ class SearchViewModel @Inject constructor(
 		.stateIn(
 			scope = viewModelScope,
 			started = SharingStarted.WhileSubscribed(5000),
-			initialValue = 0  // Zmienione z 1 na 0
+			initialValue = 0
 		)
 
 	@OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
