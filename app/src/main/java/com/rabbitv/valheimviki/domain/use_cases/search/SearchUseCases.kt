@@ -1,5 +1,7 @@
 package com.rabbitv.valheimviki.domain.use_cases.search
 
+import com.rabbitv.valheimviki.domain.use_cases.search.count_search_objects.CountSearchObjectsUseCase
+import com.rabbitv.valheimviki.domain.use_cases.search.count_search_objects_by_name.CountSearchObjectsByNameUseCase
 import com.rabbitv.valheimviki.domain.use_cases.search.delete_all_and_insert.DeleteAllAndInsertNewUseCase
 import com.rabbitv.valheimviki.domain.use_cases.search.get_all_search_objects.GetAllSearchObjectsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.search.search_by_description.SearchByDescriptionUseCase
@@ -7,6 +9,8 @@ import com.rabbitv.valheimviki.domain.use_cases.search.search_by_name.SearchByNa
 import com.rabbitv.valheimviki.domain.use_cases.search.search_by_name_and_description.SearchByNameAndDescriptionUseCase
 
 data class SearchUseCases(
+	val countSearchObjectsByNameUseCase: CountSearchObjectsByNameUseCase,
+	val countSearchObjectsUseCase: CountSearchObjectsUseCase,
 	val getAllSearchObjectsUseCase: GetAllSearchObjectsUseCase,
 	val searchByDescriptionUseCase: SearchByDescriptionUseCase,
 	val searchByNameUseCase: SearchByNameUseCase,

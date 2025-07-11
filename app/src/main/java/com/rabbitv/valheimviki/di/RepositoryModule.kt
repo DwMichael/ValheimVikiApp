@@ -145,6 +145,8 @@ import com.rabbitv.valheimviki.domain.use_cases.relation.get_item_related_by_id.
 import com.rabbitv.valheimviki.domain.use_cases.relation.get_local_relations.GetLocalRelationsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.relation.get_related_ids_for.GetRelatedIdsForUseCase
 import com.rabbitv.valheimviki.domain.use_cases.search.SearchUseCases
+import com.rabbitv.valheimviki.domain.use_cases.search.count_search_objects.CountSearchObjectsUseCase
+import com.rabbitv.valheimviki.domain.use_cases.search.count_search_objects_by_name.CountSearchObjectsByNameUseCase
 import com.rabbitv.valheimviki.domain.use_cases.search.delete_all_and_insert.DeleteAllAndInsertNewUseCase
 import com.rabbitv.valheimviki.domain.use_cases.search.get_all_search_objects.GetAllSearchObjectsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.search.search_by_description.SearchByDescriptionUseCase
@@ -379,6 +381,8 @@ object RepositoryModule {
 	@Singleton
 	fun provideSearchUseCases(searchRepository: SearchRepository): SearchUseCases {
 		return SearchUseCases(
+			countSearchObjectsByNameUseCase = CountSearchObjectsByNameUseCase(searchRepository),
+			countSearchObjectsUseCase = CountSearchObjectsUseCase(searchRepository),
 			getAllSearchObjectsUseCase = GetAllSearchObjectsUseCase(searchRepository),
 			searchByDescriptionUseCase = SearchByDescriptionUseCase(searchRepository),
 			searchByNameUseCase = SearchByNameUseCase(searchRepository),

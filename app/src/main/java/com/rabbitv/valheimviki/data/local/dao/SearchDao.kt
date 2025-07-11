@@ -10,6 +10,15 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SearchDao {
+	@Query(
+		""" SELECT COUNT(search_fts.rowid) FROM search 
+		JOIN search_fts ON search_fts.name == search.name
+        WHERE search_fts.name MATCH :query """
+	)
+	suspend fun countSearchObjectsByName(query: String): Int
+
+	@Query("""SELECT COUNT(rowid) FROM search_fts """)
+	suspend fun countSearchObjects(): Int
 
 	@Query("SELECT * FROM search ORDER BY name ASC LIMIT :limit OFFSET :offset")
 	fun getAllSearchObjects(limit: Int, offset: Int): Flow<List<Search>>
@@ -33,6 +42,7 @@ interface SearchDao {
     """
 	)
 	fun searchByDescription(query: String, limit: Int, offset: Int): Flow<List<Search>>
+
 
 	@Query(
 		"""

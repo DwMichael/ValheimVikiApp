@@ -9,6 +9,14 @@ import javax.inject.Inject
 class SearchRepositoryImpl @Inject constructor(
 	private val searchDao: SearchDao
 ) : SearchRepository {
+	override suspend fun countSearchObjectsByName(query: String): Int {
+		return searchDao.countSearchObjectsByName(query)
+	}
+
+	override suspend fun countSearchObjects(): Int {
+		return searchDao.countSearchObjects()
+	}
+
 	override fun getAllSearchObjects(limit: Int, offset: Int): Flow<List<Search>> {
 		return searchDao.getAllSearchObjects(limit, offset)
 	}

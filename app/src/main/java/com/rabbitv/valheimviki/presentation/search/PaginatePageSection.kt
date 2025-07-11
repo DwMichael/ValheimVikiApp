@@ -18,16 +18,15 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.rabbitv.valheimviki.ui.theme.ICON_CLICK_DIM
 import com.rabbitv.valheimviki.ui.theme.ICON_SIZE
 import com.rabbitv.valheimviki.ui.theme.ICON_SIZE_SECOND
-import com.rabbitv.valheimviki.ui.theme.ICON_SIZE_THIRD
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
@@ -37,15 +36,18 @@ fun PaginatePageSection(
 	modifier: Modifier = Modifier,
 	totalPages: Int,
 	currentPage: Int,
-	hasMorePages: Boolean,
 	loadNextPage: () -> Unit,
 	loadPreviousPage: () -> Unit,
 	loadSpecificPage: (pageNumber: Int) -> Unit,
 ) {
-	val lazyRowState = rememberLazyListState(
-		initialFirstVisibleItemIndex = (currentPage - 2).coerceAtLeast(0)
-	)
 
+	val lazyRowState = rememberLazyListState()
+	LaunchedEffect(currentPage) {
+		if (totalPages > 0 && currentPage > 0) {
+			val indexToScroll = (currentPage - 4).coerceAtLeast(0).coerceAtMost(totalPages - 1)
+			lazyRowState.animateScrollToItem(indexToScroll)
+		}
+	}
 	Row(
 		modifier = modifier
 			.fillMaxWidth()
@@ -55,7 +57,7 @@ fun PaginatePageSection(
 	) {
 		IconButton(
 			onClick = loadPreviousPage,
-			enabled = currentPage > 0,
+			enabled = currentPage > 1,
 			modifier = Modifier.size(ICON_SIZE_SECOND),
 			colors = IconButtonDefaults.iconButtonColors(
 				containerColor = Color.Transparent,
@@ -71,7 +73,9 @@ fun PaginatePageSection(
 		}
 
 		LazyRow(
-			modifier = Modifier.weight(1f).height(35.dp),
+			modifier = Modifier
+				.weight(1f)
+				.height(35.dp),
 			state = lazyRowState,
 			horizontalArrangement = Arrangement.Center,
 			verticalAlignment = Alignment.CenterVertically,
@@ -80,13 +84,14 @@ fun PaginatePageSection(
 		) {
 			items(
 				count = totalPages,
-				key = { page -> page }
-			) { page ->
-				val isSelected = remember(currentPage) { page == currentPage }
+				key = { pageIndex -> pageIndex }
+			) { pageIndex ->
+				val pageNumber = pageIndex + 1
+				val isSelected = remember(currentPage) { pageNumber == currentPage }
 
 				TextButton(
-					onClick = remember(page, currentPage) {
-						{ if (page != currentPage) loadSpecificPage(page) }
+					onClick = remember(pageNumber, currentPage) {
+						{ if (pageNumber != currentPage) loadSpecificPage(pageNumber) }
 					},
 					colors = ButtonDefaults.textButtonColors(
 						contentColor = if (isSelected) PrimaryWhite else PrimaryWhite.copy(alpha = 0.7f),
@@ -94,7 +99,7 @@ fun PaginatePageSection(
 					)
 				) {
 					Text(
-						text = (page + 1).toString(),
+						text = pageNumber.toString(),
 					)
 				}
 			}
@@ -102,7 +107,7 @@ fun PaginatePageSection(
 
 		IconButton(
 			onClick = loadNextPage,
-			enabled = hasMorePages,
+			enabled = currentPage < totalPages,
 			modifier = Modifier.size(ICON_SIZE_SECOND),
 			colors = IconButtonDefaults.iconButtonColors(
 				containerColor = Color.Transparent,
@@ -126,13 +131,11 @@ fun PreviewPaginatePageSectionFirstPage() {
 	ValheimVikiAppTheme {
 		PaginatePageSection(
 			currentPage = 1,
-			hasMorePages = true,
 			loadNextPage = {},
 			loadPreviousPage = {},
 			loadSpecificPage = {},
-			totalPages = 744,
-
-			)
+			totalPages = 10,
+		)
 	}
 }
 
@@ -142,11 +145,10 @@ fun PreviewPaginatePageSectionMiddlePage() {
 	ValheimVikiAppTheme {
 		PaginatePageSection(
 			currentPage = 6,
-			hasMorePages = true,
 			loadNextPage = {},
 			loadPreviousPage = {},
 			loadSpecificPage = {},
-			totalPages = 744
+			totalPages = 10,
 		)
 	}
 }
@@ -156,12 +158,11 @@ fun PreviewPaginatePageSectionMiddlePage() {
 fun PreviewPaginatePageSectionLastPage() {
 	ValheimVikiAppTheme {
 		PaginatePageSection(
-			currentPage = 400,
-			hasMorePages = false,
+			currentPage = 10,
 			loadNextPage = {},
 			loadPreviousPage = {},
 			loadSpecificPage = {},
-			totalPages = 744
+			totalPages = 10,
 		)
 	}
 }
@@ -171,12 +172,11 @@ fun PreviewPaginatePageSectionLastPage() {
 fun PreviewPaginatePageSectionSinglePage() {
 	ValheimVikiAppTheme {
 		PaginatePageSection(
-			currentPage = 0,
-			hasMorePages = false,
+			currentPage = 1,
 			loadNextPage = {},
 			loadPreviousPage = {},
 			loadSpecificPage = {},
-			totalPages = 1
+			totalPages = 1,
 		)
 	}
 }
