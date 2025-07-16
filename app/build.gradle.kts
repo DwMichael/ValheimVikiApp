@@ -109,6 +109,7 @@ dependencies {
 	implementation(libs.androidx.datastore.preferences)
 	implementation(libs.androidx.room.runtime)
 	implementation(libs.room.ktx)
+	implementation(libs.androidx.security.crypto)
 
 	androidTestImplementation(libs.dagger.hilt.android.testing)
 	ksp(libs.androidx.room.compiler)
