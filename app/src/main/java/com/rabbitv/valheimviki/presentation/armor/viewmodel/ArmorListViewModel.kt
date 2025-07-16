@@ -6,8 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.model.armor.Armor
 import com.rabbitv.valheimviki.domain.model.armor.ArmorSubCategory
 import com.rabbitv.valheimviki.domain.model.ui_state.category_state.UiCategoryState
-import com.rabbitv.valheimviki.domain.repository.ArmorRepository
 import com.rabbitv.valheimviki.domain.repository.NetworkConnectivity
+import com.rabbitv.valheimviki.domain.use_cases.armor.ArmorUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,68 +23,64 @@ import javax.inject.Inject
 @Suppress("UNCHECKED_CAST")
 @HiltViewModel
 class ArmorListViewModel @Inject constructor(
-    private val armorRepository: ArmorRepository,
-    private val connectivityObserver: NetworkConnectivity,
+	private val armorUseCases: ArmorUseCases,
+	private val connectivityObserver: NetworkConnectivity,
 ) : ViewModel() {
 
 
-    private val _selectedChip = MutableStateFlow<ArmorSubCategory?>(null)
+	private val _selectedChip = MutableStateFlow<ArmorSubCategory?>(null)
 
 
-    private val _armors: StateFlow<List<Armor>> =
-        combine(
-            armorRepository.getLocalArmors(),
-            _selectedChip,
-        ) { allArmors, chip ->
-            allArmors
-                .filter { chip == null || it.subCategory == chip.toString() }
-                .sortedBy { it.order }
-        }.flowOn(Dispatchers.Default)
-            .stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5000), emptyList())
+	private val _armors: StateFlow<List<Armor>> =
+		combine(
+			armorUseCases.getLocalArmorsUseCase(),
+			_selectedChip,
+		) { allArmors, chip ->
+			allArmors
+				.filter { chip == null || it.subCategory == chip.toString() }
+				.sortedBy { it.order }
+		}.flowOn(Dispatchers.Default)
+			.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5000), emptyList())
 
-    val uiState: StateFlow<UiCategoryState<ArmorSubCategory?, Armor>> = combine(
-        _armors,
-        _selectedChip,
-        connectivityObserver.isConnected.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.Companion.WhileSubscribed(5000),
-            initialValue = false
-        )
-    ) { armors, selectedChip, isConnected ->
-        if (isConnected) {
-            if (armors.isNotEmpty()) {
-                UiCategoryState.Success(selectedChip, armors)
-            } else {
-                UiCategoryState.Loading(selectedChip)
-            }
-        } else {
-            if (armors.isNotEmpty()) {
-                UiCategoryState.Success(selectedChip, armors)
-            } else {
-                UiCategoryState.Error(
-                    selectedChip,
-                    "No internet connection and no local data available. Try to connect to the internet again.",
-                )
-            }
-        }
-    }.onStart {
-        emit(UiCategoryState.Loading(_selectedChip.value))
-    }.catch { e ->
-        Log.e("ArmorListVM", "Error in uiState flow", e)
-        emit(
-            UiCategoryState.Error(
-                _selectedChip.value,
-                e.message ?: "An unknown error occurred"
-            )
-        )
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.Companion.WhileSubscribed(5000),
-        initialValue = UiCategoryState.Loading(_selectedChip.value)
-    )
+	val uiState: StateFlow<UiCategoryState<ArmorSubCategory?, Armor>> = combine(
+		_armors,
+		_selectedChip,
+		connectivityObserver.isConnected
+	) { armors, selectedChip, isConnected ->
+		if (isConnected) {
+			if (armors.isNotEmpty()) {
+				UiCategoryState.Success(selectedChip, armors)
+			} else {
+				UiCategoryState.Loading(selectedChip)
+			}
+		} else {
+			if (armors.isNotEmpty()) {
+				UiCategoryState.Success(selectedChip, armors)
+			} else {
+				UiCategoryState.Error(
+					selectedChip,
+					"No internet connection and no local data available. Try to connect to the internet again.",
+				)
+			}
+		}
+	}.onStart {
+		emit(UiCategoryState.Loading(_selectedChip.value))
+	}.catch { e ->
+		Log.e("ArmorListVM", "Error in uiState flow", e)
+		emit(
+			UiCategoryState.Error(
+				_selectedChip.value,
+				e.message ?: "An unknown error occurred"
+			)
+		)
+	}.stateIn(
+		scope = viewModelScope,
+		started = SharingStarted.Companion.WhileSubscribed(5000),
+		initialValue = UiCategoryState.Loading(_selectedChip.value)
+	)
 
 
-    fun onChipSelected(chip: ArmorSubCategory?) {
-        _selectedChip.value = chip
-    }
+	fun onChipSelected(chip: ArmorSubCategory?) {
+		_selectedChip.value = chip
+	}
 }
