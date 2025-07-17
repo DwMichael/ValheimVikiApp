@@ -19,6 +19,7 @@
     <string name="note" translatable="false">Note</string>
     <string name="fun_fact">Fun Fact</string>
     <string name="heart_icon" translatable="false">Heart Icon</string>
+    <string name="error_no_connection_with_empty_list_message" translatable="true">No internet connection and no local data available. Try to connect to the internet again.</string>
     <string name="hildir_text_first">Hildir has a map table in front of her that leads to various different locations where special dungeons with special minibosses can be fought, and different loot is found. Interacting with the table adds the locations to your map. The locations are:</string>
     <string name="hildir_text_second">Up to three of each type of these locations will generate in each world. The spawning rules for each location type are as follows:</string>
     <string name="hildir_text_fourth">Each of these quest locations is full of loot, enemies, and unique minibosses. Once defeated, these minibosses each drop a quest item:</string>
