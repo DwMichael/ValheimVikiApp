@@ -1,5 +1,6 @@
 package com.rabbitv.valheimviki.di
 
+import android.content.Context
 import com.rabbitv.valheimviki.data.remote.api.ApiArmorService
 import com.rabbitv.valheimviki.data.remote.api.ApiBiomeService
 import com.rabbitv.valheimviki.data.remote.api.ApiBuildingMaterialService
@@ -14,12 +15,15 @@ import com.rabbitv.valheimviki.data.remote.api.ApiRelationsService
 import com.rabbitv.valheimviki.data.remote.api.ApiToolService
 import com.rabbitv.valheimviki.data.remote.api.ApiTreeService
 import com.rabbitv.valheimviki.data.remote.api.ApiWeaponService
+import com.rabbitv.valheimviki.domain.repository.NetworkConnectivity
 import com.rabbitv.valheimviki.domain.use_cases.auth_interceptor.AuthInterceptorUseCase
+import com.rabbitv.valheimviki.domain.use_cases.connection.NetworkConnectivityObserver
 import com.rabbitv.valheimviki.utils.ApiKey
 
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -136,6 +140,14 @@ object NetWorkModule {
 	@Provides
 	fun provideCraftingObjectService(retrofit: Retrofit): ApiCraftingService {
 		return retrofit.create(ApiCraftingService::class.java)
+	}
+
+	@Provides
+	@Singleton
+	fun provideNetworkConnectivityObserver(
+		@ApplicationContext context: Context
+	): NetworkConnectivity {
+		return NetworkConnectivityObserver(context = context)
 	}
 
 }
