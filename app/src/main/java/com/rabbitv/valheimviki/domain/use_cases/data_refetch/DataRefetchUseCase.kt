@@ -34,15 +34,17 @@ import com.rabbitv.valheimviki.domain.repository.ToolRepository
 import com.rabbitv.valheimviki.domain.repository.TreeRepository
 import com.rabbitv.valheimviki.domain.repository.WeaponRepository
 import com.rabbitv.valheimviki.domain.use_cases.datastore.DataStoreUseCases
-import jakarta.inject.Inject
+
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
 import java.io.IOException
 import java.net.UnknownHostException
+import javax.inject.Inject
+import javax.inject.Singleton
 
-
+@Singleton
 class DataRefetchUseCase @Inject constructor(
 	private val biomeRepository: BiomeRepository,
 	private val creatureRepository: CreatureRepository,
@@ -59,7 +61,7 @@ class DataRefetchUseCase @Inject constructor(
 	private val buildingMaterialRepository: BuildingMaterialRepository,
 	private val craftingObjectRepository: CraftingObjectRepository,
 	private val searchRepository: SearchRepository,
-	val dataStoreUseCases: DataStoreUseCases,
+	private val dataStoreUseCases: DataStoreUseCases,
 ) {
 	suspend fun refetchAllData(): DataRefetchResult {
 		return try {

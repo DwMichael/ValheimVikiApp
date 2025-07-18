@@ -84,10 +84,7 @@ class WeaponListViewModelTest {
 
 	@Test
 	fun weaponListViewModel_Initialization_ShouldEmitLoadingState() = runTest {
-		whenever(weaponUseCases.getLocalWeaponsUseCase())
-			.thenReturn(flowOf(emptyList()))
 
-		whenever(connectivityObserver.isConnected).thenReturn(flowOf(true))
 
 		viewModel = WeaponListViewModel(weaponUseCases, connectivityObserver)
 
@@ -128,8 +125,7 @@ class WeaponListViewModelTest {
 
 	@Test
 	fun weaponListViewModel_NoConnectionAndNoCache_ShouldEmitErrorState() = runTest {
-		whenever(weaponUseCases.getLocalWeaponsUseCase())
-			.thenReturn(flowOf(emptyList()))
+
 		whenever(connectivityObserver.isConnected)
 			.thenReturn(flowOf(false))
 

@@ -8,8 +8,9 @@ import com.rabbitv.valheimviki.domain.model.relation.Relation
 import com.rabbitv.valheimviki.domain.repository.RelationRepository
 import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
+import javax.inject.Inject
 
-class RelationRepositoryImpl(
+class RelationRepositoryImpl @Inject constructor(
 	private val apiService: ApiRelationsService,
 	private val relationDao: RelationDao
 ) : RelationRepository {

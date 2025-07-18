@@ -2,12 +2,13 @@ package com.rabbitv.valheimviki.domain.use_cases.crafting_object.get_crafting_ob
 
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingSubCategory
+import javax.inject.Inject
 
-class GetCraftingObjectsBySubCategoryUseCase {
-    operator fun invoke(
-        craftingObjects: List<CraftingObject>,
-        subCategory: CraftingSubCategory
-    ): List<CraftingObject> {
-        return craftingObjects.filter { it.subCategory == subCategory.toString() }
-    }
+class GetCraftingObjectsBySubCategoryUseCase @Inject constructor() {
+	operator fun invoke(
+		craftingObjects: List<CraftingObject>,
+		subCategory: CraftingSubCategory
+	): List<CraftingObject> {
+		return craftingObjects.filter { it.subCategory == subCategory.toString() }
+	}
 }

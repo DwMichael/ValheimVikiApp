@@ -5,8 +5,11 @@ import com.rabbitv.valheimviki.domain.use_cases.crafting_object.get_crafting_obj
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.get_crafting_object_by_sub_category_use_case.GetCraftingObjectsBySubCategoryUseCase
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.get_crafting_objects_by_ids.GetCraftingObjectsByIdsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.get_local_crafting_object_use_case.GetLocalCraftingObjectsUseCase
+import javax.inject.Inject
+import javax.inject.Singleton
 
-data class CraftingObjectUseCases(
+@Singleton
+data class CraftingObjectUseCases @Inject constructor(
 	val getCraftingObjectById: GetCraftingObjectByIdUseCase,
 	val getCraftingObjectsByIds: GetCraftingObjectsByIdsUseCase,
 	val getCraftingObjectByIds: GetCraftingObjectByIdsUseCase,

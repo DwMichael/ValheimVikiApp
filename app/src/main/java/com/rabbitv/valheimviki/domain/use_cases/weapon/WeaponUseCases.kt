@@ -5,8 +5,11 @@ import com.rabbitv.valheimviki.domain.use_cases.weapon.get_weapon_by_id_use_case
 import com.rabbitv.valheimviki.domain.use_cases.weapon.get_weapons_by_ids.GetWeaponsByIdsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.weapon.get_weapons_by_sub_category_use_case.GetWeaponsBySubCategoryUseCase
 import com.rabbitv.valheimviki.domain.use_cases.weapon.get_weapons_by_sub_type_use_case.GetWeaponsBySubTypeUseCase
+import javax.inject.Inject
+import javax.inject.Singleton
 
-data class WeaponUseCases(
+@Singleton
+data class WeaponUseCases @Inject constructor(
 	val getLocalWeaponsUseCase: GetLocalWeaponsUseCase,
 	val getWeaponsByIdsUseCase: GetWeaponsByIdsUseCase,
 	val getWeaponByIdUseCase: GetWeaponByIdUseCase,

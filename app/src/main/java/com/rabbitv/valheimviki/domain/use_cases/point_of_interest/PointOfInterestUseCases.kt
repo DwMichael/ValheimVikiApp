@@ -5,11 +5,14 @@ import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.get_point_of_i
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.get_point_of_interest_by_subcategory.GetPointsOfInterestBySubCategoryUseCase
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.get_point_of_interest_by_subcategory_and_id.GetPointOfInterestBySubCategoryAndIdUseCase
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.get_point_of_interests_by_ids.GetPointsOfInterestByIdsUseCase
+import javax.inject.Inject
+import javax.inject.Singleton
 
-data class PointOfInterestUseCases(
-    val getLocalPointOfInterestUseCase: GetLocalPointOfInterestUseCase,
-    val getPointOfInterestByIdUseCase: GetPointOfInterestByIdUseCase,
-    val getPointsOfInterestBySubCategoryUseCase: GetPointsOfInterestBySubCategoryUseCase,
-    val getPointOfInterestBySubCategoryAndIdUseCase: GetPointOfInterestBySubCategoryAndIdUseCase,
-    val getPointsOfInterestByIdsUseCase: GetPointsOfInterestByIdsUseCase
+@Singleton
+data class PointOfInterestUseCases @Inject constructor(
+	val getLocalPointOfInterestUseCase: GetLocalPointOfInterestUseCase,
+	val getPointOfInterestByIdUseCase: GetPointOfInterestByIdUseCase,
+	val getPointsOfInterestBySubCategoryUseCase: GetPointsOfInterestBySubCategoryUseCase,
+	val getPointOfInterestBySubCategoryAndIdUseCase: GetPointOfInterestBySubCategoryAndIdUseCase,
+	val getPointsOfInterestByIdsUseCase: GetPointsOfInterestByIdsUseCase
 )

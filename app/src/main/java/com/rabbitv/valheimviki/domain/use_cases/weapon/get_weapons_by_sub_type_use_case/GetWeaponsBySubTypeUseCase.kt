@@ -2,9 +2,10 @@ package com.rabbitv.valheimviki.domain.use_cases.weapon.get_weapons_by_sub_type_
 
 import com.rabbitv.valheimviki.domain.model.weapon.Weapon
 import com.rabbitv.valheimviki.domain.model.weapon.WeaponSubType
+import javax.inject.Inject
 
-class GetWeaponsBySubTypeUseCase {
-   operator fun invoke(weapons: List<Weapon>, subType: WeaponSubType): List<Weapon> {
-        return weapons.filter { it.subCategory == subType.toString() }
-    }
+class GetWeaponsBySubTypeUseCase @Inject constructor() {
+	operator fun invoke(weapons: List<Weapon>, subType: WeaponSubType): List<Weapon> {
+		return weapons.filter { it.subCategory == subType.toString() }
+	}
 }

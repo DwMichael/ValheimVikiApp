@@ -5,11 +5,15 @@ import com.rabbitv.valheimviki.domain.use_cases.material.get_material_by_id.GetM
 import com.rabbitv.valheimviki.domain.use_cases.material.get_materials_by_ids.GetMaterialsByIdsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.material.get_materials_by_subcategory.GetMaterialsBySubCategoryUseCase
 import com.rabbitv.valheimviki.domain.use_cases.material.get_materials_by_subcategory_and_subtype.GetMaterialsBySubCategoryAndSubTypeUseCase
+import javax.inject.Inject
+import javax.inject.Singleton
 
-data class MaterialUseCases(
-    val getLocalMaterials: GetLocalMaterialsUseCase,
-    val getMaterialsByIds: GetMaterialsByIdsUseCase,
-    val getMaterialById: GetMaterialByIdUseCase,
-    val getMaterialsBySubCategory: GetMaterialsBySubCategoryUseCase,
-    val getMaterialsBySubCategoryAndSubType: GetMaterialsBySubCategoryAndSubTypeUseCase,
+
+@Singleton
+data class MaterialUseCases @Inject constructor(
+	val getLocalMaterials: GetLocalMaterialsUseCase,
+	val getMaterialsByIds: GetMaterialsByIdsUseCase,
+	val getMaterialById: GetMaterialByIdUseCase,
+	val getMaterialsBySubCategory: GetMaterialsBySubCategoryUseCase,
+	val getMaterialsBySubCategoryAndSubType: GetMaterialsBySubCategoryAndSubTypeUseCase,
 )
