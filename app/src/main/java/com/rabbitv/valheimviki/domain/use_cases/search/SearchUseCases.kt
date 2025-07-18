@@ -7,8 +7,11 @@ import com.rabbitv.valheimviki.domain.use_cases.search.get_all_search_objects.Ge
 import com.rabbitv.valheimviki.domain.use_cases.search.search_by_description.SearchByDescriptionUseCase
 import com.rabbitv.valheimviki.domain.use_cases.search.search_by_name.SearchByNameUseCase
 import com.rabbitv.valheimviki.domain.use_cases.search.search_by_name_and_description.SearchByNameAndDescriptionUseCase
+import javax.inject.Inject
+import javax.inject.Singleton
 
-data class SearchUseCases(
+@Singleton
+data class SearchUseCases @Inject constructor(
 	val countSearchObjectsByNameUseCase: CountSearchObjectsByNameUseCase,
 	val countSearchObjectsUseCase: CountSearchObjectsUseCase,
 	val getAllSearchObjectsUseCase: GetAllSearchObjectsUseCase,

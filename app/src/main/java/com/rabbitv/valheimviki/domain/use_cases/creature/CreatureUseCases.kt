@@ -12,8 +12,11 @@ import com.rabbitv.valheimviki.domain.use_cases.creature.get_main_bosses.GetMain
 import com.rabbitv.valheimviki.domain.use_cases.creature.get_mini_bosses.GetMiniBossesUseCase
 import com.rabbitv.valheimviki.domain.use_cases.creature.get_npcs.GetNPCsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.creature.get_passive_creatures.GetPassiveCreature
+import javax.inject.Inject
+import javax.inject.Singleton
 
-data class CreatureUseCases(
+@Singleton
+data class CreatureUseCases @Inject constructor(
 	val getCreaturesByIds: GetCreaturesByIdsUseCase,
 	val getCreatureById: GetCreatureByIdUseCase,
 	val getCreaturesBySubCategory: GetCreatureBySubCategoryUseCase,

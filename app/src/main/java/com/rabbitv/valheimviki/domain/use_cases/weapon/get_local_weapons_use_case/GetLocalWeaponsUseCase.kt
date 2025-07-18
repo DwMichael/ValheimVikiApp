@@ -8,16 +8,16 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class GetLocalWeaponsUseCase @Inject constructor(
-    val weaponRepository: WeaponRepository
+	private val weaponRepository: WeaponRepository
 ) {
-    operator fun invoke(): Flow<List<Weapon>> {
-        return try {
-            weaponRepository.getLocalWeapons().map { weapon ->
-                weapon.sortedBy { it.order }
-            }
-        } catch (e: Exception) {
-            throw WeaponFetchLocalException("Get local Weapons encounter exception $e")
-        }
+	operator fun invoke(): Flow<List<Weapon>> {
+		return try {
+			weaponRepository.getLocalWeapons().map { weapon ->
+				weapon.sortedBy { it.order }
+			}
+		} catch (e: Exception) {
+			throw WeaponFetchLocalException("Get local Weapons encounter exception $e")
+		}
 
-    }
+	}
 }
