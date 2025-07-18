@@ -9,8 +9,8 @@ import com.rabbitv.valheimviki.domain.repository.NetworkConnectivity
 import com.rabbitv.valheimviki.domain.use_cases.armor.ArmorUseCases
 import com.rabbitv.valheimviki.domain.use_cases.armor.get_armor_by_id.GetArmorByIdUseCase
 import com.rabbitv.valheimviki.domain.use_cases.armor.get_armors_by_ids.GetArmorsByIdsUseCase
-import com.rabbitv.valheimviki.domain.use_cases.armor.get_armors_by_sub_category_use_case.GetArmorsBySubCategoryUseCase
 import com.rabbitv.valheimviki.domain.use_cases.armor.get_local_armors_use_case.GetLocalArmorsUseCase
+import com.rabbitv.valheimviki.presentation.armor.model.ArmorUiEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -56,10 +56,7 @@ class ArmorListViewModelTest {
 
 	@Mock
 	private lateinit var getArmorsByIdsUseCase: GetArmorsByIdsUseCase
-
-	@Mock
-	private lateinit var getArmorsBySubCategoryUseCase: GetArmorsBySubCategoryUseCase
-	private lateinit var viewModel: ArmorListViewModel
+	
 
 	@BeforeEach
 	fun setUp() = runTest {
@@ -73,9 +70,8 @@ class ArmorListViewModelTest {
 			getLocalArmorsUseCase = getLocalArmorsUseCase,
 			getArmorByIdUseCase = getArmorByIdUseCase,
 			getArmorsByIdsUseCase = getArmorsByIdsUseCase,
-			getArmorsBySubCategoryUseCase = getArmorsBySubCategoryUseCase
 		)
-		viewModel = ArmorListViewModel(armorUseCases, connectivityObserver)
+
 	}
 
 
@@ -88,10 +84,10 @@ class ArmorListViewModelTest {
 	@Test
 	fun armorListViewModel_uiState_initialLoading() = runTest {
 
-		val viewModel = ArmorListViewModel(armorUseCases, connectivityObserver)
+		val viewModel = ArmorListViewModel(armorUseCases, connectivityObserver, Dispatchers.IO)
 
 		viewModel.uiState.test {
-			assert(awaitItem() is UIState.Loading)
+			assert(awaitItem().armorsUiState is UIState.Loading)
 		}
 	}
 
@@ -116,14 +112,12 @@ class ArmorListViewModelTest {
 
 		whenever(getLocalArmorsUseCase()).thenReturn(flowOf(fakeArmorList))
 
-		val viewModel = ArmorListViewModel(armorUseCases, connectivityObserver)
+		val viewModel = ArmorListViewModel(armorUseCases, connectivityObserver, Dispatchers.IO)
 
 		viewModel.uiState.test {
-			assert(awaitItem() is UIState.Loading)
+			val result = awaitItem()
 
-			val successState = awaitItem() as UIState.Success
-
-			assertNull(successState.data.selectedChip)
+			assertNull(result.selectedChip)
 			cancelAndIgnoreRemainingEvents()
 		}
 	}
@@ -147,19 +141,19 @@ class ArmorListViewModelTest {
 		}
 		whenever(getLocalArmorsUseCase()).thenReturn(flowOf(fakeArmorList))
 
-		val viewModel = ArmorListViewModel(armorUseCases, connectivityObserver)
+		val viewModel = ArmorListViewModel(armorUseCases, connectivityObserver, Dispatchers.IO)
 
 		viewModel.uiState.test {
-			assert(awaitItem() is UIState.Loading)
+			assert(awaitItem().armorsUiState is UIState.Loading)
 
-			val successState = awaitItem()
+			val result = awaitItem()
 
-			when (successState) {
+			when (result.armorsUiState) {
 				is UIState.Error -> fail("State should not emit error")
 				is UIState.Loading -> fail("State should have transitioned from Loading to Success")
 				is UIState.Success -> {
-					assertNull(successState.data.selectedChip)
-					assertEquals(fakeArmorList, successState.data.armors)
+					assertNull(result.selectedChip)
+					assertEquals(fakeArmorList, result.armorsUiState.data)
 				}
 			}
 
@@ -187,19 +181,19 @@ class ArmorListViewModelTest {
 		}
 		whenever(getLocalArmorsUseCase()).thenReturn(flowOf(fakeArmorList))
 
-		val viewModel = ArmorListViewModel(armorUseCases, connectivityObserver)
+		val viewModel = ArmorListViewModel(armorUseCases, connectivityObserver, Dispatchers.IO)
 
 		viewModel.uiState.test {
-			assert(awaitItem() is UIState.Loading)
+			assert(awaitItem().armorsUiState is UIState.Loading)
 
-			val successState = awaitItem()
+			val result = awaitItem()
 
-			when (successState) {
+			when (result.armorsUiState) {
 				is UIState.Error -> fail("State should not emit error")
 				is UIState.Loading -> fail("State should have transitioned from Loading to Success")
 				is UIState.Success -> {
-					assertNull(successState.data.selectedChip)
-					assertEquals(fakeArmorList, successState.data.armors)
+					assertNull(result.selectedChip)
+					assertEquals(fakeArmorList, result.armorsUiState.data)
 				}
 			}
 
@@ -212,19 +206,19 @@ class ArmorListViewModelTest {
 		runTest {
 			whenever(getLocalArmorsUseCase()).thenReturn(flowOf(emptyList()))
 			whenever(connectivityObserver.isConnected).thenReturn(flowOf(false))
-			val viewModel = ArmorListViewModel(armorUseCases, connectivityObserver)
+			val viewModel = ArmorListViewModel(armorUseCases, connectivityObserver, Dispatchers.IO)
 
 			viewModel.uiState.test {
-				assert(awaitItem() is UIState.Loading)
+				assert(awaitItem().armorsUiState is UIState.Loading)
 
 				val state = awaitItem()
 
 
-				when (state) {
+				when (state.armorsUiState) {
 					is UIState.Error -> {
 						assertEquals(
 							error_no_connection_with_empty_list_message.toString(),
-							state.message
+							state.armorsUiState.message
 						)
 					}
 
@@ -241,11 +235,11 @@ class ArmorListViewModelTest {
 
 		whenever(getLocalArmorsUseCase()).thenReturn(flowOf(emptyList()))
 		whenever(connectivityObserver.isConnected).thenReturn(flowOf(true))
-		val viewModel = ArmorListViewModel(armorUseCases, connectivityObserver)
+		val viewModel = ArmorListViewModel(armorUseCases, connectivityObserver, Dispatchers.IO)
 
 
 		viewModel.uiState.test {
-			assert(awaitItem() is UIState.Loading)
+			assert(awaitItem().armorsUiState is UIState.Loading)
 
 			expectNoEvents()
 		}
@@ -312,19 +306,17 @@ class ArmorListViewModelTest {
 
 
 		whenever(getLocalArmorsUseCase.invoke()).thenReturn(flowOf(fakeArmorList))
-
-
-		viewModel.onChipSelected(ArmorSubCategory.LEG_ARMOR)
+		val viewModel = ArmorListViewModel(armorUseCases, connectivityObserver, Dispatchers.IO)
 
 		viewModel.armors.test {
-			awaitItem()
 
-			viewModel.onChipSelected(ArmorSubCategory.LEG_ARMOR)
+			assertEquals(4, awaitItem().size)
 
-			val result = awaitItem()
-			assertEquals(2, result.size)
-			assertTrue(result.all { it.subCategory == ArmorSubCategory.LEG_ARMOR.toString() })
-			cancelAndIgnoreRemainingEvents()
+			viewModel.onEvent(ArmorUiEvent.ChipSelected(ArmorSubCategory.LEG_ARMOR))
+
+			val filteredList = awaitItem()
+			assertEquals(2, filteredList.size)
+			assertTrue(filteredList.all { it.subCategory == ArmorSubCategory.LEG_ARMOR.toString() })
 		}
 
 	}
@@ -388,7 +380,7 @@ class ArmorListViewModelTest {
 		)
 
 		whenever(getLocalArmorsUseCase.invoke()).thenReturn(flowOf(fakeArmorList))
-
+		val viewModel = ArmorListViewModel(armorUseCases, connectivityObserver, Dispatchers.IO)
 		viewModel.armors.test {
 			val armors = awaitItem()
 			println(armors)
@@ -402,7 +394,7 @@ class ArmorListViewModelTest {
 	fun armorListViewModel_armorsFlow_handlesEmptyArmorList() = runTest {
 
 		whenever(getLocalArmorsUseCase.invoke()).thenReturn(flowOf(emptyList()))
-
+		val viewModel = ArmorListViewModel(armorUseCases, connectivityObserver, Dispatchers.IO)
 		val result = viewModel.armors.first()
 		assertTrue(result.isEmpty())
 	}
@@ -466,7 +458,7 @@ class ArmorListViewModelTest {
 		)
 
 		whenever(getLocalArmorsUseCase.invoke()).thenReturn(flowOf(fakeArmorList))
-
+		val viewModel = ArmorListViewModel(armorUseCases, connectivityObserver, Dispatchers.IO)
 
 		val emissions = mutableListOf<List<Armor>>()
 		val job = launch {
@@ -474,13 +466,13 @@ class ArmorListViewModelTest {
 		}
 
 
-		viewModel.onChipSelected(ArmorSubCategory.LEG_ARMOR)
+		viewModel.onEvent(ArmorUiEvent.ChipSelected(ArmorSubCategory.LEG_ARMOR))
 		advanceUntilIdle()
 
-		viewModel.onChipSelected(ArmorSubCategory.CHEST_ARMOR)
+		viewModel.onEvent(ArmorUiEvent.ChipSelected(ArmorSubCategory.CHEST_ARMOR))
 		advanceUntilIdle()
 
-		viewModel.onChipSelected(null)
+		viewModel.onEvent(ArmorUiEvent.ChipSelected(null))
 		advanceUntilIdle()
 
 		job.cancel()
@@ -499,7 +491,7 @@ class ArmorListViewModelTest {
 	fun armorListViewModel_armorsFlow_handlesUseCaseErrorsGracefully() = runTest {
 		val exception = RuntimeException("Database error")
 		whenever(getLocalArmorsUseCase.invoke()).thenReturn(flow { throw exception })
-
+		val viewModel = ArmorListViewModel(armorUseCases, connectivityObserver, Dispatchers.IO)
 		val result = viewModel.armors.first()
 
 		assertDoesNotThrow { result }
@@ -562,7 +554,7 @@ class ArmorListViewModelTest {
 			)
 		)
 		whenever(getLocalArmorsUseCase.invoke()).thenReturn(flowOf(fakeArmorList))
-
+		val viewModel = ArmorListViewModel(armorUseCases, connectivityObserver, Dispatchers.IO)
 
 		val result = viewModel.armors.first()
 
