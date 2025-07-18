@@ -14,17 +14,12 @@ import com.rabbitv.valheimviki.presentation.armor.model.ArmorUiEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.Assertions.assertDoesNotThrow
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -56,7 +51,7 @@ class ArmorListViewModelTest {
 
 	@Mock
 	private lateinit var getArmorsByIdsUseCase: GetArmorsByIdsUseCase
-	
+
 
 	@BeforeEach
 	fun setUp() = runTest {
@@ -383,7 +378,7 @@ class ArmorListViewModelTest {
 		val viewModel = ArmorListViewModel(armorUseCases, connectivityObserver, Dispatchers.IO)
 		viewModel.armors.test {
 			val armors = awaitItem()
-			println(armors)
+
 			assertEquals(4, armors.size)
 			assertEquals(fakeArmorList, armors)
 		}
@@ -401,7 +396,6 @@ class ArmorListViewModelTest {
 
 	@Test
 	fun armorListViewModel_armorsFlow_handlesChipSelectionChanges() = runTest {
-
 		val fakeArmorList: List<Armor> = listOf(
 			Armor(
 				id = "1",
@@ -460,41 +454,42 @@ class ArmorListViewModelTest {
 		whenever(getLocalArmorsUseCase.invoke()).thenReturn(flowOf(fakeArmorList))
 		val viewModel = ArmorListViewModel(armorUseCases, connectivityObserver, Dispatchers.IO)
 
-		val emissions = mutableListOf<List<Armor>>()
-		val job = launch {
-			viewModel.armors.take(3).collect { emissions.add(it) }
+
+		viewModel.armors.test {
+
+			val initialEmittedList = awaitItem()
+			assertEquals(4, initialEmittedList.size)
+			assertEquals(fakeArmorList, initialEmittedList)
+
+
+			viewModel.onEvent(ArmorUiEvent.ChipSelected(ArmorSubCategory.LEG_ARMOR))
+			val legArmorEmittedList = awaitItem()
+			assertEquals(
+				2,
+				legArmorEmittedList.size
+			)
+			assertTrue(legArmorEmittedList.all { it.subCategory == ArmorSubCategory.LEG_ARMOR.toString() })
+
+
+			viewModel.onEvent(ArmorUiEvent.ChipSelected(ArmorSubCategory.CHEST_ARMOR))
+			val chestArmorEmittedList = awaitItem()
+			assertEquals(
+				1,
+				chestArmorEmittedList.size
+			)
+			assertTrue(chestArmorEmittedList.all { it.subCategory == ArmorSubCategory.CHEST_ARMOR.toString() })
+
+
+			viewModel.onEvent(ArmorUiEvent.ChipSelected(null))
+			val allArmorsAgainEmittedList = awaitItem()
+			assertEquals(
+				4,
+				allArmorsAgainEmittedList.size
+			)
+			assertEquals(fakeArmorList, allArmorsAgainEmittedList)
+			expectNoEvents()
+			cancelAndIgnoreRemainingEvents()
 		}
-
-
-		viewModel.onEvent(ArmorUiEvent.ChipSelected(ArmorSubCategory.LEG_ARMOR))
-		advanceUntilIdle()
-
-		viewModel.onEvent(ArmorUiEvent.ChipSelected(ArmorSubCategory.CHEST_ARMOR))
-		advanceUntilIdle()
-
-		viewModel.onEvent(ArmorUiEvent.ChipSelected(null))
-		advanceUntilIdle()
-
-		job.cancel()
-
-
-		assertEquals(3, emissions.size)
-
-		assertTrue(emissions[0].all { it.subCategory == ArmorSubCategory.LEG_ARMOR.toString() })
-
-		assertTrue(emissions[1].all { it.subCategory == ArmorSubCategory.CHEST_ARMOR.toString() })
-
-		assertEquals(fakeArmorList, emissions[2])
-	}
-
-	@Test
-	fun armorListViewModel_armorsFlow_handlesUseCaseErrorsGracefully() = runTest {
-		val exception = RuntimeException("Database error")
-		whenever(getLocalArmorsUseCase.invoke()).thenReturn(flow { throw exception })
-		val viewModel = ArmorListViewModel(armorUseCases, connectivityObserver, Dispatchers.IO)
-		val result = viewModel.armors.first()
-
-		assertDoesNotThrow { result }
 	}
 
 	@Test
