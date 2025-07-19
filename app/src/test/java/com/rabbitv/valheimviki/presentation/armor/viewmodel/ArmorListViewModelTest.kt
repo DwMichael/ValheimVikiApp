@@ -79,7 +79,7 @@ class ArmorListViewModelTest {
 	@Test
 	fun armorListViewModel_uiState_initialLoading() = runTest {
 
-		val viewModel = ArmorListViewModel(armorUseCases, connectivityObserver, Dispatchers.IO)
+		val viewModel = ArmorListViewModel(armorUseCases, connectivityObserver, Dispatchers.Default)
 
 		viewModel.uiState.test {
 			assert(awaitItem().armorsUiState is UIState.Loading)
@@ -107,7 +107,7 @@ class ArmorListViewModelTest {
 
 		whenever(getLocalArmorsUseCase()).thenReturn(flowOf(fakeArmorList))
 
-		val viewModel = ArmorListViewModel(armorUseCases, connectivityObserver, Dispatchers.IO)
+		val viewModel = ArmorListViewModel(armorUseCases, connectivityObserver, Dispatchers.Default)
 
 		viewModel.uiState.test {
 			val result = awaitItem()
@@ -136,7 +136,7 @@ class ArmorListViewModelTest {
 		}
 		whenever(getLocalArmorsUseCase()).thenReturn(flowOf(fakeArmorList))
 
-		val viewModel = ArmorListViewModel(armorUseCases, connectivityObserver, Dispatchers.IO)
+		val viewModel = ArmorListViewModel(armorUseCases, connectivityObserver, Dispatchers.Default)
 
 		viewModel.uiState.test {
 			assert(awaitItem().armorsUiState is UIState.Loading)
@@ -176,7 +176,7 @@ class ArmorListViewModelTest {
 		}
 		whenever(getLocalArmorsUseCase()).thenReturn(flowOf(fakeArmorList))
 
-		val viewModel = ArmorListViewModel(armorUseCases, connectivityObserver, Dispatchers.IO)
+		val viewModel = ArmorListViewModel(armorUseCases, connectivityObserver, Dispatchers.Default)
 
 		viewModel.uiState.test {
 			assert(awaitItem().armorsUiState is UIState.Loading)
@@ -201,7 +201,8 @@ class ArmorListViewModelTest {
 		runTest {
 			whenever(getLocalArmorsUseCase()).thenReturn(flowOf(emptyList()))
 			whenever(connectivityObserver.isConnected).thenReturn(flowOf(false))
-			val viewModel = ArmorListViewModel(armorUseCases, connectivityObserver, Dispatchers.IO)
+			val viewModel =
+				ArmorListViewModel(armorUseCases, connectivityObserver, Dispatchers.Default)
 
 			viewModel.uiState.test {
 				assert(awaitItem().armorsUiState is UIState.Loading)
@@ -230,7 +231,7 @@ class ArmorListViewModelTest {
 
 		whenever(getLocalArmorsUseCase()).thenReturn(flowOf(emptyList()))
 		whenever(connectivityObserver.isConnected).thenReturn(flowOf(true))
-		val viewModel = ArmorListViewModel(armorUseCases, connectivityObserver, Dispatchers.IO)
+		val viewModel = ArmorListViewModel(armorUseCases, connectivityObserver, Dispatchers.Default)
 
 
 		viewModel.uiState.test {
@@ -301,7 +302,7 @@ class ArmorListViewModelTest {
 
 
 		whenever(getLocalArmorsUseCase.invoke()).thenReturn(flowOf(fakeArmorList))
-		val viewModel = ArmorListViewModel(armorUseCases, connectivityObserver, Dispatchers.IO)
+		val viewModel = ArmorListViewModel(armorUseCases, connectivityObserver, Dispatchers.Default)
 
 		viewModel.armors.test {
 
@@ -375,7 +376,7 @@ class ArmorListViewModelTest {
 		)
 
 		whenever(getLocalArmorsUseCase.invoke()).thenReturn(flowOf(fakeArmorList))
-		val viewModel = ArmorListViewModel(armorUseCases, connectivityObserver, Dispatchers.IO)
+		val viewModel = ArmorListViewModel(armorUseCases, connectivityObserver, Dispatchers.Default)
 		viewModel.armors.test {
 			val armors = awaitItem()
 
@@ -389,7 +390,7 @@ class ArmorListViewModelTest {
 	fun armorListViewModel_armorsFlow_handlesEmptyArmorList() = runTest {
 
 		whenever(getLocalArmorsUseCase.invoke()).thenReturn(flowOf(emptyList()))
-		val viewModel = ArmorListViewModel(armorUseCases, connectivityObserver, Dispatchers.IO)
+		val viewModel = ArmorListViewModel(armorUseCases, connectivityObserver, Dispatchers.Default)
 		val result = viewModel.armors.first()
 		assertTrue(result.isEmpty())
 	}
@@ -452,7 +453,7 @@ class ArmorListViewModelTest {
 		)
 
 		whenever(getLocalArmorsUseCase.invoke()).thenReturn(flowOf(fakeArmorList))
-		val viewModel = ArmorListViewModel(armorUseCases, connectivityObserver, Dispatchers.IO)
+		val viewModel = ArmorListViewModel(armorUseCases, connectivityObserver, Dispatchers.Default)
 
 
 		viewModel.armors.test {
@@ -549,7 +550,7 @@ class ArmorListViewModelTest {
 			)
 		)
 		whenever(getLocalArmorsUseCase.invoke()).thenReturn(flowOf(fakeArmorList))
-		val viewModel = ArmorListViewModel(armorUseCases, connectivityObserver, Dispatchers.IO)
+		val viewModel = ArmorListViewModel(armorUseCases, connectivityObserver, Dispatchers.Default)
 
 		val result = viewModel.armors.first()
 

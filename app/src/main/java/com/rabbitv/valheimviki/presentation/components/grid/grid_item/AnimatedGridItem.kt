@@ -23,7 +23,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -31,8 +30,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.ContentAlpha
 import coil3.compose.AsyncImage
+import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import coil3.size.Scale
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.repository.ItemData
@@ -47,28 +48,26 @@ import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun AnimatedGridItem(
-    item: ItemData,
-    onItemClick: (String) -> Unit,
-    height: Dp,
-    animatedVisibilityScope: AnimatedVisibilityScope
+	item: ItemData,
+	onItemClick: (itemData: ItemData) -> Unit,
+	height: Dp,
+	animatedVisibilityScope: AnimatedVisibilityScope
 ) {
-    val scope = LocalSharedTransitionScope.current
-        ?: error("No SharedTransitionScope")
+	val scope = LocalSharedTransitionScope.current
+		?: error("No SharedTransitionScope")
 
-    with(scope) {
-        val imageState = rememberSharedContentState("image-${item.id}")
-        val surfaceState = rememberSharedContentState("surface-${item.id}")
-        val textState = rememberSharedContentState("text-${item.id}")
-        Box(
-            modifier = Modifier
+	with(scope) {
+		val imageState = rememberSharedContentState("image-${item.id}")
+		val surfaceState = rememberSharedContentState("surface-${item.id}")
+		val textState = rememberSharedContentState("text-${item.id}")
+		Box(
+			modifier = Modifier
                 .height(height)
-                .clickable {
-                    onItemClick(item.id)
-                },
-            contentAlignment = Alignment.BottomStart
-        ) {
-            AsyncImage(
-                modifier = Modifier
+                .clickable { onItemClick(item) },
+			contentAlignment = Alignment.BottomStart
+		) {
+			AsyncImage(
+				modifier = Modifier
                     .sharedElement(
                         sharedContentState = imageState,
                         animatedVisibilityScope = animatedVisibilityScope,
@@ -76,20 +75,23 @@ fun AnimatedGridItem(
                     )
                     .fillMaxSize()
                     .clip(RoundedCornerShape(MEDIUM_PADDING)),
-                model = ImageRequest.Builder(context = LocalContext.current)
-                    .data(item.imageUrl)
-                    .placeholderMemoryCacheKey("image--$item.id")
-                    .memoryCacheKey("image--$item.id")
-                    .crossfade(true)
-                    .build(),
-                error = painterResource(R.drawable.ic_placeholder),
-                placeholder = painterResource(R.drawable.ic_placeholder),
-                contentDescription = stringResource(R.string.item_grid_image),
-                contentScale = ContentScale.Crop,
-            )
+				model = ImageRequest.Builder(context = LocalContext.current)
+					.data(item.imageUrl)
+					.memoryCacheKey(item.id)
+					.diskCacheKey(item.id)
+					.placeholderMemoryCacheKey(item.id)
+					.size(400)
+					.crossfade(true)
+					.scale(Scale.FILL)
+					.memoryCachePolicy(CachePolicy.ENABLED)
+					.diskCachePolicy(CachePolicy.ENABLED)
+					.build(),
+				contentDescription = stringResource(R.string.item_grid_image),
+				contentScale = ContentScale.Crop,
+			)
 
-            Surface(
-                modifier = Modifier
+			Surface(
+				modifier = Modifier
                     .sharedElement(
                         sharedContentState = surfaceState,
                         animatedVisibilityScope = animatedVisibilityScope,
@@ -103,27 +105,28 @@ fun AnimatedGridItem(
                             bottomEnd = SMALL_PADDING
                         )
                     ),
-                tonalElevation = 0.dp,
-                color = Color.Black.copy(alpha = ContentAlpha.medium),
-            ) {
-                Text(
-                    modifier = Modifier
+				tonalElevation = 0.dp,
+				color = Color.Black.copy(alpha = ContentAlpha.medium),
+			) {
+				Text(
+					modifier = Modifier
                         .padding
                             (horizontal = 8.dp)
                         .sharedBounds(
                             sharedContentState = textState,
                             placeHolderSize = animatedSize,
                             animatedVisibilityScope = animatedVisibilityScope,
-                        ).skipToLookaheadSize()
+                        )
+                        .skipToLookaheadSize()
                         .wrapContentHeight(align = Alignment.CenterVertically),
-                    text = item.name,
-                    color = PrimaryWhite,
-                    style = MaterialTheme.typography.headlineSmall,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
-        }
-    }
+					text = item.name,
+					color = PrimaryWhite,
+					style = MaterialTheme.typography.headlineSmall,
+					overflow = TextOverflow.Ellipsis,
+				)
+			}
+		}
+	}
 }
 
 
@@ -131,23 +134,23 @@ fun AnimatedGridItem(
 @Composable
 private fun PreviewGridItem() {
 
-    val item = Biome(
-        id = "123",
-        category = "BIOME",
-        imageUrl = "https://i.redd.it/l6vyacdepct71.jpg",
-        name = "TestImagesasdasdasdassdas dasdasdasdasdasd",
-        description = "ImageTest",
-        order = 1
-    )
-    ValheimVikiAppTheme {
-        AnimatedVisibility(true) {
-            AnimatedGridItem(
-                item = item,
-                onItemClick = { _ -> },
-                height = ITEM_HEIGHT_TWO_COLUMNS,
-                animatedVisibilityScope = this,
-            )
-        }
-    }
+	val item = Biome(
+		id = "123",
+		category = "BIOME",
+		imageUrl = "https://i.redd.it/l6vyacdepct71.jpg",
+		name = "TestImagesasdasdasdassdas dasdasdasdasdasd",
+		description = "ImageTest",
+		order = 1
+	)
+	ValheimVikiAppTheme {
+		AnimatedVisibility(true) {
+			AnimatedGridItem(
+				item = item,
+				onItemClick = { _ -> },
+				height = ITEM_HEIGHT_TWO_COLUMNS,
+				animatedVisibilityScope = this,
+			)
+		}
+	}
 
 }

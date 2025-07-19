@@ -24,14 +24,13 @@ import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_TWO_COLUMNS
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
-private const val boundsAnimationDurationMillis = 500
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DefaultGrid(
 	modifier: Modifier,
 	items: List<ItemData>,
-	onItemClick: (String) -> Unit,
+	onItemClick: (itemData: ItemData) -> Unit,
 	numbersOfColumns: Int,
 	height: Dp,
 	animatedVisibilityScope: AnimatedVisibilityScope,
@@ -46,7 +45,11 @@ fun DefaultGrid(
 		modifier = Modifier.clipToBounds(),
 		contentPadding = PaddingValues(bottom = 70.dp),
 	) {
-		items(items, key = { item -> "${item.id}-${item.name}" }) { item ->
+		items(
+			items = items,
+			key = { item -> item.id },
+			contentType = { item -> item.category }
+		) { item ->
 			AnimatedGridItem(
 				item = item,
 				onItemClick = onItemClick,

@@ -5,6 +5,7 @@ import com.rabbitv.valheimviki.domain.model.category.AppCategory
 import com.rabbitv.valheimviki.domain.model.food.FoodSubCategory
 import com.rabbitv.valheimviki.domain.model.mead.MeadSubCategory
 import com.rabbitv.valheimviki.domain.repository.ItemData
+import com.rabbitv.valheimviki.utils.toAppCategory
 import com.rabbitv.valheimviki.utils.toFoodSubCategory
 import com.rabbitv.valheimviki.utils.toMeadSubCategory
 import kotlinx.serialization.Serializable
@@ -383,6 +384,16 @@ object NavigationHelper {
 			AppCategory.POINTOFINTEREST -> WorldDetailDestination.PointOfInterestDetail(itemData.id)
 			AppCategory.TREE -> WorldDetailDestination.TreeDetail(itemData.id)
 			AppCategory.OREDEPOSITE -> WorldDetailDestination.OreDepositDetail(itemData.id)
+		}
+	}
+
+	fun createItemDetailClickHandler(onItemClick: (destination: DetailDestination) -> Unit): (ItemData) -> Unit {
+		return { itemData: ItemData ->
+			val destination = routeToDetailScreen(
+				itemData = itemData,
+				appCategory = itemData.category.toAppCategory()
+			)
+			onItemClick(destination)
 		}
 	}
 }

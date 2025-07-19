@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -25,7 +26,6 @@ import com.composables.icons.lucide.Axe
 import com.composables.icons.lucide.Blend
 import com.composables.icons.lucide.Lucide
 import com.rabbitv.valheimviki.R
-import com.rabbitv.valheimviki.domain.model.armor.Armor
 import com.rabbitv.valheimviki.domain.model.armor.ArmorSubCategory
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.navigation.DetailDestination
@@ -58,12 +58,12 @@ fun ArmorListScreen(
 	paddingValues: PaddingValues,
 	viewModel: ArmorListViewModel = hiltViewModel()
 ) {
-	val armorListUiState by viewModel.uiState.collectAsStateWithLifecycle()
+	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 	val onChipSelected =
 		{ chip: ArmorSubCategory? -> viewModel.onEvent(ArmorUiEvent.ChipSelected(chip)) }
 
 	ArmorListStateRenderer(
-		armorListUiState = armorListUiState,
+		uiState = uiState,
 		onChipSelected = onChipSelected,
 		paddingValues = paddingValues,
 		modifier = modifier,
@@ -75,7 +75,7 @@ fun ArmorListScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ArmorListStateRenderer(
-	armorListUiState: ArmorListUiState,
+	uiState: ArmorListUiState,
 	onChipSelected: (ArmorSubCategory?) -> Unit,
 	paddingValues: PaddingValues,
 	modifier: Modifier,
@@ -91,7 +91,7 @@ fun ArmorListStateRenderer(
 	) {
 
 		ArmorListDisplay(
-			armorListUiState = armorListUiState,
+			uiState = uiState,
 			onChipSelected = onChipSelected,
 			onItemClick = onItemClick
 		)
@@ -101,7 +101,7 @@ fun ArmorListStateRenderer(
 
 @Composable
 fun ArmorListDisplay(
-	armorListUiState: ArmorListUiState,
+	uiState: ArmorListUiState,
 	onChipSelected: (ArmorSubCategory?) -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
 ) {
@@ -112,9 +112,9 @@ fun ArmorListDisplay(
 	) {
 		SearchFilterBar(
 			chips = getChipsForCategory(),
-			selectedOption = armorListUiState.selectedChip,
+			selectedOption = uiState.selectedChip,
 			onSelectedChange = { _, subCategory ->
-				if (armorListUiState.selectedChip == subCategory) {
+				if (uiState.selectedChip == subCategory) {
 					onChipSelected(null)
 				} else {
 					onChipSelected(subCategory)
@@ -123,12 +123,12 @@ fun ArmorListDisplay(
 			modifier = Modifier,
 		)
 		Spacer(Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp, vertical = 5.dp))
-		when (armorListUiState.armorsUiState) {
-			is UIState.Error -> EmptyScreen(errorMessage = armorListUiState.armorsUiState.message)
+		when (uiState.armorsUiState) {
+			is UIState.Error -> EmptyScreen(errorMessage = stringResource(id = uiState.armorsUiState.message.toInt()))
 			is UIState.Loading -> ShimmerListEffect()
 			is UIState.Success -> {
 				ListContent(
-					items = armorListUiState.armorsUiState.data,
+					items = uiState.armorsUiState.data,
 					clickToNavigate = { itemData ->
 						val destination = NavigationHelper.routeToDetailScreen(
 							itemData,
@@ -231,13 +231,12 @@ fun PreviewCustomElevatedFilterChipNotSelected() {
 fun PreviewWeaponListStateRenderer() {
 	ValheimVikiAppTheme {
 		ArmorListStateRenderer(
-			armorListUiState =  ArmorListUiState(
+			uiState = ArmorListUiState(
 				selectedChip = ArmorSubCategory.CAPE,
 				armorsUiState = UIState.Success(
 					data = FakeData.fakeArmorList(),
 				),
-			)
-			,
+			),
 			paddingValues = PaddingValues(),
 			modifier = Modifier,
 			onChipSelected = {},

@@ -120,14 +120,9 @@ fun FavoriteScreenContent(
 			)
 		}
 	}
+
 	val handleFavoriteItemClick = remember {
-		{ itemData: ItemData ->
-			val destination = NavigationHelper.routeToDetailScreen(
-				itemData = itemData,
-				appCategory = itemData.category.toAppCategory()
-			)
-			onItemClick(destination)
-		}
+		NavigationHelper.createItemDetailClickHandler(onItemClick)
 	}
 
 	val typeOfItemGrid = remember {
@@ -233,9 +228,7 @@ fun FavoriteScreenContent(
 									onItemClick = handleFavoriteItemClick,
 									height = ITEM_HEIGHT_TWO_COLUMNS,
 								)
-
 							}
-
 						}
 					}
 				}
