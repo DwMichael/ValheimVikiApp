@@ -31,8 +31,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.ContentAlpha
 import coil3.compose.AsyncImage
+import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import coil3.size.Scale
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.repository.ItemData
@@ -48,7 +50,7 @@ import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 @Composable
 fun AnimatedGridItem(
     item: ItemData,
-    onItemClick: (String) -> Unit,
+    onItemClick: (itemData: ItemData) -> Unit,
     height: Dp,
     animatedVisibilityScope: AnimatedVisibilityScope
 ) {
@@ -62,9 +64,7 @@ fun AnimatedGridItem(
         Box(
             modifier = Modifier
                 .height(height)
-                .clickable {
-                    onItemClick(item.id)
-                },
+                .clickable { onItemClick(item) },
             contentAlignment = Alignment.BottomStart
         ) {
             AsyncImage(
@@ -78,12 +78,15 @@ fun AnimatedGridItem(
                     .clip(RoundedCornerShape(MEDIUM_PADDING)),
                 model = ImageRequest.Builder(context = LocalContext.current)
                     .data(item.imageUrl)
-                    .placeholderMemoryCacheKey("image--$item.id")
-                    .memoryCacheKey("image--$item.id")
+                    .memoryCacheKey(item.id)
+                    .diskCacheKey(item.id)
+                    .placeholderMemoryCacheKey(item.id)
+                    .size(400)
                     .crossfade(true)
+                    .scale(Scale.FILL)
+                    .memoryCachePolicy(CachePolicy.ENABLED)
+                    .diskCachePolicy(CachePolicy.ENABLED)
                     .build(),
-                error = painterResource(R.drawable.ic_placeholder),
-                placeholder = painterResource(R.drawable.ic_placeholder),
                 contentDescription = stringResource(R.string.item_grid_image),
                 contentScale = ContentScale.Crop,
             )
