@@ -153,7 +153,6 @@ class BiomeGridViewModelTest {
 
 			viewModel.uiState.test {
 				assert(awaitItem() is UIState.Loading)
-
 				val state = awaitItem()
 
 
