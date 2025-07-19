@@ -48,7 +48,11 @@ class ArmorListViewModel @Inject constructor(
 	val uiState: StateFlow<ArmorListUiState> = combine(
 		armors,
 		_selectedChip,
-		connectivityObserver.isConnected
+		connectivityObserver.isConnected.stateIn(
+			scope = viewModelScope,
+			started = SharingStarted.WhileSubscribed(5000),
+			initialValue = false
+		)
 	) { armors, selectedChip, isConnected ->
 		when {
 			armors.isNotEmpty() -> ArmorListUiState(

@@ -20,14 +20,18 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class BiomeGridScreenViewModel @Inject constructor(
+class BiomeGridViewModel @Inject constructor(
 	val biomeUseCases: BiomeUseCases,
 	val connectivityObserver: NetworkConnectivity,
 ) : ViewModel() {
 
-	val biomeUiListState: StateFlow<UIState<List<Biome>>> = combine(
+	val uiState: StateFlow<UIState<List<Biome>>> = combine(
 		biomeUseCases.getLocalBiomesUseCase(),
-		connectivityObserver.isConnected,
+		connectivityObserver.isConnected.stateIn(
+			scope = viewModelScope,
+			started = SharingStarted.WhileSubscribed(5000),
+			initialValue = false
+		),
 	) { biomes, isConnected ->
 		when {
 			biomes.isNotEmpty() -> UIState.Success(biomes)

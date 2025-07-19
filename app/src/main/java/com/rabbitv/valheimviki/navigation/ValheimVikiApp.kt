@@ -65,7 +65,7 @@ import com.composables.icons.lucide.Trees
 import com.composables.icons.lucide.Utensils
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.presentation.armor.ArmorListScreen
-import com.rabbitv.valheimviki.presentation.biome.BiomeScreen
+import com.rabbitv.valheimviki.presentation.biome.BiomeGridScreen
 import com.rabbitv.valheimviki.presentation.building_material.BuildingMaterialCategoryScreen
 import com.rabbitv.valheimviki.presentation.building_material.BuildingMaterialListScreen
 import com.rabbitv.valheimviki.presentation.building_material.viewmodel.BuildingMaterialListViewModel
@@ -288,7 +288,7 @@ fun ValheimNavGraph(
 		}
 
 		composable<GridDestination.WorldDestinations.BiomeGrid> {
-			BiomeScreen(
+			BiomeGridScreen(
 				modifier = Modifier.padding(10.dp),
 				onItemClick = { destination ->
 					val currentTime = System.currentTimeMillis()
