@@ -66,22 +66,24 @@ class ArmorListViewModel @Inject constructor(
 				armorsUiState = UIState.Error(error_no_connection_with_empty_list_message.toString())
 			)
 		}
-	}.catch { e ->
-		Log.e("ArmorListVM", "Error in uiState flow", e)
-		emit(
-			ArmorListUiState(
-				selectedChip = _selectedChip.value,
-				armorsUiState = UIState.Error(e.message ?: "An unknown error occurred")
+	}
+		.onCompletion { error -> println("Error -> ${error?.message}") }
+		.catch { e ->
+			Log.e("ArmorListVM", "Error in uiState flow", e)
+			emit(
+				ArmorListUiState(
+					selectedChip = _selectedChip.value,
+					armorsUiState = UIState.Error(e.message ?: "An unknown error occurred")
+				)
+			)
+		}.stateIn(
+			scope = viewModelScope,
+			started = SharingStarted.WhileSubscribed(5000),
+			initialValue = ArmorListUiState(
+				selectedChip = null,
+				armorsUiState = UIState.Loading
 			)
 		)
-	}.stateIn(
-		scope = viewModelScope,
-		started = SharingStarted.WhileSubscribed(5000),
-		initialValue = ArmorListUiState(
-			selectedChip = null,
-			armorsUiState = UIState.Loading
-		)
-	)
 
 
 	fun onEvent(event: ArmorUiEvent) {
