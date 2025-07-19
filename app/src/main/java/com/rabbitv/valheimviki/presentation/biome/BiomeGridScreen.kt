@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
@@ -17,12 +18,16 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
+import com.rabbitv.valheimviki.domain.repository.ItemData
+import com.rabbitv.valheimviki.navigation.DetailDestination
+import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.biome.viewmodel.BiomeGridScreenViewModel
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.grid.grid_category.DefaultGrid
 import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerGridEffect
 import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_TWO_COLUMNS
 import com.rabbitv.valheimviki.utils.Constants.BIOME_GRID_COLUMNS
+import com.rabbitv.valheimviki.utils.toAppCategory
 import kotlinx.coroutines.FlowPreview
 
 
@@ -30,14 +35,16 @@ import kotlinx.coroutines.FlowPreview
 @Composable
 fun BiomeScreen(
 	modifier: Modifier,
-	onItemClick: (String) -> Unit,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	paddingValues: PaddingValues,
 	viewModel: BiomeGridScreenViewModel = hiltViewModel(),
 	animatedVisibilityScope: AnimatedVisibilityScope
 ) {
 	val biomeUiListState: UIState<List<Biome>> by viewModel.biomeUiListState.collectAsStateWithLifecycle()
 	val lazyGridState = rememberLazyGridState()
-
+	val handleItemClick = remember {
+		NavigationHelper.createItemDetailClickHandler(onItemClick)
+	}
 	Box(
 		modifier = modifier
 	) {
@@ -58,7 +65,7 @@ fun BiomeScreen(
 				is UIState.Success -> DefaultGrid(
 					modifier = Modifier,
 					items = state.data,
-					onItemClick = onItemClick,
+					onItemClick = handleItemClick,
 					numbersOfColumns = BIOME_GRID_COLUMNS,
 					height = ITEM_HEIGHT_TWO_COLUMNS,
 					animatedVisibilityScope = animatedVisibilityScope,
