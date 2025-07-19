@@ -35,7 +35,7 @@ class MobListViewModel @Inject constructor(
 
 
 	@OptIn(ExperimentalCoroutinesApi::class)
-	private val _creaturesBySelectedSubCat: Flow<List<Creature>> =
+	internal val creaturesBySelectedSubCat: Flow<List<Creature>> =
 		_selectedSubCategory
 			.flatMapLatest { subCat ->
 				creatureUseCases.getCreaturesBySubCategory(subCat)
@@ -47,7 +47,7 @@ class MobListViewModel @Inject constructor(
 
 
 	val mobUiState: StateFlow<MobListUiState> = combine(
-		_creaturesBySelectedSubCat,
+		creaturesBySelectedSubCat,
 		connectivityObserver.isConnected.stateIn(
 			scope = viewModelScope,
 			started = SharingStarted.Companion.WhileSubscribed(5000),

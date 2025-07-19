@@ -24,11 +24,7 @@ class BossesGridViewModel @Inject constructor(
 ) : ViewModel() {
 
 	val mainBossUiListState: StateFlow<UIState<List<MainBoss>>> = combine(
-		creatureUseCases.getMainBossesUseCase()
-			.catch { e ->
-				Log.e("BossScreenVM", "getLocalCreaturesUseCase failed in combine", e)
-				emit(emptyList())
-			},
+		creatureUseCases.getMainBossesUseCase(),
 		connectivityObserver.isConnected.stateIn(
 			scope = viewModelScope,
 			started = SharingStarted.Companion.WhileSubscribed(5000),
