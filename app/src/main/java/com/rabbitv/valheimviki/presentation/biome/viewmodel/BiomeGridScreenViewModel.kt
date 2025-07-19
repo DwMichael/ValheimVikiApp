@@ -20,9 +20,9 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class BiomeScreenViewModel @Inject constructor(
-	private val biomeUseCases: BiomeUseCases,
-	private val connectivityObserver: NetworkConnectivity,
+class BiomeGridScreenViewModel @Inject constructor(
+	val biomeUseCases: BiomeUseCases,
+	val connectivityObserver: NetworkConnectivity,
 ) : ViewModel() {
 
 	val biomeUiListState: StateFlow<UIState<List<Biome>>> = combine(
