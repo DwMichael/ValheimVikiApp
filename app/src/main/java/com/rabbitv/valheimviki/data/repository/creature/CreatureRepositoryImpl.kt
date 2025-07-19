@@ -2,15 +2,18 @@ package com.rabbitv.valheimviki.data.repository.creature
 
 import com.rabbitv.valheimviki.data.local.dao.CreatureDao
 import com.rabbitv.valheimviki.data.remote.api.ApiCreatureService
+import com.rabbitv.valheimviki.di.qualifiers.IoDispatcher
 import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.repository.CreatureRepository
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 import javax.inject.Inject
 
 class CreatureRepositoryImpl @Inject constructor(
 	private val apiService: ApiCreatureService,
-	private val creatureDao: CreatureDao
+	private val creatureDao: CreatureDao,
+	@param:IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : CreatureRepository {
 
 
