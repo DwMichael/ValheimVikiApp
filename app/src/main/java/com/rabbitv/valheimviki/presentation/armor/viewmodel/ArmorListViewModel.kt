@@ -26,7 +26,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
-@Suppress("UNCHECKED_CAST")
+
 @HiltViewModel
 class ArmorListViewModel @Inject constructor(
 	private val armorUseCases: ArmorUseCases,
@@ -51,7 +51,7 @@ class ArmorListViewModel @Inject constructor(
 		connectivityObserver.isConnected.stateIn(
 			scope = viewModelScope,
 			started = SharingStarted.WhileSubscribed(5000),
-			initialValue = false
+			initialValue = true
 		)
 	) { armors, selectedChip, isConnected ->
 		when {

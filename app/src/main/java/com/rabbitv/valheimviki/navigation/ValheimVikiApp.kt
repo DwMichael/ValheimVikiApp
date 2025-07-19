@@ -73,8 +73,8 @@ import com.rabbitv.valheimviki.presentation.components.DrawerItem
 import com.rabbitv.valheimviki.presentation.components.NavigationDrawer
 import com.rabbitv.valheimviki.presentation.components.topbar.MainAppBar
 import com.rabbitv.valheimviki.presentation.crafting.CraftingListScreen
-import com.rabbitv.valheimviki.presentation.creatures.bosses.BossScreen
-import com.rabbitv.valheimviki.presentation.creatures.mini_bosses.MiniBossScreen
+import com.rabbitv.valheimviki.presentation.creatures.bosses.BossGridScreen
+import com.rabbitv.valheimviki.presentation.creatures.mini_bosses.MiniBossesGridScreen
 import com.rabbitv.valheimviki.presentation.creatures.mob_list.MobListScreen
 import com.rabbitv.valheimviki.presentation.detail.armor.ArmorDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.biome.BiomeDetailScreen
@@ -308,7 +308,7 @@ fun ValheimNavGraph(
 		}
 
 		composable<GridDestination.CreatureDestinations.BossGrid> {
-			BossScreen(
+			BossGridScreen(
 				modifier = Modifier.padding(10.dp),
 				onItemClick = { destination ->
 					val currentTime = System.currentTimeMillis()
@@ -327,7 +327,7 @@ fun ValheimNavGraph(
 			)
 		}
 		composable<GridDestination.CreatureDestinations.MiniBossGrid> {
-			MiniBossScreen(
+			MiniBossesGridScreen(
 				modifier = Modifier.padding(10.dp),
 				onItemClick = { destination ->
 					val currentTime = System.currentTimeMillis()

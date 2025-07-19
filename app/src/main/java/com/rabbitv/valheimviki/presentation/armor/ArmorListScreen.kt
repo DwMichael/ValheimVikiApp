@@ -10,6 +10,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,7 +43,6 @@ import com.rabbitv.valheimviki.presentation.components.shimmering_effect.Shimmer
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
-import com.rabbitv.valheimviki.utils.toAppCategory
 
 
 class ArmorChip(
@@ -106,7 +106,9 @@ fun ArmorListDisplay(
 	onItemClick: (destination: DetailDestination) -> Unit,
 ) {
 	val lazyListState = rememberLazyListState()
-
+	val handleItemClick = remember {
+		NavigationHelper.createItemDetailClickHandler(onItemClick)
+	}
 	Column(
 		horizontalAlignment = Alignment.Start
 	) {
@@ -129,13 +131,7 @@ fun ArmorListDisplay(
 			is UIState.Success -> {
 				ListContent(
 					items = uiState.armorsUiState.data,
-					clickToNavigate = { itemData ->
-						val destination = NavigationHelper.routeToDetailScreen(
-							itemData,
-							itemData.category.toAppCategory()
-						)
-						onItemClick(destination)
-					},
+					clickToNavigate = handleItemClick,
 					lazyListState = lazyListState,
 					imageScale = ContentScale.Fit,
 					horizontalPadding = 0.dp
