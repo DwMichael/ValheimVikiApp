@@ -5,18 +5,14 @@ import com.rabbitv.valheimviki.domain.model.creature.CreatureSubCategory
 import com.rabbitv.valheimviki.domain.model.creature.mini_boss.MiniBoss
 import com.rabbitv.valheimviki.domain.repository.CreatureRepository
 import jakarta.inject.Inject
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 
 class GetMiniBossesUseCase @Inject constructor(private val creatureRepository: CreatureRepository) {
-    @OptIn(ExperimentalCoroutinesApi::class)
-    operator fun invoke(): Flow<List<MiniBoss>> {
-        val creatureSubCategory = CreatureSubCategory.MINI_BOSS
-        return creatureRepository.getCreaturesBySubCategory(creatureSubCategory.toString())
-            .map { mainBosses -> mainBosses.toMiniBosses().sortedBy { it.order } }
-            .flowOn(Dispatchers.IO)
-    }
+	operator fun invoke(): Flow<List<MiniBoss>> {
+		val creatureSubCategory = CreatureSubCategory.MINI_BOSS
+		return creatureRepository.getCreaturesBySubCategory(creatureSubCategory.toString())
+			.map { mainBosses -> mainBosses.toMiniBosses().sortedBy { it.order } }
+
+	}
 }
