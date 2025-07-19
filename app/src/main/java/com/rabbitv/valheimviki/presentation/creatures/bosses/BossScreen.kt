@@ -22,9 +22,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
 import com.rabbitv.valheimviki.domain.model.ui_state.default_list_state.UiListState
-import com.rabbitv.valheimviki.domain.repository.ItemData
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
@@ -39,46 +38,46 @@ import kotlinx.coroutines.FlowPreview
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class, FlowPreview::class)
 @Composable
 fun BossScreen(
-    modifier: Modifier,
-    onItemClick: (destination: DetailDestination) -> Unit,
-    paddingValues: PaddingValues,
-    viewModel: BossesViewModel = hiltViewModel(),
-    animatedVisibilityScope: AnimatedVisibilityScope
+	modifier: Modifier,
+	onItemClick: (destination: DetailDestination) -> Unit,
+	paddingValues: PaddingValues,
+	viewModel: BossesViewModel = hiltViewModel(),
+	animatedVisibilityScope: AnimatedVisibilityScope
 ) {
 
-    val mainBossUiListState: UiListState<MainBoss> by viewModel.mainBossUiListState.collectAsStateWithLifecycle()
-    val lazyGridState = rememberLazyGridState()
-    val handleItemClick = remember {
-        NavigationHelper.createItemDetailClickHandler(onItemClick)
-    }
+	val uiState by viewModel.mainBossUiListState.collectAsStateWithLifecycle()
+	val lazyGridState = rememberLazyGridState()
+	val handleItemClick = remember {
+		NavigationHelper.createItemDetailClickHandler(onItemClick)
+	}
 
 
-    Box(
-        modifier = modifier
-    ) {
-        Surface(
-            color = Color.Transparent,
-            modifier = Modifier
+	Box(
+		modifier = modifier
+	) {
+		Surface(
+			color = Color.Transparent,
+			modifier = Modifier
                 .testTag("BossSurface")
                 .fillMaxSize()
                 .padding(paddingValues)
-        ) {
-            when (val state = mainBossUiListState) {
-                is UiListState.Loading -> ShimmerGridEffect()
-                is UiListState.Error -> EmptyScreen(errorMessage = state.message)
-                is UiListState.Success -> DefaultGrid(
-                    modifier = Modifier,
-                    items = state.list,
-                    onItemClick = handleItemClick,
-                    numbersOfColumns = BIOME_GRID_COLUMNS,
-                    height = ITEM_HEIGHT_TWO_COLUMNS,
-                    animatedVisibilityScope = animatedVisibilityScope,
-                    lazyGridState = lazyGridState,
-                )
+		) {
+			when (val state = uiState) {
+				is UIState.Loading -> ShimmerGridEffect()
+				is UIState.Error -> EmptyScreen(errorMessage = state.message)
+				is UIState.Success -> DefaultGrid(
+					modifier = Modifier,
+					items = state.data,
+					onItemClick = handleItemClick,
+					numbersOfColumns = BIOME_GRID_COLUMNS,
+					height = ITEM_HEIGHT_TWO_COLUMNS,
+					animatedVisibilityScope = animatedVisibilityScope,
+					lazyGridState = lazyGridState,
+				)
 
-            }
-        }
-    }
+			}
+		}
+	}
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -86,18 +85,18 @@ fun BossScreen(
 @Composable
 fun PreviewBossListScreen() {
 
-    Scaffold(
-        topBar = {
-            TopAppBar(title = { Text("Biomes") })
-        },
-        content = { padding ->
-            Box(
-                modifier = Modifier
+	Scaffold(
+		topBar = {
+			TopAppBar(title = { Text("Biomes") })
+		},
+		content = { padding ->
+			Box(
+				modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
-            ) {
+			) {
 
-            }
-        }
-    )
+			}
+		}
+	)
 }
