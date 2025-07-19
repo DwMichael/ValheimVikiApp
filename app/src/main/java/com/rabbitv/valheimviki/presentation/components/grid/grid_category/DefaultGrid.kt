@@ -24,7 +24,6 @@ import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_TWO_COLUMNS
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
-private const val boundsAnimationDurationMillis = 500
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

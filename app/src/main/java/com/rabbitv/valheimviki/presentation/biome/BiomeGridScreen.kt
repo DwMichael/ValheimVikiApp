@@ -18,7 +18,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
-import com.rabbitv.valheimviki.domain.repository.ItemData
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.biome.viewmodel.BiomeGridScreenViewModel
@@ -27,7 +26,6 @@ import com.rabbitv.valheimviki.presentation.components.grid.grid_category.Defaul
 import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerGridEffect
 import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_TWO_COLUMNS
 import com.rabbitv.valheimviki.utils.Constants.BIOME_GRID_COLUMNS
-import com.rabbitv.valheimviki.utils.toAppCategory
 import kotlinx.coroutines.FlowPreview
 
 
