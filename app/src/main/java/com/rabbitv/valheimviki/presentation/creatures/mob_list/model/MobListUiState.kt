@@ -1,12 +1,10 @@
 package com.rabbitv.valheimviki.presentation.creatures.mob_list.model
 
-import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.model.creature.CreatureSubCategory
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
+import com.rabbitv.valheimviki.domain.repository.ItemData
 
 data class MobListUiState(
-    val creatureList: List<Creature> = emptyList(),
-    val selectedSubCategory: CreatureSubCategory = CreatureSubCategory.PASSIVE_CREATURE,
-    val isConnection: Boolean = true,
-    val isLoading: Boolean = false,
-    val error: String? = null
+	val listState: UIState<List<ItemData>> = UIState.Loading,
+	val selectedSubCategory: CreatureSubCategory = CreatureSubCategory.PASSIVE_CREATURE,
 )

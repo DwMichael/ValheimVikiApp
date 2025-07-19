@@ -27,9 +27,8 @@ import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Rat
 import com.composables.icons.lucide.Skull
 import com.composables.icons.lucide.User
-import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.model.creature.CreatureSubCategory
-import com.rabbitv.valheimviki.domain.model.ui_state.category_state.UiCategoryState
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
@@ -38,9 +37,10 @@ import com.rabbitv.valheimviki.presentation.components.list.ListContent
 import com.rabbitv.valheimviki.presentation.components.segmented.SegmentedButtonSingleSelect
 import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerGridEffect
 import com.rabbitv.valheimviki.presentation.creatures.mob_list.model.MobSegmentOption
+import com.rabbitv.valheimviki.presentation.creatures.mob_list.model.MobUiEvent
 import com.rabbitv.valheimviki.presentation.creatures.mob_list.viewmodel.MobListViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
-import com.rabbitv.valheimviki.utils.toAppCategory
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.launch
 
@@ -48,8 +48,8 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class, FlowPreview::class)
 @Composable
 fun MobListScreen(
-	onItemClick: (destination: DetailDestination) -> Unit,
 	modifier: Modifier,
+	onItemClick: (destination: DetailDestination) -> Unit,
 	paddingValues: PaddingValues,
 	viewModel: MobListViewModel = hiltViewModel()
 ) {
@@ -59,6 +59,11 @@ fun MobListScreen(
 		Lucide.User
 	)
 	val uiState by viewModel.mobUiState.collectAsStateWithLifecycle()
+	val onCategorySelected =
+		{ category: CreatureSubCategory -> viewModel.onEvent(MobUiEvent.CategorySelected(category = category)) }
+	val handleItemClick = remember {
+		NavigationHelper.createItemDetailClickHandler(onItemClick)
+	}
 	val scope = rememberCoroutineScope()
 	val lazyListState = rememberLazyListState()
 	val backButtonVisibleState by remember {
@@ -79,30 +84,24 @@ fun MobListScreen(
 			) {
 				SegmentedButtonSingleSelect(
 					options = MobSegmentOption.entries,
-					selectedOption = uiState.selectedCategory,
-					onOptionSelected = {
-						scope.launch {
+					selectedOption = uiState.selectedSubCategory,
+					onOptionSelected = { category ->
+						scope.launch(Dispatchers.Main) {
 							lazyListState.animateScrollToItem(0)
 						}
-						viewModel.onCategorySelected(it)
+						onCategorySelected(category)
 					},
 					icons = icons
 				)
 				Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
 
 				Box(modifier = Modifier.fillMaxSize()) {
-					when (val state = uiState) {
-						is UiCategoryState.Error<CreatureSubCategory> -> EmptyScreen(errorMessage = state.message.toString())
-						is UiCategoryState.Loading<CreatureSubCategory> -> ShimmerGridEffect()
-						is UiCategoryState.Success<CreatureSubCategory, Creature> -> ListContent(
-							items = state.list,
-							clickToNavigate = { itemData ->
-								val destination = NavigationHelper.routeToDetailScreen(
-									itemData,
-									itemData.category.toAppCategory()
-								)
-								onItemClick(destination)
-							},
+					when (val state = uiState.listState) {
+						is UIState.Error -> EmptyScreen(errorMessage = state.message)
+						is UIState.Loading -> ShimmerGridEffect()
+						is UIState.Success -> ListContent(
+							items = state.data,
+							clickToNavigate = handleItemClick,
 							lazyListState = lazyListState,
 							horizontalPadding = 0.dp,
 						)
