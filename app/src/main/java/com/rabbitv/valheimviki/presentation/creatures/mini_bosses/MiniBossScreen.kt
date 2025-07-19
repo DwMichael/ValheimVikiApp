@@ -23,9 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rabbitv.valheimviki.domain.model.creature.Creature
-import com.rabbitv.valheimviki.domain.model.creature.mini_boss.MiniBoss
-import com.rabbitv.valheimviki.domain.model.ui_state.default_list_state.UiListState
-import com.rabbitv.valheimviki.domain.repository.ItemData
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
@@ -40,62 +38,62 @@ import kotlinx.coroutines.FlowPreview
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class, FlowPreview::class)
 @Composable
 fun MiniBossScreen(
-    modifier: Modifier,
-    onItemClick: (destination: DetailDestination) -> Unit,
-    paddingValues: PaddingValues,
-    viewModel: MiniBossesViewModel = hiltViewModel(),
-    animatedVisibilityScope: AnimatedVisibilityScope
+	modifier: Modifier,
+	onItemClick: (destination: DetailDestination) -> Unit,
+	paddingValues: PaddingValues,
+	viewModel: MiniBossesViewModel = hiltViewModel(),
+	animatedVisibilityScope: AnimatedVisibilityScope
 ) {
-    val miniBossUiListState: UiListState<MiniBoss> by viewModel.miniBossUiListState.collectAsStateWithLifecycle()
-    val lazyGridState = rememberLazyGridState()
-    val handleItemClick = remember {
-        NavigationHelper.createItemDetailClickHandler(onItemClick)
-    }
-    Box(
-        modifier = modifier
-    ) {
-        Surface(
-            color = Color.Transparent,
-            modifier = Modifier
+	val miniBossUiListState by viewModel.miniBossUiListState.collectAsStateWithLifecycle()
+	val lazyGridState = rememberLazyGridState()
+	val handleItemClick = remember {
+		NavigationHelper.createItemDetailClickHandler(onItemClick)
+	}
+	Box(
+		modifier = modifier
+	) {
+		Surface(
+			color = Color.Transparent,
+			modifier = Modifier
                 .testTag("MiniBossSurface")
                 .fillMaxSize()
                 .padding(paddingValues)
-        ) {
-            when (val state = miniBossUiListState) {
-                is UiListState.Loading -> ShimmerGridEffect()
-                is UiListState.Error -> EmptyScreen(errorMessage = state.message.toString())
-                is UiListState.Success -> DefaultGrid(
-                    modifier = Modifier,
-                    items = state.list,
-                    onItemClick = handleItemClick,
-                    numbersOfColumns = BIOME_GRID_COLUMNS,
-                    height = ITEM_HEIGHT_TWO_COLUMNS,
-                    animatedVisibilityScope = animatedVisibilityScope,
-                    lazyGridState = lazyGridState,
-                )
-            }
-        }
-    }
+		) {
+			when (val state = miniBossUiListState) {
+				is UIState.Loading -> ShimmerGridEffect()
+				is UIState.Error -> EmptyScreen(errorMessage = state.message.toString())
+				is UIState.Success -> DefaultGrid(
+					modifier = Modifier,
+					items = state.data,
+					onItemClick = handleItemClick,
+					numbersOfColumns = BIOME_GRID_COLUMNS,
+					height = ITEM_HEIGHT_TWO_COLUMNS,
+					animatedVisibilityScope = animatedVisibilityScope,
+					lazyGridState = lazyGridState,
+				)
+			}
+		}
+	}
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
 fun PreviewMiniBossListScreen() {
-    val sampleCreatures = emptyList<Creature>()
+	emptyList<Creature>()
 
-    Scaffold(
-        topBar = {
-            TopAppBar(title = { Text("Biomes") })
-        },
-        content = { padding ->
-            Box(
-                modifier = Modifier
+	Scaffold(
+		topBar = {
+			TopAppBar(title = { Text("Biomes") })
+		},
+		content = { padding ->
+			Box(
+				modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
-            ) {
+			) {
 
-            }
-        }
-    )
+			}
+		}
+	)
 }
