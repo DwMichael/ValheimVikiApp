@@ -290,14 +290,15 @@ fun ValheimNavGraph(
 		composable<GridDestination.WorldDestinations.BiomeGrid> {
 			BiomeScreen(
 				modifier = Modifier.padding(10.dp),
-				onItemClick = { id ->
+				onItemClick = { destination ->
 					val currentTime = System.currentTimeMillis()
 					if (currentTime - lastClickTime.longValue > clickDebounceMillis) {
 						lastClickTime.longValue = currentTime
-						valheimVikiNavController.navigate(
-							WorldDetailDestination.BiomeDetail(biomeId = id)
-						) {
+						valheimVikiNavController.navigate(destination) {
 							launchSingleTop = true
+							popUpTo(destination) {
+								inclusive = true
+							}
 						}
 					}
 				},
@@ -309,14 +310,15 @@ fun ValheimNavGraph(
 		composable<GridDestination.CreatureDestinations.BossGrid> {
 			BossScreen(
 				modifier = Modifier.padding(10.dp),
-				onItemClick = { mainBossId ->
+				onItemClick = { destination ->
 					val currentTime = System.currentTimeMillis()
 					if (currentTime - lastClickTime.longValue > clickDebounceMillis) {
 						lastClickTime.longValue = currentTime
-						valheimVikiNavController.navigate(
-							CreatureDetailDestination.MainBossDetail(mainBossId = mainBossId)
-						) {
+						valheimVikiNavController.navigate(destination) {
 							launchSingleTop = true
+							popUpTo(destination) {
+								inclusive = true
+							}
 						}
 					}
 				},
@@ -327,14 +329,15 @@ fun ValheimNavGraph(
 		composable<GridDestination.CreatureDestinations.MiniBossGrid> {
 			MiniBossScreen(
 				modifier = Modifier.padding(10.dp),
-				onItemClick = { miniBossId ->
+				onItemClick = { destination ->
 					val currentTime = System.currentTimeMillis()
 					if (currentTime - lastClickTime.longValue > clickDebounceMillis) {
 						lastClickTime.longValue = currentTime
-						valheimVikiNavController.navigate(
-							CreatureDetailDestination.MiniBossDetail(miniBossId = miniBossId)
-						) {
+						valheimVikiNavController.navigate(destination) {
 							launchSingleTop = true
+							popUpTo(destination) {
+								inclusive = true
+							}
 						}
 					}
 				},
@@ -485,14 +488,15 @@ fun ValheimNavGraph(
 		composable<GridDestination.WorldDestinations.OreDepositGrid> {
 			OreDepositScreen(
 				modifier = Modifier.padding(10.dp),
-				onItemClick = { oreDepositId ->
+				onItemClick = { destination ->
 					val currentTime = System.currentTimeMillis()
 					if (currentTime - lastClickTime.longValue > clickDebounceMillis) {
 						lastClickTime.longValue = currentTime
-						valheimVikiNavController.navigate(
-							WorldDetailDestination.OreDepositDetail(oreDepositId = oreDepositId)
-						) {
+						valheimVikiNavController.navigate(destination) {
 							launchSingleTop = true
+							popUpTo(destination) {
+								inclusive = true
+							}
 						}
 					}
 				},
@@ -504,14 +508,15 @@ fun ValheimNavGraph(
 		composable<GridDestination.WorldDestinations.TreeGrid> {
 			TreeScreen(
 				modifier = Modifier.padding(10.dp),
-				onItemClick = { treeId ->
+				onItemClick = { destination ->
 					val currentTime = System.currentTimeMillis()
 					if (currentTime - lastClickTime.longValue > clickDebounceMillis) {
 						lastClickTime.longValue = currentTime
-						valheimVikiNavController.navigate(
-							WorldDetailDestination.TreeDetail(treeId = treeId)
-						) {
+						valheimVikiNavController.navigate(destination) {
 							launchSingleTop = true
+							popUpTo(destination) {
+								inclusive = true
+							}
 						}
 					}
 				},
