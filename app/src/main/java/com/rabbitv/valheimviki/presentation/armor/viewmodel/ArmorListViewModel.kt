@@ -26,7 +26,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
-@Suppress("UNCHECKED_CAST")
+
 @HiltViewModel
 class ArmorListViewModel @Inject constructor(
 	private val armorUseCases: ArmorUseCases,

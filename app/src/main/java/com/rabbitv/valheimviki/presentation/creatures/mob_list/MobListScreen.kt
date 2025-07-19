@@ -48,7 +48,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class, FlowPreview::class)
 @Composable
 fun MobListScreen(
-	modifier: Modifier,
+	modifier: Modifier = Modifier,
 	onItemClick: (destination: DetailDestination) -> Unit,
 	paddingValues: PaddingValues,
 	viewModel: MobListViewModel = hiltViewModel()

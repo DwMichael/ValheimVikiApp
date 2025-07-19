@@ -43,7 +43,6 @@ import com.rabbitv.valheimviki.presentation.components.shimmering_effect.Shimmer
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
-import com.rabbitv.valheimviki.utils.toAppCategory
 
 
 class ArmorChip(

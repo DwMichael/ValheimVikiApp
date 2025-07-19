@@ -22,7 +22,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.rabbitv.valheimviki.domain.model.ui_state.default_list_state.UiListState
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
@@ -58,9 +57,9 @@ fun BossScreen(
 		Surface(
 			color = Color.Transparent,
 			modifier = Modifier
-                .testTag("BossSurface")
-                .fillMaxSize()
-                .padding(paddingValues)
+				.testTag("BossSurface")
+				.fillMaxSize()
+				.padding(paddingValues)
 		) {
 			when (val state = uiState) {
 				is UIState.Loading -> ShimmerGridEffect()
@@ -92,8 +91,8 @@ fun PreviewBossListScreen() {
 		content = { padding ->
 			Box(
 				modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
+					.fillMaxSize()
+					.padding(padding)
 			) {
 
 			}

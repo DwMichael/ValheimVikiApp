@@ -44,7 +44,7 @@ fun MiniBossScreen(
 	viewModel: MiniBossesViewModel = hiltViewModel(),
 	animatedVisibilityScope: AnimatedVisibilityScope
 ) {
-	val miniBossUiListState by viewModel.miniBossUiListState.collectAsStateWithLifecycle()
+	val uiState by viewModel.miniBossUiListState.collectAsStateWithLifecycle()
 	val lazyGridState = rememberLazyGridState()
 	val handleItemClick = remember {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
@@ -59,9 +59,9 @@ fun MiniBossScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
 		) {
-			when (val state = miniBossUiListState) {
+			when (val state = uiState) {
 				is UIState.Loading -> ShimmerGridEffect()
-				is UIState.Error -> EmptyScreen(errorMessage = state.message.toString())
+				is UIState.Error -> EmptyScreen(errorMessage = state.message)
 				is UIState.Success -> DefaultGrid(
 					modifier = Modifier,
 					items = state.data,
