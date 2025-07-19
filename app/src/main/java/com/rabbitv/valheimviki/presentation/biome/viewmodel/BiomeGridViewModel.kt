@@ -30,7 +30,7 @@ class BiomeGridViewModel @Inject constructor(
 		connectivityObserver.isConnected.stateIn(
 			scope = viewModelScope,
 			started = SharingStarted.WhileSubscribed(5000),
-			initialValue = false
+			initialValue = true
 		),
 	) { biomes, isConnected ->
 		when {

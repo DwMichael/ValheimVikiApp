@@ -51,7 +51,7 @@ class ArmorListViewModel @Inject constructor(
 		connectivityObserver.isConnected.stateIn(
 			scope = viewModelScope,
 			started = SharingStarted.WhileSubscribed(5000),
-			initialValue = false
+			initialValue = true
 		)
 	) { armors, selectedChip, isConnected ->
 		when {
