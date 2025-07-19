@@ -31,7 +31,7 @@ private const val boundsAnimationDurationMillis = 500
 fun DefaultGrid(
 	modifier: Modifier,
 	items: List<ItemData>,
-	onItemClick: (String) -> Unit,
+	onItemClick: (itemData: ItemData) -> Unit,
 	numbersOfColumns: Int,
 	height: Dp,
 	animatedVisibilityScope: AnimatedVisibilityScope,
@@ -46,7 +46,11 @@ fun DefaultGrid(
 		modifier = Modifier.clipToBounds(),
 		contentPadding = PaddingValues(bottom = 70.dp),
 	) {
-		items(items, key = { item -> "${item.id}-${item.name}" }) { item ->
+		items(
+			items = items,
+			key = { item -> item.id },
+			contentType = { item -> item.category }
+		) { item ->
 			AnimatedGridItem(
 				item = item,
 				onItemClick = onItemClick,
