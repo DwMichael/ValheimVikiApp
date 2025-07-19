@@ -11,6 +11,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
@@ -18,6 +19,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rabbitv.valheimviki.domain.model.tree.Tree
 import com.rabbitv.valheimviki.domain.model.ui_state.default_list_state.UiListState
+import com.rabbitv.valheimviki.navigation.DetailDestination
+import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.grid.grid_category.DefaultGrid
 import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerGridEffect
@@ -30,73 +33,75 @@ import kotlinx.coroutines.FlowPreview
 @OptIn(ExperimentalMaterial3Api::class, FlowPreview::class)
 @Composable
 fun TreeScreen(
-    modifier: Modifier,
-    onItemClick: (String) -> Unit,
-    paddingValues: PaddingValues,
-    viewModel: TreeScreenViewModel = hiltViewModel(),
-    animatedVisibilityScope: AnimatedVisibilityScope
+	modifier: Modifier,
+	onItemClick: (destination: DetailDestination) -> Unit,
+	paddingValues: PaddingValues,
+	viewModel: TreeScreenViewModel = hiltViewModel(),
+	animatedVisibilityScope: AnimatedVisibilityScope
 ) {
 
 
-    val treeUIState: UiListState<Tree> by viewModel.uiState.collectAsStateWithLifecycle()
+	val treeUIState: UiListState<Tree> by viewModel.uiState.collectAsStateWithLifecycle()
 
 
-    val lazyGridState = rememberLazyGridState()
+	val lazyGridState = rememberLazyGridState()
+	val handleItemClick = remember {
+		NavigationHelper.createItemDetailClickHandler(onItemClick)
+	}
 
 
+	Box(
+		modifier = modifier
+	) {
+		Surface(
+			color = Color.Transparent,
+			modifier = Modifier
+				.testTag("OreDepositSurface")
+				.fillMaxSize()
+				.padding(paddingValues)
 
-    Box(
-        modifier = modifier
-    ) {
-        Surface(
-            color = Color.Transparent,
-            modifier = Modifier
-                .testTag("OreDepositSurface")
-                .fillMaxSize()
-                .padding(paddingValues)
+		) {
+			when (val state = treeUIState) {
 
-        ) {
-            when (val state = treeUIState) {
+				is UiListState.Loading -> {
+					ShimmerGridEffect()
+				}
 
-                is UiListState.Loading -> {
-                    ShimmerGridEffect()
-                }
+				is UiListState.Error -> {
+					Box(
+						modifier = Modifier.testTag("EmptyScreenOreDeposit"),
+					) {
+						Box(
+							modifier = Modifier
+								.fillMaxSize()
+								.testTag("EmptyScreenOreDeposit")
+						) {
+							EmptyScreen(
+								errorMessage = state.message
+							)
+						}
+					}
+				}
 
-                is UiListState.Error -> {
-                    Box(
-                        modifier = Modifier.testTag("EmptyScreenOreDeposit"),
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .testTag("EmptyScreenOreDeposit")
-                        ) {
-                            EmptyScreen(
-                                errorMessage = state.message
-                            )
-                        }
-                    }
-                }
+				is UiListState.Success -> {
+					Box(
+						modifier = Modifier.testTag("OreDepositGrid"),
+					) {
+						DefaultGrid(
+							modifier = Modifier,
+							items = state.list,
+							onItemClick = handleItemClick,
+							numbersOfColumns = BIOME_GRID_COLUMNS,
+							height = ITEM_HEIGHT_TWO_COLUMNS,
+							animatedVisibilityScope = animatedVisibilityScope,
+							lazyGridState = lazyGridState,
+						)
+					}
+				}
+			}
 
-                is UiListState.Success -> {
-                    Box(
-                        modifier = Modifier.testTag("OreDepositGrid"),
-                    ) {
-                        DefaultGrid(
-                            modifier = Modifier,
-                            items = state.list,
-                            onItemClick = onItemClick,
-                            numbersOfColumns = BIOME_GRID_COLUMNS,
-                            height = ITEM_HEIGHT_TWO_COLUMNS,
-                            animatedVisibilityScope = animatedVisibilityScope,
-                            lazyGridState = lazyGridState,
-                        )
-                    }
-                }
-            }
-
-        }
-    }
+		}
+	}
 }
 
 

@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
@@ -23,6 +24,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
 import com.rabbitv.valheimviki.domain.model.ui_state.default_list_state.UiListState
+import com.rabbitv.valheimviki.domain.repository.ItemData
+import com.rabbitv.valheimviki.navigation.DetailDestination
+import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.grid.grid_category.DefaultGrid
 import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerGridEffect
@@ -36,7 +40,7 @@ import kotlinx.coroutines.FlowPreview
 @Composable
 fun BossScreen(
     modifier: Modifier,
-    onItemClick: (String) -> Unit,
+    onItemClick: (destination: DetailDestination) -> Unit,
     paddingValues: PaddingValues,
     viewModel: BossesViewModel = hiltViewModel(),
     animatedVisibilityScope: AnimatedVisibilityScope
@@ -44,7 +48,9 @@ fun BossScreen(
 
     val mainBossUiListState: UiListState<MainBoss> by viewModel.mainBossUiListState.collectAsStateWithLifecycle()
     val lazyGridState = rememberLazyGridState()
-
+    val handleItemClick = remember {
+        NavigationHelper.createItemDetailClickHandler(onItemClick)
+    }
 
 
     Box(
@@ -59,11 +65,11 @@ fun BossScreen(
         ) {
             when (val state = mainBossUiListState) {
                 is UiListState.Loading -> ShimmerGridEffect()
-                is UiListState.Error -> EmptyScreen(errorMessage = state.message.toString())
+                is UiListState.Error -> EmptyScreen(errorMessage = state.message)
                 is UiListState.Success -> DefaultGrid(
                     modifier = Modifier,
                     items = state.list,
-                    onItemClick = onItemClick,
+                    onItemClick = handleItemClick,
                     numbersOfColumns = BIOME_GRID_COLUMNS,
                     height = ITEM_HEIGHT_TWO_COLUMNS,
                     animatedVisibilityScope = animatedVisibilityScope,
