@@ -1,10 +1,10 @@
-package com.rabbitv.valheimviki.presentation.creatures.mini_bosses.viewmodel
+package com.rabbitv.valheimviki.presentation.creatures.bosses.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.R.string.error_no_connection_with_empty_list_message
-import com.rabbitv.valheimviki.domain.model.creature.mini_boss.MiniBoss
+import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.domain.repository.NetworkConnectivity
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
@@ -18,15 +18,15 @@ import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @HiltViewModel
-class MiniBossesViewModel @Inject constructor(
+class BossesGridViewModel @Inject constructor(
 	val creatureUseCases: CreatureUseCases,
 	val connectivityObserver: NetworkConnectivity,
 ) : ViewModel() {
 
-	val miniBossUiListState: StateFlow<UIState<List<MiniBoss>>> = combine(
-		creatureUseCases.getMiniBossesUseCase()
+	val mainBossUiListState: StateFlow<UIState<List<MainBoss>>> = combine(
+		creatureUseCases.getMainBossesUseCase()
 			.catch { e ->
-				Log.e("MiniBossScreenVM", "getLocalCreaturesUseCase failed in combine", e)
+				Log.e("BossScreenVM", "getLocalCreaturesUseCase failed in combine", e)
 				emit(emptyList())
 			},
 		connectivityObserver.isConnected.stateIn(
@@ -41,7 +41,7 @@ class MiniBossesViewModel @Inject constructor(
 			else -> UIState.Error(error_no_connection_with_empty_list_message.toString())
 		}
 	}.onCompletion { error -> println("Error -> ${error?.message}") }.catch { e ->
-		Log.e("MiniBossScreenVM", "Error in creatureUiState flow", e)
+		Log.e("BossScreenVM", "Error in creatureUiState flow", e)
 		emit(UIState.Error(e.message ?: "An unknown error occurred"))
 	}.stateIn(
 		scope = viewModelScope,

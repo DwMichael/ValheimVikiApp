@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.creatures.mini_bosses
+package com.rabbitv.valheimviki.presentation.creatures.bosses
 
 
 import androidx.compose.animation.AnimatedVisibilityScope
@@ -22,14 +22,13 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.grid.grid_category.DefaultGrid
 import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerGridEffect
-import com.rabbitv.valheimviki.presentation.creatures.mini_bosses.viewmodel.MiniBossesViewModel
+import com.rabbitv.valheimviki.presentation.creatures.bosses.viewmodel.BossesGridViewModel
 import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_TWO_COLUMNS
 import com.rabbitv.valheimviki.utils.Constants.BIOME_GRID_COLUMNS
 import kotlinx.coroutines.FlowPreview
@@ -37,27 +36,30 @@ import kotlinx.coroutines.FlowPreview
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class, FlowPreview::class)
 @Composable
-fun MiniBossScreen(
+fun BossGridScreen(
 	modifier: Modifier,
 	onItemClick: (destination: DetailDestination) -> Unit,
 	paddingValues: PaddingValues,
-	viewModel: MiniBossesViewModel = hiltViewModel(),
+	viewModel: BossesGridViewModel = hiltViewModel(),
 	animatedVisibilityScope: AnimatedVisibilityScope
 ) {
-	val uiState by viewModel.miniBossUiListState.collectAsStateWithLifecycle()
+
+	val uiState by viewModel.mainBossUiListState.collectAsStateWithLifecycle()
 	val lazyGridState = rememberLazyGridState()
 	val handleItemClick = remember {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
 	}
+
+
 	Box(
 		modifier = modifier
 	) {
 		Surface(
 			color = Color.Transparent,
 			modifier = Modifier
-                .testTag("MiniBossSurface")
-                .fillMaxSize()
-                .padding(paddingValues)
+				.testTag("BossSurface")
+				.fillMaxSize()
+				.padding(paddingValues)
 		) {
 			when (val state = uiState) {
 				is UIState.Loading -> ShimmerGridEffect()
@@ -71,6 +73,7 @@ fun MiniBossScreen(
 					animatedVisibilityScope = animatedVisibilityScope,
 					lazyGridState = lazyGridState,
 				)
+
 			}
 		}
 	}
@@ -79,8 +82,7 @@ fun MiniBossScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
-fun PreviewMiniBossListScreen() {
-	emptyList<Creature>()
+fun PreviewBossListScreen() {
 
 	Scaffold(
 		topBar = {
@@ -89,8 +91,8 @@ fun PreviewMiniBossListScreen() {
 		content = { padding ->
 			Box(
 				modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
+					.fillMaxSize()
+					.padding(padding)
 			) {
 
 			}
