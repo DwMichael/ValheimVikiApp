@@ -19,9 +19,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.rabbitv.valheimviki.domain.model.building_material.BuildingMaterialSubCategory
-import com.rabbitv.valheimviki.domain.model.ui_state.category_chip_state.UiCategoryChipState
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.presentation.building_material.model.BuildingMaterialSegmentOption
+import com.rabbitv.valheimviki.presentation.building_material.model.BuildingMaterialUiEvent
 import com.rabbitv.valheimviki.presentation.building_material.viewmodel.BuildingMaterialListViewModel
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.grid.grid_category.CategoryGrid
@@ -32,56 +32,58 @@ import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BuildingMaterialCategoryScreen(
-    onGridCategoryClick: () -> Unit,
-    modifier: Modifier, paddingValues: PaddingValues,
-    viewModel: BuildingMaterialListViewModel
+	onGridCategoryClick: () -> Unit,
+	modifier: Modifier, paddingValues: PaddingValues,
+	viewModel: BuildingMaterialListViewModel
 ) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+	val lazyGridState = rememberLazyGridState()
+	val buildingMaterialCategories = BuildingMaterialSegmentOption.entries
 
-    val lazyGridState = rememberLazyGridState()
-
-    val buildingMaterialCategories = BuildingMaterialSegmentOption.entries
-
-
-    Surface(
-        color = Color.Transparent,
-        modifier = Modifier
-            .testTag("MaterialListSurface")
+	Surface(
+		color = Color.Transparent,
+		modifier = Modifier
+            .testTag("BuildingMaterialListSurface")
             .fillMaxSize()
             .padding(paddingValues)
-    ) {
-        Box(
-            modifier = Modifier
+	) {
+		Box(
+			modifier = Modifier
                 .fillMaxSize()
                 .padding(BODY_CONTENT_PADDING.dp)
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Top
-            ) {
-                when (val state = uiState) {
-                    is UiCategoryChipState.Error -> EmptyScreen(errorMessage = state.message)
-                    is UiCategoryChipState.Loading -> {
-                        Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
-                        ShimmerGridEffect()
-                    }
+		) {
+			Column(
+				horizontalAlignment = Alignment.CenterHorizontally,
+				verticalArrangement = Arrangement.Top
+			) {
+				when (val state = uiState.materialsUiState) {
+					is UIState.Error -> EmptyScreen(errorMessage = state.message)
+					is UIState.Loading -> {
+						Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
+						ShimmerGridEffect()
+					}
 
-                    is UiCategoryChipState.Success ->
-                        CategoryGrid<BuildingMaterialSubCategory>(
-                            modifier = modifier,
-                            items = buildingMaterialCategories,
-                            onItemClick = { categorySegmentOption ->
-                                viewModel.onCategorySelected(categorySegmentOption)
-                                onGridCategoryClick()
-                            },
-                            numbersOfColumns = 2,
-                            height = 200.dp,
-                            lazyGridState = lazyGridState
-                        )
-                }
-            }
-        }
-    }
+					is UIState.Success ->
+						CategoryGrid(
+							modifier = modifier,
+							items = buildingMaterialCategories,
+							onItemClick = { categorySegmentOption ->
+								viewModel.onEvent(
+									BuildingMaterialUiEvent.CategorySelected(
+										categorySegmentOption
+									)
+								)
+								onGridCategoryClick()
+							},
+							numbersOfColumns = 2,
+							height = 200.dp,
+							lazyGridState = lazyGridState
+						)
+
+				}
+			}
+		}
+	}
 }
 
 

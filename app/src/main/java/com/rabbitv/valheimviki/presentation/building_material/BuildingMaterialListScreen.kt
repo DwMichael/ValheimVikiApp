@@ -20,11 +20,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -44,19 +43,21 @@ import com.composables.icons.lucide.Star
 import com.composables.icons.lucide.Table
 import com.rabbitv.valheimviki.domain.model.building_material.BuildingMaterialSubCategory
 import com.rabbitv.valheimviki.domain.model.building_material.BuildingMaterialSubType
-import com.rabbitv.valheimviki.domain.model.ui_state.category_chip_state.UiCategoryChipState
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
+import com.rabbitv.valheimviki.presentation.building_material.model.BuildingMaterialUiEvent
 import com.rabbitv.valheimviki.presentation.building_material.viewmodel.BuildingMaterialListViewModel
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
 import com.rabbitv.valheimviki.presentation.components.chip.ChipData
 import com.rabbitv.valheimviki.presentation.components.chip.SearchFilterBar
+import com.rabbitv.valheimviki.presentation.components.floating_action_button.CustomFloatingActionButton
 import com.rabbitv.valheimviki.presentation.components.list.ListContent
 import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerListEffect
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
-import com.rabbitv.valheimviki.utils.toAppCategory
+import kotlinx.coroutines.launch
 
 class BuildingMaterialChip(
 	override val option: BuildingMaterialSubType,
@@ -73,25 +74,22 @@ fun BuildingMaterialListScreen(
 ) {
 
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-	val scrollPosition = remember { mutableIntStateOf(0) }
-	val lazyListState = rememberLazyListState(
-		initialFirstVisibleItemIndex = scrollPosition.intValue
-	)
+	val lazyListState = rememberLazyListState()
+	val scope = rememberCoroutineScope()
 	val title = uiState.selectedCategory?.let { viewModel.getLabelFor(it) }
 
-	val backToTopState = remember { mutableStateOf(false) }
-	if (backToTopState.value) {
-		LaunchedEffect(backToTopState.value) {
-			lazyListState.animateScrollToItem(0)
-			scrollPosition.intValue = 0
-			backToTopState.value = false
-		}
+	val backButtonVisibleState by remember {
+		derivedStateOf { lazyListState.firstVisibleItemIndex >= 2 }
+	}
+	val handleFavoriteItemClick = remember {
+		NavigationHelper.createItemDetailClickHandler(onItemClick)
 	}
 	BackHandler(onBack = {
-		viewModel.onCategorySelected(null)
-		viewModel.onTypeSelected(null)
+		viewModel.onEvent(BuildingMaterialUiEvent.CategorySelected(null))
+		viewModel.onEvent(BuildingMaterialUiEvent.ChipSelected(null))
 		onBackClick()
 	})
+
 	Scaffold(
 		topBar = {
 			Box(
@@ -101,8 +99,8 @@ fun BuildingMaterialListScreen(
 			) {
 				IconButton(
 					onClick = {
-						viewModel.onCategorySelected(null)
-						viewModel.onTypeSelected(null)
+						viewModel.onEvent(BuildingMaterialUiEvent.CategorySelected(null))
+						viewModel.onEvent(BuildingMaterialUiEvent.ChipSelected(null))
 						onBackClick()
 					},
 					modifier = Modifier
@@ -135,9 +133,20 @@ fun BuildingMaterialListScreen(
 				}
 			}
 		},
+		floatingActionButton = {
+			CustomFloatingActionButton(
+				showBackButton = backButtonVisibleState,
+				onClick = {
+					scope.launch {
+						lazyListState.animateScrollToItem(0)
+					}
+				},
+				bottomPadding = 0.dp
+			)
+		},
 		content = { innerScaffoldPadding ->
-			when (val currentState = uiState) {
-				is UiCategoryChipState.Loading -> {
+			when (val currentState = uiState.materialsUiState) {
+				is UIState.Loading -> {
 					Column(
 						modifier = Modifier
 							.fillMaxSize()
@@ -157,7 +166,7 @@ fun BuildingMaterialListScreen(
 					}
 				}
 
-				is UiCategoryChipState.Success -> {
+				is UIState.Success -> {
 					Column(
 						modifier = Modifier
 							.fillMaxSize()
@@ -173,15 +182,23 @@ fun BuildingMaterialListScreen(
 							Column(
 								horizontalAlignment = Alignment.CenterHorizontally
 							) {
-								if (currentState.selectedCategory != null) {
+								if (uiState.selectedCategory != null) {
 									SearchFilterBar(
-										chips = getChipsForCategory(currentState.selectedCategory),
-										selectedOption = currentState.selectedChip,
+										chips = getChipsForCategory(uiState.selectedCategory),
+										selectedOption = uiState.selectedChip,
 										onSelectedChange = { _, subCategoryType ->
-											if (currentState.selectedChip == subCategoryType) {
-												viewModel.onTypeSelected(null)
+											if (uiState.selectedChip == subCategoryType) {
+												viewModel.onEvent(
+													BuildingMaterialUiEvent.ChipSelected(
+														subCategoryType
+													)
+												)
 											} else {
-												viewModel.onTypeSelected(subCategoryType)
+												viewModel.onEvent(
+													BuildingMaterialUiEvent.ChipSelected(
+														subCategoryType
+													)
+												)
 											}
 										},
 										modifier = Modifier,
@@ -194,14 +211,8 @@ fun BuildingMaterialListScreen(
 									)
 								}
 								ListContent(
-									items = currentState.list,
-									clickToNavigate = { itemData ->
-										val destination = NavigationHelper.routeToDetailScreen(
-											itemData,
-											itemData.category.toAppCategory()
-										)
-										onItemClick(destination)
-									},
+									items = currentState.data,
+									clickToNavigate = handleFavoriteItemClick,
 									lazyListState = lazyListState,
 									imageScale = ContentScale.Fit,
 									horizontalPadding = 0.dp
@@ -211,7 +222,7 @@ fun BuildingMaterialListScreen(
 					}
 				}
 
-				is UiCategoryChipState.Error -> {
+				is UIState.Error -> {
 					EmptyScreen(
 						errorMessage = currentState.message
 					)
