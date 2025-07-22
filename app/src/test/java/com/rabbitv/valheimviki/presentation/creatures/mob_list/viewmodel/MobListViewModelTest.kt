@@ -279,7 +279,7 @@ class MobListViewModelTest {
 				cancelAndIgnoreRemainingEvents()
 			}
 		}
-	
+
 
 	@Test
 	fun mobListViewModel_creaturesBySelectedSubCatFlow_handlesEmptyCreatureList() = runTest {
@@ -295,7 +295,7 @@ class MobListViewModelTest {
 	}
 
 	@Test
-	fun mobListViewModel_armorsFlow_handlesCategorySelectionChanges() = runTest {
+	fun mobListViewModel_creatureFlow_handlesCategorySelectionChanges() = runTest {
 		val passiveCreatures = listOf(
 			Creature(
 				id = "1",
