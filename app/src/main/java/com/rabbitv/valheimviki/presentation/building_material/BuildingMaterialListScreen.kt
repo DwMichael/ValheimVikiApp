@@ -187,19 +187,11 @@ fun BuildingMaterialListScreen(
 										chips = getChipsForCategory(uiState.selectedCategory),
 										selectedOption = uiState.selectedChip,
 										onSelectedChange = { _, subCategoryType ->
-											if (uiState.selectedChip == subCategoryType) {
-												viewModel.onEvent(
-													BuildingMaterialUiEvent.ChipSelected(
-														subCategoryType
-													)
+											viewModel.onEvent(
+												BuildingMaterialUiEvent.ChipSelected(
+													subCategoryType
 												)
-											} else {
-												viewModel.onEvent(
-													BuildingMaterialUiEvent.ChipSelected(
-														subCategoryType
-													)
-												)
-											}
+											)
 										},
 										modifier = Modifier,
 									)
@@ -234,8 +226,8 @@ fun BuildingMaterialListScreen(
 
 
 @Composable
-private fun getChipsForCategory(category: BuildingMaterialSubCategory?): List<BuildingMaterialChip> { // Changed to nullable
-	return when (category) { // category can now be null
+private fun getChipsForCategory(category: BuildingMaterialSubCategory?): List<BuildingMaterialChip> {
+	return when (category) {
 		BuildingMaterialSubCategory.STONE_AND_METAL -> emptyList()
 		BuildingMaterialSubCategory.LIGHT_SOURCE -> emptyList()
 		BuildingMaterialSubCategory.FURNITURE -> listOf(

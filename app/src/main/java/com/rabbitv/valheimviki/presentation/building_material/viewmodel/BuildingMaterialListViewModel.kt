@@ -47,8 +47,11 @@ class BuildingMaterialListViewModel @Inject constructor(
 			_selectedSubCategory,
 			_selectedSubType
 		) { all, category, type ->
+			if (category == null) {
+				return@combine emptyList()
+			}
 			all
-				.filter { category == null || it.subCategory == category.toString() }
+				.filter { it.subCategory == category.toString() }
 				.filter { type == null || it.subType == type.toString() }
 				.sortedBy { it.order }
 		}.flowOn(defaultDispatcher)
@@ -108,7 +111,13 @@ class BuildingMaterialListViewModel @Inject constructor(
 	fun onEvent(event: BuildingMaterialUiEvent) {
 		when (event) {
 			is BuildingMaterialUiEvent.CategorySelected -> _selectedSubCategory.update { event.category }
-			is BuildingMaterialUiEvent.ChipSelected -> _selectedSubType.update { event.chip }
+			is BuildingMaterialUiEvent.ChipSelected -> {
+				if (_selectedSubType.value == event.chip) {
+					_selectedSubType.update { null }
+				} else {
+					_selectedSubType.update { event.chip }
+				}
+			}
 		}
 	}
 
