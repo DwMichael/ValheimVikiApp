@@ -18,12 +18,15 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,6 +45,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.ContentAlpha
 import coil3.compose.AsyncImage
+import coil3.compose.AsyncImagePainter
+import coil3.compose.rememberAsyncImagePainter
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.rabbitv.valheimviki.R
@@ -64,20 +69,24 @@ fun CardImageWithTopLabel(
 	contentScale: ContentScale = ContentScale.Crop,
 	painter: Painter? = painterResource(id = R.drawable.bg_crafting)
 ) {
+
+	val painterAsync = rememberAsyncImagePainter(itemData.imageUrl)
+	val state by painterAsync.state.collectAsState()
+
 	Card(
 		modifier = modifier
-            .padding(BODY_CONTENT_PADDING.dp)
-            .height(300.dp)
-            .clip(RoundedCornerShape(DETAIL_ITEM_SHAPE_PADDING))
-            .border(1.dp, YellowDTBorder, RoundedCornerShape(DETAIL_ITEM_SHAPE_PADDING))
-            .shadow(
-                elevation = 8.dp,
-                shape = RoundedCornerShape(8.dp),
-                spotColor = Color.Black.copy(alpha = 0.25f)
-            )
-            .clickable {
-                onClickedItem()
-            },
+			.padding(BODY_CONTENT_PADDING.dp)
+			.height(300.dp)
+			.clip(RoundedCornerShape(DETAIL_ITEM_SHAPE_PADDING))
+			.border(1.dp, YellowDTBorder, RoundedCornerShape(DETAIL_ITEM_SHAPE_PADDING))
+			.shadow(
+				elevation = 8.dp,
+				shape = RoundedCornerShape(8.dp),
+				spotColor = Color.Black.copy(alpha = 0.25f)
+			)
+			.clickable {
+				onClickedItem()
+			},
 		colors = CardDefaults.cardColors(
 			containerColor = Color.Transparent,
 			contentColor = Color.Transparent,
@@ -88,8 +97,8 @@ fun CardImageWithTopLabel(
 		Column {
 			Surface(
 				modifier = Modifier
-                    .fillMaxHeight(0.25f)
-                    .fillMaxWidth(),
+					.fillMaxHeight(0.25f)
+					.fillMaxWidth(),
 				tonalElevation = 0.dp,
 				color = Color.Black.copy(alpha = ContentAlpha.medium),
 			) {
@@ -103,15 +112,14 @@ fun CardImageWithTopLabel(
 						color = Color.White,
 						style = textStyle,
 						modifier = Modifier
-                            .wrapContentSize(align = Alignment.Center)
-                            .padding
-                                (horizontal = 8.dp),
+							.wrapContentSize(align = Alignment.Center)
+							.padding(horizontal = 8.dp),
 						textAlign = TextAlign.Center
 					)
 					HorizontalDivider(
 						modifier = Modifier
-                            .width(horizontalDividerWidth)
-                            .padding(5.dp),
+							.width(horizontalDividerWidth)
+							.padding(5.dp),
 						thickness = 1.dp,
 						color = Color.White
 					)
@@ -121,17 +129,18 @@ fun CardImageWithTopLabel(
 							color = Color.White,
 							style = MaterialTheme.typography.labelLarge,
 							modifier = Modifier
-                                .wrapContentSize(align = Alignment.Center)
-                                .padding
-                                    (horizontal = 8.dp),
+								.wrapContentSize(align = Alignment.Center)
+								.padding(horizontal = 8.dp),
 							textAlign = TextAlign.Center
 						)
 					}
 				}
 			}
-			Box(modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Transparent)) {
+			Box(
+				modifier = Modifier
+					.fillMaxSize()
+					.background(Color.Transparent)
+			) {
 				painter?.let {
 					Image(
 						modifier = Modifier.fillMaxSize(),
@@ -140,19 +149,27 @@ fun CardImageWithTopLabel(
 						contentScale = ContentScale.Crop
 					)
 				}
-				AsyncImage(
-					modifier = Modifier.fillMaxSize(),
-					model = ImageRequest.Builder(LocalContext.current)
-						.data(itemData.imageUrl)
-						.crossfade(true)
-						.build(),
-					placeholder = painterResource(R.drawable.ic_placeholder),
-					error = if (LocalInspectionMode.current) painterResource(R.drawable.testweapon) else null,
-					contentDescription = stringResource(R.string.mainbosssection),
-					contentScale = contentScale,
-				)
-			}
+				when (state) {
+					is AsyncImagePainter.State.Empty,
+					is AsyncImagePainter.State.Loading -> {
+						CircularProgressIndicator()
+					}
 
+					is AsyncImagePainter.State.Success -> {
+						Image(
+							modifier = Modifier.fillMaxSize(),
+							painter = painterAsync,
+							contentDescription = "Card Image",
+							contentScale = contentScale
+						)
+					}
+
+					is AsyncImagePainter.State.Error -> {
+
+					}
+				}
+
+			}
 		}
 	}
 }
@@ -180,7 +197,7 @@ fun PreviewCardImageWithTopLabel() {
 	)
 	ValheimVikiAppTheme {
 		CardImageWithTopLabel(
-            onClickedItem = {},
+			onClickedItem = {},
 			itemData = fakeMainBoss,
 			subTitle = "Przykładowy opis głównego bossa Przykładowy.",
 			contentScale = ContentScale.FillBounds

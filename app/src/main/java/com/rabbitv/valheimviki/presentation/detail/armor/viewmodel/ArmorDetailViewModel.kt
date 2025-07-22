@@ -64,7 +64,7 @@ class ArmorDetailViewModel @Inject constructor(
 		ArmorUiState(
 			armor = values[0] as Armor?,
 			materials = values[1] as List<MaterialUpgrade>,
-			craftingObject = values[2] as CraftingObject,
+			craftingObject = values[2] as CraftingObject?,
 			isFavorite = values[3] as Boolean,
 			isLoading = values[4] as Boolean,
 			error = values[5] as String?,
