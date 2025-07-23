@@ -49,6 +49,7 @@ import androidx.navigation.compose.rememberNavController
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.welcome.OnBoardingPage
 import com.rabbitv.valheimviki.navigation.GridDestination
+import com.rabbitv.valheimviki.presentation.intro.viewmodel.WelcomeViewModel
 import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.Constants.LAST_ON_BOARDING_PAGE

@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.splash
+package com.rabbitv.valheimviki.presentation.splash.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,16 +13,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SplashViewModel @Inject constructor(
-    private val useCases: DataStoreUseCases
+	private val useCases: DataStoreUseCases
 ) : ViewModel() {
-    private val _onBoardingCompleted = MutableStateFlow(false)
-    val onBoardingCompleted: StateFlow<Boolean> = _onBoardingCompleted
+	private val _onBoardingCompleted = MutableStateFlow(false)
+	val onBoardingCompleted: StateFlow<Boolean> = _onBoardingCompleted
 
-    init {
-        viewModelScope.launch(Dispatchers.Default) {
-            _onBoardingCompleted.value =
-                useCases.readOnBoardingUseCase().stateIn(viewModelScope).value
+	init {
+		viewModelScope.launch(Dispatchers.Default) {
+			_onBoardingCompleted.value =
+				useCases.readOnBoardingUseCase().stateIn(viewModelScope).value
 
-        }
-    }
+		}
+	}
 }

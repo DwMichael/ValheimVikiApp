@@ -12,9 +12,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.rabbitv.valheimviki.navigation.GridDestination
-import com.rabbitv.valheimviki.navigation.ListDestination
 import com.rabbitv.valheimviki.navigation.TopLevelDestination
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
+import com.rabbitv.valheimviki.presentation.splash.viewmodel.SplashViewModel
 
 
 @Composable
