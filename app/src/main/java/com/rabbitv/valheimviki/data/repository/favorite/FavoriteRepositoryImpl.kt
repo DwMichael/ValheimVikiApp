@@ -13,8 +13,7 @@ import javax.inject.Inject
 class FavoriteRepositoryImpl @Inject constructor(
 	private val favoriteDao: FavoriteDao,
 	@param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
-
-	) : FavoriteRepository {
+) : FavoriteRepository {
 	override fun isFavorite(id: String): Flow<Favorite?> {
 		return favoriteDao.isFavorite(id).flowOn(ioDispatcher)
 	}
