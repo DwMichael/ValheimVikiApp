@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,9 +29,8 @@ import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.TrendingUp
 import com.composables.icons.lucide.Wrench
 import com.rabbitv.valheimviki.domain.model.armor.ArmorSubCategory
-import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingSubCategory
-import com.rabbitv.valheimviki.domain.model.ui_state.category_state.UiCategoryState
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
@@ -39,10 +39,11 @@ import com.rabbitv.valheimviki.presentation.components.chip.CustomElevatedFilter
 import com.rabbitv.valheimviki.presentation.components.chip.SearchFilterBar
 import com.rabbitv.valheimviki.presentation.components.list.ListContent
 import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerListEffect
+import com.rabbitv.valheimviki.presentation.crafting.model.CraftingListUiEvent
+import com.rabbitv.valheimviki.presentation.crafting.model.CraftingListUiState
 import com.rabbitv.valheimviki.presentation.crafting.viewmodel.CraftingListViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
-import com.rabbitv.valheimviki.utils.FakeData
 import com.rabbitv.valheimviki.utils.toAppCategory
 
 
@@ -61,7 +62,8 @@ fun CraftingListScreen(
 	viewModel: CraftingListViewModel = hiltViewModel()
 ) {
 	val craftingObjectListUiState by viewModel.uiState.collectAsStateWithLifecycle()
-	val onChipSelected = { chip: CraftingSubCategory? -> viewModel.onChipSelected(chip) }
+	val onChipSelected =
+		{ chip: CraftingSubCategory? -> viewModel.onEvent(CraftingListUiEvent.ChipSelected(chip)) }
 	CraftingListStateRenderer(
 		craftingObjectListUiState = craftingObjectListUiState,
 		onChipSelected = onChipSelected,
@@ -74,7 +76,7 @@ fun CraftingListScreen(
 
 @Composable
 fun CraftingListStateRenderer(
-	craftingObjectListUiState: UiCategoryState<CraftingSubCategory?, CraftingObject>,
+	craftingObjectListUiState: CraftingListUiState,
 	onChipSelected: (CraftingSubCategory?) -> Unit,
 	paddingValues: PaddingValues,
 	modifier: Modifier,
@@ -100,40 +102,32 @@ fun CraftingListStateRenderer(
 
 @Composable
 fun CraftingStationListDisplay(
-	craftingObjectListUiState: UiCategoryState<CraftingSubCategory?, CraftingObject>,
+	craftingObjectListUiState: CraftingListUiState,
 	onChipSelected: (CraftingSubCategory?) -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit
 ) {
 	val lazyListState = rememberLazyListState()
+
+	val handleFavoriteItemClick = remember {
+		NavigationHelper.createItemDetailClickHandler(onItemClick)
+	}
 	Column(
 		horizontalAlignment = Alignment.Start
 	) {
 		SearchFilterBar(
 			chips = getChipsForCategory(),
-			selectedOption = craftingObjectListUiState.selectedCategory,
-			onSelectedChange = { _, subCategory ->
-				if (craftingObjectListUiState.selectedCategory == subCategory) {
-					onChipSelected(null)
-				} else {
-					onChipSelected(subCategory)
-				}
-			},
+			selectedOption = craftingObjectListUiState.selectedChip,
+			onSelectedChange = { _, subCategory -> onChipSelected(subCategory) },
 			modifier = Modifier,
 		)
 		Spacer(Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp, vertical = 5.dp))
-		when (val state = craftingObjectListUiState) {
-			is UiCategoryState.Error<CraftingSubCategory?> -> EmptyScreen(errorMessage = state.message.toString())
-			is UiCategoryState.Loading<CraftingSubCategory?> -> ShimmerListEffect()
-			is UiCategoryState.Success<CraftingSubCategory?, CraftingObject> ->
+		when (val state = craftingObjectListUiState.craftingListUiState) {
+			is UIState.Error -> EmptyScreen(errorMessage = state.message)
+			is UIState.Loading -> ShimmerListEffect()
+			is UIState.Success ->
 				ListContent(
-					items = state.list,
-					clickToNavigate = { itemData ->
-						val destination = NavigationHelper.routeToDetailScreen(
-							itemData,
-							itemData.category.toAppCategory()
-						)
-						onItemClick(destination)
-					},
+					items = state.data,
+					clickToNavigate = handleFavoriteItemClick,
 					lazyListState = lazyListState,
 					imageScale = ContentScale.Fit,
 					horizontalPadding = 0.dp
@@ -234,9 +228,9 @@ fun PreviewCustomElevatedFilterChipNotSelected() {
 fun PreviewWeaponListStateRenderer() {
 	ValheimVikiAppTheme {
 		CraftingListStateRenderer(
-			craftingObjectListUiState = UiCategoryState.Success(
-				selectedCategory = CraftingSubCategory.CRAFTING_STATION,
-				list = FakeData.fakeCraftingObjectList()
+			craftingObjectListUiState = CraftingListUiState(
+				selectedChip = null,
+				craftingListUiState = UIState.Loading
 			),
 			paddingValues = PaddingValues(),
 			modifier = Modifier,
