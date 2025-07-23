@@ -46,7 +46,7 @@ import com.composables.icons.lucide.Utensils
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.category.AppCategory
 import com.rabbitv.valheimviki.domain.model.ui_state.ui_state.UiState
-import com.rabbitv.valheimviki.domain.repository.ItemData
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.chip.ChipData
@@ -55,7 +55,8 @@ import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.floating_action_button.CustomFloatingActionButton
 import com.rabbitv.valheimviki.presentation.components.grid.grid_item.FavoriteGridItem
 import com.rabbitv.valheimviki.presentation.components.topbar.SimpleTopBar
-import com.rabbitv.valheimviki.presentation.favorite.model.UiStateFavorite
+import com.rabbitv.valheimviki.presentation.favorite.model.FavoriteUiEvent
+import com.rabbitv.valheimviki.presentation.favorite.model.FavoriteUiState
 import com.rabbitv.valheimviki.presentation.favorite.viewmodel.FavoriteViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_SMALL_IMAGES
@@ -83,7 +84,7 @@ fun FavoriteScreen(
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 	val onCategorySelected = { category: AppCategory? ->
-		viewModel.onCategorySelected(category)
+		viewModel.onEvent(FavoriteUiEvent.CategorySelected(category))
 	}
 	FavoriteScreenContent(
 		onBack = onBack,
@@ -100,7 +101,7 @@ fun FavoriteScreenContent(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
 	onCategorySelected: (category: AppCategory?) -> Unit,
-	uiState: UiState<UiStateFavorite>
+	uiState: FavoriteUiState
 ) {
 	val lazyGridState = rememberLazyStaggeredGridState()
 	val scope = rememberCoroutineScope()
@@ -171,35 +172,30 @@ fun FavoriteScreenContent(
 				item(span = StaggeredGridItemSpan.FullLine, key = "SlavicDivider") {
 					SlavicDivider()
 				}
-				when (uiState) {
-					is UiState.Loading -> null
-					is UiState.Error -> null
-					is UiState.Success<UiStateFavorite> -> {
-						item(span = StaggeredGridItemSpan.FullLine) {
-							SearchFilterBar(
-								chips = chips,
-								selectedOption = uiState.data.selectedCategory,
-								onSelectedChange = { _, category ->
-									if (uiState.data.selectedCategory == category) {
-										onCategorySelected(null)
-									} else {
-										onCategorySelected(category)
-									}
-								},
-								modifier = Modifier,
-							)
-							Spacer(
-								Modifier.padding(
-									horizontal = BODY_CONTENT_PADDING.dp,
-									vertical = 5.dp
-								)
-							)
-						}
+				item(span = StaggeredGridItemSpan.FullLine) {
+					SearchFilterBar(
+						chips = chips,
+						selectedOption = uiState.selectedCategory,
+						onSelectedChange = { _, category -> onCategorySelected(category) },
+						modifier = Modifier,
+					)
+					Spacer(
+						Modifier.padding(
+							horizontal = BODY_CONTENT_PADDING.dp,
+							vertical = 5.dp
+						)
+					)
+				}
+				when (val state = uiState.favoritesState) {
+					is UIState.Loading -> null
+					is UIState.Error -> null
+					is UIState.Success -> {
+
 						item(span = StaggeredGridItemSpan.FullLine, key = "SlavicDivider2") {
 							SlavicDivider()
 						}
 						items(
-							items = uiState.data.favorites,
+							items = state.data,
 							key = { favorite -> favorite.id },
 							contentType = { favorite -> favorite.category }
 						) { favorite ->
@@ -335,7 +331,7 @@ fun PreviewFavoriteScreenContentLoading() {
 			onBack = {},
 			onItemClick = {},
 			onCategorySelected = {},
-			uiState = UiState.Loading()
+			uiState = FavoriteUiState()
 		)
 	}
 }
