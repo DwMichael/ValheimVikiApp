@@ -100,21 +100,7 @@ class CraftingListScreenTest {
 
 
 	@Test
-	fun craftingListViewModel_chipSelectedChestArmor_isNull() = runTest {
-		val fakeCraftingObjectList: List<CraftingObject> = List(4) { index ->
-			CraftingObject(
-				id = index.toString(),
-				name = "Test Crafting Object",
-				subCategory = "Chest",
-				imageUrl = "",
-				category = "",
-				description = "",
-				order = index,
-			)
-		}
-
-		whenever(getLocalCraftingObjectsUseCase()).thenReturn(flowOf(fakeCraftingObjectList))
-
+	fun craftingListViewModel_chipSelected_isNull() = runTest {
 		val viewModel =
 			CraftingListViewModel(craftingUseCases, connectivityObserver, Dispatchers.Default)
 
