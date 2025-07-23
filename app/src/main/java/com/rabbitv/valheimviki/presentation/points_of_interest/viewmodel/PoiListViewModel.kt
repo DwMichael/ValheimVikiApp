@@ -22,8 +22,8 @@ import kotlinx.coroutines.flow.stateIn
 
 @HiltViewModel
 class PoiListViewModel @Inject constructor(
-	private val pointOfInterestUseCases: PointOfInterestUseCases,
-	private val connectivityObserver: NetworkConnectivity,
+	val pointOfInterestUseCases: PointOfInterestUseCases,
+	val connectivityObserver: NetworkConnectivity,
 ) : ViewModel() {
 	private val _selectedSubCategory =
 		MutableStateFlow<PointOfInterestSubCategory>(PointOfInterestSubCategory.FORSAKEN_ALTAR)

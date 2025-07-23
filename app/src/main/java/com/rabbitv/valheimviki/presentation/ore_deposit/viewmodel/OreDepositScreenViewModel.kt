@@ -17,52 +17,47 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
-data class OreDepositUIState(
-    val oreDeposits: List<OreDeposit> = emptyList(),
-    val error: String? = null,
-    val isLoading: Boolean = false
-)
 
 @HiltViewModel
 class OreDepositScreenViewModel @Inject constructor(
-    private val oreDepositUseCases: OreDepositUseCases,
-    private val connectivityObserver: NetworkConnectivity,
+	val oreDepositUseCases: OreDepositUseCases,
+	val connectivityObserver: NetworkConnectivity,
 ) : ViewModel() {
 
-    val uiState: StateFlow<UiListState<OreDeposit>> = combine(
-        oreDepositUseCases.getLocalOreDepositsUseCase(),
-        connectivityObserver.isConnected.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = false
-        )
-    ) { oreDeposits, isConnected ->
-        if (isConnected) {
-            if (oreDeposits.isNotEmpty()) {
-                UiListState.Success(oreDeposits)
-            } else {
-                UiListState.Loading
-            }
-        } else {
-            if (oreDeposits.isNotEmpty()) {
-                UiListState.Success(oreDeposits)
-            } else {
-                UiListState.Error(
-                    "No internet connection and no local data available. Try to connect to the internet again.",
-                    ErrorType.INTERNET_CONNECTION
-                )
-            }
-        }
-    }.onStart {
-        emit(UiListState.Loading)
-    }.catch { e ->
-        Log.e("OreDepositListVM", "Error in uiState flow", e)
-        emit(UiListState.Error(e.message ?: "An unknown error occurred"))
-    }.stateIn(
-        viewModelScope,
-        SharingStarted.Companion.WhileSubscribed(5000),
-        UiListState.Loading
-    )
+	val uiState: StateFlow<UiListState<OreDeposit>> = combine(
+		oreDepositUseCases.getLocalOreDepositsUseCase(),
+		connectivityObserver.isConnected.stateIn(
+			scope = viewModelScope,
+			started = SharingStarted.WhileSubscribed(5000),
+			initialValue = false
+		)
+	) { oreDeposits, isConnected ->
+		if (isConnected) {
+			if (oreDeposits.isNotEmpty()) {
+				UiListState.Success(oreDeposits)
+			} else {
+				UiListState.Loading
+			}
+		} else {
+			if (oreDeposits.isNotEmpty()) {
+				UiListState.Success(oreDeposits)
+			} else {
+				UiListState.Error(
+					"No internet connection and no local data available. Try to connect to the internet again.",
+					ErrorType.INTERNET_CONNECTION
+				)
+			}
+		}
+	}.onStart {
+		emit(UiListState.Loading)
+	}.catch { e ->
+		Log.e("OreDepositListVM", "Error in uiState flow", e)
+		emit(UiListState.Error(e.message ?: "An unknown error occurred"))
+	}.stateIn(
+		viewModelScope,
+		SharingStarted.Companion.WhileSubscribed(5000),
+		UiListState.Loading
+	)
 
 
 }
