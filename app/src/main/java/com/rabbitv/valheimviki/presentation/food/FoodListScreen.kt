@@ -27,7 +27,7 @@ import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Rat
 import com.composables.icons.lucide.Skull
 import com.composables.icons.lucide.User
-import com.rabbitv.valheimviki.domain.model.ui_state.category_state.UiCategoryState
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
@@ -35,16 +35,17 @@ import com.rabbitv.valheimviki.presentation.components.floating_action_button.Cu
 import com.rabbitv.valheimviki.presentation.components.list.ListContent
 import com.rabbitv.valheimviki.presentation.components.segmented.SegmentedButtonSingleSelect
 import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerListEffect
+import com.rabbitv.valheimviki.presentation.food.model.FoodListUiEvent
 import com.rabbitv.valheimviki.presentation.food.model.FoodSegmentOption
 import com.rabbitv.valheimviki.presentation.food.viewmodel.FoodListViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
-import com.rabbitv.valheimviki.utils.toAppCategory
 import kotlinx.coroutines.launch
 
 
 @Composable
 fun FoodListScreen(
-	modifier: Modifier, paddingValues: PaddingValues,
+	modifier: Modifier,
+	paddingValues: PaddingValues,
 	onItemClick: (destination: DetailDestination) -> Unit,
 	viewModel: FoodListViewModel = hiltViewModel()
 ) {
@@ -59,7 +60,9 @@ fun FoodListScreen(
 	val backButtonVisibleState by remember {
 		derivedStateOf { lazyListState.firstVisibleItemIndex >= 2 }
 	}
-
+	val handleFavoriteItemClick = remember {
+		NavigationHelper.createItemDetailClickHandler(onItemClick)
+	}
 	Surface(
 		color = Color.Transparent,
 		modifier = Modifier
@@ -76,7 +79,7 @@ fun FoodListScreen(
 					options = FoodSegmentOption.entries,
 					selectedOption = uiState.selectedCategory,
 					onOptionSelected = {
-						viewModel.onCategorySelected(it)
+						viewModel.onEvent(FoodListUiEvent.CategorySelected(it))
 						scope.launch {
 							lazyListState.animateScrollToItem(0)
 						}
@@ -85,22 +88,16 @@ fun FoodListScreen(
 				)
 				Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
 				Box(modifier = Modifier.fillMaxSize()) {
-					when (val state = uiState) {
-						is UiCategoryState.Loading -> {
+					when (val state = uiState.foodState) {
+						is UIState.Loading -> {
 							Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
 							ShimmerListEffect()
 						}
 
-						is UiCategoryState.Error -> EmptyScreen(errorMessage = state.message.toString())
-						is UiCategoryState.Success -> ListContent(
-							items = state.list,
-							clickToNavigate = { itemData ->
-								val destination = NavigationHelper.routeToDetailScreen(
-									itemData,
-									itemData.category.toAppCategory()
-								)
-								onItemClick(destination)
-							},
+						is UIState.Error -> EmptyScreen(errorMessage = state.message)
+						is UIState.Success -> ListContent(
+							items = state.data,
+							clickToNavigate = handleFavoriteItemClick,
 							lazyListState = lazyListState,
 							horizontalPadding = 0.dp,
 							imageScale = ContentScale.Fit
