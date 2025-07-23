@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -37,7 +36,7 @@ import com.composables.icons.lucide.TreeDeciduous
 import com.composables.icons.lucide.Trophy
 import com.rabbitv.valheimviki.domain.model.material.MaterialSubCategory
 import com.rabbitv.valheimviki.domain.model.material.MaterialSubType
-import com.rabbitv.valheimviki.domain.model.ui_state.category_chip_state.UiCategoryChipState
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
@@ -47,9 +46,9 @@ import com.rabbitv.valheimviki.presentation.components.floating_action_button.Cu
 import com.rabbitv.valheimviki.presentation.components.list.ListContent
 import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerListEffect
 import com.rabbitv.valheimviki.presentation.components.topbar.SimpleTopBar
+import com.rabbitv.valheimviki.presentation.material.model.MaterialUiEvent
 import com.rabbitv.valheimviki.presentation.material.viewmodel.MaterialListViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
-import com.rabbitv.valheimviki.utils.toAppCategory
 import kotlinx.coroutines.launch
 
 class MaterialChip(
@@ -58,14 +57,13 @@ class MaterialChip(
 	override val label: String
 ) : ChipData<MaterialSubType>
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun MaterialListScreen(
 	onBackClick: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
 	viewModel: MaterialListViewModel,
 ) {
-
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 	val lazyListState = rememberLazyListState()
 	val scope = rememberCoroutineScope()
@@ -73,10 +71,12 @@ fun MaterialListScreen(
 	val backButtonVisibleState by remember {
 		derivedStateOf { lazyListState.firstVisibleItemIndex >= 2 }
 	}
-
+	val handleFavoriteItemClick = remember {
+		NavigationHelper.createItemDetailClickHandler(onItemClick)
+	}
 	BackHandler(onBack = {
-		viewModel.onCategorySelected(null)
-		viewModel.onTypeSelected(null)
+		viewModel.onEvent(MaterialUiEvent.CategorySelected(null))
+		viewModel.onEvent(MaterialUiEvent.ChipSelected(null))
 		onBackClick()
 	})
 	Scaffold(
@@ -85,8 +85,8 @@ fun MaterialListScreen(
 				modifier = Modifier,
 				title = title,
 				onClick = {
-					viewModel.onCategorySelected(null)
-					viewModel.onTypeSelected(null)
+					viewModel.onEvent(MaterialUiEvent.CategorySelected(null))
+					viewModel.onEvent(MaterialUiEvent.ChipSelected(null))
 					onBackClick()
 				}
 			)
@@ -106,8 +106,8 @@ fun MaterialListScreen(
 		},
 		floatingActionButtonPosition = FabPosition.End,
 		content = { innerScaffoldPadding ->
-			when (val currentState = uiState) {
-				is UiCategoryChipState.Loading -> {
+			when (val currentState = uiState.materialsUiState) {
+				is UIState.Loading -> {
 					Column(
 						modifier = Modifier
 							.fillMaxSize()
@@ -127,7 +127,13 @@ fun MaterialListScreen(
 					}
 				}
 
-				is UiCategoryChipState.Success -> {
+				is UIState.Error -> {
+					EmptyScreen(
+						errorMessage = currentState.message
+					)
+				}
+
+				is UIState.Success -> {
 					Column(
 						modifier = Modifier
 							.fillMaxSize()
@@ -143,16 +149,16 @@ fun MaterialListScreen(
 							Column(
 								horizontalAlignment = Alignment.CenterHorizontally
 							) {
-								if (currentState.selectedCategory != null) {
+								if (uiState.selectedCategory != null) {
 									SearchFilterBar(
-										chips = getChipsForCategory(currentState.selectedCategory),
-										selectedOption = currentState.selectedChip,
+										chips = getChipsForCategory(uiState.selectedCategory),
+										selectedOption = uiState.selectedChip,
 										onSelectedChange = { _, subCategoryType ->
-											if (currentState.selectedChip == subCategoryType) {
-												viewModel.onTypeSelected(null)
-											} else {
-												viewModel.onTypeSelected(subCategoryType)
-											}
+											viewModel.onEvent(
+												MaterialUiEvent.ChipSelected(
+													subCategoryType
+												)
+											)
 										},
 										modifier = Modifier,
 									)
@@ -163,16 +169,10 @@ fun MaterialListScreen(
 										)
 									)
 								}
-								if (currentState.selectedCategory != null) {
+								if (uiState.selectedCategory != null) {
 									ListContent(
-										items = currentState.list,
-										clickToNavigate = { itemData ->
-											val destination = NavigationHelper.routeToDetailScreen(
-												itemData,
-												itemData.category.toAppCategory()
-											)
-											onItemClick(destination)
-										},
+										items = currentState.data,
+										clickToNavigate = handleFavoriteItemClick,
 										lazyListState = lazyListState,
 										imageScale = ContentScale.Fit,
 										horizontalPadding = 0.dp,
@@ -183,12 +183,6 @@ fun MaterialListScreen(
 						}
 					}
 				}
-
-				is UiCategoryChipState.Error -> {
-					EmptyScreen(
-						errorMessage = currentState.message
-					)
-				}
 			}
 		}
 	)
@@ -196,8 +190,8 @@ fun MaterialListScreen(
 
 
 @Composable
-private fun getChipsForCategory(category: MaterialSubCategory?): List<MaterialChip> { // Changed to nullable
-	return when (category) { // category can now be null
+private fun getChipsForCategory(category: MaterialSubCategory?): List<MaterialChip> {
+	return when (category) {
 		MaterialSubCategory.BOSS_DROP -> listOf(
 			MaterialChip(
 				MaterialSubType.ITEM,

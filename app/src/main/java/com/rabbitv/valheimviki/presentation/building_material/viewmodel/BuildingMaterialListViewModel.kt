@@ -50,9 +50,15 @@ class BuildingMaterialListViewModel @Inject constructor(
 			if (category == null) {
 				return@combine emptyList()
 			}
+
+			if (type == null) {
+				return@combine all.filter { it.subCategory == category.toString() }
+					.sortedBy { it.order }
+			}
+
 			all
 				.filter { it.subCategory == category.toString() }
-				.filter { type == null || it.subType == type.toString() }
+				.filter { it.subType == type.toString() }
 				.sortedBy { it.order }
 		}.flowOn(defaultDispatcher)
 			.onCompletion { error -> println("Error -> ${error?.message}") }
