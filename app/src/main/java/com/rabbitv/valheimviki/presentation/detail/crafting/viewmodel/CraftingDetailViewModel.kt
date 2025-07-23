@@ -51,7 +51,7 @@ class CraftingDetailViewModel @Inject constructor(
 	private val favoriteUseCases: FavoriteUseCases,
 	private val _savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
-	//TODO MUST FIND THE WAY TO OPTIMALIZE IT
+	//TODO MUST FIND THE WAY TO OPTIMIZE IT
 	private val _craftingObjectId: String = checkNotNull(_savedStateHandle[CRAFTING_KEY])
 	private val _craftingObject = MutableStateFlow<CraftingObject?>(null)
 	private val _craftingUpgraderObjects = MutableStateFlow<List<CraftingProducts>>(emptyList())
