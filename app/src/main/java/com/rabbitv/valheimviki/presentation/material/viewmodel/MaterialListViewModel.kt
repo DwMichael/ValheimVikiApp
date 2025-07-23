@@ -28,8 +28,8 @@ import kotlinx.coroutines.flow.update
 
 @HiltViewModel
 class MaterialListViewModel @Inject constructor(
-	private val materialUseCases: MaterialUseCases,
-	private val connectivityObserver: NetworkConnectivity,
+	val materialUseCases: MaterialUseCases,
+	val connectivityObserver: NetworkConnectivity,
 	@param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 	private val _selectedSubCategory =
