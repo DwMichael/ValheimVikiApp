@@ -3,95 +3,105 @@ package com.rabbitv.valheimviki.presentation.crafting.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rabbitv.valheimviki.domain.model.armor.Armor
-import com.rabbitv.valheimviki.domain.model.armor.ArmorSubCategory
+import com.rabbitv.valheimviki.R.string.error_no_connection_with_empty_list_message
+import com.rabbitv.valheimviki.di.qualifiers.DefaultDispatcher
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingSubCategory
-import com.rabbitv.valheimviki.domain.model.ui_state.category_state.UiCategoryState
-import com.rabbitv.valheimviki.domain.repository.ArmorRepository
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.domain.repository.NetworkConnectivity
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.CraftingObjectUseCases
+import com.rabbitv.valheimviki.presentation.crafting.model.CraftingListUiEvent
+import com.rabbitv.valheimviki.presentation.crafting.model.CraftingListUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @Suppress("UNCHECKED_CAST")
 @HiltViewModel
 class CraftingListViewModel @Inject constructor(
-    private val craftingObjectUseCases: CraftingObjectUseCases,
-    private val connectivityObserver: NetworkConnectivity,
+	private val craftingObjectUseCases: CraftingObjectUseCases,
+	private val connectivityObserver: NetworkConnectivity,
+	@param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
 
-    private val _selectedChip = MutableStateFlow<CraftingSubCategory?>(null)
+	private val _selectedChip = MutableStateFlow<CraftingSubCategory?>(null)
 
 
-    private val _craftingObjects: StateFlow<List<CraftingObject>> =
-        combine(
-            craftingObjectUseCases.getLocalCraftingObjectsUseCase(),
-            _selectedChip,
-        ) { allCraftingObjects, chip ->
-            val filtered = allCraftingObjects.filter { chip == null || it.subCategory == chip.toString() }
-
-            if (chip == null) {
-                filtered.sortedBy { it.name }
-            } else {
-                filtered.sortedBy { it.order }
-            }
-        }.flowOn(Dispatchers.Default)
-            .stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5000), emptyList())
-
-    val uiState: StateFlow<UiCategoryState<CraftingSubCategory?, CraftingObject>> = combine(
-        _craftingObjects,
-        _selectedChip,
-        connectivityObserver.isConnected.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.Companion.WhileSubscribed(5000),
-            initialValue = false
-        )
-    ) { craftingObjects, selectedChip, isConnected ->
-        if (isConnected) {
-            if (craftingObjects.isNotEmpty()) {
-                UiCategoryState.Success(selectedChip, craftingObjects)
-            } else {
-                UiCategoryState.Loading(selectedChip)
-            }
-        } else {
-            if (craftingObjects.isNotEmpty()) {
-                UiCategoryState.Success(selectedChip, craftingObjects)
-            } else {
-                UiCategoryState.Error(
-                    selectedChip,
-                    "No internet connection and no local data available. Try to connect to the internet again.",
-                )
-            }
-        }
-    }.onStart {
-        emit(UiCategoryState.Loading(_selectedChip.value))
-    }.catch { e ->
-        Log.e("CraftingObjectListVM", "Error in uiState flow", e)
-        emit(
-            UiCategoryState.Error(
-                _selectedChip.value,
-                e.message ?: "An unknown error occurred"
-            )
-        )
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.Companion.WhileSubscribed(5000),
-        initialValue = UiCategoryState.Loading(_selectedChip.value)
-    )
+	internal val craftingObjects: Flow<List<CraftingObject>> =
+		combine(
+			craftingObjectUseCases.getLocalCraftingObjectsUseCase(),
+			_selectedChip,
+		) { allCraftingObjects, chip ->
+			if (chip == null) {
+				return@combine allCraftingObjects.sortedBy { it.name }
+			}
+			allCraftingObjects.filter { it.subCategory == chip.toString() }.sortedBy { it.order }
+		}.flowOn(defaultDispatcher)
 
 
-    fun onChipSelected(chip: CraftingSubCategory?) {
-        _selectedChip.value = chip
-    }
+	val uiState: StateFlow<CraftingListUiState> = combine(
+		craftingObjects,
+		_selectedChip,
+		connectivityObserver.isConnected.stateIn(
+			scope = viewModelScope,
+			started = SharingStarted.Companion.WhileSubscribed(5000),
+			initialValue = false
+		)
+	) { craftingObjects, selectedChip, isConnected ->
+		when {
+			craftingObjects.isNotEmpty() -> CraftingListUiState(
+				selectedChip = selectedChip,
+				craftingListUiState = UIState.Success(craftingObjects),
+
+				)
+
+			isConnected -> CraftingListUiState(
+				selectedChip = selectedChip,
+				craftingListUiState = UIState.Loading
+			)
+
+			else -> CraftingListUiState(
+				selectedChip = selectedChip,
+				craftingListUiState = UIState.Error(error_no_connection_with_empty_list_message.toString())
+			)
+		}
+	}.catch { e ->
+		Log.e("CraftingListVM", "Error in uiState flow", e)
+		emit(
+			CraftingListUiState(
+				selectedChip = _selectedChip.value,
+				craftingListUiState = UIState.Error(e.message ?: "An unknown error occurred")
+			)
+		)
+	}.stateIn(
+		viewModelScope,
+		SharingStarted.Companion.WhileSubscribed(5000),
+		initialValue = CraftingListUiState(
+			selectedChip = null,
+			craftingListUiState = UIState.Loading
+		)
+	)
+
+
+	fun onEvent(event: CraftingListUiEvent) {
+		when (event) {
+			is CraftingListUiEvent.ChipSelected -> {
+				if (_selectedChip.value == event.chip) {
+					_selectedChip.update { null }
+				} else {
+					_selectedChip.update { event.chip }
+				}
+			}
+		}
+	}
 }
