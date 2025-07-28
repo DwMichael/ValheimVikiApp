@@ -38,8 +38,11 @@ class ArmorListViewModel @Inject constructor(
 
 	internal val armors: Flow<List<Armor>> = armorUseCases.getLocalArmorsUseCase()
 		.combine(_selectedChip) { allArmors, chip ->
+			if (chip == null) {
+				return@combine allArmors
+			}
 			allArmors
-				.filter { chip == null || it.subCategory == chip.toString() }
+				.filter { it.subCategory == chip.toString() }
 		}.flowOn(defaultDispatcher)
 		.onCompletion { error -> println("Error -> ${error?.message}") }
 		.catch { println("Caught -> ${it.message}") }
@@ -93,7 +96,11 @@ class ArmorListViewModel @Inject constructor(
 	fun onEvent(event: ArmorUiEvent) {
 		when (event) {
 			is ArmorUiEvent.ChipSelected -> {
-				_selectedChip.update { event.chip }
+				if (_selectedChip.value == event.chip) {
+					_selectedChip.update { null }
+				} else {
+					_selectedChip.update { event.chip }
+				}
 			}
 		}
 	}

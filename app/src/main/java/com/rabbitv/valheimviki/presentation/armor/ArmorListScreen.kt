@@ -116,11 +116,7 @@ fun ArmorListDisplay(
 			chips = getChipsForCategory(),
 			selectedOption = uiState.selectedChip,
 			onSelectedChange = { _, subCategory ->
-				if (uiState.selectedChip == subCategory) {
-					onChipSelected(null)
-				} else {
-					onChipSelected(subCategory)
-				}
+				onChipSelected(subCategory)
 			},
 			modifier = Modifier,
 		)
