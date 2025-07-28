@@ -3,42 +3,47 @@ package com.rabbitv.valheimviki.presentation.points_of_interest.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rabbitv.valheimviki.R.string.error_no_connection_with_empty_list_message
+import com.rabbitv.valheimviki.di.qualifiers.DefaultDispatcher
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterestSubCategory
-import com.rabbitv.valheimviki.domain.model.ui_state.category_state.UiCategoryState
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.domain.repository.NetworkConnectivity
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.PointOfInterestUseCases
+import com.rabbitv.valheimviki.presentation.points_of_interest.model.PoiListUiEvent
+import com.rabbitv.valheimviki.presentation.points_of_interest.model.PoiListUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 
 @HiltViewModel
 class PoiListViewModel @Inject constructor(
 	val pointOfInterestUseCases: PointOfInterestUseCases,
 	val connectivityObserver: NetworkConnectivity,
+	@param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 	private val _selectedSubCategory =
 		MutableStateFlow<PointOfInterestSubCategory>(PointOfInterestSubCategory.FORSAKEN_ALTAR)
 
-	private val _poiList: StateFlow<List<PointOfInterest>> =
-		combine(
-			pointOfInterestUseCases.getLocalPointOfInterestUseCase(),
+	private val _poiList: Flow<List<PointOfInterest>> =
+		pointOfInterestUseCases.getLocalPointOfInterestUseCase().combine(
 			_selectedSubCategory,
 		) { all, category ->
 			all.filter { it.subCategory == category.toString() }
 				.sortedBy { it.order }
-		}.flowOn(Dispatchers.Default)
-			.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5000), emptyList())
+		}.flowOn(defaultDispatcher)
 
-	val uiState: StateFlow<UiCategoryState<PointOfInterestSubCategory, PointOfInterest>> = combine(
+
+	val uiState: StateFlow<PoiListUiState> = combine(
 		_poiList,
 		_selectedSubCategory,
 		connectivityObserver.isConnected.stateIn(
@@ -47,40 +52,46 @@ class PoiListViewModel @Inject constructor(
 			initialValue = false
 		),
 	) { poiList, subCategory, isConnected ->
-		if (isConnected) {
-			if (poiList.isNotEmpty()) {
-				UiCategoryState.Success(subCategory, poiList)
-			} else {
-				UiCategoryState.Loading(subCategory)
-			}
-		} else {
-			if (poiList.isNotEmpty()) {
-				UiCategoryState.Success(subCategory, poiList)
-			} else {
-				UiCategoryState.Error(
-					subCategory,
-					"No internet connection and no local data available. Try to connect to the internet again.",
+		when {
+			poiList.isNotEmpty() -> {
+				PoiListUiState(
+					selectedSubCategory = subCategory,
+					poiList = UIState.Success(poiList)
 				)
 			}
-		}
 
-	}.onStart {
-		emit(UiCategoryState.Loading(_selectedSubCategory.value))
+			isConnected -> PoiListUiState(
+				selectedSubCategory = subCategory,
+				poiList = UIState.Loading
+			)
+
+			else -> PoiListUiState(
+				selectedSubCategory = subCategory,
+				poiList = UIState.Error(error_no_connection_with_empty_list_message.toString())
+			)
+		}
 	}.catch { e ->
-		Log.e("PointOfInterestListVM", "Error in uiState flow", e)
+		Log.e("PoiListVM", "Error in uiState flow", e)
 		emit(
-			UiCategoryState.Error(
-				_selectedSubCategory.value,
-				e.message ?: "An unknown error occurred"
+			PoiListUiState(
+				selectedSubCategory = _selectedSubCategory.value,
+				poiList = UIState.Error(e.message ?: "An unknown error occurred")
 			)
 		)
 	}.stateIn(
 		viewModelScope,
 		SharingStarted.Companion.WhileSubscribed(5000),
-		UiCategoryState.Loading(_selectedSubCategory.value)
+		initialValue = PoiListUiState(
+			selectedSubCategory = PointOfInterestSubCategory.FORSAKEN_ALTAR,
+			poiList = UIState.Loading
+		)
 	)
 
-	fun onCategorySelected(cat: PointOfInterestSubCategory) {
-		_selectedSubCategory.value = cat
+	fun onEvent(event: PoiListUiEvent) {
+		when (event) {
+			is PoiListUiEvent.CategorySelected -> {
+				_selectedSubCategory.update { event.category }
+			}
+		}
 	}
 }
