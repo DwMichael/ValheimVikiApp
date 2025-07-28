@@ -17,8 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.rabbitv.valheimviki.domain.model.tree.Tree
-import com.rabbitv.valheimviki.domain.model.ui_state.default_list_state.UiListState
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
@@ -39,17 +38,11 @@ fun TreeScreen(
 	viewModel: TreeScreenViewModel = hiltViewModel(),
 	animatedVisibilityScope: AnimatedVisibilityScope
 ) {
-
-
-	val treeUIState: UiListState<Tree> by viewModel.uiState.collectAsStateWithLifecycle()
-
-
+	val treeUIState by viewModel.uiState.collectAsStateWithLifecycle()
 	val lazyGridState = rememberLazyGridState()
 	val handleItemClick = remember {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
 	}
-
-
 	Box(
 		modifier = modifier
 	) {
@@ -63,11 +56,11 @@ fun TreeScreen(
 		) {
 			when (val state = treeUIState) {
 
-				is UiListState.Loading -> {
+				is UIState.Loading -> {
 					ShimmerGridEffect()
 				}
 
-				is UiListState.Error -> {
+				is UIState.Error -> {
 					Box(
 						modifier = Modifier.testTag("EmptyScreenOreDeposit"),
 					) {
@@ -83,13 +76,13 @@ fun TreeScreen(
 					}
 				}
 
-				is UiListState.Success -> {
+				is UIState.Success -> {
 					Box(
 						modifier = Modifier.testTag("OreDepositGrid"),
 					) {
 						DefaultGrid(
 							modifier = Modifier,
-							items = state.list,
+							items = state.data,
 							onItemClick = handleItemClick,
 							numbersOfColumns = BIOME_GRID_COLUMNS,
 							height = ITEM_HEIGHT_TWO_COLUMNS,
