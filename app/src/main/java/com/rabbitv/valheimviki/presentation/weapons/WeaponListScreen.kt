@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,7 +32,7 @@ import com.composables.icons.lucide.Wand
 import com.composables.icons.lucide.WandSparkles
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.ui_state.category_chip_state.UiCategoryChipState
-import com.rabbitv.valheimviki.domain.model.weapon.Weapon
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.domain.model.weapon.WeaponSubCategory
 import com.rabbitv.valheimviki.domain.model.weapon.WeaponSubType
 import com.rabbitv.valheimviki.navigation.DetailDestination
@@ -43,11 +44,12 @@ import com.rabbitv.valheimviki.presentation.components.list.ListContent
 import com.rabbitv.valheimviki.presentation.components.segmented.SegmentedButtonSingleSelect
 import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerListEffect
 import com.rabbitv.valheimviki.presentation.weapons.model.WeaponSegmentOption
+import com.rabbitv.valheimviki.presentation.weapons.model.WeaponUiEvent
+import com.rabbitv.valheimviki.presentation.weapons.model.WeaponUiState
 import com.rabbitv.valheimviki.presentation.weapons.viewmodel.WeaponListViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
-import com.rabbitv.valheimviki.utils.toAppCategory
 
 
 data class WeaponChip(
@@ -64,8 +66,10 @@ fun WeaponListScreen(
 	viewModel: WeaponListViewModel = hiltViewModel()
 ) {
 	val weaponListUiState by viewModel.uiState.collectAsStateWithLifecycle()
-	val onCategorySelected = { cat: WeaponSubCategory -> viewModel.onCategorySelected(cat) }
-	val onChipSelected = { chip: WeaponSubType? -> viewModel.onChipSelected(chip) }
+	val onCategorySelected =
+		{ cat: WeaponSubCategory -> viewModel.onEvent(WeaponUiEvent.CategorySelected(cat)) }
+	val onChipSelected =
+		{ chip: WeaponSubType? -> viewModel.onEvent(WeaponUiEvent.ChipSelected(chip)) }
 	WeaponListStateRenderer(
 		weaponListUiState = weaponListUiState,
 		onCategorySelected = onCategorySelected,
@@ -80,7 +84,7 @@ fun WeaponListScreen(
 
 @Composable
 fun WeaponListStateRenderer(
-	weaponListUiState: UiCategoryChipState<WeaponSubCategory, WeaponSubType?, Weapon>,
+	weaponListUiState: WeaponUiState,
 	onCategorySelected: (WeaponSubCategory) -> Unit,
 	onChipSelected: (WeaponSubType?) -> Unit,
 	paddingValues: PaddingValues,
@@ -108,7 +112,7 @@ fun WeaponListStateRenderer(
 
 @Composable
 fun WeaponListDisplay(
-	weaponListUiState: UiCategoryChipState<WeaponSubCategory, WeaponSubType?, Weapon>,
+	weaponListUiState: WeaponUiState,
 	onCategorySelected: (WeaponSubCategory) -> Unit,
 	onChipSelected: (WeaponSubType?) -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
@@ -116,7 +120,9 @@ fun WeaponListDisplay(
 	val lazyListState = rememberLazyListState()
 
 	getWeaponCategoryIndex(category = weaponListUiState.selectedCategory)
-
+	val handleItemClick = remember {
+		NavigationHelper.createItemDetailClickHandler(onItemClick)
+	}
 	Column(
 		horizontalAlignment = Alignment.Start
 	) {
@@ -145,10 +151,10 @@ fun WeaponListDisplay(
 
 
 		Spacer(Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp, vertical = 5.dp))
-		when (val state = weaponListUiState) {
-			is UiCategoryChipState.Loading<WeaponSubCategory, WeaponSubType?> -> ShimmerListEffect()
+		when (val state = weaponListUiState.weaponUiState) {
+			is UIState.Loading -> ShimmerListEffect()
 
-			is UiCategoryChipState.Error<WeaponSubCategory, WeaponSubType?> -> {
+			is UIState.Error -> {
 				Log.e("WeaponListScreen", "Error: ${state.message}")
 				Box(
 					modifier = Modifier.testTag("EmptyScreenWeaponList"),
@@ -165,16 +171,10 @@ fun WeaponListDisplay(
 				}
 			}
 
-			is UiCategoryChipState.Success<WeaponSubCategory, WeaponSubType?, Weapon> -> {
+			is UIState.Success -> {
 				ListContent(
-					items = state.list,
-					clickToNavigate = { itemData ->
-						val destination = NavigationHelper.routeToDetailScreen(
-							itemData,
-							itemData.category.toAppCategory()
-						)
-						onItemClick(destination)
-					},
+					items = state.data,
+					clickToNavigate = handleItemClick,
 					lazyListState = lazyListState,
 					imageScale = ContentScale.Fit,
 					horizontalPadding = 0.dp
@@ -322,10 +322,10 @@ fun PreviewWeaponListStateRenderer() {
 
 	ValheimVikiAppTheme {
 		WeaponListStateRenderer(
-			weaponListUiState = UiCategoryChipState.Success(
+			weaponListUiState = WeaponUiState(
 				selectedCategory = WeaponSubCategory.MELEE_WEAPON,
-				selectedChip = WeaponSubType.SWORD,
-				list = FakeData.fakeWeaponList,
+				selectedChip = null,
+				weaponUiState = UIState.Loading
 			),
 			paddingValues = PaddingValues(),
 			modifier = Modifier,
