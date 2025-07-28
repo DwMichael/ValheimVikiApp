@@ -27,8 +27,8 @@ import kotlinx.coroutines.flow.update
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class FoodListViewModel @Inject constructor(
-	private val foodUseCases: FoodUseCases,
-	private val connectivityObserver: NetworkConnectivity,
+	val foodUseCases: FoodUseCases,
+	val connectivityObserver: NetworkConnectivity,
 ) : ViewModel() {
 	private val _selectedSubCategory =
 		MutableStateFlow(FoodSubCategory.COOKED_FOOD)
@@ -70,7 +70,7 @@ class FoodListViewModel @Inject constructor(
 		emit(
 			FoodListUiState(
 				selectedCategory = _selectedSubCategory.value,
-				foodState = UIState.Error(e.message ?: "An unknown error occurred")
+				foodState = UIState.Error("An unknown error occurred")
 			)
 		)
 	}.stateIn(
