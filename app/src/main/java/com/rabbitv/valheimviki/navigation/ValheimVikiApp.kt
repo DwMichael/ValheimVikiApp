@@ -406,7 +406,6 @@ fun ValheimNavGraph(
 
 		composable<ListDestination.ItemDestinations.ToolList> {
 			ToolListScreen(
-				modifier = Modifier.padding(10.dp),
 				onItemClick = { destination ->
 					valheimVikiNavController.navigate(destination)
 				},
