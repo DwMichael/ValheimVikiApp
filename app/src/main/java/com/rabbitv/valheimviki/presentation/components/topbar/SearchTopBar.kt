@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.search
+package com.rabbitv.valheimviki.presentation.components.topbar
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.WindowInsets
@@ -15,16 +15,12 @@ import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.X
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
