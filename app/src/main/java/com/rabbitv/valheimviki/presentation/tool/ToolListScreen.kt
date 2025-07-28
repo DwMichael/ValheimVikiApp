@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -33,7 +32,7 @@ import com.composables.icons.lucide.Wheat
 import com.composables.icons.lucide.Wrench
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.item_tool.ToolSubCategory
-import com.rabbitv.valheimviki.domain.model.ui_state.category_state.UiCategoryState
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
@@ -42,16 +41,14 @@ import com.rabbitv.valheimviki.presentation.components.floating_action_button.Cu
 import com.rabbitv.valheimviki.presentation.components.list.ListContent
 import com.rabbitv.valheimviki.presentation.components.shimmering_effect.ShimmerListEffect
 import com.rabbitv.valheimviki.presentation.tool.model.ToolChip
+import com.rabbitv.valheimviki.presentation.tool.model.ToolListUiEvent
 import com.rabbitv.valheimviki.presentation.tool.viewmodel.ToolListViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
-import com.rabbitv.valheimviki.utils.toAppCategory
 import kotlinx.coroutines.launch
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ToolListScreen(
-	modifier: Modifier,
 	onItemClick: (destination: DetailDestination) -> Unit,
 	paddingValues: PaddingValues,
 	viewModel: ToolListViewModel = hiltViewModel()
@@ -62,7 +59,9 @@ fun ToolListScreen(
 	val backButtonVisibleState by remember {
 		derivedStateOf { lazyListState.firstVisibleItemIndex >= 2 }
 	}
-
+	val handleFavoriteItemClick = remember {
+		NavigationHelper.createItemDetailClickHandler(onItemClick)
+	}
 
 	Surface(
 		color = Color.Transparent,
@@ -80,33 +79,23 @@ fun ToolListScreen(
 					chips = getChipsForCategory(),
 					selectedOption = uiState.selectedCategory,
 					onSelectedChange = { _, subCategory ->
-						if (uiState.selectedCategory == subCategory) {
-							viewModel.onChipSelected(null)
-						} else {
-							viewModel.onChipSelected(subCategory)
-						}
+						viewModel.onEvent(ToolListUiEvent.CategorySelected(subCategory))
 					},
 					modifier = Modifier,
 				)
 				Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
 
 				Box(modifier = Modifier.fillMaxSize()) {
-					when (val state = uiState) {
-						is UiCategoryState.Error -> EmptyScreen(errorMessage = state.message.toString())
-						is UiCategoryState.Loading -> {
+					when (val state = uiState.toolState) {
+						is UIState.Error -> EmptyScreen(errorMessage = state.message)
+						is UIState.Loading -> {
 							Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
 							ShimmerListEffect()
 						}
 
-						is UiCategoryState.Success -> ListContent(
-							items = state.list,
-							clickToNavigate = { itemData ->
-								val destination = NavigationHelper.routeToDetailScreen(
-									itemData,
-									itemData.category.toAppCategory()
-								)
-								onItemClick(destination)
-							},
+						is UIState.Success -> ListContent(
+							items = state.data,
+							clickToNavigate = handleFavoriteItemClick,
 							lazyListState = lazyListState,
 							imageScale = ContentScale.Fit,
 							horizontalPadding = 0.dp
@@ -114,7 +103,6 @@ fun ToolListScreen(
 					}
 				}
 			}
-
 			CustomFloatingActionButton(
 				showBackButton = backButtonVisibleState,
 				onClick = {
