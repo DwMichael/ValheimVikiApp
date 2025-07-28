@@ -17,8 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
-import com.rabbitv.valheimviki.domain.model.ui_state.default_list_state.UiListState
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.EmptyScreen
@@ -39,7 +38,7 @@ fun OreDepositScreen(
 	viewModel: OreDepositScreenViewModel = hiltViewModel(),
 	animatedVisibilityScope: AnimatedVisibilityScope
 ) {
-	val oreDepositUIState: UiListState<OreDeposit> by viewModel.uiState.collectAsStateWithLifecycle()
+	val oreDepositUIState by viewModel.uiState.collectAsStateWithLifecycle()
 	val lazyGridState = rememberLazyGridState()
 	val handleItemClick = remember {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
@@ -58,11 +57,11 @@ fun OreDepositScreen(
 
 			when (val state = oreDepositUIState) {
 
-				is UiListState.Loading -> {
+				is UIState.Loading -> {
 					ShimmerGridEffect()
 				}
 
-				is UiListState.Error -> {
+				is UIState.Error -> {
 					Box(
 						modifier = Modifier.testTag("EmptyScreenOreDeposit"),
 					) {
@@ -78,13 +77,13 @@ fun OreDepositScreen(
 					}
 				}
 
-				is UiListState.Success -> {
+				is UIState.Success -> {
 					Box(
 						modifier = Modifier.testTag("OreDepositGrid"),
 					) {
 						DefaultGrid(
 							modifier = Modifier,
-							items = state.list,
+							items = state.data,
 							onItemClick = handleItemClick,
 							numbersOfColumns = BIOME_GRID_COLUMNS,
 							height = ITEM_HEIGHT_TWO_COLUMNS,
