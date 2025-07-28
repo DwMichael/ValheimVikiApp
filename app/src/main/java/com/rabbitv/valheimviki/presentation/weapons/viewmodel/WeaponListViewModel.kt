@@ -39,7 +39,7 @@ class WeaponListViewModel @Inject constructor(
 	private val _selectedChip = MutableStateFlow<WeaponSubType?>(null)
 
 
-	internal val weaponState: Flow<List<Weapon>> =
+	internal val weapons: Flow<List<Weapon>> =
 		combine(
 			weaponRepository.getLocalWeaponsUseCase(),
 			_selectedCategory,
@@ -62,7 +62,7 @@ class WeaponListViewModel @Inject constructor(
 
 	val uiState: StateFlow<WeaponUiState> =
 		combine(
-			weaponState,
+			weapons,
 			_selectedCategory,
 			_selectedChip,
 			connectivityObserver.isConnected.stateIn(

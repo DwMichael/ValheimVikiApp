@@ -1,7 +1,8 @@
 package com.rabbitv.valheimviki.presentation.weapons.viewmodel
 
 import app.cash.turbine.test
-import com.rabbitv.valheimviki.domain.model.ui_state.category_chip_state.UiCategoryChipState
+import com.rabbitv.valheimviki.R.string.error_no_connection_with_empty_list_message
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.domain.model.weapon.Weapon
 import com.rabbitv.valheimviki.domain.model.weapon.WeaponSubCategory
 import com.rabbitv.valheimviki.domain.model.weapon.WeaponSubType
@@ -27,6 +28,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.fail
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @ExtendWith(MockitoExtension::class)
@@ -74,7 +76,7 @@ class WeaponListViewModelTest {
 			getWeaponsByIdsUseCase = getWeaponsByIdsUseCase,
 		)
 
-		viewModel = WeaponListViewModel(weaponUseCases, connectivityObserver)
+		viewModel = WeaponListViewModel(weaponUseCases, connectivityObserver, testDispatcher)
 	}
 
 	@AfterTest
@@ -86,17 +88,16 @@ class WeaponListViewModelTest {
 	fun weaponListViewModel_Initialization_ShouldEmitLoadingState() = runTest {
 
 
-		viewModel = WeaponListViewModel(weaponUseCases, connectivityObserver)
+		viewModel = WeaponListViewModel(weaponUseCases, connectivityObserver, testDispatcher)
 
 		viewModel.uiState.test {
-			assert(awaitItem() is UiCategoryChipState.Loading)
-			cancelAndIgnoreRemainingEvents()
+			assert(awaitItem().weaponUiState is UIState.Loading)
 		}
 	}
 
 
 	@Test
-	fun weaponListViewModel_LoadData_ShouldEmitSuccessState() = runTest {
+	fun weaponListViewModel_uiState_ShouldEmitSuccessState() = runTest {
 		val sword = Weapon(
 			id = 1.toString(),
 			name = "Test Sword",
@@ -113,12 +114,22 @@ class WeaponListViewModelTest {
 			.thenReturn(flowOf(weapons))
 		whenever(connectivityObserver.isConnected).thenReturn(flowOf(true))
 
-		viewModel = WeaponListViewModel(weaponUseCases, connectivityObserver)
-
+		viewModel = WeaponListViewModel(weaponUseCases, connectivityObserver, testDispatcher)
 		viewModel.uiState.test {
-			assert(awaitItem() is UiCategoryChipState.Loading)
-			val success = awaitItem() as UiCategoryChipState.Success
-			assertEquals(weapons, success.list)
+			assert(awaitItem().weaponUiState is UIState.Loading)
+
+			val result = awaitItem()
+
+
+			when (result.weaponUiState) {
+				is UIState.Error -> fail("State should not emit error")
+				is UIState.Loading -> fail("State should have transitioned from Loading to Success")
+				is UIState.Success -> {
+					assert(result.selectedCategory == WeaponSubCategory.MELEE_WEAPON)
+					assertEquals(weapons, result.weaponUiState.data)
+				}
+			}
+
 			cancelAndIgnoreRemainingEvents()
 		}
 	}
@@ -129,15 +140,26 @@ class WeaponListViewModelTest {
 		whenever(connectivityObserver.isConnected)
 			.thenReturn(flowOf(false))
 
-		viewModel = WeaponListViewModel(weaponUseCases, connectivityObserver)
+		viewModel = WeaponListViewModel(weaponUseCases, connectivityObserver, testDispatcher)
 
 		viewModel.uiState.test {
-			awaitItem()
-			val error = awaitItem() as UiCategoryChipState.Error
-			assertEquals(
-				"No internet connection and no local data available. Try to connect to the internet again.",
-				error.message
-			)
+			assert(awaitItem().weaponUiState is UIState.Loading)
+
+			val state = awaitItem()
+
+
+			when (state.weaponUiState) {
+				is UIState.Error -> {
+					assertEquals(
+						error_no_connection_with_empty_list_message.toString(),
+						state.weaponUiState.message
+					)
+				}
+
+				is UIState.Loading -> fail("State should have transitioned from Loading to Error")
+				is UIState.Success -> fail("State should not emit Success")
+			}
+
 			cancelAndIgnoreRemainingEvents()
 		}
 	}
@@ -161,21 +183,23 @@ class WeaponListViewModelTest {
 		whenever(connectivityObserver.isConnected)
 			.thenReturn(flowOf(false))
 
-		viewModel = WeaponListViewModel(weaponUseCases, connectivityObserver)
+		viewModel = WeaponListViewModel(weaponUseCases, connectivityObserver, testDispatcher)
+
 
 		viewModel.uiState.test {
-			assert(awaitItem() is UiCategoryChipState.Loading)
+			assert(awaitItem().weaponUiState is UIState.Loading)
 
-			val potentialError = awaitItem()
-			assert(potentialError is UiCategoryChipState.Error || potentialError is UiCategoryChipState.Success)
+			val result = awaitItem()
 
-			val successState = if (potentialError is UiCategoryChipState.Success) {
-				potentialError
-			} else {
-				awaitItem() as UiCategoryChipState.Success
+			when (result.weaponUiState) {
+				is UIState.Error -> fail("State should not emit error")
+				is UIState.Loading -> fail("State should have transitioned from Loading to Success")
+				is UIState.Success -> {
+					assert(result.selectedCategory == WeaponSubCategory.MELEE_WEAPON)
+					assertEquals(weapons, result.weaponUiState.data)
+				}
 			}
 
-			assertEquals(weapons, successState.list)
 			cancelAndIgnoreRemainingEvents()
 		}
 	}
