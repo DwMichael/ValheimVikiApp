@@ -75,7 +75,7 @@ class FoodListViewModelTest {
 	}
 
 	@Test
-	fun `uiState should emit initial loading state`() = runTest {
+	fun uiState_InitialLoad_EmitsLoadingState() = runTest {
 		// When
 		val viewModel = FoodListViewModel(foodUseCases, connectivityObserver)
 
@@ -86,7 +86,7 @@ class FoodListViewModelTest {
 	}
 
 	@Test
-	fun `selectedCategory should be initialized with COOKED_FOOD`() = runTest {
+	fun selectedCategory_Initialization_IsCookedFood() = runTest {
 		// When
 		val viewModel = FoodListViewModel(foodUseCases, connectivityObserver)
 
@@ -100,7 +100,7 @@ class FoodListViewModelTest {
 	}
 
 	@Test
-	fun `uiState should emit success when data is available`() = runTest {
+	fun uiState_DataAvailable_EmitsSuccess() = runTest {
 		// Given
 		val foodList: List<Food> = List(4) { index ->
 			Food(
@@ -142,7 +142,7 @@ class FoodListViewModelTest {
 	}
 
 	@Test
-	fun `uiState should emit success when data is available with no connection`() = runTest {
+	fun uiState_DataAvailableAndNoConnection_EmitsSuccess() = runTest {
 		// Given
 		whenever(connectivityObserver.isConnected).thenReturn(flowOf(false))
 		val foodList: List<Food> = List(4) { index ->
@@ -185,7 +185,7 @@ class FoodListViewModelTest {
 	}
 
 	@Test
-	fun `uiState should emit error when connection is not available and list is empty`() = runTest {
+	fun uiState_NoConnectionAndListEmpty_EmitsError() = runTest {
 		// Given
 		whenever(getFoodBySubCategoryUseCase(FoodSubCategory.COOKED_FOOD)).thenReturn(
 			flowOf(
@@ -220,7 +220,7 @@ class FoodListViewModelTest {
 	}
 
 	@Test
-	fun `uiState should remain loading when connected and list is empty`() = runTest {
+	fun uiState_ConnectedAndListEmpty_RemainsLoading() = runTest {
 		// Given
 		whenever(connectivityObserver.isConnected).thenReturn(flowOf(true))
 
@@ -235,7 +235,7 @@ class FoodListViewModelTest {
 	}
 
 	@Test
-	fun `foods flow should emit filtered food list when category is selected`() = runTest {
+	fun foodsFlow_CategorySelected_EmitsFilteredFoodList() = runTest {
 		// Given
 		val cookedFoodList = listOf(
 			Food(
@@ -299,7 +299,7 @@ class FoodListViewModelTest {
 	}
 
 	@Test
-	fun `foods flow should handle empty food list`() = runTest {
+	fun foodsFlow_EmptyFoodList_HandlesCorrectly() = runTest {
 		// Given
 		whenever(getFoodBySubCategoryUseCase(FoodSubCategory.COOKED_FOOD)).thenReturn(
 			flowOf(
@@ -316,7 +316,7 @@ class FoodListViewModelTest {
 	}
 
 	@Test
-	fun `foods flow should handle category selection changes correctly`() = runTest {
+	fun foodsFlow_CategorySelectionChanges_HandlesCorrectly() = runTest {
 		// Given
 		val cookedFoodList = listOf(
 			Food(
@@ -390,7 +390,7 @@ class FoodListViewModelTest {
 	}
 
 	@Test
-	fun `foods flow should catch exceptions and emit empty list`() = runTest {
+	fun foodsFlow_CatchesExceptions_EmitsEmptyList() = runTest {
 		// Given
 		whenever(getFoodBySubCategoryUseCase(FoodSubCategory.COOKED_FOOD)).thenReturn(
 			flowOf(
@@ -415,9 +415,9 @@ class FoodListViewModelTest {
 			assertTrue(result.isEmpty())
 		}
 	}
-	
+
 	@Test
-	fun `uiState should handle unknown error when exception message is null`() = runTest {
+	fun uiState_UnknownErrorAndExceptionMessageIsNull_HandlesCorrectly() = runTest {
 		// Given
 		whenever(getFoodBySubCategoryUseCase(FoodSubCategory.COOKED_FOOD)).thenReturn(
 			flow {

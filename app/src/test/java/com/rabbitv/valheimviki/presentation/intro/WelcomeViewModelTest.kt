@@ -62,7 +62,7 @@ class WelcomeViewModelTest {
 	}
 
 	@Test
-	fun `saveOnBoardingState should call use case with true parameter`() = runTest {
+	fun saveOnBoardingState_TrueParameter_CallsUseCase() = runTest {
 		// Given
 		val viewModel = WelcomeViewModel(dataStoreUseCases)
 		val completed = true
@@ -76,7 +76,7 @@ class WelcomeViewModelTest {
 	}
 
 	@Test
-	fun `saveOnBoardingState should call use case with false parameter`() = runTest {
+	fun saveOnBoardingState_FalseParameter_CallsUseCase() = runTest {
 		// Given
 		val viewModel = WelcomeViewModel(dataStoreUseCases)
 		val completed = false
@@ -90,7 +90,7 @@ class WelcomeViewModelTest {
 	}
 
 	@Test
-	fun `saveOnBoardingState should be called multiple times correctly`() = runTest {
+	fun saveOnBoardingState_MultipleCalls_WorksCorrectly() = runTest {
 		// Given
 		val viewModel = WelcomeViewModel(dataStoreUseCases)
 
@@ -106,7 +106,7 @@ class WelcomeViewModelTest {
 	}
 
 	@Test
-	fun `saveOnBoardingState should not throw exception when called`() = runTest {
+	fun saveOnBoardingState_WhenCalled_DoesNotThrowException() = runTest {
 		// Given
 		val viewModel = WelcomeViewModel(dataStoreUseCases)
 
@@ -119,7 +119,7 @@ class WelcomeViewModelTest {
 	}
 
 	@Test
-	fun `WelcomeViewModel should be created successfully with dependencies`() {
+	fun welcomeViewModel_Dependencies_CreatedSuccessfully() {
 		// Given & When
 		WelcomeViewModel(dataStoreUseCases)
 
