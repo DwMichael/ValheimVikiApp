@@ -28,8 +28,8 @@ import kotlinx.coroutines.flow.update
 
 @HiltViewModel
 class MaterialListViewModel @Inject constructor(
-	val materialUseCases: MaterialUseCases,
-	val connectivityObserver: NetworkConnectivity,
+	private val materialUseCases: MaterialUseCases,
+	private val connectivityObserver: NetworkConnectivity,
 	@param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 	private val _selectedSubCategory =
@@ -58,7 +58,7 @@ class MaterialListViewModel @Inject constructor(
 			.toList()
 	}.flowOn(defaultDispatcher)
 		.onCompletion { error -> println("Error -> ${error?.message}") }
-		.catch { println("Caught -> ${it.message}") }
+		.catch { throw it }
 
 
 	val uiState: StateFlow<MaterialUiState> =
@@ -70,7 +70,7 @@ class MaterialListViewModel @Inject constructor(
 				.stateIn(
 					viewModelScope,
 					SharingStarted.WhileSubscribed(5000),
-					false
+					true
 				)
 		) { materials, selectedSubCategory, selectedSubType, isConnected ->
 			when {
