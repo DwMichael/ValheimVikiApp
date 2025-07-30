@@ -263,8 +263,8 @@ class BuildingMaterialListViewModelTest {
 				connectivityObserver,
 				Dispatchers.Default
 			)
-			val result = viewModel.materialList.first()
-			assertTrue(result.isEmpty())
+			val result = viewModel.filteredBuildingMaterialsWithSelection.first()
+			assertTrue(result.component1().isEmpty())
 		}
 
 	@Test
@@ -294,39 +294,49 @@ class BuildingMaterialListViewModelTest {
 			Dispatchers.Default
 		)
 
-		viewModel.materialList.test {
+		viewModel.filteredBuildingMaterialsWithSelection.test {
 
-			val initialList: List<BuildingMaterial> = awaitItem()
-			assertEquals(0, initialList.size)
-			assertEquals(emptyList<BuildingMaterial>(), initialList)
+			val (materials, _, _) = awaitItem()
+			assertEquals(0, materials.size)
+			assertEquals(emptyList<BuildingMaterial>(), materials)
 			assertEquals(null, viewModel.uiState.value.selectedCategory)
 			assertEquals(null, viewModel.uiState.value.selectedChip)
 
 			viewModel.onEvent(BuildingMaterialUiEvent.CategorySelected(BuildingMaterialSubCategory.WOOD))
-			val woodList = awaitItem()
-			assertEquals(1, woodList.size)
-			assertTrue(woodList.all { it.subCategory == BuildingMaterialSubCategory.WOOD.toString() })
+			val woodTriple = awaitItem()
+			assertEquals(1, woodTriple.component1().size)
+			assertTrue(
+				woodTriple.component1()
+					.all { it.subCategory == BuildingMaterialSubCategory.WOOD.toString() })
 
 			viewModel.onEvent(BuildingMaterialUiEvent.CategorySelected(BuildingMaterialSubCategory.LIGHT_SOURCE))
-			val lightList = awaitItem()
-			assertEquals(1, lightList.size)
-			assertTrue(lightList.all { it.subCategory == BuildingMaterialSubCategory.LIGHT_SOURCE.toString() })
+			val lightTriple = awaitItem()
+			assertEquals(1, lightTriple.component1().size)
+			assertTrue(
+				lightTriple.component1()
+					.all { it.subCategory == BuildingMaterialSubCategory.LIGHT_SOURCE.toString() })
 
 			viewModel.onEvent(BuildingMaterialUiEvent.CategorySelected(BuildingMaterialSubCategory.ROOF))
-			val roofList = awaitItem()
-			assertEquals(1, roofList.size)
-			assertTrue(roofList.all { it.subCategory == BuildingMaterialSubCategory.ROOF.toString() })
+			val roofTriple = awaitItem()
+			assertEquals(1, roofTriple.component1().size)
+			assertTrue(
+				roofTriple.component1()
+					.all { it.subCategory == BuildingMaterialSubCategory.ROOF.toString() })
 
 			viewModel.onEvent(BuildingMaterialUiEvent.CategorySelected(BuildingMaterialSubCategory.TRANSPORT))
-			val transportList = awaitItem()
-			assertEquals(1, transportList.size)
-			assertTrue(transportList.all { it.subCategory == BuildingMaterialSubCategory.TRANSPORT.toString() })
+			val transportTriple = awaitItem()
+			assertEquals(1, transportTriple.component1().size)
+			assertTrue(
+				transportTriple.component1()
+					.all { it.subCategory == BuildingMaterialSubCategory.TRANSPORT.toString() })
 
 
 			viewModel.onEvent(BuildingMaterialUiEvent.CategorySelected(BuildingMaterialSubCategory.RESOURCE))
-			val resourceList = awaitItem()
-			assertEquals(1, resourceList.size)
-			assertTrue(resourceList.all { it.subCategory == BuildingMaterialSubCategory.RESOURCE.toString() })
+			val resourceTriple = awaitItem()
+			assertEquals(1, resourceTriple.component1().size)
+			assertTrue(
+				resourceTriple.component1()
+					.all { it.subCategory == BuildingMaterialSubCategory.RESOURCE.toString() })
 
 			cancelAndIgnoreRemainingEvents()
 		}
@@ -425,41 +435,69 @@ class BuildingMaterialListViewModelTest {
 			Dispatchers.Default
 		)
 
-		viewModel.materialList.test {
-			val initialList: List<BuildingMaterial> = awaitItem()
-			assertEquals(0, initialList.size)
-			assertEquals(emptyList<BuildingMaterial>(), initialList)
+		viewModel.filteredBuildingMaterialsWithSelection.test {
+
+			val (initialMaterials, initialCategory, initialType) = awaitItem()
+			assertEquals(0, initialMaterials.size)
+			assertEquals(emptyList<BuildingMaterial>(), initialMaterials)
+			assertEquals(null, initialCategory)
+			assertEquals(null, initialType)
+
 
 			viewModel.onEvent(BuildingMaterialUiEvent.CategorySelected(BuildingMaterialSubCategory.FURNITURE))
-			val furnitureMaterialList = awaitItem()
+
+			val (furnitureMaterialList, furnitureCategory, furnitureType) = awaitItem()
 			assertEquals(7, furnitureMaterialList.size)
 			assertTrue(furnitureMaterialList.all { it.subCategory == BuildingMaterialSubCategory.FURNITURE.toString() })
+			assertEquals(BuildingMaterialSubCategory.FURNITURE, furnitureCategory)
+			assertEquals(null, furnitureType)
+
 
 			viewModel.onEvent(BuildingMaterialUiEvent.ChipSelected(BuildingMaterialSubType.BANNER))
-			val furnitureBannerMaterialList = awaitItem()
+
+			val (furnitureBannerMaterialList, bannerCategory, bannerType) = awaitItem()
 			assertEquals(1, furnitureBannerMaterialList.size)
 			assertTrue(furnitureBannerMaterialList.all { it.subType == BuildingMaterialSubType.BANNER.toString() })
+			assertEquals(BuildingMaterialSubCategory.FURNITURE, bannerCategory)
+			assertEquals(BuildingMaterialSubType.BANNER, bannerType)
+
 
 			viewModel.onEvent(BuildingMaterialUiEvent.ChipSelected(BuildingMaterialSubType.TABLE))
-			val furnitureTableMaterialList = awaitItem()
-			assertEquals(1, furnitureTableMaterialList.size)
+
+			val (furnitureTableMaterialList, tableCategory, tableType) = awaitItem()
+			assertEquals(
+				1,
+				furnitureTableMaterialList.size,
+				"furnitureTableMaterialList should be 1"
+			)
 			assertTrue(furnitureTableMaterialList.all { it.subType == BuildingMaterialSubType.TABLE.toString() })
+			assertEquals(BuildingMaterialSubCategory.FURNITURE, tableCategory)
+			assertEquals(BuildingMaterialSubType.TABLE, tableType)
 
 
 			viewModel.onEvent(BuildingMaterialUiEvent.ChipSelected(BuildingMaterialSubType.TABLE))
-			val furnitureAllMaterialsAfterDeselect = awaitItem()
+
+			val (furnitureAllMaterialsAfterDeselect, deselectCategory, deselectType) = awaitItem()
 			assertEquals(7, furnitureAllMaterialsAfterDeselect.size)
 			assertTrue(furnitureAllMaterialsAfterDeselect.all { it.subCategory == BuildingMaterialSubCategory.FURNITURE.toString() })
+			assertEquals(BuildingMaterialSubCategory.FURNITURE, deselectCategory)
+			assertEquals(null, deselectType)
+
 
 			viewModel.onEvent(BuildingMaterialUiEvent.ChipSelected(BuildingMaterialSubType.DECORATIVE))
-			val furnitureDecorativeMaterialList = awaitItem()
-			assertEquals(2, furnitureDecorativeMaterialList.size)
-			assertTrue(furnitureDecorativeMaterialList.all { it.subType == BuildingMaterialSubType.DECORATIVE.toString() })
 
+			val (furnitureDecorativeMaterialList, decorativeCategory, decorativeType) = awaitItem()
+			assertEquals(
+				2,
+				furnitureDecorativeMaterialList.size,
+				"furnitureDecorativeMaterialList should be 2"
+			)
+			assertTrue(furnitureDecorativeMaterialList.all { it.subType == BuildingMaterialSubType.DECORATIVE.toString() })
+			assertEquals(BuildingMaterialSubCategory.FURNITURE, decorativeCategory)
+			assertEquals(BuildingMaterialSubType.DECORATIVE, decorativeType)
 
 
 			cancelAndIgnoreRemainingEvents()
 		}
-
 	}
 }

@@ -84,6 +84,97 @@ class MaterialListViewModelTest {
 	}
 
 	@Test
+	fun materialListFlow_NoCategorySelected_ShouldEmitEmptyList() = runTest {
+		val materials = MutableList(4) { index ->
+			Material(
+				id = index.toString(),
+				name = "Material Object Test",
+				subCategory = MaterialSubCategory.CREATURE_DROP.toString(),
+				imageUrl = "",
+				category = AppCategory.MATERIAL.toString(),
+				description = "",
+				order = index,
+			)
+		}
+
+		whenever(materialUseCases.getLocalMaterials()).thenReturn(flowOf(materials))
+
+		val viewModel = MaterialListViewModel(
+			materialUseCases = materialUseCases,
+			connectivityObserver = connectivityObserver,
+			defaultDispatcher = testDispatcher
+		)
+
+		viewModel.filteredMaterialsWithSelection.test {
+			val result = awaitItem()
+			assertEquals(emptyList(), result.first, "Should return empty list")
+		}
+
+	}
+
+	@Test
+	fun materialListFlow_CategorySelectedWithNoTypeSelected_ShouldEmitFilteredListByCategory() =
+		runTest {
+			val creatureDrop = List(4) { index ->
+				Material(
+					id = index.toString(),
+					name = "Material Object Test",
+					subCategory = MaterialSubCategory.CREATURE_DROP.toString(),
+					imageUrl = "",
+					category = AppCategory.MATERIAL.toString(),
+					description = "",
+					order = index,
+				)
+			}
+
+			val miscList = listOf(
+				Material(
+					id = "6",
+					name = "Material Object Test",
+					category = AppCategory.MATERIAL.toString(),
+					subCategory = MaterialSubCategory.MISCELLANEOUS.toString(),
+					imageUrl = "",
+					description = "",
+					order = 8,
+				),
+				Material(
+					id = "5",
+					name = "Material Object Test",
+					subCategory = MaterialSubCategory.MISCELLANEOUS.toString(),
+					imageUrl = "",
+					category = AppCategory.MATERIAL.toString(),
+					description = "",
+					order = 3,
+				),
+
+				)
+			val materials = creatureDrop + miscList
+			whenever(materialUseCases.getLocalMaterials()).thenReturn(flowOf(materials))
+			val viewModel = MaterialListViewModel(
+				materialUseCases = materialUseCases,
+				connectivityObserver = connectivityObserver,
+				defaultDispatcher = testDispatcher
+			)
+
+
+			viewModel.filteredMaterialsWithSelection.test {
+				viewModel.onEvent(MaterialUiEvent.CategorySelected(MaterialSubCategory.CREATURE_DROP))
+				val result = awaitItem()
+
+				assertEquals(
+					creatureDrop.sortedBy { it.order },
+					result.first,
+					"Category is selected so full list should be emitted"
+				)
+				assertEquals(
+					4,
+					result.first.size,
+					"Should be size of 4"
+				)
+			}
+		}
+
+	@Test
 	fun uiState_MaterialsUiStateInitLoad_EmitsLoadingState() = runTest {
 
 		val viewModel = MaterialListViewModel(
