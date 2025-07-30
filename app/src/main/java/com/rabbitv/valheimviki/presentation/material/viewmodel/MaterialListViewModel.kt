@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.R.string.error_no_connection_with_empty_list_message
 import com.rabbitv.valheimviki.di.qualifiers.DefaultDispatcher
+import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.material.MaterialSubCategory
 import com.rabbitv.valheimviki.domain.model.material.MaterialSubType
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
@@ -21,8 +22,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
@@ -36,34 +35,11 @@ class MaterialListViewModel @Inject constructor(
 		MutableStateFlow<MaterialSubCategory?>(null)
 	private val _selectedSubType =
 		MutableStateFlow<MaterialSubType?>(null)
-	internal val materialList = combine(
-		materialUseCases.getLocalMaterials(),
-		_selectedSubCategory,
-		_selectedSubType,
-	) { materials, category, type ->
-
-		if (category == null) {
-			return@combine emptyList()
-		}
-
-		if (type == null) {
-			return@combine materials.filter { it.subCategory == category.toString() }
-				.sortedBy { it.order }
-		}
-
-		materials.asSequence()
-			.filter { it.subCategory == category.toString() }
-			.filter { it.subType == type.toString() }
-			.sortedBy { it.name }
-			.toList()
-	}.flowOn(defaultDispatcher)
-		.onCompletion { error -> println("Error -> ${error?.message}") }
-		.catch { throw it }
 
 
 	val uiState: StateFlow<MaterialUiState> =
 		combine(
-			materialList,
+			materialUseCases.getLocalMaterials(),
 			_selectedSubCategory,
 			_selectedSubType,
 			connectivityObserver.isConnected
@@ -73,11 +49,14 @@ class MaterialListViewModel @Inject constructor(
 					true
 				)
 		) { materials, selectedSubCategory, selectedSubType, isConnected ->
+			val filteredMaterials =
+				filterMaterialList(materials, selectedSubCategory, selectedSubType)
+
 			when {
-				materials.isNotEmpty() -> MaterialUiState(
+				filteredMaterials.isNotEmpty() -> MaterialUiState(
 					selectedCategory = selectedSubCategory,
 					selectedChip = selectedSubType,
-					materialsUiState = UIState.Success(materials),
+					materialsUiState = UIState.Success(filteredMaterials),
 
 					)
 
@@ -110,6 +89,27 @@ class MaterialListViewModel @Inject constructor(
 				materialsUiState = UIState.Loading
 			)
 		)
+
+	private fun filterMaterialList(
+		materials: List<Material>,
+		category: MaterialSubCategory?,
+		type: MaterialSubType?
+	): List<Material> {
+		if (category == null) {
+			return emptyList()
+		}
+
+		if (type == null) {
+			return materials.filter { it.subCategory == category.toString() }
+				.sortedBy { it.order }
+		}
+
+		return materials.asSequence()
+			.filter { it.subCategory == category.toString() }
+			.filter { it.subType == type.toString() }
+			.sortedBy { it.name }
+			.toList()
+	}
 
 	fun onEvent(event: MaterialUiEvent) {
 		when (event) {
