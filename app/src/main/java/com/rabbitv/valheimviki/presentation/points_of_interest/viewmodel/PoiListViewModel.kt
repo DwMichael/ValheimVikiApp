@@ -34,24 +34,24 @@ class PoiListViewModel @Inject constructor(
 	private val _selectedSubCategory =
 		MutableStateFlow<PointOfInterestSubCategory>(PointOfInterestSubCategory.FORSAKEN_ALTAR)
 
-	private val _poiList: Flow<List<PointOfInterest>> =
+	private val _filteredPoiListWithCategory: Flow<Pair<List<PointOfInterest>, PointOfInterestSubCategory>> =
 		pointOfInterestUseCases.getLocalPointOfInterestUseCase().combine(
 			_selectedSubCategory,
 		) { all, category ->
-			all.filter { it.subCategory == category.toString() }
+			val list = all.filter { it.subCategory == category.toString() }
 				.sortedBy { it.order }
+			Pair(list, category)
 		}.flowOn(defaultDispatcher)
 
 
 	val uiState: StateFlow<PoiListUiState> = combine(
-		_poiList,
-		_selectedSubCategory,
+		_filteredPoiListWithCategory,
 		connectivityObserver.isConnected.stateIn(
 			scope = viewModelScope,
 			started = SharingStarted.WhileSubscribed(5000),
 			initialValue = false
 		),
-	) { poiList, subCategory, isConnected ->
+	) { (poiList, subCategory), isConnected ->
 		when {
 			poiList.isNotEmpty() -> {
 				PoiListUiState(
