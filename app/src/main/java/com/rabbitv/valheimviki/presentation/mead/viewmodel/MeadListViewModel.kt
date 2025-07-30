@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
@@ -38,8 +39,10 @@ class MeadListViewModel @Inject constructor(
 		_selectedSubCategory,
 	) { allMead, category ->
 		allMead.filter { it.subCategory == category.toString() }
+			.sortedBy { it.order }
 	}.flowOn(defaultDispatcher)
-
+		.onCompletion { error -> println("Error -> ${error?.message}") }
+		.catch { throw it }
 
 	val uiState: StateFlow<MeadUiSate> = combine(
 		meadList,
