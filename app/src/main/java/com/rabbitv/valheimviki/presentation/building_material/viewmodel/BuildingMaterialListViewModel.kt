@@ -41,25 +41,29 @@ class BuildingMaterialListViewModel @Inject constructor(
 	private val _selectedSubType =
 		MutableStateFlow<BuildingMaterialSubType?>(null)
 
-	internal val materialList: Flow<List<BuildingMaterial>> =
+	internal val filteredBuildingMaterialsWithSelection: Flow<Triple<List<BuildingMaterial>, BuildingMaterialSubCategory?, BuildingMaterialSubType?>> =
 		combine(
 			buildingMaterialUseCases.getLocalBuildMaterial(),
 			_selectedSubCategory,
 			_selectedSubType
 		) { all, category, type ->
 			if (category == null) {
-				return@combine emptyList()
+				return@combine Triple(emptyList(), category, type)
 			}
 
 			if (type == null) {
-				return@combine all.filter { it.subCategory == category.toString() }
+				val list = all.filter { it.subCategory == category.toString() }
 					.sortedBy { it.order }
+
+				return@combine Triple(list, category, type)
 			}
 
-			all
+			val list = all
 				.filter { it.subCategory == category.toString() }
 				.filter { it.subType == type.toString() }
 				.sortedBy { it.order }
+			Triple(list, category, type)
+
 		}.flowOn(defaultDispatcher)
 			.onCompletion { error -> println("Error -> ${error?.message}") }
 			.catch { println("Caught -> ${it.message}") }
@@ -67,15 +71,13 @@ class BuildingMaterialListViewModel @Inject constructor(
 
 	val uiState: StateFlow<BuildingMaterialUiState> =
 		combine(
-			materialList,
-			_selectedSubCategory,
-			_selectedSubType,
+			filteredBuildingMaterialsWithSelection,
 			connectivityObserver.isConnected.stateIn(
 				scope = viewModelScope,
 				started = SharingStarted.WhileSubscribed(5000),
 				initialValue = false
 			)
-		) { materials, selectedSubCategory, selectedSubType, isConnected ->
+		) { (materials, selectedSubCategory, selectedSubType), isConnected ->
 			when {
 				materials.isNotEmpty() -> BuildingMaterialUiState(
 					selectedCategory = selectedSubCategory,
