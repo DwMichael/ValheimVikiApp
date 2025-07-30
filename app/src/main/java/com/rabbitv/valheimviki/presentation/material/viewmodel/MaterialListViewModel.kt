@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
@@ -72,7 +73,7 @@ class MaterialListViewModel @Inject constructor(
 					materialsUiState = UIState.Error(error_no_connection_with_empty_list_message.toString())
 				)
 			}
-		}.catch { e ->
+		}.flowOn(defaultDispatcher).catch { e ->
 			Log.e("MaterialListVM", "Error in uiState flow", e)
 			emit(
 				MaterialUiState(
