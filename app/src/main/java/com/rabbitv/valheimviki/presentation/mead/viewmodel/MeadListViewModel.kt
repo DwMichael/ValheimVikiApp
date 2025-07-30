@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.R.string.error_no_connection_with_empty_list_message
 import com.rabbitv.valheimviki.di.qualifiers.DefaultDispatcher
-import com.rabbitv.valheimviki.domain.model.mead.Mead
 import com.rabbitv.valheimviki.domain.model.mead.MeadSubCategory
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.domain.repository.NetworkConnectivity
@@ -15,14 +14,12 @@ import com.rabbitv.valheimviki.presentation.mead.model.MeadUiSate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
@@ -35,17 +32,8 @@ class MeadListViewModel @Inject constructor(
 	private val _selectedSubCategory =
 		MutableStateFlow<MeadSubCategory>(MeadSubCategory.MEAD_BASE)
 
-	internal val meadList: Flow<List<Mead>> = meadUseCases.getLocalMeadsUseCase().combine(
-		_selectedSubCategory,
-	) { allMead, category ->
-		allMead.filter { it.subCategory == category.toString() }
-			.sortedBy { it.order }
-	}.flowOn(defaultDispatcher)
-		.onCompletion { error -> println("Error -> ${error?.message}") }
-		.catch { throw it }
-
 	val uiState: StateFlow<MeadUiSate> = combine(
-		meadList,
+		meadUseCases.getLocalMeadsUseCase(),
 		_selectedSubCategory,
 		connectivityObserver.isConnected.stateIn(
 			scope = viewModelScope,
@@ -53,11 +41,16 @@ class MeadListViewModel @Inject constructor(
 			initialValue = false
 		)
 	) { meadList, selectedSubCategory, isConnected ->
+
+		val filteredMeadList = meadList
+			.filter { it.subCategory == selectedSubCategory.toString() }
+			.sortedBy { it.order }
+		
 		when {
-			meadList.isNotEmpty() -> {
+			filteredMeadList.isNotEmpty() -> {
 				MeadUiSate(
 					selectedCategory = selectedSubCategory,
-					meadState = UIState.Success(meadList)
+					meadState = UIState.Success(filteredMeadList)
 				)
 			}
 
@@ -71,22 +64,23 @@ class MeadListViewModel @Inject constructor(
 				meadState = UIState.Error(error_no_connection_with_empty_list_message.toString())
 			)
 		}
-	}.catch { e ->
-		Log.e("MeadListVM", "Error in uiState flow", e)
-		emit(
-			MeadUiSate(
-				selectedCategory = _selectedSubCategory.value,
-				meadState = UIState.Error(e.message ?: "An unknown error occurred")
+	}.flowOn(defaultDispatcher)
+		.catch { e ->
+			Log.e("MeadListVM", "Error in uiState flow", e)
+			emit(
+				MeadUiSate(
+					selectedCategory = _selectedSubCategory.value,
+					meadState = UIState.Error(e.message ?: "An unknown error occurred")
+				)
+			)
+		}.stateIn(
+			viewModelScope,
+			SharingStarted.Companion.WhileSubscribed(5000),
+			initialValue = MeadUiSate(
+				selectedCategory = MeadSubCategory.MEAD_BASE,
+				meadState = UIState.Loading
 			)
 		)
-	}.stateIn(
-		viewModelScope,
-		SharingStarted.Companion.WhileSubscribed(5000),
-		initialValue = MeadUiSate(
-			selectedCategory = MeadSubCategory.MEAD_BASE,
-			meadState = UIState.Loading
-		)
-	)
 
 	fun onEvent(event: MeadUiEvent) {
 		when (event) {
