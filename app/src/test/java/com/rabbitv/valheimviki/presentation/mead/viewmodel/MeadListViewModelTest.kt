@@ -34,7 +34,7 @@ import kotlin.test.fail
 @OptIn(ExperimentalCoroutinesApi::class)
 @ExtendWith(MockitoExtension::class)
 class MeadListViewModelTest {
-	val meadBases = listOf(
+	private val meadBases = listOf(
 		Mead(
 			id = "10", // Fixed ID instead of Random.nextInt(0, 100).toString()
 			imageUrl = "",
@@ -63,7 +63,7 @@ class MeadListViewModelTest {
 		)
 	)
 
-	val potions = listOf(
+	private val potions = listOf(
 		Mead(
 			id = "3", // Fixed ID
 			imageUrl = "",
@@ -78,7 +78,7 @@ class MeadListViewModelTest {
 			order = 1 // Fixed order
 		)
 	)
-	val meads = meadBases + potions
+	private val meads = meadBases + potions
 	private val testDispatcher = StandardTestDispatcher()
 
 	@Mock
