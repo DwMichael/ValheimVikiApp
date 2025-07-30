@@ -21,8 +21,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class OreDepositScreenViewModel @Inject constructor(
-	val oreDepositUseCases: OreDepositUseCases,
-	val connectivityObserver: NetworkConnectivity,
+	private val oreDepositUseCases: OreDepositUseCases,
+	private val connectivityObserver: NetworkConnectivity,
 ) : ViewModel() {
 
 	val uiState: StateFlow<UIState<List<OreDeposit>>> = combine(
@@ -34,7 +34,7 @@ class OreDepositScreenViewModel @Inject constructor(
 		)
 	) { oreDeposits, isConnected ->
 		when {
-			oreDeposits.isNotEmpty() -> UIState.Success(oreDeposits)
+			oreDeposits.isNotEmpty() -> UIState.Success(oreDeposits.sortedBy { it.order })
 			isConnected -> UIState.Loading
 			else -> UIState.Error(error_no_connection_with_empty_list_message.toString())
 		}

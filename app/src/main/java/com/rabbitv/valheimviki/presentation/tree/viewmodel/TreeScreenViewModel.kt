@@ -21,8 +21,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TreeScreenViewModel @Inject constructor(
-	val treesUseCases: TreeUseCases,
-	val connectivityObserver: NetworkConnectivity,
+	private val treesUseCases: TreeUseCases,
+	private val connectivityObserver: NetworkConnectivity,
 ) : ViewModel() {
 
 
@@ -34,7 +34,7 @@ class TreeScreenViewModel @Inject constructor(
 		)
 	) { trees, isConnected ->
 		when {
-			trees.isNotEmpty() -> UIState.Success(trees)
+			trees.isNotEmpty() -> UIState.Success(trees.sortedBy { it.order })
 			isConnected -> UIState.Loading
 			else -> UIState.Error(error_no_connection_with_empty_list_message.toString())
 		}

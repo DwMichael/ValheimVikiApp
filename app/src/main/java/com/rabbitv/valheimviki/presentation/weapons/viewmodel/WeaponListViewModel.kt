@@ -38,7 +38,6 @@ class WeaponListViewModel @Inject constructor(
 	private val _selectedCategory = MutableStateFlow(WeaponSubCategory.MELEE_WEAPON)
 	private val _selectedChip = MutableStateFlow<WeaponSubType?>(null)
 
-
 	internal val weapons: Flow<List<Weapon>> =
 		combine(
 			weaponRepository.getLocalWeaponsUseCase(),
