@@ -31,8 +31,7 @@ class PoiListViewModel @Inject constructor(
 	val connectivityObserver: NetworkConnectivity,
 	@param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
-	private val _selectedSubCategory =
-		MutableStateFlow<PointOfInterestSubCategory>(PointOfInterestSubCategory.FORSAKEN_ALTAR)
+	private val _selectedSubCategory = MutableStateFlow(PointOfInterestSubCategory.FORSAKEN_ALTAR)
 
 	private val _filteredPoiListWithCategory: Flow<Pair<List<PointOfInterest>, PointOfInterestSubCategory>> =
 		pointOfInterestUseCases.getLocalPointOfInterestUseCase().combine(
