@@ -1,15 +1,12 @@
 package com.rabbitv.valheimviki.presentation.search.viewmodel
 
+import com.rabbitv.valheimviki.domain.repository.NetworkConnectivity
 import com.rabbitv.valheimviki.domain.use_cases.search.SearchUseCases
-import com.rabbitv.valheimviki.domain.use_cases.search.count_search_objects.CountSearchObjectsUseCase
-import com.rabbitv.valheimviki.domain.use_cases.search.count_search_objects_by_name.CountSearchObjectsByNameUseCase
 import com.rabbitv.valheimviki.domain.use_cases.search.delete_all_and_insert.DeleteAllAndInsertNewUseCase
-import com.rabbitv.valheimviki.domain.use_cases.search.get_all_search_objects.GetAllSearchObjectsUseCase
-import com.rabbitv.valheimviki.domain.use_cases.search.search_by_description.SearchByDescriptionUseCase
-import com.rabbitv.valheimviki.domain.use_cases.search.search_by_name.SearchByNameUseCase
-import com.rabbitv.valheimviki.domain.use_cases.search.search_by_name_and_description.SearchByNameAndDescriptionUseCase
+import com.rabbitv.valheimviki.domain.use_cases.search.get_paged_search_object.GetPagedSearchObjectsUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
@@ -18,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.whenever
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @ExtendWith(MockitoExtension::class)
@@ -25,22 +23,11 @@ class SearchViewModelTest {
 	private val testDispatcher = StandardTestDispatcher()
 
 	@Mock
-	private lateinit var countSearchObjectsByNameUseCase: CountSearchObjectsByNameUseCase
+	private lateinit var connectivity: NetworkConnectivity
 
 	@Mock
-	private lateinit var countSearchObjectsUseCase: CountSearchObjectsUseCase
+	private lateinit var getPagedSearchObjectsUseCase: GetPagedSearchObjectsUseCase
 
-	@Mock
-	private lateinit var getAllSearchObjectsUseCase: GetAllSearchObjectsUseCase
-
-	@Mock
-	private lateinit var searchByDescriptionUseCase: SearchByDescriptionUseCase
-
-	@Mock
-	private lateinit var searchByNameUseCase: SearchByNameUseCase
-
-	@Mock
-	private lateinit var searchByNameAndDescriptionUseCase: SearchByNameAndDescriptionUseCase
 
 	@Mock
 	private lateinit var deleteAllAndInsertNewUseCase: DeleteAllAndInsertNewUseCase
@@ -50,13 +37,9 @@ class SearchViewModelTest {
 	@BeforeEach
 	fun setUp() {
 		Dispatchers.setMain(testDispatcher)
+		whenever(connectivity.isConnected).thenReturn(flowOf(true))
 		searchUseCases = SearchUseCases(
-			countSearchObjectsByNameUseCase = countSearchObjectsByNameUseCase,
-			countSearchObjectsUseCase = countSearchObjectsUseCase,
-			getAllSearchObjectsUseCase = getAllSearchObjectsUseCase,
-			searchByDescriptionUseCase = searchByDescriptionUseCase,
-			searchByNameUseCase = searchByNameUseCase,
-			searchByNameAndDescriptionUseCase = searchByNameAndDescriptionUseCase,
+			getPagedSearchObjectsUseCase = getPagedSearchObjectsUseCase,
 			deleteAllAndInsertNewUseCase = deleteAllAndInsertNewUseCase
 		)
 	}
@@ -65,4 +48,6 @@ class SearchViewModelTest {
 	fun tearDown() {
 		Dispatchers.resetMain()
 	}
+
+
 }
