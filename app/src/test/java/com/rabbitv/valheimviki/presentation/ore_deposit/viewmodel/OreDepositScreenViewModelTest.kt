@@ -5,7 +5,7 @@ import com.rabbitv.valheimviki.R.string.error_no_connection_with_empty_list_mess
 import com.rabbitv.valheimviki.domain.model.category.AppCategory
 import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
-import com.rabbitv.valheimviki.domain.use_cases.connection.NetworkConnectivityObserver
+import com.rabbitv.valheimviki.domain.repository.NetworkConnectivity
 import com.rabbitv.valheimviki.domain.use_cases.ore_deposit.OreDepositUseCases
 import com.rabbitv.valheimviki.domain.use_cases.ore_deposit.get_local_ore_deposit.GetLocalOreDepositUseCase
 import com.rabbitv.valheimviki.domain.use_cases.ore_deposit.get_ore_deposit_by_id.GetOreDepositByIdUseCase
@@ -56,7 +56,7 @@ class OreDepositScreenViewModelTest {
 	private val testDispatcher = StandardTestDispatcher()
 
 	@Mock
-	private lateinit var connectivityObserver: NetworkConnectivityObserver
+	private lateinit var connectivityObserver: NetworkConnectivity
 
 	@Mock
 	private lateinit var oreDepositUseCases: OreDepositUseCases
