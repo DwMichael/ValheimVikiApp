@@ -5,6 +5,6 @@ import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterestSub
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 
 data class PoiListUiState(
-	val poiList: UIState<List<PointOfInterest>> = UIState.Loading,
+	val poiListState: UIState<List<PointOfInterest>> = UIState.Loading,
 	val selectedSubCategory: PointOfInterestSubCategory = PointOfInterestSubCategory.FORSAKEN_ALTAR,
 )

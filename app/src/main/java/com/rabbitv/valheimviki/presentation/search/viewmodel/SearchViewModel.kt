@@ -33,14 +33,12 @@ class SearchViewModel @Inject constructor(
 	private val searchUseCases: SearchUseCases,
 	@param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
-
 	companion object {
 		const val PAGE_SIZE = 30
 	}
 
 	private val _searchQuery = MutableStateFlow("")
 	private val _currentPage = MutableStateFlow(1)
-
 
 	fun onEvent(event: SearchUiEvent) {
 		when (event) {

@@ -27,13 +27,12 @@ import kotlinx.coroutines.flow.update
 
 @HiltViewModel
 class PoiListViewModel @Inject constructor(
-	val pointOfInterestUseCases: PointOfInterestUseCases,
-	val connectivityObserver: NetworkConnectivity,
+	private val pointOfInterestUseCases: PointOfInterestUseCases,
+	private val connectivityObserver: NetworkConnectivity,
 	@param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 	private val _selectedSubCategory = MutableStateFlow(PointOfInterestSubCategory.FORSAKEN_ALTAR)
-
-	private val _filteredPoiListWithCategory: Flow<Pair<List<PointOfInterest>, PointOfInterestSubCategory>> =
+	internal val filteredPoiListWithCategory: Flow<Pair<List<PointOfInterest>, PointOfInterestSubCategory>> =
 		pointOfInterestUseCases.getLocalPointOfInterestUseCase().combine(
 			_selectedSubCategory,
 		) { all, category ->
@@ -44,29 +43,29 @@ class PoiListViewModel @Inject constructor(
 
 
 	val uiState: StateFlow<PoiListUiState> = combine(
-		_filteredPoiListWithCategory,
+		filteredPoiListWithCategory,
 		connectivityObserver.isConnected.stateIn(
 			scope = viewModelScope,
 			started = SharingStarted.WhileSubscribed(5000),
-			initialValue = false
+			initialValue = true
 		),
 	) { (poiList, subCategory), isConnected ->
 		when {
 			poiList.isNotEmpty() -> {
 				PoiListUiState(
 					selectedSubCategory = subCategory,
-					poiList = UIState.Success(poiList)
+					poiListState = UIState.Success(poiList)
 				)
 			}
 
 			isConnected -> PoiListUiState(
 				selectedSubCategory = subCategory,
-				poiList = UIState.Loading
+				poiListState = UIState.Loading
 			)
 
 			else -> PoiListUiState(
 				selectedSubCategory = subCategory,
-				poiList = UIState.Error(error_no_connection_with_empty_list_message.toString())
+				poiListState = UIState.Error(error_no_connection_with_empty_list_message.toString())
 			)
 		}
 	}.catch { e ->
@@ -74,7 +73,7 @@ class PoiListViewModel @Inject constructor(
 		emit(
 			PoiListUiState(
 				selectedSubCategory = _selectedSubCategory.value,
-				poiList = UIState.Error(e.message ?: "An unknown error occurred")
+				poiListState = UIState.Error(e.message ?: "An unknown error occurred")
 			)
 		)
 	}.stateIn(
@@ -82,7 +81,7 @@ class PoiListViewModel @Inject constructor(
 		SharingStarted.Companion.WhileSubscribed(5000),
 		initialValue = PoiListUiState(
 			selectedSubCategory = PointOfInterestSubCategory.FORSAKEN_ALTAR,
-			poiList = UIState.Loading
+			poiListState = UIState.Loading
 		)
 	)
 

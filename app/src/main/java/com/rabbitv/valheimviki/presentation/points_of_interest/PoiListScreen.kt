@@ -90,7 +90,7 @@ fun PoiListScreen(
 				)
 				Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
 				Box(modifier = Modifier.fillMaxSize()) {
-					when (val state = uiState.poiList) {
+					when (val state = uiState.poiListState) {
 						is UIState.Loading -> {
 							Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
 							ShimmerListEffect()
