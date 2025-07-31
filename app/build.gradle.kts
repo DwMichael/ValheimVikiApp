@@ -87,6 +87,7 @@ dependencies {
 	implementation(libs.androidx.paging.runtime)
 	testImplementation(libs.paging.common)
 	implementation(libs.paging.compose)
+	implementation(libs.room.paging)
 
 	implementation(libs.okhttp)
 	implementation(libs.retrofit)

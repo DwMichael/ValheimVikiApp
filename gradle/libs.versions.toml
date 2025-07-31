@@ -38,6 +38,7 @@ pagingRuntime = "3.3.6"
 retrofit = "3.0.0"
 roomCompiler = "2.7.2"
 roomKtx = "2.7.2"
+roomPaging = "2.7.2"
 roomRuntime = "2.7.2"
 securityCrypto = "1.1.0-beta01"
 turbine = "1.2.1"
@@ -97,6 +98,7 @@ paging-compose = { module = "androidx.paging:paging-compose", version.ref = "pag
 paging-common = { module = "androidx.paging:paging-common", version.ref = "pagingCommon" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomKtx" }
+room-paging = { module = "androidx.room:room-paging", version.ref = "roomPaging" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 work-testing = { module = "androidx.work:work-testing", version.ref = "workTesting" }
 
