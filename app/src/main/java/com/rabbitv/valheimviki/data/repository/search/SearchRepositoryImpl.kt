@@ -1,5 +1,8 @@
 package com.rabbitv.valheimviki.data.repository.search
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import com.rabbitv.valheimviki.data.local.dao.SearchDao
 import com.rabbitv.valheimviki.di.qualifiers.IoDispatcher
 import com.rabbitv.valheimviki.domain.model.search.Search
@@ -14,35 +17,23 @@ class SearchRepositoryImpl @Inject constructor(
 	private val searchDao: SearchDao,
 	@param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) : SearchRepository {
-	override suspend fun countSearchObjectsByName(query: String): Int {
-		return withContext(ioDispatcher) {
-			searchDao.countSearchObjectsByName(query)
-		}
-	}
 
-	override suspend fun countSearchObjects(): Int {
-		return withContext(ioDispatcher) { searchDao.countSearchObjects() }
-	}
-
-	override fun getAllSearchObjects(limit: Int, offset: Int): Flow<List<Search>> {
-		return searchDao.getAllSearchObjects(limit, offset).flowOn(ioDispatcher)
-	}
-
-	override fun searchByName(query: String, limit: Int, offset: Int): Flow<List<Search>> {
-		return searchDao.searchByName(query, limit, offset).flowOn(ioDispatcher)
-	}
-
-	override fun searchByDescription(query: String, limit: Int, offset: Int): Flow<List<Search>> {
-		return searchDao.searchByName(query, limit, offset).flowOn(ioDispatcher)
-	}
-
-	override fun searchByNameAndDescription(
+	override fun getPagedSearchObjects(
 		query: String,
-		limit: Int,
-		offset: Int
-	): Flow<List<Search>> {
-		return searchDao.searchByName(query, limit, offset).flowOn(ioDispatcher)
-	}
+		pageSize: Int
+	): Flow<PagingData<Search>> = Pager(
+		config = PagingConfig(
+			pageSize = pageSize,
+			prefetchDistance = pageSize / 2,
+			enablePlaceholders = false
+		),
+		pagingSourceFactory = if (query.isBlank()) {
+			{ searchDao.pagingSourceAll() }
+		} else {
+			{ searchDao.pagingSource(query.trim()) }
+		}
+	).flow.flowOn(ioDispatcher)
+
 
 	override suspend fun deleteAllAndInsertNew(searchData: List<Search>) {
 		return withContext(ioDispatcher) {
