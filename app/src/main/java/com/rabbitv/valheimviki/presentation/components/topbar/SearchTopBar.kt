@@ -35,6 +35,7 @@ import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 fun SearchTopBar(
 	modifier: Modifier = Modifier,
 	searchQuery: String,
+	enabled: Boolean = true,
 	updateSearchQuery: (query: String) -> Unit,
 ) {
 	val keyboardController = LocalSoftwareKeyboardController.current
@@ -52,7 +53,7 @@ fun SearchTopBar(
 				onSearch = { keyboardController?.hide() },
 				expanded = false,
 				onExpandedChange = {},
-				enabled = true,
+				enabled = enabled,
 				placeholder = {
 					Text(
 						"Describe what you looking for..",
