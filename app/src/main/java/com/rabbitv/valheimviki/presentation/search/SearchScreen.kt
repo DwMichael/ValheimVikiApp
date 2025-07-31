@@ -94,7 +94,6 @@ fun SearchScreenContent(
 		) {
 			SearchTopBar(
 				searchQuery = query,
-				enabled = pagingItems.itemSnapshotList.isNotEmpty(),
 				updateSearchQuery = onUpdateQuery,
 			)
 			SlavicDivider()
