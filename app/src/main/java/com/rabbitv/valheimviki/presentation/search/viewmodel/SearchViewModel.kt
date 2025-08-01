@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import javax.inject.Inject
 
@@ -33,7 +32,6 @@ class SearchViewModel @Inject constructor(
 	@OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 	val searchResults: Flow<PagingData<Search>> = _searchQuery
 		.debounce(300L)
-		.distinctUntilChanged()
 		.flatMapLatest { query ->
 			searchUseCases.getPagedSearchObjectsUseCase(query, PAGE_SIZE)
 		}
