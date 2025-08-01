@@ -10,6 +10,9 @@ import com.rabbitv.valheimviki.domain.model.search.Search
 
 @Dao
 interface SearchDao {
+	@Query("SELECT COUNT(*) FROM search")
+	suspend fun count(): Int
+
 	@Query(
 		"""
            SELECT * FROM search 

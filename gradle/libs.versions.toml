@@ -35,6 +35,7 @@ okhttp = "5.1.0"
 pagingCommon = "3.3.6"
 pagingCompose = "3.3.6"
 pagingRuntime = "3.3.6"
+pagingTesting = "3.3.6"
 retrofit = "3.0.0"
 roomCompiler = "2.7.2"
 roomKtx = "2.7.2"
@@ -58,6 +59,7 @@ androidx-hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "hiltNa
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 androidx-navigation-testing = { module = "androidx.navigation:navigation-testing", version.ref = "navigationTesting" }
 androidx-paging-runtime = { module = "androidx.paging:paging-runtime", version.ref = "pagingRuntime" }
+androidx-paging-testing = { module = "androidx.paging:paging-testing", version.ref = "pagingTesting" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomCompiler" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
 androidx-security-crypto = { module = "androidx.security:security-crypto", version.ref = "securityCrypto" }
