@@ -1,22 +1,12 @@
 package com.rabbitv.valheimviki.domain.use_cases.search
 
-import com.rabbitv.valheimviki.domain.use_cases.search.count_search_objects.CountSearchObjectsUseCase
-import com.rabbitv.valheimviki.domain.use_cases.search.count_search_objects_by_name.CountSearchObjectsByNameUseCase
 import com.rabbitv.valheimviki.domain.use_cases.search.delete_all_and_insert.DeleteAllAndInsertNewUseCase
-import com.rabbitv.valheimviki.domain.use_cases.search.get_all_search_objects.GetAllSearchObjectsUseCase
-import com.rabbitv.valheimviki.domain.use_cases.search.search_by_description.SearchByDescriptionUseCase
-import com.rabbitv.valheimviki.domain.use_cases.search.search_by_name.SearchByNameUseCase
-import com.rabbitv.valheimviki.domain.use_cases.search.search_by_name_and_description.SearchByNameAndDescriptionUseCase
+import com.rabbitv.valheimviki.domain.use_cases.search.get_paged_search_object.GetPagedSearchObjectsUseCase
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 data class SearchUseCases @Inject constructor(
-	val countSearchObjectsByNameUseCase: CountSearchObjectsByNameUseCase,
-	val countSearchObjectsUseCase: CountSearchObjectsUseCase,
-	val getAllSearchObjectsUseCase: GetAllSearchObjectsUseCase,
-	val searchByDescriptionUseCase: SearchByDescriptionUseCase,
-	val searchByNameUseCase: SearchByNameUseCase,
-	val searchByNameAndDescriptionUseCase: SearchByNameAndDescriptionUseCase,
 	val deleteAllAndInsertNewUseCase: DeleteAllAndInsertNewUseCase,
+	val getPagedSearchObjectsUseCase: GetPagedSearchObjectsUseCase
 )

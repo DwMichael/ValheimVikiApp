@@ -83,6 +83,13 @@ dependencies {
 
 	///IF SOMETHING AGAIN WILL TURN OFF BC OF LIBRARIES THEN USE DOES UNDER WITH NEWER VERSION
 
+
+	implementation(libs.androidx.paging.runtime)
+	testImplementation(libs.paging.common)
+	testImplementation(libs.androidx.paging.testing)
+	implementation(libs.paging.compose)
+	implementation(libs.room.paging)
+
 	implementation(libs.okhttp)
 	implementation(libs.retrofit)
 	implementation(libs.converter.gson)
