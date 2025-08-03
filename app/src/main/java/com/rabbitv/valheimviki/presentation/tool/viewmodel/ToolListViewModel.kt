@@ -27,41 +27,43 @@ import kotlinx.coroutines.flow.update
 
 @HiltViewModel
 class ToolListViewModel @Inject constructor(
-	val toolUseCases: ToolUseCases,
-	val connectivityObserver: NetworkConnectivity,
+	private val toolUseCases: ToolUseCases,
+	private val connectivityObserver: NetworkConnectivity,
 	@param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
 	private val _selectedChip =
 		MutableStateFlow<ToolSubCategory?>(null)
 
-	internal val itemTool: Flow<List<ItemTool>> =
+	private val itemTool: Flow<Pair<List<ItemTool>, ToolSubCategory?>> =
 		combine(
 			toolUseCases.getLocalToolsUseCase(),
 			_selectedChip,
 		) { allTools, category ->
 			if (category == null) {
-				return@combine allTools
+				return@combine Pair(allTools, category)
 			}
 
-			allTools.filter { it.subCategory == category.name }
+			Pair(
+				allTools.filter { it.subCategory == category.name },
+				category
+			)
 		}.flowOn(defaultDispatcher)
 
 
 	val uiState: StateFlow<ToolListUiState> = combine(
 		itemTool,
-		_selectedChip,
 		connectivityObserver.isConnected.stateIn(
 			scope = viewModelScope,
 			started = SharingStarted.Companion.WhileSubscribed(5000),
 			initialValue = false
 		)
-	) { tools, selectedChip, isConnected ->
+	) { (tools, selectedChip), isConnected ->
 		when {
 			tools.isNotEmpty() -> {
 				ToolListUiState(
 					selectedCategory = selectedChip,
-					toolState = UIState.Success(tools)
+					toolState = UIState.Success(tools.sortedBy { it.order })
 				)
 			}
 
