@@ -7,7 +7,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.data.mappers.creatures.toMainBoss
-import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.model.creature.CreatureSubCategory
 import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
@@ -15,7 +14,9 @@ import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
+import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
 import com.rabbitv.valheimviki.domain.model.tree.Tree
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
 import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
@@ -27,16 +28,16 @@ import com.rabbitv.valheimviki.domain.use_cases.tree.TreeUseCases
 import com.rabbitv.valheimviki.presentation.detail.biome.model.BiomeDetailUiState
 import com.rabbitv.valheimviki.utils.Constants.BIOME_ARGUMENT_KEY
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -55,41 +56,98 @@ class BiomeDetailScreenViewModel @Inject constructor(
 	private val favoriteUseCases: FavoriteUseCases,
 ) : ViewModel() {
 	private val _biomeId: String = checkNotNull(savedStateHandle[BIOME_ARGUMENT_KEY])
-	private val _biome = MutableStateFlow<Biome?>(null)
-	private val _mainBoss = MutableStateFlow<MainBoss?>(null)
-	private val _relatedCreatures = MutableStateFlow<List<Creature>>(emptyList())
-	private val _relatedOreDeposits = MutableStateFlow<List<OreDeposit>>(emptyList())
-	private val _relatedMaterials = MutableStateFlow<List<Material>>(emptyList())
-	private val _relatedPointOfInterest = MutableStateFlow<List<PointOfInterest>>(emptyList())
-	private val _relatedTrees = MutableStateFlow<List<Tree>>(emptyList())
-	private val _isLoading = MutableStateFlow(true)
-	private val _error = MutableStateFlow<String?>(null)
+	private val _relations: StateFlow<List<RelatedItem>> =
+		relationsUseCase
+			.getRelatedIdsUseCase(_biomeId)
+			.distinctUntilChanged()
+			.stateIn(
+				scope = viewModelScope,
+				started = SharingStarted.WhileSubscribed(3000),
+				initialValue = emptyList(),
+			)
+
+	private val _mainBossFlow: Flow<MainBoss?> =
+		_relations
+			.map { it.map { rel -> rel.id } }
+			.flatMapLatest { rIds ->
+				creaturesUseCase
+					.getCreatureByRelationAndSubCategory(
+						rIds,
+						CreatureSubCategory.BOSS
+					)
+					.map { creature -> creature?.toMainBoss() }
+			}
+			.onCompletion { error -> println("Error -> ${error?.message}") }
+			.catch { e -> Log.e("Boss fetch error BiomeDetailViewModel", e.message.toString()) }
+
+	private val _creaturesFlow: Flow<List<Creature>> = _relations.map { it.map { rel -> rel.id } }
+		.flatMapLatest { rIds ->
+			creaturesUseCase.getCreaturesByIds(rIds)
+		}.onCompletion { error -> println("Error -> ${error?.message}") }
+		.catch { e -> Log.e("Creatures fetch error BiomeDetailViewModel", e.message.toString()) }
 
 
+	private val _oreDepositFlow: Flow<List<OreDeposit>> =
+		_relations.map { it.map { rel -> rel.id } }
+			.flatMapLatest { rIds ->
+				oreDepositUseCases.getOreDepositsByIdsUseCase(rIds)
+			}.onCompletion { error -> println("Error -> ${error?.message}") }
+			.catch { e ->
+				Log.e(
+					"Ore deposits fetch error BiomeDetailViewModel",
+					e.message.toString()
+				)
+			}
+
+	private val _poiFlow: Flow<List<PointOfInterest>> = _relations.map { it.map { rel -> rel.id } }
+		.flatMapLatest { rIds ->
+			pointOfInterestUseCases.getPointsOfInterestByIdsUseCase(rIds)
+		}.onCompletion { error -> println("Error -> ${error?.message}") }
+		.catch { e ->
+			Log.e(
+				"PointOfInterest fetch error BiomeDetailViewModel",
+				e.message.toString()
+			)
+		}
+
+	private val _treesFlow: Flow<List<Tree>> = _relations.map { it.map { rel -> rel.id } }
+		.flatMapLatest { rIds ->
+			treeUseCases.getTreesByIdsUseCase(rIds)
+		}.onCompletion { error -> println("Error -> ${error?.message}") }
+		.catch { e -> Log.e("Trees fetch error BiomeDetailViewModel", e.message.toString()) }
+
+
+	private val _materialsFlow: Flow<List<Material>> = _relations.map { it.map { rel -> rel.id } }
+		.flatMapLatest { rIds ->
+			materialUseCases.getMaterialsByIds(rIds)
+		}.onCompletion { error -> println("Error -> ${error?.message}") }
+		.catch { e -> Log.e("Materials fetch error BiomeDetailViewModel", e.message.toString()) }
+	private val _worldObjectsDataFlow: Flow<Triple<List<OreDeposit>, List<PointOfInterest>, List<Tree>>> =
+		combine(_oreDepositFlow, _poiFlow, _treesFlow) { ores, poi, trees ->
+			Triple(ores, poi, trees)
+		}
+
+	private val _creaturesDataFlow: Flow<Pair<MainBoss?, List<Creature>>> =
+		combine(_mainBossFlow, _creaturesFlow) { boss, creatures ->
+			boss to creatures
+		}
 	val biomeUiState: StateFlow<BiomeDetailUiState> = combine(
-		_biome,
-		_mainBoss,
-		_relatedCreatures,
-		_relatedOreDeposits,
-		_relatedMaterials,
-		_relatedPointOfInterest,
-		_relatedTrees,
-		favoriteUseCases.isFavorite(_biomeId)
-			.flowOn(Dispatchers.IO),
-		_isLoading,
-		_error
-	) { values ->
+		biomeUseCases.getBiomeByIdUseCase(biomeId = _biomeId),
+		_creaturesDataFlow,
+		_worldObjectsDataFlow,
+		_materialsFlow,
+		favoriteUseCases.isFavorite(_biomeId),
+	) { biome, (mainBoss, creatures), (ores, poi, trees), materials, favorite ->
+
 		BiomeDetailUiState(
-			biome = values[0] as Biome?,
-			mainBoss = values[1] as MainBoss?,
-			relatedCreatures = values[2] as List<Creature>,
-			relatedOreDeposits = values[3] as List<OreDeposit>,
-			relatedMaterials = values[4] as List<Material>,
-			relatedPointOfInterest = values[5] as List<PointOfInterest>,
-			relatedTrees = values[6] as List<Tree>,
-			isFavorite = values[7] as Boolean,
-			isLoading = values[8] as Boolean,
-			error = values[9] as String?
+			biome = biome,
+			mainBoss = UIState.Success(mainBoss),
+			relatedCreatures = UIState.Success(creatures),
+			relatedOreDeposits = UIState.Success(ores),
+			relatedMaterials = UIState.Success(materials),
+			relatedPointOfInterest = UIState.Success(poi),
+			relatedTrees = UIState.Success(trees),
+			isFavorite = favorite,
 		)
 	}.stateIn(
 		scope = viewModelScope,
@@ -97,92 +155,6 @@ class BiomeDetailScreenViewModel @Inject constructor(
 		initialValue = BiomeDetailUiState()
 	)
 
-
-	init {
-		initialBiomeData()
-	}
-
-	internal fun initialBiomeData() {
-		viewModelScope.launch(Dispatchers.IO) {
-			_isLoading.value = true
-			try {
-
-				val biomeData = biomeUseCases.getBiomeByIdUseCase(biomeId = _biomeId).firstOrNull()
-				_biome.value = biomeData
-				val relatedIds: List<String> = async {
-					relationsUseCase.getRelatedIdsUseCase(_biomeId)
-						.first()
-						.map { it.id }
-				}.await()
-
-				launch {
-					try {
-						creaturesUseCase.getCreatureByRelationAndSubCategory(
-							relatedIds,
-							CreatureSubCategory.BOSS
-						).first()?.toMainBoss().let { boss ->
-							_mainBoss.value = boss
-						}
-					} catch (e: Exception) {
-						Log.e("Boss fetch error BiomeDetailViewModel", e.message.toString())
-						_mainBoss.value = null
-					}
-				}
-
-				launch {
-					try {
-						_relatedCreatures.value =
-							creaturesUseCase.getCreaturesByIds(relatedIds).first()
-					} catch (e: Exception) {
-						Log.e("Creatures fetch error BiomeDetailViewModel", e.message.toString())
-					}
-				}
-
-				launch {
-					try {
-						_relatedOreDeposits.value =
-							oreDepositUseCases.getOreDepositsByIdsUseCase(relatedIds).first()
-
-					} catch (e: Exception) {
-						Log.e("Ore deposits fetch error BiomeDetailViewModel", e.message.toString())
-					}
-				}
-				launch {
-					try {
-						_relatedMaterials.value =
-							materialUseCases.getMaterialsByIds(relatedIds).first()
-					} catch (e: Exception) {
-						Log.e("Materials fetch error BiomeDetailViewModel", e.message.toString())
-					}
-				}
-
-
-				launch {
-					try {
-						_relatedPointOfInterest.value =
-							pointOfInterestUseCases.getPointsOfInterestByIdsUseCase(relatedIds)
-								.first()
-					} catch (e: Exception) {
-						Log.e(
-							"PointOfInterest fetch error BiomeDetailViewModel",
-							e.message.toString()
-						)
-					}
-				}
-				launch {
-					try {
-						_relatedTrees.value = treeUseCases.getTreesByIdsUseCase(relatedIds).first()
-					} catch (e: Exception) {
-						Log.e("Trees fetch error BiomeDetailViewModel", e.message.toString())
-					}
-				}
-				_isLoading.value = false
-			} catch (e: Exception) {
-				Log.e("General fetch error BiomeDetailViewModel", e.message.toString())
-				_isLoading.value = false
-			}
-		}
-	}
 
 	fun toggleFavorite(favorite: Favorite, currentIsFavorite: Boolean) {
 		viewModelScope.launch {
