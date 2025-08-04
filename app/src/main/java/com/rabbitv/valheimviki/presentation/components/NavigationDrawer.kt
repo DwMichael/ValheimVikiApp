@@ -25,9 +25,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -71,6 +73,7 @@ import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+@Immutable
 data class DrawerItem(
 	val drawerId: Int,
 	val iconPainter: Painter? = null,
@@ -80,24 +83,29 @@ data class DrawerItem(
 	val navigationDestination: NavigationDestination
 )
 
+@Immutable
+data class DrawerItemCollection(
+	val drawerItems: List<DrawerItem>
+)
+
 @Composable
 fun NavigationDrawer(
 	modifier: Modifier,
 	drawerState: DrawerState,
 	scope: CoroutineScope,
-	childNavController: NavHostController,
-	items: List<DrawerItem>,
+	childNavController: () -> NavHostController,
+	items: DrawerItemCollection,
 	isDetailScreen: () -> Boolean,
 	isTransitionActive: () -> Boolean,
 	content: @Composable () -> Unit,
 ) {
 
 
-	val selectedId = remember { mutableIntStateOf(0) }
+	val selectedId = rememberSaveable { mutableIntStateOf(0) }
 
 	DisposableEffect(Unit) {
 		val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
-			val bestMatch = items
+			val bestMatch = items.drawerItems
 				.filter { item ->
 					destination.hierarchy.any { nav ->
 						val simple =
@@ -112,17 +120,19 @@ fun NavigationDrawer(
 			bestMatch?.let { selectedId.intValue = it.drawerId }
 		}
 
-		childNavController.addOnDestinationChangedListener(listener)
-		onDispose { childNavController.removeOnDestinationChangedListener(listener) }
+		childNavController().addOnDestinationChangedListener(listener)
+		onDispose { childNavController().removeOnDestinationChangedListener(listener) }
 	}
 
 	val onItemClick = remember(scope, childNavController) {
 		{ item: DrawerItem ->
-			val currentRoute = childNavController.currentDestination?.route
+			val currentRoute = childNavController().currentDestination?.route
 			scope.launch { drawerState.close() }
 			if (item.navigationDestination.toString() != currentRoute) {
-				childNavController.navigate(item.navigationDestination) {
-					popUpTo(childNavController.graph.findStartDestination().id) { saveState = true }
+				childNavController().navigate(item.navigationDestination) {
+					popUpTo(childNavController().graph.findStartDestination().id) {
+						saveState = true
+					}
 					launchSingleTop = true
 					restoreState = true
 				}
@@ -133,12 +143,12 @@ fun NavigationDrawer(
 	ModalNavigationDrawer(
 		modifier = modifier
 			.fillMaxSize()
-			.testTag("NavigationDrawer"),
+			.testTag("ModalNavigationDrawer"),
 		drawerState = drawerState,
 		gesturesEnabled = isDetailScreen() && !isTransitionActive(),
 		drawerContent = {
 			DrawerContent(
-				items = items,
+				items = items.drawerItems,
 				selectedItem = { selectedId.intValue },
 				onItemClick = onItemClick,
 			)
@@ -388,13 +398,14 @@ private fun PreviewNavigationDrawer() {
 		)
 	)
 
+	val nav = rememberNavController()
 	ValheimVikiAppTheme {
 		NavigationDrawer(
 			modifier = Modifier,
 			drawerState = rememberDrawerState(DrawerValue.Open),
 			scope = rememberCoroutineScope(),
-			childNavController = rememberNavController(),
-			items = items,
+			childNavController = { nav },
+			items = DrawerItemCollection(items),
 			content = {},
 			isDetailScreen = { false },
 			isTransitionActive = { false },

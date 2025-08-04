@@ -70,6 +70,7 @@ import com.rabbitv.valheimviki.presentation.building_material.BuildingMaterialCa
 import com.rabbitv.valheimviki.presentation.building_material.BuildingMaterialListScreen
 import com.rabbitv.valheimviki.presentation.building_material.viewmodel.BuildingMaterialListViewModel
 import com.rabbitv.valheimviki.presentation.components.DrawerItem
+import com.rabbitv.valheimviki.presentation.components.DrawerItemCollection
 import com.rabbitv.valheimviki.presentation.components.NavigationDrawer
 import com.rabbitv.valheimviki.presentation.components.topbar.MainAppBar
 import com.rabbitv.valheimviki.presentation.crafting.CraftingListScreen
@@ -146,18 +147,9 @@ fun MainContainer(
 	val drawerState = rememberDrawerState(DrawerValue.Closed)
 	val scope = rememberCoroutineScope()
 
-	val drawerItems: List<DrawerItem> = rememberDrawerItems()
+	val drawerCollection: DrawerItemCollection = rememberDrawerItems()
+
 	val currentBackStackEntry by valheimVikiNavController.currentBackStackEntryAsState()
-	val currentDestination = currentBackStackEntry?.destination
-
-
-	val selectedItem by remember(currentDestination) {
-		derivedStateOf {
-			currentDestination?.route?.let { route ->
-				findSelectedDrawerItem(route, drawerItems)
-			} ?: drawerItems.first()
-		}
-	}
 
 	BackHandler(enabled = drawerState.isOpen) {
 		scope.launch {
@@ -182,12 +174,12 @@ fun MainContainer(
 		modifier = modifier,
 		drawerState = drawerState,
 		scope = scope,
-		childNavController = valheimVikiNavController,
-		items = drawerItems,
-		selectedItem = selectedItem,
-		isDetailScreen = showTopAppBar,
-		isTransitionActive = running,
+		childNavController = { valheimVikiNavController },
+		items = drawerCollection,
+		isDetailScreen = { showTopAppBar },
+		isTransitionActive = { running },
 	) {
+
 		Scaffold(
 			topBar = {
 				AnimatedVisibility(
@@ -198,7 +190,7 @@ fun MainContainer(
 					MainAppBar(
 						scope = scope,
 						drawerState = drawerState,
-						enabled = running,
+						enabled = { running },
 						onSearchBarClick = {
 							valheimVikiNavController.navigate(TopLevelDestination.Search)
 						},
@@ -850,7 +842,7 @@ fun ValheimNavGraph(
 
 
 @Composable
-fun rememberDrawerItems(): List<DrawerItem> {
+fun rememberDrawerItems(): DrawerItemCollection {
 
 	val biomesLabel = stringResource(R.string.biomes)
 	val biomesDesc = stringResource(R.string.biomes_section)
@@ -917,129 +909,133 @@ fun rememberDrawerItems(): List<DrawerItem> {
 
 	val configuration = LocalConfiguration.current
 	return remember(configuration) {
-		listOf(
-			// Biomes
-			DrawerItem(
-				icon = mountainSnowIcon,
-				label = biomesLabel,
-				contentDescription = biomesDesc,
-				navigationDestination = GridDestination.WorldDestinations.BiomeGrid
-			),
-			// Bosses
-			DrawerItem(
-				iconPainter = skullPainter,
-				label = bossesLabel,
-				contentDescription = bossesDesc,
-				navigationDestination = GridDestination.CreatureDestinations.BossGrid
-			),
-			// Mini-bosses
-			DrawerItem(
-				iconPainter = ogrePainter,
-				label = minibossesLabel,
-				contentDescription = minibossesDesc,
-				navigationDestination = GridDestination.CreatureDestinations.MiniBossGrid
-			),
-			// Creatures
-			DrawerItem(
-				icon = rabbitIcon,
-				label = creaturesLabel,
-				contentDescription = creaturesDesc,
-				navigationDestination = ListDestination.CreatureDestinations.MobList
-			),
-			// Weapons
-			DrawerItem(
-				icon = swordsIcon,
-				label = weaponsLabel,
-				contentDescription = weaponsDesc,
-				navigationDestination = ListDestination.ItemDestinations.WeaponList
-			),
-			// Armors
-			DrawerItem(
-				icon = shieldIcon,
-				label = armorsLabel,
-				contentDescription = armorsDesc,
-				navigationDestination = ListDestination.ItemDestinations.ArmorList
-			),
-			// Food
-			DrawerItem(
-				icon = utensilsIcon,
-				label = foodLabel,
-				contentDescription = foodDesc,
-				navigationDestination = ListDestination.FoodDestinations.FoodList
-			),
-			// Meads
-			DrawerItem(
-				icon = flaskIcon,
-				label = meadsLabel,
-				contentDescription = meadsDesc,
-				navigationDestination = ListDestination.FoodDestinations.MeadList
-			),
-			// CraftingObjects
-			DrawerItem(
-				icon = anvilIcon,
-				label = craftingObjectsLabel,
-				contentDescription = craftingObjectsDesc,
-				navigationDestination = ListDestination.CraftingDestinations.CraftingObjectsList
-			),
-			// Tools
-			DrawerItem(
-				icon = gavelIcon,
-				label = toolsLabel,
-				contentDescription = toolsDesc,
-				navigationDestination = ListDestination.ItemDestinations.ToolList
-			),
-			// Materials
-			DrawerItem(
-				icon = cuboidIcon,
-				label = materialsLabel,
-				contentDescription = materialsDesc,
-				navigationDestination = ListDestination.CraftingDestinations.MaterialCategory
-			),
-			// Building Materials
-			DrawerItem(
-				icon = houseIcon,
-				label = buildingMatsLabel,
-				contentDescription = buildingMatsDesc,
-				navigationDestination = ListDestination.CraftingDestinations.BuildingMaterialCategory
-			),
-			// Ore Deposits
-			DrawerItem(
-				icon = pickaxeIcon,
-				label = oreLabel,
-				contentDescription = oreDesc,
-				navigationDestination = GridDestination.WorldDestinations.OreDepositGrid
-			),
-			// Trees
-			DrawerItem(
-				icon = treesIcon,
-				label = treesLabel,
-				contentDescription = treesDesc,
-				navigationDestination = GridDestination.WorldDestinations.TreeGrid
-			),
-			// Points of Interest
-			DrawerItem(
-				icon = mapPinnedIcon,
-				label = poiLabel,
-				contentDescription = poiDesc,
-				navigationDestination = ListDestination.WorldDestinations.PointOfInterestList
+		DrawerItemCollection(
+			listOf(
+				// Biomes
+				DrawerItem(
+					drawerId = 0,
+					icon = mountainSnowIcon,
+					label = biomesLabel,
+					contentDescription = biomesDesc,
+					navigationDestination = GridDestination.WorldDestinations.BiomeGrid
+				),
+				// Bosses
+				DrawerItem(
+					drawerId = 1,
+					iconPainter = skullPainter,
+					label = bossesLabel,
+					contentDescription = bossesDesc,
+					navigationDestination = GridDestination.CreatureDestinations.BossGrid
+				),
+				// Mini-bosses
+				DrawerItem(
+					drawerId = 2,
+					iconPainter = ogrePainter,
+					label = minibossesLabel,
+					contentDescription = minibossesDesc,
+					navigationDestination = GridDestination.CreatureDestinations.MiniBossGrid
+				),
+				// Creatures
+				DrawerItem(
+					drawerId = 3,
+					icon = rabbitIcon,
+					label = creaturesLabel,
+					contentDescription = creaturesDesc,
+					navigationDestination = ListDestination.CreatureDestinations.MobList
+				),
+				// Weapons
+				DrawerItem(
+					drawerId = 4,
+					icon = swordsIcon,
+					label = weaponsLabel,
+					contentDescription = weaponsDesc,
+					navigationDestination = ListDestination.ItemDestinations.WeaponList
+				),
+				// Armors
+				DrawerItem(
+					drawerId = 5,
+					icon = shieldIcon,
+					label = armorsLabel,
+					contentDescription = armorsDesc,
+					navigationDestination = ListDestination.ItemDestinations.ArmorList
+				),
+				// Food
+				DrawerItem(
+					drawerId = 6,
+					icon = utensilsIcon,
+					label = foodLabel,
+					contentDescription = foodDesc,
+					navigationDestination = ListDestination.FoodDestinations.FoodList
+				),
+				// Meads
+				DrawerItem(
+					drawerId = 7,
+					icon = flaskIcon,
+					label = meadsLabel,
+					contentDescription = meadsDesc,
+					navigationDestination = ListDestination.FoodDestinations.MeadList
+				),
+				// CraftingObjects
+				DrawerItem(
+					drawerId = 8,
+					icon = anvilIcon,
+					label = craftingObjectsLabel,
+					contentDescription = craftingObjectsDesc,
+					navigationDestination = ListDestination.CraftingDestinations.CraftingObjectsList
+				),
+				// Tools
+				DrawerItem(
+					drawerId = 9,
+					icon = gavelIcon,
+					label = toolsLabel,
+					contentDescription = toolsDesc,
+					navigationDestination = ListDestination.ItemDestinations.ToolList
+				),
+				// Materials
+				DrawerItem(
+					drawerId = 10,
+					icon = cuboidIcon,
+					label = materialsLabel,
+					contentDescription = materialsDesc,
+					navigationDestination = ListDestination.CraftingDestinations.MaterialCategory
+				),
+				// Building Materials
+				DrawerItem(
+					drawerId = 11,
+					icon = houseIcon,
+					label = buildingMatsLabel,
+					contentDescription = buildingMatsDesc,
+					navigationDestination = ListDestination.CraftingDestinations.BuildingMaterialCategory
+				),
+				// Ore Deposits
+				DrawerItem(
+					drawerId = 12,
+					icon = pickaxeIcon,
+					label = oreLabel,
+					contentDescription = oreDesc,
+					navigationDestination = GridDestination.WorldDestinations.OreDepositGrid
+				),
+				// Trees
+				DrawerItem(
+					drawerId = 13,
+					icon = treesIcon,
+					label = treesLabel,
+					contentDescription = treesDesc,
+					navigationDestination = GridDestination.WorldDestinations.TreeGrid
+				),
+				// Points of Interest
+				DrawerItem(
+					drawerId = 14,
+					icon = mapPinnedIcon,
+					label = poiLabel,
+					contentDescription = poiDesc,
+					navigationDestination = ListDestination.WorldDestinations.PointOfInterestList
+				)
 			)
 		)
 	}
 }
 
-private fun findSelectedDrawerItem(
-	currentRoute: String,
-	drawerItems: List<DrawerItem>
-): DrawerItem {
-	val allMatches = drawerItems.filter { item ->
-		val screenName = item.navigationDestination::class.simpleName ?: ""
-		screenName.isNotEmpty() && currentRoute.contains(screenName, ignoreCase = true)
-	}
-
-	return allMatches.maxByOrNull { item ->
-		(item.navigationDestination::class.simpleName ?: "").length
-	} ?: drawerItems.first()
-}
 
 fun NavDestination.shouldShowTopBar(): Boolean {
 	val route = this.route ?: return false
