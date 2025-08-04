@@ -24,13 +24,10 @@ import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,10 +40,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.composables.icons.lucide.Anvil
 import com.composables.icons.lucide.Cuboid
@@ -94,38 +91,45 @@ fun NavigationDrawer(
 	isTransitionActive: () -> Boolean,
 	content: @Composable () -> Unit,
 ) {
-	val navBackStackEntry by childNavController.currentBackStackEntryAsState()
-	val currentDestination = navBackStackEntry?.destination
 
-	var selectedId by rememberSaveable { mutableIntStateOf(0) }
 
-	LaunchedEffect(currentDestination) {
-		items.firstOrNull { item ->
-			currentDestination
-				?.hierarchy
-				?.any { it.route == item.navigationDestination.toString() } == true
-		}?.let {
-			selectedId = it.drawerId
+	val selectedId = remember { mutableIntStateOf(0) }
+
+	DisposableEffect(Unit) {
+		val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
+			val bestMatch = items
+				.filter { item ->
+					destination.hierarchy.any { nav ->
+						val simple =
+							item.navigationDestination::class.simpleName ?: return@any false
+						nav.route?.contains(simple, ignoreCase = true) == true
+					}
+				}
+				.maxByOrNull { item ->
+					item.navigationDestination::class.simpleName?.length ?: 0
+				}
+
+			bestMatch?.let { selectedId.intValue = it.drawerId }
 		}
+
+		childNavController.addOnDestinationChangedListener(listener)
+		onDispose { childNavController.removeOnDestinationChangedListener(listener) }
 	}
 
 	val onItemClick = remember(scope, childNavController) {
 		{ item: DrawerItem ->
-			val currentRoute = childNavController.currentBackStackEntry?.destination?.route
+			val currentRoute = childNavController.currentDestination?.route
 			scope.launch { drawerState.close() }
 			if (item.navigationDestination.toString() != currentRoute) {
-				selectedId = item.drawerId
 				childNavController.navigate(item.navigationDestination) {
-					popUpTo(childNavController.graph.findStartDestination().id) {
-						saveState = true
-					}
+					popUpTo(childNavController.graph.findStartDestination().id) { saveState = true }
 					launchSingleTop = true
 					restoreState = true
 				}
 			}
-
 		}
 	}
+
 	ModalNavigationDrawer(
 		modifier = modifier
 			.fillMaxSize()
@@ -135,7 +139,7 @@ fun NavigationDrawer(
 		drawerContent = {
 			DrawerContent(
 				items = items,
-				selectedItem = { selectedId },
+				selectedItem = { selectedId.intValue },
 				onItemClick = onItemClick,
 			)
 		},
@@ -207,6 +211,7 @@ private fun DrawerNavigationItem(
 	isSelected: () -> Boolean,
 	onClick: () -> Unit,
 ) {
+
 	NavigationDrawerItem(
 		colors = NavigationDrawerItemDefaults.colors(
 			selectedIconColor = PrimaryText,
@@ -242,28 +247,13 @@ private fun DrawerNavigationItem(
 			)
 		},
 		selected = isSelected(),
-		onClick = {
-			onClick()
-		},
+		onClick = onClick,
 		modifier = Modifier
 			.height(48.dp)
 			.padding(NavigationDrawerItemDefaults.ItemPadding)
 	)
 }
 
-private fun findSelectedDrawerItem(
-	currentRoute: String,
-	drawerItems: List<DrawerItem>
-): DrawerItem {
-	val allMatches = drawerItems.filter { item ->
-		val screenName = item.navigationDestination::class.simpleName ?: ""
-		screenName.isNotEmpty() && currentRoute.contains(screenName, ignoreCase = true)
-	}
-
-	return allMatches.maxByOrNull { item ->
-		(item.navigationDestination::class.simpleName ?: "").length
-	} ?: drawerItems.first()
-}
 
 @Preview(name = "NavigationDrawerImage", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
