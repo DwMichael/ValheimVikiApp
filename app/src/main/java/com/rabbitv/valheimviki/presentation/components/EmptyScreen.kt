@@ -22,7 +22,8 @@ import com.composables.icons.lucide.CircleHelp
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.ServerOff
 import com.composables.icons.lucide.WifiOff
-import com.rabbitv.valheimviki.domain.model.ui_state.default_list_state.ErrorType
+import com.rabbitv.valheimviki.domain.exceptions.ErrorType
+
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
 @Composable
