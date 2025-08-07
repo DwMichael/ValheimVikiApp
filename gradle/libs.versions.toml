@@ -1,5 +1,5 @@
 [versions]
-agp = "8.11.1"
+agp = "8.12.0"
 appcompat = "1.7.1"
 coilCompose = "3.2.0"
 coilNetworkOkhttp = "3.2.0"
@@ -41,6 +41,7 @@ roomCompiler = "2.7.2"
 roomKtx = "2.7.2"
 roomPaging = "2.7.2"
 roomRuntime = "2.7.2"
+runtimeTracing = "1.8.3"
 securityCrypto = "1.1.0-beta01"
 turbine = "1.2.1"
 uiTextGoogleFonts = "1.8.3"
@@ -62,6 +63,7 @@ androidx-paging-runtime = { module = "androidx.paging:paging-runtime", version.r
 androidx-paging-testing = { module = "androidx.paging:paging-testing", version.ref = "pagingTesting" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomCompiler" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
+androidx-runtime-tracing = { module = "androidx.compose.runtime:runtime-tracing", version.ref = "runtimeTracing" }
 androidx-security-crypto = { module = "androidx.security:security-crypto", version.ref = "securityCrypto" }
 androidx-ui-text-google-fonts = { module = "androidx.compose.ui:ui-text-google-fonts", version.ref = "uiTextGoogleFonts" }
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtx" }
