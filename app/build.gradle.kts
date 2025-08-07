@@ -138,6 +138,9 @@ dependencies {
 	testImplementation(libs.turbine)
 
 	testImplementation(libs.mockito.junit.jupiter)
+
+	implementation(libs.androidx.runtime.tracing)
+
 	mockitoAgent("org.mockito:mockito-core:5.18.0") { isTransitive = false }
 }
 
