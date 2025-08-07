@@ -113,7 +113,9 @@ fun ToolDetailContent(
 	val scrollState = rememberScrollState()
 	val craftingStationPainter = painterResource(R.drawable.food_bg)
 	val isExpandable = remember { mutableStateOf(false) }
-
+	val handleItemClick = remember {
+		NavigationHelper.createItemDetailClickHandler(onItemClick)
+	}
 	BgImage()
 	Scaffold(
 		modifier = Modifier.fillMaxSize(),
@@ -267,11 +269,7 @@ fun ToolDetailContent(
 						HorizontalPagerSection(
 							list = uiState.relatedOreDeposits,
 							data = oreDepositData,
-							onItemClick = { clickedItemId ->
-								val destination =
-									WorldDetailDestination.OreDepositDetail(oreDepositId = clickedItemId)
-								onItemClick(destination)
-							},
+							onItemClick = handleItemClick,
 						)
 					}
 					if (uiState.relatedNpc != null) {

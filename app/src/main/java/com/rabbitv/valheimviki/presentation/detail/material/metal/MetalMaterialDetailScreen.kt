@@ -104,7 +104,9 @@ fun MetalMaterialDetailContent(
 
 	val scrollState = rememberScrollState()
 	val isExpandable = remember { mutableStateOf(false) }
-
+	val handleItemClick = remember {
+		NavigationHelper.createItemDetailClickHandler(onItemClick)
+	}
 
 	val pointOfInterestData = HorizontalPagerData(
 		title = "Point Of Interest",
@@ -208,11 +210,7 @@ fun MetalMaterialDetailContent(
 						HorizontalPagerSection(
 							list = uiState.pointOfInterests,
 							data = pointOfInterestData,
-							onItemClick = { clickedItemId ->
-								val destination =
-									WorldDetailDestination.PointOfInterestDetail(pointOfInterestId = clickedItemId)
-								onItemClick(destination)
-							}
+							onItemClick = handleItemClick
 						)
 					}
 					if (uiState.oreDeposits.isNotEmpty()) {
@@ -220,11 +218,7 @@ fun MetalMaterialDetailContent(
 						HorizontalPagerSection(
 							list = uiState.oreDeposits,
 							data = oreDepositData,
-							onItemClick = { clickedItemId ->
-								val destination =
-									WorldDetailDestination.OreDepositDetail(oreDepositId = clickedItemId)
-								onItemClick(destination)
-							},
+							onItemClick = handleItemClick,
 						)
 					}
 					if (uiState.creatures.isNotEmpty()) {
@@ -232,16 +226,7 @@ fun MetalMaterialDetailContent(
 						HorizontalPagerSection(
 							list = uiState.creatures,
 							data = creatureData,
-							onItemClick = { clickedItemId ->
-								val creature = uiState.creatures.find { it.id == clickedItemId }
-								creature?.let {
-									val destination = NavigationHelper.routeToCreature(
-										it.subCategory.toString(),
-										it.id
-									)
-									onItemClick(destination)
-								}
-							},
+							onItemClick = handleItemClick,
 						)
 					}
 					if (uiState.requiredMaterials.isNotEmpty()) {

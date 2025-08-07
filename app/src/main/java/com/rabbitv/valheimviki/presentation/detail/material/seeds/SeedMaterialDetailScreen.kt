@@ -105,7 +105,9 @@ fun SeedMaterialDetailContent(
 	val isStatInfoExpanded1 = remember { mutableStateOf(false) }
 	val isStatInfoExpanded2 = remember { mutableStateOf(false) }
 	val isExpandable = remember { mutableStateOf(false) }
-
+	val handleItemClick = remember {
+		NavigationHelper.createItemDetailClickHandler(onItemClick)
+	}
 	val toolsData = HorizontalPagerData(
 		title = "Tools",
 		subTitle = "Tools needed to plant this seed",
@@ -258,11 +260,7 @@ fun SeedMaterialDetailContent(
 						HorizontalPagerSection(
 							list = uiState.trees,
 							data = treesData,
-							onItemClick = { clickedItemId ->
-								val destination =
-									WorldDetailDestination.TreeDetail(treeId = clickedItemId)
-								onItemClick(destination)
-							}
+							onItemClick = handleItemClick
 						)
 					}
 
@@ -271,11 +269,7 @@ fun SeedMaterialDetailContent(
 						HorizontalPagerSection(
 							list = uiState.pointsOfInterest,
 							data = pointsOfInterestData,
-							onItemClick = { clickedItemId ->
-								val destination =
-									WorldDetailDestination.PointOfInterestDetail(pointOfInterestId = clickedItemId)
-								onItemClick(destination)
-							}
+							onItemClick = handleItemClick
 
 						)
 					}
@@ -284,11 +278,7 @@ fun SeedMaterialDetailContent(
 						HorizontalPagerSection(
 							list = uiState.tools,
 							data = toolsData,
-							onItemClick = { clickedItemId ->
-								val destination =
-									EquipmentDetailDestination.ToolDetail(clickedItemId)
-								onItemClick(destination)
-							},
+							onItemClick = handleItemClick,
 						)
 					}
 					uiState.npc?.let { npc ->

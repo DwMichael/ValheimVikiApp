@@ -122,7 +122,9 @@ fun TreeDetailContent(
 		iconRotationDegrees = 0f,
 		itemContentScale = ContentScale.Crop
 	)
-
+	val handleItemClick = remember {
+		NavigationHelper.createItemDetailClickHandler(onItemClick)
+	}
 
 	Scaffold(
 		content = { padding ->
@@ -239,11 +241,7 @@ fun TreeDetailContent(
 								HorizontalPagerSection(
 									list = uiState.relatedAxes,
 									data = axesData,
-									onItemClick = { clickedItemId ->
-										val destination =
-											EquipmentDetailDestination.WeaponDetail(clickedItemId)
-										onItemClick(destination)
-									},
+									onItemClick = handleItemClick,
 								)
 							}
 

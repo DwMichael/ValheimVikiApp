@@ -35,6 +35,7 @@ import com.composables.icons.lucide.Trees
 import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.navigation.DetailDestination
+import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.navigation.WorldDetailDestination
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
@@ -85,6 +86,9 @@ fun WoodMaterialDetailContent(
 ) {
 	val scrollState = rememberScrollState()
 	val isExpandable = remember { mutableStateOf(false) }
+	val handleItemClick = remember {
+		NavigationHelper.createItemDetailClickHandler(onItemClick)
+	}
 	val treesData = HorizontalPagerData(
 		title = "Trees",
 		subTitle = "Trees from witch this wood drop",
@@ -175,11 +179,7 @@ fun WoodMaterialDetailContent(
 						HorizontalPagerSection(
 							list = uiState.trees,
 							data = treesData,
-							onItemClick = { clickedItemId ->
-								val destination =
-									WorldDetailDestination.TreeDetail(treeId = clickedItemId)
-								onItemClick(destination)
-							}
+							onItemClick =handleItemClick
 						)
 					}
 

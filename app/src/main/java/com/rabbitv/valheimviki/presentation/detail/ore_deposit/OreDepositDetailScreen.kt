@@ -111,6 +111,9 @@ fun OreDepositDetailContent(
 ) {
 	val isRunning by remember { derivedStateOf { animatedVisibilityScope.transition.isRunning } }
 	val scrollState = rememberScrollState()
+	val handleItemClick = remember {
+		NavigationHelper.createItemDetailClickHandler(onItemClick)
+	}
 	val pickaxesData = HorizontalPagerData(
 		title = "Pickaxes",
 		subTitle = "List of pickaxes that can mine this ore out",
@@ -239,11 +242,7 @@ fun OreDepositDetailContent(
 							HorizontalPagerSection(
 								list = uiState.relatedTools,
 								data = pickaxesData,
-								onItemClick = { clickedItemId ->
-									val destination =
-										EquipmentDetailDestination.ToolDetail(clickedItemId)
-									onItemClick(destination)
-								},
+								onItemClick = handleItemClick,
 							)
 						}
 						if (uiState.craftingStation.isNotEmpty()) {
@@ -251,13 +250,7 @@ fun OreDepositDetailContent(
 							HorizontalPagerSection(
 								list = uiState.craftingStation,
 								data = craftingObjectData,
-								onItemClick = { clickedItemId ->
-									val destination =
-										BuildingDetailDestination.CraftingObjectDetail(
-											clickedItemId
-										)
-									onItemClick(destination)
-								},
+								onItemClick = handleItemClick,
 							)
 						}
 						if (uiState.relatedMaterials.isNotEmpty()) {

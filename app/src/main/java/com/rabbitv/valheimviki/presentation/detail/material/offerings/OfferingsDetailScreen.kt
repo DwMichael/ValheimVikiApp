@@ -94,7 +94,9 @@ fun OfferingsDetailContent(
 
 	val scrollState = rememberScrollState()
 	val isExpandable = remember { mutableStateOf(false) }
-
+	val handleItemClick = remember {
+		NavigationHelper.createItemDetailClickHandler(onItemClick)
+	}
 	val aggressiveCreatureData = HorizontalPagerData(
 		title = "Aggressive Creatures",
 		subTitle = "Creatures from witch this material drop",
@@ -172,17 +174,7 @@ fun OfferingsDetailContent(
 						HorizontalPagerSection(
 							list = uiState.aggressive,
 							data = aggressiveCreatureData,
-							onItemClick = { clickedItemId ->
-								val creature =
-									uiState.aggressive.find { it.id == clickedItemId }
-								creature?.let {
-									val destination = NavigationHelper.routeToCreature(
-										it.subCategory,
-										it.id
-									)
-									onItemClick(destination)
-								}
-							},
+							onItemClick = handleItemClick,
 						)
 					}
 					if (uiState.passive.isNotEmpty()) {
@@ -190,17 +182,7 @@ fun OfferingsDetailContent(
 						HorizontalPagerSection(
 							list = uiState.passive,
 							data = passiveCreatureData,
-							onItemClick = { clickedItemId ->
-								val creature =
-									uiState.passive.find { it.id == clickedItemId }
-								creature?.let {
-									val destination = NavigationHelper.routeToCreature(
-										it.subCategory,
-										it.id
-									)
-									onItemClick(destination)
-								}
-							},
+							onItemClick = handleItemClick,
 						)
 					}
 					if (uiState.pointsOfInterest.isNotEmpty()) {
@@ -208,11 +190,7 @@ fun OfferingsDetailContent(
 						HorizontalPagerSection(
 							list = uiState.pointsOfInterest,
 							data = pointsOfInterestData,
-							onItemClick = { clickedItemId ->
-								val destination =
-									WorldDetailDestination.PointOfInterestDetail(pointOfInterestId = clickedItemId)
-								onItemClick(destination)
-							}
+							onItemClick = handleItemClick
 						)
 					}
 					if (uiState.altars.isNotEmpty()) {
@@ -220,11 +198,7 @@ fun OfferingsDetailContent(
 						HorizontalPagerSection(
 							list = uiState.altars,
 							data = altarsData,
-							onItemClick = { clickedItemId ->
-								val destination =
-									WorldDetailDestination.PointOfInterestDetail(pointOfInterestId = clickedItemId)
-								onItemClick(destination)
-							}
+							onItemClick = handleItemClick
 						)
 					}
 					if (uiState.craftingStation.isNotEmpty()) {

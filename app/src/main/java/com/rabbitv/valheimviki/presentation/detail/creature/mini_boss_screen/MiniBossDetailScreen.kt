@@ -118,7 +118,9 @@ fun MiniBossContent(
 	val isStatInfoExpanded = remember {
 		List(5) { mutableStateOf(false) }
 	}
-
+	val handleItemClick = remember {
+		NavigationHelper.createItemDetailClickHandler(onItemClick)
+	}
 	val dropItemData = HorizontalPagerData(
 		title = "Drop Items",
 		subTitle = "Items that drop from boss after defeating him",
@@ -235,18 +237,7 @@ fun MiniBossContent(
 							if (miniBossUiSate.dropItems.isNotEmpty()) {
 								SlavicDivider()
 								HorizontalPagerSection(
-									onItemClick = { clickedItemId ->
-										val dropItem =
-											miniBossUiSate.dropItems.find { it.id == clickedItemId }
-										dropItem?.let {
-											val destination = NavigationHelper.routeToMaterial(
-												it.subCategory,
-												it.id
-											)
-											onItemClick(destination)
-										}
-
-									},
+									onItemClick = handleItemClick,
 									list = miniBossUiSate.dropItems,
 									data = dropItemData
 								)
