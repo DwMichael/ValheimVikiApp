@@ -29,6 +29,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.key
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -62,6 +65,7 @@ import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
 import kotlin.math.absoluteValue
 
+@Immutable
 data class HorizontalPagerData(
 	val title: String,
 	val subTitle: String,
@@ -75,7 +79,7 @@ data class HorizontalPagerData(
 fun HorizontalPagerSection(
 	list: List<ItemData>,
 	data: HorizontalPagerData,
-	onItemClick: (itemId: String) -> Unit = {},
+	onItemClick: (itemId: ItemData) -> Unit = {},
 	maxHeight: Dp = 240.dp,
 	minHeight: Dp = 210.dp,
 	pageWidth: Dp = 160.dp,
@@ -85,8 +89,9 @@ fun HorizontalPagerSection(
 ) {
 	val state = rememberPagerState(pageCount = { list.size })
 	val screenWidth = LocalConfiguration.current.screenWidthDp.dp
-	val horizontalPadding = (screenWidth - pageWidth) / 2
-	Box(
+	val horizontalPadding = remember { (screenWidth - pageWidth) / 2 }
+
+	Column(
 		modifier = Modifier
 			.fillMaxWidth()
 			.heightIn(min = minHeight, max = maxHeight)
@@ -94,28 +99,26 @@ fun HorizontalPagerSection(
 				start = BODY_CONTENT_PADDING.dp,
 				end = BODY_CONTENT_PADDING.dp,
 				bottom = BODY_CONTENT_PADDING.dp,
-			)
+			),
+		horizontalAlignment = Alignment.Start
 	)
 	{
-		Column(
-			horizontalAlignment = Alignment.Start
+		HorizontalHeader(
+			data = data
 		)
-		{
-			HorizontalHeader(
-				data = data
-			)
-			Spacer(modifier = Modifier.padding(6.dp))
-			HorizontalPager(
+		Spacer(modifier = Modifier.padding(6.dp))
+		HorizontalPager(
+			state = state,
+			modifier = Modifier.fillMaxWidth(),
+			contentPadding = PaddingValues(horizontal = horizontalPadding),
+			pageSize = PageSize.Fixed(pageWidth),
+			beyondViewportPageCount = 2,
+			flingBehavior = PagerDefaults.flingBehavior(
 				state = state,
-				modifier = Modifier.fillMaxWidth(),
-				contentPadding = PaddingValues(horizontal = horizontalPadding),
-				pageSize = PageSize.Fixed(pageWidth),
-				beyondViewportPageCount = list.size,
-				flingBehavior = PagerDefaults.flingBehavior(
-					state = state,
-					pagerSnapDistance = PagerSnapDistance.atMost(list.size)
-				)
-			) { pageIndex ->
+				pagerSnapDistance = PagerSnapDistance.atMost(list.size)
+			)
+		) { pageIndex ->
+			key(list[pageIndex].id) {
 				HorizontalPagerItem(
 					pagerState = state,
 					list = list,
@@ -175,7 +178,7 @@ fun HorizontalPagerItem(
 	pageIndex: Int,
 	totalSize: Int,
 	contentScale: ContentScale,
-	onItemClick: (itemId: String) -> Unit,
+	onItemClick: (itemId: ItemData) -> Unit,
 	itemHeight: Dp = 150.dp,
 	itemWidth: Dp = 150.dp,
 	imagePadding: Dp
@@ -212,7 +215,7 @@ fun HorizontalPagerItem(
 				shape = RoundedCornerShape(8.dp),
 				spotColor = Color.White.copy(alpha = 0.25f)
 			)
-			.clickable { onItemClick(item.id) },
+			.clickable { onItemClick(item) },
 	) {
 		Box(
 			modifier = Modifier.fillMaxSize()
@@ -222,8 +225,7 @@ fun HorizontalPagerItem(
 				modifier = Modifier
 					.fillMaxSize()
 					.background(DarkGrey)
-					.padding(imagePadding)
-				,
+					.padding(imagePadding),
 				model = ImageRequest.Builder(LocalContext.current)
 					.data(item.imageUrl)
 					.crossfade(true)
