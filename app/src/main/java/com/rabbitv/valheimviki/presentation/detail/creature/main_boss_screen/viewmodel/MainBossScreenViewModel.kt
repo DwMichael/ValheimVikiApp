@@ -29,7 +29,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -66,8 +65,7 @@ class MainBossScreenViewModel @Inject constructor(
 		_relatedSummoningItems,
 		_relatedBiome,
 		_trophy,
-		favoriteUseCases.isFavorite(mainBossId)
-			.flowOn(Dispatchers.IO),
+		favoriteUseCases.isFavorite(mainBossId),
 		_isLoading,
 		_error
 	) { values ->
