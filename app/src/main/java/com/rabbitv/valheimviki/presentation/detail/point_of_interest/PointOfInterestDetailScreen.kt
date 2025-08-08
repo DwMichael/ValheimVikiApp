@@ -37,7 +37,6 @@ import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.navigation.DetailDestination
-import com.rabbitv.valheimviki.navigation.EquipmentDetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.navigation.WorldDetailDestination
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
@@ -154,7 +153,9 @@ fun PointOfInterestDetailContent(
 								onClickedItem = {
 									val destination =
 										WorldDetailDestination.BiomeDetail(
-											biomeId = biome.id
+											biomeId = biome.id,
+											imageUrl = biome.imageUrl,
+											title = biome.name,
 										)
 									onItemClick(destination)
 

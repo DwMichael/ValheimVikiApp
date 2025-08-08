@@ -168,7 +168,11 @@ fun GeneralMaterialDetailContent(
 						CardWithOverlayLabel(
 							onClickedItem = {
 								val destination =
-									WorldDetailDestination.BiomeDetail(biomeId = biome.id)
+									WorldDetailDestination.BiomeDetail(
+										biomeId = biome.id,
+										imageUrl = biome.imageUrl,
+										title = biome.name,
+									)
 								onItemClick(destination)
 							},
 							painter = rememberAsyncImagePainter(biome.imageUrl),

@@ -52,9 +52,9 @@ import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.navigation.WorldDetailDestination
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
-import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
+import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDetailImage
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.creature.aggressive_screen.PageIndicator
@@ -85,7 +85,7 @@ fun PassiveCreatureDetailScreen(
 	PassiveCreatureDetailContent(
 		onBack = onBack,
 		onItemClick = onItemClick,
-		onToggleFavorite =onToggleFavorite,
+		onToggleFavorite = onToggleFavorite,
 		uiState = uiState,
 
 		)
@@ -160,7 +160,7 @@ fun PassiveCreatureDetailContent(
 						)
 
 						TridentsDividedRow(text = "DETAILS")
-						uiState.biome?.let {
+						uiState.biome?.let { biome ->
 							Text(
 								modifier = Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp),
 								text = "PRIMARY SPAWN",
@@ -172,7 +172,11 @@ fun PassiveCreatureDetailContent(
 							CardWithOverlayLabel(
 								onClickedItem = {
 									val destination =
-										WorldDetailDestination.BiomeDetail(biomeId = it.id)
+										WorldDetailDestination.BiomeDetail(
+											biomeId = biome.id,
+											imageUrl = biome.imageUrl,
+											title = biome.name
+										)
 									onItemClick(destination)
 								},
 								painter = rememberAsyncImagePainter(uiState.biome.imageUrl),
@@ -184,7 +188,7 @@ fun PassiveCreatureDetailContent(
 											.wrapContentWidth(Alignment.CenterHorizontally)
 									) {
 										Text(
-											it.name.uppercase(),
+											biome.name.uppercase(),
 											style = MaterialTheme.typography.bodyLarge,
 											modifier = Modifier,
 											color = Color.White,

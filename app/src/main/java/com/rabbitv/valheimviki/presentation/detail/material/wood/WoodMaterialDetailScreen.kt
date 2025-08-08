@@ -150,7 +150,11 @@ fun WoodMaterialDetailContent(
 							CardWithOverlayLabel(
 								onClickedItem = {
 									val destination =
-										WorldDetailDestination.BiomeDetail(biomeId = biome.id)
+										WorldDetailDestination.BiomeDetail(
+											biomeId = biome.id,
+											imageUrl = biome.imageUrl,
+											title = biome.name,
+										)
 									onItemClick(destination)
 								},
 								painter = rememberAsyncImagePainter(biome.imageUrl),
@@ -179,7 +183,7 @@ fun WoodMaterialDetailContent(
 						HorizontalPagerSection(
 							list = uiState.trees,
 							data = treesData,
-							onItemClick =handleItemClick
+							onItemClick = handleItemClick
 						)
 					}
 
