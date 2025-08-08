@@ -9,10 +9,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class GetMiniBossesUseCase @Inject constructor(private val creatureRepository: CreatureRepository) {
-	operator fun invoke(): Flow<List<MiniBoss>> {
-		val creatureSubCategory = CreatureSubCategory.MINI_BOSS
-		return creatureRepository.getCreaturesBySubCategory(creatureSubCategory.toString())
+	operator fun invoke(): Flow<List<MiniBoss>> =
+		creatureRepository.getCreaturesBySubCategory(CreatureSubCategory.MINI_BOSS.toString())
 			.map { mainBosses -> mainBosses.toMiniBosses().sortedBy { it.order } }
-
-	}
 }

@@ -9,11 +9,8 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class GetAggressiveCreatures @Inject constructor(private val creatureRepository: CreatureRepository) {
-	operator fun invoke(): Flow<List<AggressiveCreature>> {
-		val creatureSubCategory = CreatureSubCategory.AGGRESSIVE_CREATURE
-		return creatureRepository.getCreaturesBySubCategory(creatureSubCategory.toString())
-			.map { mainBosses -> mainBosses.toAggressiveCreatures().sortedBy { it.order } }
+	operator fun invoke(): Flow<List<AggressiveCreature>> =
+		creatureRepository.getCreaturesBySubCategory(CreatureSubCategory.AGGRESSIVE_CREATURE.toString())
+			.map { mainBosses -> mainBosses.toAggressiveCreatures() }
 
-
-	}
 }

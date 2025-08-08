@@ -6,8 +6,6 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class GetCreatureByIdUseCase @Inject constructor(private val creatureRepository: CreatureRepository) {
-	operator fun invoke(creatureId: String): Flow<Creature?> {
-		return creatureRepository.getCreatureById(creatureId)
-
-	}
+	operator fun invoke(creatureId: String): Flow<Creature?> =
+		creatureRepository.getCreatureById(creatureId)
 }

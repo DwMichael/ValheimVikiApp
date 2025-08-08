@@ -12,10 +12,8 @@ class GetCreaturesByRelationAndSubCategory @Inject constructor(
 	operator fun invoke(
 		creatureIds: List<String>,
 		creatureSubCategory: CreatureSubCategory
-	): Flow<List<Creature>> {
-		return creatureRepository.getCreaturesByRelationAndSubCategory(
-			creatureIds,
-			creatureSubCategory.toString()
-		)
-	}
+	): Flow<List<Creature>> = creatureRepository.getCreaturesByRelationAndSubCategory(
+		creatureIds,
+		creatureSubCategory.toString()
+	)
 }

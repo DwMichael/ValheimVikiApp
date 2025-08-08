@@ -10,9 +10,7 @@ import kotlinx.coroutines.flow.map
 
 
 class GetNPCsUseCase @Inject constructor(private val creatureRepository: CreatureRepository) {
-	operator fun invoke(): Flow<List<NPC>> {
-		val creatureSubCategory = CreatureSubCategory.NPC
-		return creatureRepository.getCreaturesBySubCategory(creatureSubCategory.toString())
-			.map { mainBosses -> mainBosses.toNPC().sortedBy { it.order } }
-	}
+	operator fun invoke(): Flow<List<NPC>> =
+		creatureRepository.getCreaturesBySubCategory(CreatureSubCategory.NPC.toString())
+			.map { mainBosses -> mainBosses.toNPC() }
 }
