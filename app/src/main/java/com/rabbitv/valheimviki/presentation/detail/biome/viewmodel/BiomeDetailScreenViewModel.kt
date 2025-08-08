@@ -5,6 +5,7 @@ package com.rabbitv.valheimviki.presentation.detail.biome.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.rabbitv.valheimviki.data.mappers.creatures.toMainBoss
 import com.rabbitv.valheimviki.di.qualifiers.DefaultDispatcher
 import com.rabbitv.valheimviki.domain.model.biome.Biome
@@ -25,19 +26,20 @@ import com.rabbitv.valheimviki.domain.use_cases.ore_deposit.OreDepositUseCases
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.PointOfInterestUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.domain.use_cases.tree.TreeUseCases
+import com.rabbitv.valheimviki.navigation.WorldDetailDestination
 import com.rabbitv.valheimviki.presentation.detail.biome.model.BiomeDetailUiState
-import com.rabbitv.valheimviki.utils.Constants.BIOME_ARGUMENT_KEY
 import com.rabbitv.valheimviki.utils.extensions.combine
+import com.rabbitv.valheimviki.utils.relatedListFlowGated
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -50,7 +52,7 @@ class BiomeDetailScreenViewModel @Inject constructor(
 	savedStateHandle: SavedStateHandle,
 	private val biomeUseCases: BiomeUseCases,
 	private val creaturesUseCase: CreatureUseCases,
-	private val relationsUseCase: RelationUseCases,
+	private val relationsUseCases: RelationUseCases,
 	private val materialUseCases: MaterialUseCases,
 	private val pointOfInterestUseCases: PointOfInterestUseCases,
 	private val treeUseCases: TreeUseCases,
@@ -59,80 +61,103 @@ class BiomeDetailScreenViewModel @Inject constructor(
 	@param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
-	private val _biomeId: String = checkNotNull(savedStateHandle[BIOME_ARGUMENT_KEY])
+	private val args = savedStateHandle.toRoute<WorldDetailDestination.BiomeDetail>()
+	val biomeId: String = args.biomeId
+	val initialImageUrl: String = args.imageUrl
+	val initialTitle: String = args.title
 
-	private val _biomeFlow: Flow<Biome?> = biomeUseCases.getBiomeByIdUseCase(_biomeId)
-	private val _relations: Flow<List<kotlin.String>> =
-		relationsUseCase.getRelatedIdsUseCase(_biomeId)
-			.map { relations -> relations.map { it.id } }
+	private val contentStart = MutableStateFlow(false)
+
+	fun startContent() {
+		contentStart.value = true
+	}
+
+	private val _biomeFlow: StateFlow<Biome?> =
+		biomeUseCases.getBiomeByIdUseCase(biomeId)
+			.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
+
+	private val relationsIds: StateFlow<List<String>> =
+		relationsUseCases.getRelatedIdsUseCase(biomeId)
+			.map { list -> list.map { it.id } }
 			.distinctUntilChanged()
+			.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
-	@OptIn(ExperimentalCoroutinesApi::class)
-	private fun <T> getRelatedDataFlow(fetcher: (List<kotlin.String>) -> Flow<T>): Flow<UIState<T>> {
-		return _relations.flatMapLatest { ids ->
-			if (ids.isEmpty()) {
-				flowOf(UIState.Success(emptyList<Any>() as T))
-			} else {
-				fetcher(ids)
-					.map<T, UIState<T>> { data -> UIState.Success(data) }
-					.catch { e -> emit(UIState.Error(e.message ?: "Unknown error")) }
+
+	private val _mainBossState: Flow<UIState<MainBoss?>> =
+		relationsIds
+			.flatMapLatest { ids ->
+				creaturesUseCase
+					.getCreatureByRelationAndSubCategory(ids, CreatureSubCategory.BOSS)
 			}
-		}.flowOn(defaultDispatcher)
-	}
-
-	private val _mainBossState: Flow<UIState<MainBoss?>> = getRelatedDataFlow { ids ->
-		creaturesUseCase.getCreatureByRelationAndSubCategory(ids, CreatureSubCategory.BOSS)
 			.map { it?.toMainBoss() }
-	}
+			.distinctUntilChanged()
+			.map<MainBoss?, UIState<MainBoss?>> { UIState.Success(it) }
+			.catch { e -> emit(UIState.Error(e.message ?: "Error fetching main boss")) }
+			.flowOn(defaultDispatcher)
 
-	private val _creaturesState: Flow<UIState<List<Creature>>> = getRelatedDataFlow { ids ->
-		creaturesUseCase.getCreaturesByIds(ids)
-	}
 
-	private val _oreDepositsState: Flow<UIState<List<OreDeposit>>> = getRelatedDataFlow { ids ->
-		oreDepositUseCases.getOreDepositsByIdsUseCase(ids)
-	}
+	private val _creaturesState: Flow<UIState<List<Creature>>> =
+		relatedListFlowGated(
+			idsFlow = relationsIds,
+			contentStart = contentStart,
+			fetcher = { ids -> creaturesUseCase.getCreaturesByIds(ids) },
+			sortBy = { it.order }
+		).flowOn(defaultDispatcher)
 
-	private val _materialsState: Flow<UIState<List<Material>>> = getRelatedDataFlow { ids ->
-		materialUseCases.getMaterialsByIds(ids)
-	}
 
-	private val _poiState: Flow<UIState<List<PointOfInterest>>> = getRelatedDataFlow { ids ->
-		pointOfInterestUseCases.getPointsOfInterestByIdsUseCase(ids)
-	}
+	private val _oreDepositsState: Flow<UIState<List<OreDeposit>>> =
+		relatedListFlowGated(
+			idsFlow = relationsIds,
+			contentStart = contentStart,
+			fetcher = { ids -> oreDepositUseCases.getOreDepositsByIdsUseCase(ids) },
+			sortBy = { it.order }
+		).flowOn(defaultDispatcher)
 
-	private val _treesState: Flow<UIState<List<Tree>>> = getRelatedDataFlow { ids ->
-		treeUseCases.getTreesByIdsUseCase(ids)
-	}
+	private val _materialsState: Flow<UIState<List<Material>>> = relatedListFlowGated(
+		idsFlow = relationsIds,
+		contentStart = contentStart,
+		fetcher = { ids -> materialUseCases.getMaterialsByIds(ids) },
+		sortBy = { it.order }
+	).flowOn(defaultDispatcher)
 
-	private val _isFavorite: Flow<Boolean> = favoriteUseCases.isFavorite(_biomeId)
+	private val _poiState: Flow<UIState<List<PointOfInterest>>> = relatedListFlowGated(
+		idsFlow = relationsIds,
+		contentStart = contentStart,
+		fetcher = { ids -> pointOfInterestUseCases.getPointsOfInterestByIdsUseCase(ids) },
+		sortBy = { it.order }
+	).flowOn(defaultDispatcher)
 
-	val biomeUiState: StateFlow<BiomeDetailUiState> = combine(
-		_biomeFlow,
-		_mainBossState,
-		_creaturesState,
-		_oreDepositsState,
-		_materialsState,
-		_poiState,
-		_treesState,
-		_isFavorite
-	) { biome, mainBoss, creatures, oreDeposits, materials, poi, trees, isFavorite ->
-		BiomeDetailUiState(
-			biome = biome,
-			mainBoss = mainBoss,
-			relatedCreatures = creatures,
-			relatedOreDeposits = oreDeposits,
-			relatedMaterials = materials,
-			relatedPointOfInterest = poi,
-			relatedTrees = trees,
-			isFavorite = isFavorite
-		)
-	}.stateIn(
-		scope = viewModelScope,
-		started = SharingStarted.WhileSubscribed(5000),
-		initialValue = BiomeDetailUiState()
-	)
+	private val _treesState: Flow<UIState<List<Tree>>> = relatedListFlowGated(
+		idsFlow = relationsIds,
+		contentStart = contentStart,
+		fetcher = { ids -> treeUseCases.getTreesByIdsUseCase(ids) },
+		sortBy = { it.order }
+	).flowOn(defaultDispatcher)
+	
 
+	val biomeUiState: StateFlow<BiomeDetailUiState> =
+		combine(
+			_biomeFlow,
+			_mainBossState,
+			_creaturesState,
+			_oreDepositsState,
+			_materialsState,
+			_poiState,
+			_treesState,
+			favoriteUseCases.isFavorite(biomeId)
+		) { biome, boss, creatures, ores, materials, poi, trees, fav ->
+			BiomeDetailUiState(
+				biome = biome,
+				mainBoss = boss,
+				relatedCreatures = creatures,
+				relatedOreDeposits = ores,
+				relatedMaterials = materials,
+				relatedPointOfInterest = poi,
+				relatedTrees = trees,
+				isFavorite = fav
+			)
+		}.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), BiomeDetailUiState())
 
 	fun toggleFavorite(favorite: Favorite, currentIsFavorite: Boolean) {
 		viewModelScope.launch {
@@ -143,6 +168,4 @@ class BiomeDetailScreenViewModel @Inject constructor(
 			}
 		}
 	}
-
-
 }
