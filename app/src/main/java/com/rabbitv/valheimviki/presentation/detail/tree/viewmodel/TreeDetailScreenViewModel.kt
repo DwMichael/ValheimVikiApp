@@ -24,13 +24,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -47,20 +46,20 @@ class TreeDetailScreenViewModel @Inject constructor(
 	private val weaponUseCase: WeaponUseCases
 ) : ViewModel() {
 	private val _treeId: String = checkNotNull(savedStateHandle[TREE_KEY])
-	private val _tree = MutableStateFlow<Tree?>(null)
+
+	private val _treeFlow: Flow<Tree?> = treeUseCases.getTreeByIdUseCase(_treeId)
 	private val _relatedBiomes = MutableStateFlow<List<Biome>>(emptyList())
 	private val _relatedMaterials = MutableStateFlow<List<MaterialDrop>>(emptyList())
 	private val _relatedAxes = MutableStateFlow<List<Weapon>>(emptyList())
-	private val _isLoading = MutableStateFlow(true)
+	private val _isLoading = MutableStateFlow(true) // Initialize as true
 	private val _error = MutableStateFlow<String?>(null)
 
 	val treeUiState: StateFlow<TreeDetailUiState> = combine(
-		_tree,
+		_treeFlow,
 		_relatedBiomes,
 		_relatedMaterials,
 		_relatedAxes,
-		favoriteUseCases.isFavorite(_treeId)
-			.flowOn(Dispatchers.IO),
+		favoriteUseCases.isFavorite(_treeId),
 		_isLoading,
 		_error
 	) { values ->
@@ -81,65 +80,54 @@ class TreeDetailScreenViewModel @Inject constructor(
 
 
 	init {
-		initialTreeData()
+		loadAllTreeData()
 	}
 
-	internal fun initialTreeData() {
+
+	internal fun loadAllTreeData() {
 		viewModelScope.launch(Dispatchers.IO) {
 			_isLoading.value = true
 			try {
-				_tree.value = treeUseCases.getTreeByIdUseCase(_treeId).firstOrNull()
 
-				val relatedObjects: List<RelatedItem> = async {
-					relationsUseCase.getRelatedIdsUseCase(_treeId)
-						.first()
-				}.await()
-
+				val relatedObjects: List<RelatedItem> =
+					relationsUseCase.getRelatedIdsUseCase(_treeId).first()
 				val relatedIds = relatedObjects.map { it.id }
 
-
-
-				launch {
-					_relatedBiomes.value =
-						biomeUseCases.getBiomesByIdsUseCase(relatedIds).first()
-							.sortedBy { it.order }
+				val biomesJob = async {
+					biomeUseCases.getBiomesByIdsUseCase(relatedIds).first().sortedBy { it.order }
 				}
 
-				launch {
-
+				val materialsJob = async {
 					val materials = materialUseCases.getMaterialsByIds(relatedIds).first()
 					val tempList = mutableListOf<MaterialDrop>()
-
 					val relatedItemsMap = relatedObjects.associateBy { it.id }
-					for (material in materials) {
+					materials.forEach { material ->
 						val relatedItem = relatedItemsMap[material.id]
-						val quantityList = listOf<Int?>(
-							relatedItem?.quantity,
-						)
-						val chanceStarList = listOf(
-							relatedItem?.chance1star,
-						)
 						tempList.add(
 							MaterialDrop(
 								itemDrop = material,
-								quantityList = quantityList,
-								chanceStarList = chanceStarList
+								quantityList = listOf(relatedItem?.quantity),
+								chanceStarList = listOf(relatedItem?.chance1star)
 							)
 						)
 					}
-
-					_relatedMaterials.value = tempList
+					tempList
 				}
 
-				launch {
-					_relatedAxes.value =
-						weaponUseCase.getWeaponsByIdsUseCase(relatedIds).first()
-							.sortedBy { it.order }
+				val axesJob = async {
+					weaponUseCase.getWeaponsByIdsUseCase(relatedIds).first().sortedBy { it.order }
 				}
+
+
+				_relatedBiomes.value = biomesJob.await()
+				_relatedMaterials.value = materialsJob.await()
+				_relatedAxes.value = axesJob.await()
+
 
 				_isLoading.value = false
 			} catch (e: Exception) {
-				Log.e("General fetch error treeDetailViewModel", e.message.toString())
+				Log.e("TreeDetailViewModel", "Error fetching tree details: ${e.message}", e)
+				_error.value = "Failed to load tree details: ${e.localizedMessage}"
 				_isLoading.value = false
 			}
 		}
