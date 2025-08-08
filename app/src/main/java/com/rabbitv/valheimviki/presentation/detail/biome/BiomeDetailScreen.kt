@@ -8,16 +8,19 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -41,6 +44,7 @@ import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.LocalSharedTransitionScope
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
+import com.rabbitv.valheimviki.presentation.components.LoadingIndicator
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
@@ -54,7 +58,7 @@ import com.rabbitv.valheimviki.presentation.detail.biome.model.BiomeDetailUiStat
 import com.rabbitv.valheimviki.presentation.detail.biome.viewmodel.BiomeDetailScreenViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
-import com.rabbitv.valheimviki.utils.FakeData
+import kotlinx.coroutines.delay
 
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -81,8 +85,12 @@ fun BiomeDetailScreen(
 		onItemClick = onItemClick,
 		sharedTransitionScope = sharedTransitionScope,
 		animatedVisibilityScope = animatedVisibilityScope,
-		biomeUiState = biomeUiState,
-		onToggleFavorite = onToggleFavorite
+		uiState = biomeUiState,
+		onToggleFavorite = onToggleFavorite,
+		vmStart = { viewModel.startContent() },
+		biomeId = viewModel.biomeId,
+		headerImageUrl = viewModel.initialImageUrl,
+		headerTitle = viewModel.initialTitle
 	)
 
 }
@@ -94,56 +102,75 @@ fun BiomeDetailContent(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
 	onToggleFavorite: (favorite: Favorite, currentIsFavorite: Boolean) -> Unit,
-	biomeUiState: BiomeDetailUiState,
+	uiState: BiomeDetailUiState,
 	sharedTransitionScope: SharedTransitionScope,
 	animatedVisibilityScope: AnimatedVisibilityScope,
+	vmStart: () -> Unit,
+	biomeId: String,
+	headerImageUrl: String,
+	headerTitle: String
+
 ) {
-	val isRunning by remember { derivedStateOf { animatedVisibilityScope.transition.isRunning } }
+	val isAnimating = animatedVisibilityScope.transition.isRunning
+	LaunchedEffect(isAnimating) {
+		if (!isAnimating) {
+			withFrameNanos { }
+			vmStart()
+		}
+	}
 	val scrollState = rememberScrollState()
-	val handleItemClick = remember {
+	val handleClick = remember(onItemClick) {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
 	}
-	val creatureData = HorizontalPagerData(
-		title = "Creatures",
-		subTitle = "Creatures you may encounter in this biome",
-		icon = Lucide.PawPrint,
-		iconRotationDegrees = -85f,
-		itemContentScale = ContentScale.Crop
-	)
-	val oreDepositData = HorizontalPagerData(
-		title = "Ore Deposits",
-		subTitle = "Ore Deposits you may encounter in this biome",
-		icon = Lucide.Pickaxe,
-		iconRotationDegrees = 0f,
-		itemContentScale = ContentScale.Crop,
-	)
+	val sectionConfigs = remember(
+		uiState.relatedCreatures,
+		uiState.relatedOreDeposits,
+		uiState.relatedMaterials,
+		uiState.relatedPointOfInterest,
+		uiState.relatedTrees
+	) {
+		listOf(
+			uiState.relatedCreatures to HorizontalPagerData(
+				title = "Creatures",
+				subTitle = "Creatures you may encounter in this biome",
+				icon = Lucide.PawPrint,
+				iconRotationDegrees = -85f,
+				itemContentScale = ContentScale.Crop
+			),
+			uiState.relatedOreDeposits to HorizontalPagerData(
+				title = "Ore Deposits",
+				subTitle = "Ore Deposits you may encounter in this biome",
+				icon = Lucide.Pickaxe,
+				iconRotationDegrees = 0f,
+				itemContentScale = ContentScale.Crop
+			),
+			uiState.relatedMaterials to HorizontalPagerData(
+				title = "Materials",
+				subTitle = "Unique materials",
+				icon = Lucide.Gem,
+				iconRotationDegrees = 0f,
+				itemContentScale = ContentScale.Crop
+			),
+			uiState.relatedPointOfInterest to HorizontalPagerData(
+				title = "Points Of Interest",
+				subTitle = "Points Of Interest you may encounter",
+				icon = Lucide.House,
+				iconRotationDegrees = 0f,
+				itemContentScale = ContentScale.Crop
+			),
+			uiState.relatedTrees to HorizontalPagerData(
+				title = "Trees",
+				subTitle = "Trees you may encounter",
+				icon = Lucide.Trees,
+				iconRotationDegrees = 0f,
+				itemContentScale = ContentScale.Crop
+			)
+		)
+	}
 
-	val materialData = HorizontalPagerData(
-		title = "Materials",
-		subTitle = "Unique materials you may encounter in this biome",
-		icon = Lucide.Gem,
-		iconRotationDegrees = 0f,
-		itemContentScale = ContentScale.Crop,
-	)
-
-	val pointOfInterestData = HorizontalPagerData(
-		title = "Points Of Interest",
-		subTitle = "Points Of Interest you may encounter in this biome",
-		icon = Lucide.House,
-		iconRotationDegrees = 0f,
-		itemContentScale = ContentScale.Crop,
-	)
-	val treeData = HorizontalPagerData(
-		title = "Trees",
-		subTitle = "Trees you may encounter in this biome",
-		icon = Lucide.Trees,
-		iconRotationDegrees = 0f,
-		itemContentScale = ContentScale.Crop,
-	)
 
 	Scaffold(
 		content = { padding ->
-
 			BgImage()
 			Box(
 				modifier = Modifier
@@ -154,113 +181,90 @@ fun BiomeDetailContent(
 					modifier = Modifier
 						.testTag("BiomeDetailScreen")
 						.fillMaxSize()
-						.verticalScroll(scrollState, enabled = !isRunning),
+						.verticalScroll(scrollState, enabled = !isAnimating),
 					verticalArrangement = Arrangement.Top,
 					horizontalAlignment = Alignment.Start,
 				) {
-
 					MainDetailImageAnimated(
 						sharedTransitionScope = sharedTransitionScope,
 						animatedVisibilityScope = animatedVisibilityScope,
-						id = biomeUiState.biome.id,
-						imageUrl = biomeUiState.biome.imageUrl,
-						title = biomeUiState.biome.name
+						id = biomeId,
+						imageUrl = headerImageUrl,
+						title = headerTitle
 					)
-					if (biomeUiState.biome != null) {
-						DetailExpandableText(
-							text = biomeUiState.biome.description,
-							boxPadding = BODY_CONTENT_PADDING.dp
-						)
-					}
+
+					DetailExpandableText(
+						text = uiState.biome?.description ?: "",
+						boxPadding = BODY_CONTENT_PADDING.dp
+					)
 
 
+					when (val bossState = uiState.mainBoss) {
+						is UIState.Error -> {}
+						is UIState.Loading -> {
 
+							LoadingIndicator(PaddingValues(16.dp))
+						}
 
-					if (biomeUiState.mainBoss is UIState.Success) {
-						biomeUiState.mainBoss.data?.let { mainBoss ->
-							ImageWithTopLabel(
-								itemData = mainBoss,
-								subTitle = "BOSS",
-								onItemClick = handleItemClick,
-							)
+						is UIState.Success -> {
+
+							bossState.data?.let { boss ->
+								SlavicDivider()
+								ImageWithTopLabel(
+									itemData = boss,
+									subTitle = "BOSS",
+									onItemClick = handleClick
+								)
+							}
 						}
 					}
+					sectionConfigs.forEach { (state, config) ->
+						when (state) {
+							is UIState.Loading -> {
+								TridentsDividedRow()
+								LoadingIndicator(PaddingValues(16.dp))
+							}
 
+							is UIState.Success -> {
+								state.data.takeIf { (it).isNotEmpty() }?.let { list ->
+									TridentsDividedRow()
+									HorizontalPagerSection(
+										list = list,
+										data = config,
+										onItemClick = handleClick
+									)
+								}
+							}
+
+							is UIState.Error -> {}
+						}
+					}
 					SlavicDivider()
-					if (biomeUiState.relatedCreatures is UIState.Success) {
-						if (biomeUiState.relatedCreatures.data.isNotEmpty()) {
-							HorizontalPagerSection(
-								list = biomeUiState.relatedCreatures.data,
-								data = creatureData,
-								onItemClick = handleItemClick,
-							)
-						}
-					}
 
 
 
-					if (biomeUiState.relatedOreDeposits is UIState.Success) {
-						if (biomeUiState.relatedOreDeposits.data.isNotEmpty()) {
-							TridentsDividedRow()
-							HorizontalPagerSection(
-								list = biomeUiState.relatedOreDeposits.data,
-								data = oreDepositData,
-								onItemClick = handleItemClick,
-							)
-						}
-					}
-					if (biomeUiState.relatedMaterials is UIState.Success) {
-						if (biomeUiState.relatedMaterials.data.isNotEmpty()) {
-							TridentsDividedRow()
-							HorizontalPagerSection(
-								list = biomeUiState.relatedMaterials.data,
-								data = materialData,
-								onItemClick = handleItemClick,
-							)
-						}
-					}
-					if (biomeUiState.relatedPointOfInterest is UIState.Success) {
-						if (biomeUiState.relatedPointOfInterest.data.isNotEmpty()) {
-							TridentsDividedRow()
-							HorizontalPagerSection(
-								list = biomeUiState.relatedPointOfInterest.data,
-								data = pointOfInterestData,
-								onItemClick = handleItemClick
-							)
-						}
-					}
-					if (biomeUiState.relatedTrees is UIState.Success) {
-						if (biomeUiState.relatedTrees.data.isNotEmpty()) {
-							TridentsDividedRow()
-							HorizontalPagerSection(
-								list = biomeUiState.relatedTrees.data,
-								data = treeData,
-								onItemClick = handleItemClick
-							)
-						}
-					}
 
-					Box(modifier = Modifier.size(45.dp))
-
+					Spacer(Modifier.height(45.dp))
 				}
 
-				if (!isRunning && biomeUiState.biome != null) {
+
+				if (!isAnimating && uiState.biome != null) {
 					AnimatedBackButton(
-						modifier = Modifier
+						Modifier
 							.align(Alignment.TopStart)
 							.padding(16.dp),
 						scrollState = scrollState,
-						onBack = onBack,
+						onBack = onBack
 					)
 					FavoriteButton(
-						modifier = Modifier
+						Modifier
 							.align(Alignment.TopEnd)
 							.padding(16.dp),
-						isFavorite = biomeUiState.isFavorite,
+						isFavorite = uiState.isFavorite,
 						onToggleFavorite = {
 							onToggleFavorite(
-								biomeUiState.biome.toFavorite(),
-								biomeUiState.isFavorite
+								uiState.biome.toFavorite(),
+								uiState.isFavorite
 							)
 						},
 					)
@@ -297,9 +301,7 @@ fun PreviewBiomeDetailContent() {
 		collapseImmune = "False",
 		forsakenPower = "High"
 	)
-	val creatureList = FakeData.generateFakeCreatures()
-	val oreDeposit = FakeData.generateFakeOreDeposits()
-	val materials = FakeData.generateFakeMaterials()
+
 	val uiState = BiomeDetailUiState(
 		biome = fakeBiome,
 		mainBoss = UIState.Loading,
@@ -317,9 +319,13 @@ fun PreviewBiomeDetailContent() {
 					onBack = { },
 					sharedTransitionScope = this@SharedTransitionLayout,
 					animatedVisibilityScope = this,
-					biomeUiState = uiState,
+					uiState = uiState,
 					onItemClick = { _ -> {} },
 					onToggleFavorite = { _, _ -> {} },
+					vmStart = {},
+					biomeId = "",
+					headerImageUrl = "",
+					headerTitle = "",
 				)
 			}
 		}
