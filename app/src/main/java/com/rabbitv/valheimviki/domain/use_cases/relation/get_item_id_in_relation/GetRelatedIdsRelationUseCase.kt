@@ -6,7 +6,7 @@ import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
 
 class GetRelatedIdsRelationUseCase @Inject constructor(private val relationRepository: RelationRepository) {
-	operator fun invoke(itemId: String): Flow<List<RelatedItem>> {
-		return relationRepository.getRelatedIds(itemId)
-	}
+	operator fun invoke(itemId: String): Flow<List<RelatedItem>> =
+		relationRepository.getRelatedIds(itemId)
+
 }
