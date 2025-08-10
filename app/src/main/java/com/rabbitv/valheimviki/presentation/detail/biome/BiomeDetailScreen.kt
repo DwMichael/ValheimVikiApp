@@ -88,9 +88,9 @@ fun BiomeDetailScreen(
 		uiState = biomeUiState,
 		onToggleFavorite = onToggleFavorite,
 		vmStart = { viewModel.startContent() },
-		biomeId = viewModel.biomeId,
-		headerImageUrl = viewModel.initialImageUrl,
-		headerTitle = viewModel.initialTitle
+		biomeId = viewModel.biomeId.value,
+		headerImageUrl = viewModel.initialImageUrl.value,
+		headerTitle = viewModel.initialTitle.value
 	)
 
 }

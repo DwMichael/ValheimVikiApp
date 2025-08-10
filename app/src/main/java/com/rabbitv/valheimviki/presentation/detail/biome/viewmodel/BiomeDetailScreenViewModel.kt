@@ -2,6 +2,7 @@
 
 package com.rabbitv.valheimviki.presentation.detail.biome.viewmodel
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -49,7 +50,7 @@ import javax.inject.Inject
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class BiomeDetailScreenViewModel @Inject constructor(
-	savedStateHandle: SavedStateHandle,
+	private val savedStateHandle: SavedStateHandle,
 	private val biomeUseCases: BiomeUseCases,
 	private val creaturesUseCase: CreatureUseCases,
 	private val relationsUseCases: RelationUseCases,
@@ -61,10 +62,19 @@ class BiomeDetailScreenViewModel @Inject constructor(
 	@param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
-	private val args = savedStateHandle.toRoute<WorldDetailDestination.BiomeDetail>()
-	val biomeId: String = args.biomeId
-	val initialImageUrl: String = args.imageUrl
-	val initialTitle: String = args.title
+	var biomeId = mutableStateOf("")
+		private set
+	var initialImageUrl = mutableStateOf("")
+		private set
+	var initialTitle = mutableStateOf("")
+		private set
+
+	init {
+		biomeId.value = savedStateHandle.toRoute<WorldDetailDestination.BiomeDetail>().biomeId
+		initialImageUrl.value =
+			savedStateHandle.toRoute<WorldDetailDestination.BiomeDetail>().imageUrl
+		initialTitle.value = savedStateHandle.toRoute<WorldDetailDestination.BiomeDetail>().title
+	}
 
 	private val contentStart = MutableStateFlow(false)
 
@@ -73,12 +83,12 @@ class BiomeDetailScreenViewModel @Inject constructor(
 	}
 
 	private val _biomeFlow: StateFlow<Biome?> =
-		biomeUseCases.getBiomeByIdUseCase(biomeId)
+		biomeUseCases.getBiomeByIdUseCase(biomeId.value)
 			.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
 
 	private val relationsIds: StateFlow<List<String>> =
-		relationsUseCases.getRelatedIdsUseCase(biomeId)
+		relationsUseCases.getRelatedIdsUseCase(biomeId.value)
 			.map { list -> list.map { it.id } }
 			.distinctUntilChanged()
 			.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
@@ -134,7 +144,7 @@ class BiomeDetailScreenViewModel @Inject constructor(
 		fetcher = { ids -> treeUseCases.getTreesByIdsUseCase(ids) },
 		sortBy = { it.order }
 	).flowOn(defaultDispatcher)
-	
+
 
 	val biomeUiState: StateFlow<BiomeDetailUiState> =
 		combine(
@@ -145,7 +155,7 @@ class BiomeDetailScreenViewModel @Inject constructor(
 			_materialsState,
 			_poiState,
 			_treesState,
-			favoriteUseCases.isFavorite(biomeId)
+			favoriteUseCases.isFavorite(biomeId.value)
 		) { biome, boss, creatures, ores, materials, poi, trees, fav ->
 			BiomeDetailUiState(
 				biome = biome,
