@@ -72,6 +72,7 @@ dependencies {
 	implementation(libs.androidx.ui.tooling.preview)
 	implementation(libs.androidx.material3)
 	implementation(libs.androidx.compose.material)
+	implementation(libs.androidx.navigation.testing)
 	testImplementation(libs.junit.jupiter)
 	androidTestImplementation(libs.androidx.junit)
 	androidTestImplementation(libs.androidx.espresso.core)
@@ -79,9 +80,6 @@ dependencies {
 	androidTestImplementation(libs.androidx.ui.test.junit4)
 	debugImplementation(libs.androidx.ui.tooling)
 	debugImplementation(libs.androidx.ui.test.manifest)
-
-
-	///IF SOMETHING AGAIN WILL TURN OFF BC OF LIBRARIES THEN USE DOES UNDER WITH NEWER VERSION
 
 
 	implementation(libs.androidx.paging.runtime)
@@ -127,7 +125,8 @@ dependencies {
 
 	testImplementation(libs.mockito.core)
 	testImplementation(libs.kotlinx.coroutines.test)
-
+	testImplementation(libs.junit)
+	testImplementation(libs.robolectric)
 
 	testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0") {
 		exclude(group = "org.mockito", module = "mockito-android")
