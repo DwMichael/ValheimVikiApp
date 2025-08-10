@@ -1,16 +1,16 @@
 [versions]
 agp = "8.12.0"
 appcompat = "1.7.1"
-coilCompose = "3.2.0"
-coilNetworkOkhttp = "3.2.0"
+coilCompose = "3.3.0"
+coilNetworkOkhttp = "3.3.0"
 converterGson = "3.0.0"
 coreSplashscreen = "1.0.1"
 datastorePreferences = "1.1.7"
-hiltAndroid = "2.56.2"
-hiltAndroidCompiler = "2.56.2"
-hiltAndroidTesting = "2.56.2"
-hiltCompiler = "2.56.2"
-hiltCompilerVersion = "2.56.2"
+hiltAndroid = "2.57"
+hiltAndroidCompiler = "2.57"
+hiltAndroidTesting = "2.57"
+hiltCompiler = "2.57"
+hiltCompilerVersion = "2.57"
 hiltNavigationCompose = "1.2.0"
 iconsLucide = "1.1.0"
 junitJunit = "4.13.2"
@@ -111,6 +111,6 @@ work-testing = { module = "androidx.work:work-testing", version.ref = "workTesti
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version = "2.1.21" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version = "2.2.0" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 
