@@ -40,6 +40,7 @@ import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.navigation.BuildingDetailDestination
 import com.rabbitv.valheimviki.navigation.DetailDestination
+import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.navigation.WorldDetailDestination
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
@@ -96,7 +97,9 @@ fun GeneralMaterialDetailContent(
 	val scrollState = rememberScrollState()
 	val isExpandable = remember { mutableStateOf(false) }
 
-
+	val handleItemClick = remember {
+		NavigationHelper.createItemDetailClickHandler(onItemClick)
+	}
 	val pointOfInterestData = HorizontalPagerData(
 		title = "Point Of Interest",
 		subTitle = "Places where you can find this item",
@@ -165,7 +168,11 @@ fun GeneralMaterialDetailContent(
 						CardWithOverlayLabel(
 							onClickedItem = {
 								val destination =
-									WorldDetailDestination.BiomeDetail(biomeId = biome.id)
+									WorldDetailDestination.BiomeDetail(
+										biomeId = biome.id,
+										imageUrl = biome.imageUrl,
+										title = biome.name,
+									)
 								onItemClick(destination)
 							},
 							painter = rememberAsyncImagePainter(biome.imageUrl),
@@ -200,11 +207,7 @@ fun GeneralMaterialDetailContent(
 						HorizontalPagerSection(
 							list = uiState.pointOfInterests,
 							data = pointOfInterestData,
-							onItemClick = { clickedItemId ->
-								val destination =
-									WorldDetailDestination.PointOfInterestDetail(pointOfInterestId = clickedItemId)
-								onItemClick(destination)
-							}
+							onItemClick = handleItemClick
 						)
 					}
 					if (uiState.oreDeposits.isNotEmpty()) {
@@ -212,11 +215,7 @@ fun GeneralMaterialDetailContent(
 						HorizontalPagerSection(
 							list = uiState.oreDeposits,
 							data = oreDepositData,
-							onItemClick = { clickedItemId ->
-								val destination =
-									WorldDetailDestination.OreDepositDetail(oreDepositId = clickedItemId)
-								onItemClick(destination)
-							},
+							onItemClick = handleItemClick,
 						)
 					}
 					if (uiState.trees.isNotEmpty()) {
@@ -224,11 +223,7 @@ fun GeneralMaterialDetailContent(
 						HorizontalPagerSection(
 							list = uiState.trees,
 							data = treesData,
-							onItemClick = { clickedItemId ->
-								val destination =
-									WorldDetailDestination.TreeDetail(treeId = clickedItemId)
-								onItemClick(destination)
-							}
+							onItemClick = handleItemClick
 						)
 					}
 					if (uiState.craftingStations.isNotEmpty()) {

@@ -52,7 +52,7 @@ fun ImageWithTopLabel(
     subTitle: String? = null,
     textStyle: TextStyle = MaterialTheme.typography.titleMedium,
     contentScale: ContentScale =  ContentScale.Crop,
-    onItemClick: (itemId: String) -> Unit = {},
+    onItemClick: (itemData: ItemData) -> Unit ={},
 ) {
     Box(
         modifier = modifier
@@ -63,7 +63,7 @@ fun ImageWithTopLabel(
                 elevation = 8.dp,
                 shape = RoundedCornerShape(8.dp),
                 spotColor = Color.Black.copy(alpha = 0.25f)
-            ).clickable { onItemClick(itemData.id) },
+            ).clickable { onItemClick(itemData) },
         contentAlignment = Alignment.TopStart
     ) {
         AsyncImage(

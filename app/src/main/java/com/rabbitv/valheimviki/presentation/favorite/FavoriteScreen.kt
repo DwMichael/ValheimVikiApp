@@ -45,7 +45,6 @@ import com.composables.icons.lucide.Trees
 import com.composables.icons.lucide.Utensils
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.category.AppCategory
-import com.rabbitv.valheimviki.domain.model.ui_state.ui_state.UiState
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper

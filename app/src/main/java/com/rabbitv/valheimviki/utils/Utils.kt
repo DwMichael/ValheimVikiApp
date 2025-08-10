@@ -27,12 +27,70 @@ import com.rabbitv.valheimviki.domain.model.category.AppCategory
 import com.rabbitv.valheimviki.domain.model.food.FoodSubCategory
 import com.rabbitv.valheimviki.domain.model.item_tool.tool_upgrade_info.ToolsUpgradeInfo
 import com.rabbitv.valheimviki.domain.model.mead.MeadSubCategory
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.domain.model.weapon.UpgradeInfo
 import com.rabbitv.valheimviki.presentation.components.card.GridLevelInfo
 import com.rabbitv.valheimviki.presentation.detail.armor.model.StatArmorVisuals
 import com.rabbitv.valheimviki.presentation.detail.tool.model.StatToolsVisuals
 import com.rabbitv.valheimviki.presentation.detail.weapon.model.StatWeaponVisuals
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 
+@OptIn(ExperimentalCoroutinesApi::class)
+fun <E, K : Comparable<K>> relatedListFlowGated(
+	idsFlow: Flow<List<String>>,
+	contentStart: Flow<Boolean>,
+	fetcher: (List<String>) -> Flow<List<E>>,
+	sortBy: ((E) -> K)? = null
+): Flow<UIState<List<E>>> =
+	contentStart.flatMapLatest { active ->
+		if (!active) {
+			flowOf(UIState.Loading)
+		} else {
+			idsFlow.flatMapLatest { ids ->
+				val source: Flow<List<E>> = fetcher(ids)
+				val sorted: Flow<List<E>> =
+					if (sortBy != null) {
+						val selector = sortBy
+						source.map { list: List<E> -> list.sortedBy(selector) }
+					} else {
+						source
+					}
+				sorted
+					.distinctUntilChanged()
+					.map<List<E>, UIState<List<E>>> { UIState.Success(it) }
+					.catch { e -> emit(UIState.Error(e.message ?: "Error")) }
+			}
+		}
+	}
+
+@OptIn(ExperimentalCoroutinesApi::class)
+fun <T> relatedDataFlow(
+	idsFlow: Flow<List<String>>,
+	fetcher: (List<String>) -> Flow<T>
+): Flow<UIState<T>> =
+	idsFlow.flatMapLatest { ids ->
+		fetcher(ids)
+			.map<T, UIState<T>> { UIState.Success(it) }
+			.catch { e -> emit(UIState.Error(e.message ?: "Unknown error")) }
+	}
+
+@OptIn(ExperimentalCoroutinesApi::class)
+fun <Id, Raw, Ui> Flow<List<Id>>.toUiState(
+	fetcher: (List<Id>) -> Flow<Raw>,
+	mapper: (Raw) -> Ui,
+	errorMsg: String = "Unknown error"
+): Flow<UIState<Ui>> =
+	flatMapLatest { ids ->
+		fetcher(ids)
+			.map<Raw, UIState<Ui>> { UIState.Success(mapper(it)) }
+			.catch { e -> emit(UIState.Error(e.message ?: errorMsg)) }
+	}
 
 fun String?.valid() =
 	takeIf { !isNullOrBlank() && !equals("null", ignoreCase = true) }

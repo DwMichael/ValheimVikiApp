@@ -69,9 +69,9 @@ import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.navigation.WorldDetailDestination
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
-import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
+import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDetailImage
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
@@ -175,14 +175,18 @@ fun NpcDetailContent(
 						boxPadding = BODY_CONTENT_PADDING.dp
 					)
 					TridentsDividedRow(text = "NPC DETAIL")
-					if (uiState.biome != null) {
+					uiState.biome?.let {  biome ->
 						CardWithOverlayLabel(
-							painter = rememberAsyncImagePainter(uiState.biome.imageUrl),
+							painter = rememberAsyncImagePainter(biome.imageUrl),
 							content = {
 								Row(
 									modifier = Modifier.clickable {
 										val destination =
-											WorldDetailDestination.BiomeDetail(biomeId = uiState.biome.id)
+											WorldDetailDestination.BiomeDetail(
+												biomeId = biome.id,
+												imageUrl = biome.imageUrl,
+												title = biome.name,
+											)
 										onItemClick(destination)
 									}
 								) {
@@ -583,7 +587,8 @@ fun ShopItemsTable(
 					modifier = Modifier
 						.fillMaxWidth()
 						.clickable {
-							val destination = NavigationHelper.routeToMaterial(it.subCategory, it.id)
+							val destination =
+								NavigationHelper.routeToMaterial(it.subCategory, it.id)
 							onItemClick(destination)
 						},
 					verticalAlignment = Alignment.CenterVertically,
@@ -822,7 +827,7 @@ fun PreviewNPCPage() {
 			onBack = {},
 			onItemClick = {},
 			uiState = fakeNpcDetailUiState,
-			onToggleFavorite = {_,_->{}}
+			onToggleFavorite = { _, _ -> {} }
 		)
 	}
 }
@@ -847,7 +852,7 @@ fun PreviewNPCPageSmal() {
 		NpcDetailContent(
 			onBack = {},
 			onItemClick = {},
-			onToggleFavorite = {_,_->{}},
+			onToggleFavorite = { _, _ -> {} },
 			uiState = NpcDetailUiState(
 				npc = NPC(
 					id = "npc_blacksmith",

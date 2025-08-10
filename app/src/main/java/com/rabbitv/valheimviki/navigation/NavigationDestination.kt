@@ -122,7 +122,9 @@ sealed interface WorldDetailDestination : DetailDestination {
 
 	@Serializable
 	data class BiomeDetail(
-		val biomeId: String
+		val biomeId: String,
+		val imageUrl: String,
+		val title: String
 	) : WorldDetailDestination
 
 	@Serializable
@@ -337,7 +339,11 @@ object NavigationHelper {
 		appCategory: AppCategory
 	): DetailDestination {
 		return when (appCategory) {
-			AppCategory.BIOME -> WorldDetailDestination.BiomeDetail(biomeId = itemData.id)
+			AppCategory.BIOME -> WorldDetailDestination.BiomeDetail(
+				biomeId = itemData.id,
+				imageUrl = itemData.imageUrl,
+				title = itemData.name
+			)
 
 			AppCategory.CREATURE -> {
 				val subCategory = itemData.subCategory

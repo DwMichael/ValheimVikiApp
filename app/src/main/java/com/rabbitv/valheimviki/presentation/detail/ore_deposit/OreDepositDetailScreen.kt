@@ -48,9 +48,7 @@ import com.composables.icons.lucide.Pickaxe
 import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
-import com.rabbitv.valheimviki.navigation.BuildingDetailDestination
 import com.rabbitv.valheimviki.navigation.DetailDestination
-import com.rabbitv.valheimviki.navigation.EquipmentDetailDestination
 import com.rabbitv.valheimviki.navigation.LocalSharedTransitionScope
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.navigation.WorldDetailDestination
@@ -111,6 +109,9 @@ fun OreDepositDetailContent(
 ) {
 	val isRunning by remember { derivedStateOf { animatedVisibilityScope.transition.isRunning } }
 	val scrollState = rememberScrollState()
+	val handleItemClick = remember {
+		NavigationHelper.createItemDetailClickHandler(onItemClick)
+	}
 	val pickaxesData = HorizontalPagerData(
 		title = "Pickaxes",
 		subTitle = "List of pickaxes that can mine this ore out",
@@ -207,7 +208,9 @@ fun OreDepositDetailContent(
 									onClickedItem = {
 										val destination =
 											WorldDetailDestination.BiomeDetail(
-												biomeId = biome.id
+												biomeId = biome.id,
+												imageUrl = biome.imageUrl,
+												title = biome.name,
 											)
 										onItemClick(destination)
 
@@ -239,11 +242,7 @@ fun OreDepositDetailContent(
 							HorizontalPagerSection(
 								list = uiState.relatedTools,
 								data = pickaxesData,
-								onItemClick = { clickedItemId ->
-									val destination =
-										EquipmentDetailDestination.ToolDetail(clickedItemId)
-									onItemClick(destination)
-								},
+								onItemClick = handleItemClick,
 							)
 						}
 						if (uiState.craftingStation.isNotEmpty()) {
@@ -251,13 +250,7 @@ fun OreDepositDetailContent(
 							HorizontalPagerSection(
 								list = uiState.craftingStation,
 								data = craftingObjectData,
-								onItemClick = { clickedItemId ->
-									val destination =
-										BuildingDetailDestination.CraftingObjectDetail(
-											clickedItemId
-										)
-									onItemClick(destination)
-								},
+								onItemClick = handleItemClick,
 							)
 						}
 						if (uiState.relatedMaterials.isNotEmpty()) {

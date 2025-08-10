@@ -10,10 +10,7 @@ import kotlinx.coroutines.flow.map
 
 
 class GetPassiveCreature @Inject constructor(private val creatureRepository: CreatureRepository) {
-	operator fun invoke(): Flow<List<PassiveCreature>> {
-		val creatureSubCategory = CreatureSubCategory.PASSIVE_CREATURE
-		return creatureRepository.getCreaturesBySubCategory(creatureSubCategory.toString())
-			.map { creatures -> creatures.toPassiveCreatures().sortedBy { it.order } }
-
-	}
+	operator fun invoke(): Flow<List<PassiveCreature>> =
+		creatureRepository.getCreaturesBySubCategory(CreatureSubCategory.PASSIVE_CREATURE.toString())
+			.map { creatures -> creatures.toPassiveCreatures() }
 }

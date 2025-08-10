@@ -34,7 +34,6 @@ import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
-import com.rabbitv.valheimviki.navigation.WorldDetailDestination
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
@@ -85,7 +84,9 @@ fun ValuableMaterialDetailContent(
 
 	val scrollState = rememberScrollState()
 	val isExpandable = remember { mutableStateOf(false) }
-
+	val handleItemClick = remember {
+		NavigationHelper.createItemDetailClickHandler(onItemClick)
+	}
 	val creatureData = HorizontalPagerData(
 		title = "Creatures",
 		subTitle = "From those creatures this item drop",
@@ -154,11 +155,7 @@ fun ValuableMaterialDetailContent(
 						HorizontalPagerSection(
 							list = uiState.pointsOfInterest,
 							data = pointsOfInterestData,
-							onItemClick = { clickedItemId ->
-								val destination =
-									WorldDetailDestination.PointOfInterestDetail(pointOfInterestId = clickedItemId)
-								onItemClick(destination)
-							}
+							onItemClick = handleItemClick
 						)
 					}
 					if (uiState.creatures.isNotEmpty()) {
@@ -166,16 +163,7 @@ fun ValuableMaterialDetailContent(
 						HorizontalPagerSection(
 							list = uiState.creatures,
 							data = creatureData,
-							onItemClick = { clickedItemId ->
-								val creature = uiState.creatures.find { it.id == clickedItemId }
-								creature?.let {
-									val destination = NavigationHelper.routeToCreature(
-										it.subCategory.toString(),
-										it.id
-									)
-									onItemClick(destination)
-								}
-							},
+							onItemClick = handleItemClick,
 						)
 					}
 					if (uiState.npc.isNotEmpty()) {
@@ -183,16 +171,7 @@ fun ValuableMaterialDetailContent(
 						HorizontalPagerSection(
 							list = uiState.npc,
 							data = npcData,
-							onItemClick = { clickedItemId ->
-								val creature = uiState.creatures.find { it.id == clickedItemId }
-								creature?.let {
-									val destination = NavigationHelper.routeToCreature(
-										it.subCategory.toString(),
-										it.id
-									)
-									onItemClick(destination)
-								}
-							},
+							onItemClick = handleItemClick,
 						)
 					}
 				}

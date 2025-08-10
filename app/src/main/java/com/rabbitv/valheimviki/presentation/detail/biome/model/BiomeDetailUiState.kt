@@ -7,16 +7,15 @@ import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
 import com.rabbitv.valheimviki.domain.model.tree.Tree
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 
 data class BiomeDetailUiState(
 	val biome: Biome? = null,
-	val mainBoss: MainBoss? = null,
-	val relatedCreatures: List<Creature> = emptyList(),
-	val relatedOreDeposits: List<OreDeposit> = emptyList(),
-	val relatedMaterials: List<Material> = emptyList(),
-	val relatedPointOfInterest: List<PointOfInterest> = emptyList(),
-	val relatedTrees: List<Tree> = emptyList(),
+	val mainBoss: UIState<MainBoss?> = UIState.Loading,
+	val relatedCreatures: UIState<List<Creature>> = UIState.Loading,
+	val relatedOreDeposits: UIState<List<OreDeposit>> = UIState.Loading,
+	val relatedMaterials: UIState<List<Material>> = UIState.Loading,
+	val relatedPointOfInterest: UIState<List<PointOfInterest>> = UIState.Loading,
+	val relatedTrees: UIState<List<Tree>> = UIState.Loading,
 	val isFavorite: Boolean = false,
-	val isLoading: Boolean = false,
-	val error: String? = null
 )

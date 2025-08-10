@@ -47,7 +47,6 @@ import com.composables.icons.lucide.Trees
 import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.navigation.DetailDestination
-import com.rabbitv.valheimviki.navigation.EquipmentDetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.navigation.WorldDetailDestination
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
@@ -105,7 +104,9 @@ fun SeedMaterialDetailContent(
 	val isStatInfoExpanded1 = remember { mutableStateOf(false) }
 	val isStatInfoExpanded2 = remember { mutableStateOf(false) }
 	val isExpandable = remember { mutableStateOf(false) }
-
+	val handleItemClick = remember {
+		NavigationHelper.createItemDetailClickHandler(onItemClick)
+	}
 	val toolsData = HorizontalPagerData(
 		title = "Tools",
 		subTitle = "Tools needed to plant this seed",
@@ -184,7 +185,11 @@ fun SeedMaterialDetailContent(
 							CardWithOverlayLabel(
 								onClickedItem = {
 									val destination =
-										WorldDetailDestination.BiomeDetail(biomeId = biome.id)
+										WorldDetailDestination.BiomeDetail(
+											biomeId = biome.id,
+											imageUrl = biome.imageUrl,
+											title = biome.name,
+										)
 									onItemClick(destination)
 								},
 								painter = rememberAsyncImagePainter(biome.imageUrl),
@@ -258,11 +263,7 @@ fun SeedMaterialDetailContent(
 						HorizontalPagerSection(
 							list = uiState.trees,
 							data = treesData,
-							onItemClick = { clickedItemId ->
-								val destination =
-									WorldDetailDestination.TreeDetail(treeId = clickedItemId)
-								onItemClick(destination)
-							}
+							onItemClick = handleItemClick
 						)
 					}
 
@@ -271,11 +272,7 @@ fun SeedMaterialDetailContent(
 						HorizontalPagerSection(
 							list = uiState.pointsOfInterest,
 							data = pointsOfInterestData,
-							onItemClick = { clickedItemId ->
-								val destination =
-									WorldDetailDestination.PointOfInterestDetail(pointOfInterestId = clickedItemId)
-								onItemClick(destination)
-							}
+							onItemClick = handleItemClick
 
 						)
 					}
@@ -284,11 +281,7 @@ fun SeedMaterialDetailContent(
 						HorizontalPagerSection(
 							list = uiState.tools,
 							data = toolsData,
-							onItemClick = { clickedItemId ->
-								val destination =
-									EquipmentDetailDestination.ToolDetail(clickedItemId)
-								onItemClick(destination)
-							},
+							onItemClick = handleItemClick,
 						)
 					}
 					uiState.npc?.let { npc ->
@@ -342,7 +335,7 @@ fun PreviewToolDetailContentCooked() {
 			uiState = SeedUiState(),
 			onBack = {},
 			onItemClick = {},
-			onToggleFavorite = {_,_->{}}
+			onToggleFavorite = { _, _ -> {} }
 		)
 	}
 

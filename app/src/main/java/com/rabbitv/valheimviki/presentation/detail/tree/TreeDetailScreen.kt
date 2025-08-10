@@ -1,17 +1,10 @@
 package com.rabbitv.valheimviki.presentation.detail.tree
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.animation.core.EaseOutCubic
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -51,7 +44,6 @@ import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.tree.Tree
 import com.rabbitv.valheimviki.navigation.DetailDestination
-import com.rabbitv.valheimviki.navigation.EquipmentDetailDestination
 import com.rabbitv.valheimviki.navigation.LocalSharedTransitionScope
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.navigation.WorldDetailDestination
@@ -115,184 +107,139 @@ fun TreeDetailContent(
 	val isRunning by remember { derivedStateOf { animatedVisibilityScope.transition.isRunning } }
 	val scrollState = rememberScrollState()
 	painterResource(id = R.drawable.main_background)
-	val axesData = HorizontalPagerData(
-		title = "Axes",
-		subTitle = "List of axes that can cut this tree",
-		icon = Lucide.Axe,
-		iconRotationDegrees = 0f,
-		itemContentScale = ContentScale.Crop
-	)
-
+	val axesData = remember {
+		HorizontalPagerData(
+			title = "Axes",
+			subTitle = "List of axes that can cut this tree",
+			icon = Lucide.Axe,
+			iconRotationDegrees = 0f,
+			itemContentScale = ContentScale.Crop
+		)
+	}
+	val handleItemClick = remember {
+		NavigationHelper.createItemDetailClickHandler(onItemClick)
+	}
 
 	Scaffold(
 		content = { padding ->
-			AnimatedContent(
-				targetState = uiState.isLoading,
-				modifier = Modifier.fillMaxSize(),
-				transitionSpec = {
-					if (!targetState && initialState) {
-						fadeIn(
-							animationSpec = tween(
-								durationMillis = 650,
-								delayMillis = 0
-							)
-						) + slideInVertically(
-							initialOffsetY = { height -> height / 25 },
-							animationSpec = tween(
-								durationMillis = 650,
-								delayMillis = 0,
-								easing = EaseOutCubic
-							)
-						) togetherWith
-								fadeOut(
-									animationSpec = tween(
-										durationMillis = 200
-									)
-								)
-					} else {
-						fadeIn(animationSpec = tween(durationMillis = 300)) togetherWith
-								fadeOut(animationSpec = tween(durationMillis = 300))
-					}
-				},
-				label = "LoadingStateTransition"
-			) { isLoading ->
-				if (isLoading) {
-					Box(
-						modifier = Modifier
-							.fillMaxSize()
-							.padding(padding),
-						contentAlignment = Alignment.Center
-					) {
-						Box(modifier = Modifier.size(45.dp))
-					}
-				} else if (uiState.tree != null) {
-					BgImage()
-					Box(
-						modifier = Modifier
-							.fillMaxSize()
-							.padding(padding)
-					) {
-						Column(
-							modifier = Modifier
-								.testTag("TreeDetailScreen")
-								.fillMaxSize()
-								.verticalScroll(scrollState, enabled = !isRunning),
-							verticalArrangement = Arrangement.Top,
-							horizontalAlignment = Alignment.Start,
-						) {
-							MainDetailImageAnimated(
-								sharedTransitionScope = sharedTransitionScope,
-								animatedVisibilityScope = animatedVisibilityScope,
-								id = uiState.tree.id,
-								imageUrl = uiState.tree.imageUrl,
-								title = uiState.tree.name
-							)
 
-							DetailExpandableText(
-								text = uiState.tree.description.toString(),
-								boxPadding = BODY_CONTENT_PADDING.dp
-							)
-							if (uiState.relatedBiomes.isNotEmpty()) {
-								SlavicDivider()
-								Text(
-									modifier = Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp),
-									text = "PRIMARY SPAWNS",
-									textAlign = TextAlign.Left,
-									style = MaterialTheme.typography.titleSmall,
-									maxLines = 1,
-									overflow = TextOverflow.Visible
-								)
-								uiState.relatedBiomes.forEach { biome ->
-									CardWithOverlayLabel(
-										onClickedItem = {
-											val destination =
-												WorldDetailDestination.BiomeDetail(
-													biomeId = biome.id
-												)
-											onItemClick(destination)
-
-										},
-										painter = rememberAsyncImagePainter(biome.imageUrl),
-										content = {
-											Box(
-												modifier = Modifier
-													.fillMaxSize()
-													.wrapContentHeight(Alignment.CenterVertically)
-													.wrapContentWidth(Alignment.CenterHorizontally)
-											) {
-												Text(
-													biome.name.uppercase(),
-													style = MaterialTheme.typography.bodyLarge,
-													modifier = Modifier,
-													color = Color.White,
-													textAlign = TextAlign.Center
-												)
-											}
-										}
-									)
-								}
-
-							}
-
-							if (uiState.relatedAxes.isNotEmpty()) {
-								TridentsDividedRow()
-								HorizontalPagerSection(
-									list = uiState.relatedAxes,
-									data = axesData,
-									onItemClick = { clickedItemId ->
-										val destination =
-											EquipmentDetailDestination.WeaponDetail(clickedItemId)
-										onItemClick(destination)
-									},
-								)
-							}
-
-							if (uiState.relatedMaterials.isNotEmpty()) {
-								TridentsDividedRow()
-								DroppedItemsSection(
-									onItemClick = { clickedItemId, subCategory ->
-										val destination =
-											NavigationHelper.routeToMaterial(
-												subCategory,
-												clickedItemId
-											)
-										onItemClick(destination)
-									},
-									list = uiState.relatedMaterials,
-									icon = Lucide.Gem,
-									starLevel = 0,
-									title = "Materials",
-									subTitle = "Unique drops are obtained by cutting this tree.",
-								)
-							}
-							Box(modifier = Modifier.size(45.dp))
-						}
-						if (!isRunning) {
-							AnimatedBackButton(
-								modifier = Modifier
-									.align(Alignment.TopStart)
-									.padding(16.dp),
-								scrollState = scrollState,
-								onBack = onBack,
-							)
-							FavoriteButton(
-								modifier = Modifier
-									.align(Alignment.TopEnd)
-									.padding(16.dp),
-								isFavorite = uiState.isFavorite,
-								onToggleFavorite = {
-									onToggleFavorite(uiState.tree.toFavorite(), uiState.isFavorite)
-								},
-							)
-
-						}
-					}
-				} else {
-					Box(
-						Modifier
-							.fillMaxSize()
-							.padding(padding)
+			BgImage()
+			Box(
+				modifier = Modifier
+					.fillMaxSize()
+					.padding(padding)
+			) {
+				Column(
+					modifier = Modifier
+						.testTag("TreeDetailScreen")
+						.fillMaxSize()
+						.verticalScroll(scrollState, enabled = !isRunning),
+					verticalArrangement = Arrangement.Top,
+					horizontalAlignment = Alignment.Start,
+				) {
+					MainDetailImageAnimated(
+						sharedTransitionScope = sharedTransitionScope,
+						animatedVisibilityScope = animatedVisibilityScope,
+						id = uiState.tree?.id ?: "",
+						imageUrl = uiState.tree?.imageUrl ?: "",
+						title = uiState.tree?.name ?: "",
 					)
+
+					DetailExpandableText(
+						text = uiState.tree?.description ?: "",
+						boxPadding = BODY_CONTENT_PADDING.dp
+					)
+					if (uiState.relatedBiomes.isNotEmpty()) {
+						SlavicDivider()
+						Text(
+							modifier = Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp),
+							text = "PRIMARY SPAWNS",
+							textAlign = TextAlign.Left,
+							style = MaterialTheme.typography.titleSmall,
+							maxLines = 1,
+							overflow = TextOverflow.Visible
+						)
+						uiState.relatedBiomes.forEach { biome ->
+							CardWithOverlayLabel(
+								onClickedItem = {
+									val destination =
+										WorldDetailDestination.BiomeDetail(
+											biomeId = biome.id,
+											imageUrl = biome.imageUrl,
+											title = biome.name,
+										)
+									onItemClick(destination)
+
+								},
+								painter = rememberAsyncImagePainter(biome.imageUrl),
+								content = {
+									Box(
+										modifier = Modifier
+											.fillMaxSize()
+											.wrapContentHeight(Alignment.CenterVertically)
+											.wrapContentWidth(Alignment.CenterHorizontally)
+									) {
+										Text(
+											biome.name.uppercase(),
+											style = MaterialTheme.typography.bodyLarge,
+											modifier = Modifier,
+											color = Color.White,
+											textAlign = TextAlign.Center
+										)
+									}
+								}
+							)
+						}
+
+					}
+
+					if (uiState.relatedAxes.isNotEmpty()) {
+						TridentsDividedRow()
+						HorizontalPagerSection(
+							list = uiState.relatedAxes,
+							data = axesData,
+							onItemClick = handleItemClick,
+						)
+					}
+
+					if (uiState.relatedMaterials.isNotEmpty()) {
+						TridentsDividedRow()
+						DroppedItemsSection(
+							onItemClick = { clickedItemId, subCategory ->
+								val destination =
+									NavigationHelper.routeToMaterial(
+										subCategory,
+										clickedItemId
+									)
+								onItemClick(destination)
+							},
+							list = uiState.relatedMaterials,
+							icon = Lucide.Gem,
+							starLevel = 0,
+							title = "Materials",
+							subTitle = "Unique drops are obtained by cutting this tree.",
+						)
+					}
+					Box(modifier = Modifier.size(45.dp))
+				}
+				if (!isRunning && uiState.tree != null) {
+					AnimatedBackButton(
+						modifier = Modifier
+							.align(Alignment.TopStart)
+							.padding(16.dp),
+						scrollState = scrollState,
+						onBack = onBack,
+					)
+					FavoriteButton(
+						modifier = Modifier
+							.align(Alignment.TopEnd)
+							.padding(16.dp),
+						isFavorite = uiState.isFavorite,
+						onToggleFavorite = {
+							onToggleFavorite(uiState.tree.toFavorite(), uiState.isFavorite)
+						},
+					)
+
 				}
 			}
 		}

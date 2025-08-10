@@ -15,6 +15,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,7 +37,6 @@ import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.navigation.DetailDestination
-import com.rabbitv.valheimviki.navigation.EquipmentDetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.navigation.WorldDetailDestination
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
@@ -87,6 +87,9 @@ fun PointOfInterestDetailContent(
 	uiState: PointOfInterestUiState,
 ) {
 	val scrollState = rememberScrollState()
+	val handleItemClick = remember {
+		NavigationHelper.createItemDetailClickHandler(onItemClick)
+	}
 	val altarOfferings = HorizontalPagerData(
 		title = "Offerings",
 		subTitle = "List of offerings that are needed to summon boss",
@@ -150,7 +153,9 @@ fun PointOfInterestDetailContent(
 								onClickedItem = {
 									val destination =
 										WorldDetailDestination.BiomeDetail(
-											biomeId = biome.id
+											biomeId = biome.id,
+											imageUrl = biome.imageUrl,
+											title = biome.name,
 										)
 									onItemClick(destination)
 
@@ -181,18 +186,7 @@ fun PointOfInterestDetailContent(
 						HorizontalPagerSection(
 							list = uiState.relatedOfferings,
 							data = altarOfferings,
-							onItemClick = { clickedItemId ->
-								val offering =
-									uiState.relatedOfferings.find { it.id == clickedItemId }
-								offering?.let {
-									val destination =
-										NavigationHelper.routeToMaterial(
-											offering.subCategory,
-											offering.id
-										)
-									onItemClick(destination)
-								}
-							},
+							onItemClick = handleItemClick,
 						)
 					}
 
@@ -216,11 +210,7 @@ fun PointOfInterestDetailContent(
 						HorizontalPagerSection(
 							list = uiState.relatedWeapons,
 							data = weaponsData,
-							onItemClick = { clickedItemId ->
-								val destination =
-									EquipmentDetailDestination.WeaponDetail(clickedItemId)
-								onItemClick(destination)
-							},
+							onItemClick = handleItemClick,
 						)
 					}
 					if (uiState.relatedCreatures.isNotEmpty()) {
@@ -228,17 +218,7 @@ fun PointOfInterestDetailContent(
 						HorizontalPagerSection(
 							list = uiState.relatedCreatures,
 							data = creatureData,
-							onItemClick = { clickedItemId ->
-								val creature =
-									uiState.relatedCreatures.find { it.id == clickedItemId }
-								creature?.let {
-									val destination = NavigationHelper.routeToCreature(
-										it.subCategory.toString(),
-										it.id
-									)
-									onItemClick(destination)
-								}
-							},
+							onItemClick = handleItemClick
 						)
 					}
 

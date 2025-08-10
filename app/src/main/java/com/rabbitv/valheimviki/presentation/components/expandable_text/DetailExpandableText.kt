@@ -47,7 +47,6 @@ fun DetailExpandableText(
 	var clickable by remember { mutableStateOf(false) }
 	var lastCharIndex by remember { mutableIntStateOf(0) }
     val htmlFormattedText = remember(text) {
-
         AnnotatedString.fromHtml(text)
     }
 	Box(

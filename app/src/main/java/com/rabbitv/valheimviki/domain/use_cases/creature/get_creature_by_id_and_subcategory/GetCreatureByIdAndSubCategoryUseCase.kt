@@ -8,10 +8,9 @@ import javax.inject.Inject
 
 class GetCreatureByIdAndSubCategoryUseCase @Inject constructor(private val creatureRepository: CreatureRepository) {
 
-	operator fun invoke(id: String, creatureSubCategory: CreatureSubCategory): Flow<Creature?> {
-		return creatureRepository.getCreatureByIdAndSubCategory(
+	operator fun invoke(id: String, creatureSubCategory: CreatureSubCategory): Flow<Creature?> =
+		creatureRepository.getCreatureByIdAndSubCategory(
 			id,
 			creatureSubCategory.toString()
 		)
-	}
 }

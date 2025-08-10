@@ -32,6 +32,7 @@ import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.navigation.DetailDestination
+import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.navigation.WorldDetailDestination
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
@@ -83,7 +84,9 @@ fun GemstoneDetailContent(
 
 	val scrollState = rememberScrollState()
 	val isExpandable = remember { mutableStateOf(false) }
-
+	val handleItemClick = remember {
+		NavigationHelper.createItemDetailClickHandler(onItemClick)
+	}
 
 	val pointsOfInterestData = HorizontalPagerData(
 		title = "Points of interest",
@@ -138,13 +141,7 @@ fun GemstoneDetailContent(
 						HorizontalPagerSection(
 							list = uiState.pointsOfInterest,
 							data = pointsOfInterestData,
-							onItemClick = { clickedItemId ->
-								val destination =
-									WorldDetailDestination.PointOfInterestDetail(
-										pointOfInterestId = clickedItemId
-									)
-								onItemClick(destination)
-							}
+							onItemClick = handleItemClick
 						)
 					}
 

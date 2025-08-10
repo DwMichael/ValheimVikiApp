@@ -31,7 +31,6 @@ import com.composables.icons.lucide.Shield
 import com.composables.icons.lucide.Wand
 import com.composables.icons.lucide.WandSparkles
 import com.rabbitv.valheimviki.R
-import com.rabbitv.valheimviki.domain.model.ui_state.category_chip_state.UiCategoryChipState
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.domain.model.weapon.WeaponSubCategory
 import com.rabbitv.valheimviki.domain.model.weapon.WeaponSubType
@@ -49,7 +48,6 @@ import com.rabbitv.valheimviki.presentation.weapons.model.WeaponUiState
 import com.rabbitv.valheimviki.presentation.weapons.viewmodel.WeaponListViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
-import com.rabbitv.valheimviki.utils.FakeData
 
 
 data class WeaponChip(
