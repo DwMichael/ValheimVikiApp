@@ -28,10 +28,10 @@ fun Creature.toMainBoss(): MainBoss {
 fun Creature.toMiniBoss(): MiniBoss {
 	return MiniBoss(
 		id = this.id,
-		category = this.category.toString(),
+		category = this.category,
 		subCategory = this.subCategory.toString(),
-		imageUrl = this.imageUrl.toString(),
-		name = this.name.toString(),
+		imageUrl = this.imageUrl,
+		name = this.name,
 		description = this.description.toString(),
 		order = this.order,
 		baseHP = this.baseHP ?: 0,
@@ -45,10 +45,10 @@ fun Creature.toMiniBoss(): MiniBoss {
 fun Creature.toAggressiveCreature(): AggressiveCreature {
 	return AggressiveCreature(
 		id = this.id,
-		category = this.category.toString(),
+		category = this.category,
 		subCategory = this.subCategory.toString(),
-		imageUrl = this.imageUrl.toString(),
-		name = this.name.toString(),
+		imageUrl = this.imageUrl,
+		name = this.name,
 		description = this.description.toString(),
 		order = this.order,
 		levels = this.levelCreatureData.toList(),
@@ -62,10 +62,10 @@ fun Creature.toAggressiveCreature(): AggressiveCreature {
 fun Creature.toPassiveCreature(): PassiveCreature {
 	return PassiveCreature(
 		id = this.id,
-		category = this.category.toString(),
+		category = this.category,
 		subCategory = this.subCategory.toString(),
-		imageUrl = this.imageUrl.toString(),
-		name = this.name.toString(),
+		imageUrl = this.imageUrl,
+		name = this.name,
 		description = this.description.toString(),
 		notes = this.notes.toString(),
 		order = this.order,
@@ -78,10 +78,10 @@ fun Creature.toPassiveCreature(): PassiveCreature {
 fun Creature.toNPC(): NPC {
 	return NPC(
 		id = this.id,
-		category = this.category.toString(),
+		category = this.category,
 		subCategory = this.subCategory.toString(),
-		imageUrl = this.imageUrl.toString(),
-		name = this.name.toString(),
+		imageUrl = this.imageUrl,
+		name = this.name,
 		description = this.description.toString(),
 		biography = this.biography.toString(),
 		location = this.location.toString(),
