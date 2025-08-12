@@ -6,6 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -35,12 +36,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.armor.Armor
 import com.rabbitv.valheimviki.domain.model.armor.UpgradeArmorInfo
-import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 import com.rabbitv.valheimviki.domain.model.favorite.Favorite
-import com.rabbitv.valheimviki.navigation.BuildingDetailDestination
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
+import com.rabbitv.valheimviki.presentation.components.LoadingIndicator
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
@@ -50,7 +51,8 @@ import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImage
 import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
-import com.rabbitv.valheimviki.presentation.detail.armor.model.ArmorUiState
+import com.rabbitv.valheimviki.presentation.detail.armor.model.ArmorDetailUiEvent
+import com.rabbitv.valheimviki.presentation.detail.armor.model.ArmorDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.armor.viewmodel.ArmorDetailViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ForestGreen20Dark
@@ -69,9 +71,10 @@ fun ArmorDetailScreen(
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 	val onToggleFavorite = { favorite: Favorite, isFavorite: Boolean ->
-		viewModel.toggleFavorite(
-			favorite = favorite,
-			currentIsFavorite = isFavorite
+		viewModel.uiEvent(
+			ArmorDetailUiEvent.ToggleFavorite(
+				favorite = favorite
+			)
 		)
 	}
 	ArmorDetailContent(
@@ -87,11 +90,14 @@ fun ArmorDetailContent(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
 	onToggleFavorite: (favorite: Favorite, currentIsFavorite: Boolean) -> Unit,
-	uiState: ArmorUiState
+	uiState: ArmorDetailUiState
 ) {
 
 	val isExpandable = remember { mutableStateOf(false) }
 	val scrollState = rememberScrollState()
+	val handleClick = remember(onItemClick) {
+		NavigationHelper.createItemDetailClickHandler(onItemClick)
+	}
 
 	BgImage()
 	Scaffold(
@@ -147,34 +153,63 @@ fun ArmorDetailContent(
 
 						armor.upgradeInfoList.forEachIndexed { levelIndex, upgradeInfoForLevel ->
 							val upgradeStats = mapUpgradeArmorInfoToGridList(upgradeInfoForLevel)
-							LevelInfoCard(
-								modifier = Modifier.padding(
-									horizontal = BODY_CONTENT_PADDING.dp,
-									vertical = 8.dp
-								),
-								onItemClick = { clickedItemId, subCategory ->
-									val destination =
-										NavigationHelper.routeToMaterial(subCategory, clickedItemId)
-									onItemClick(destination)
-								},
-								level = levelIndex,
-								upgradeStats = upgradeStats,
-								materialsForUpgrade = uiState.materials,
-							)
+							when (val materials = uiState.materials) {
+								is UIState.Error -> {}
+								is UIState.Loading -> {
+									LoadingIndicator(
+										paddingValues = PaddingValues(16.dp)
+									)
+								}
+
+								is UIState.Success -> {
+
+									LevelInfoCard(
+										modifier = Modifier.padding(
+											horizontal = BODY_CONTENT_PADDING.dp,
+											vertical = 8.dp
+										),
+										onItemClick = { clickedItemId, subCategory ->
+											val destination =
+												NavigationHelper.routeToMaterial(
+													subCategory,
+													clickedItemId
+												)
+											onItemClick(destination)
+										},
+										level = levelIndex,
+										upgradeStats = upgradeStats,
+										materialsForUpgrade = materials.data,
+									)
+								}
+							}
+
 						}
 						SlavicDivider()
-					} else if (uiState.materials.isNotEmpty()) {
-						RequiredMaterialColumn(
-							level = 0,
-							foodForUpgrade = emptyList(),
-							materialsForUpgrade = uiState.materials,
-							onItemClick = { clickedItemId, subCategory ->
-								val destination =
-									NavigationHelper.routeToMaterial(subCategory, clickedItemId)
-								onItemClick(destination)
-							},
-						)
+					} else {
+						when (val materials = uiState.materials) {
+							is UIState.Error -> {}
+							is UIState.Loading -> {
+								LoadingIndicator(
+									paddingValues = PaddingValues(16.dp)
+								)
+							}
 
+							is UIState.Success -> {
+								RequiredMaterialColumn(
+									level = 0,
+									foodForUpgrade = emptyList(),
+									materialsForUpgrade = materials.data,
+									onItemClick = { clickedItemId, subCategory ->
+										val destination =
+											NavigationHelper.routeToMaterial(
+												subCategory,
+												clickedItemId
+											)
+										onItemClick(destination)
+									},
+								)
+							}
+						}
 					}
 					armor.effects?.let { effectContent ->
 						if (effectContent.isNotBlank()) {
@@ -193,20 +228,28 @@ fun ArmorDetailContent(
 							)
 						}
 					}
-					uiState.craftingObject?.let { craftingStation ->
-						TridentsDividedRow()
-						CardImageWithTopLabel(
-							onClickedItem = {
-								val destination = BuildingDetailDestination.CraftingObjectDetail(
-									craftingObjectId = craftingStation.id
+					when (val craftingObject = uiState.craftingObject) {
+						is UIState.Error -> {}
+						is UIState.Loading -> {
+							TridentsDividedRow()
+							LoadingIndicator(
+								paddingValues = PaddingValues(16.dp)
+							)
+						}
+
+						is UIState.Success -> {
+							uiState.craftingObject.data?.let { craftingStation ->
+								TridentsDividedRow()
+								CardImageWithTopLabel(
+									onClickedItem = handleClick,
+									itemData = craftingObject.data,
+									subTitle = "Crafting Station Needed to Make This Item",
+									contentScale = ContentScale.Fit,
 								)
-								onItemClick(destination)
-							},
-							itemData = craftingStation,
-							subTitle = "Crafting Station Needed to Make This Item",
-							contentScale = ContentScale.Fit,
-						)
+							}
+						}
 					}
+
 
 
 				}
@@ -298,21 +341,12 @@ private fun PreviewArmorDetailScreen() {
 			onBack = {},
 			onItemClick = {},
 			onToggleFavorite = { _, _ -> {} },
-			uiState = ArmorUiState(
+			uiState = ArmorDetailUiState(
 				armor = testArmor,
-				materials = emptyList(),
-				craftingObject = CraftingObject(
-					id = "1",
-					imageUrl = "",
-					category = "",
-					subCategory = "TODO()",
-					name = "Workbench",
-					description = "",
-					order = 1
-				),
-				isLoading = false,
-				error = null
+				materials =UIState.Loading,
+				craftingObject = UIState.Loading
 			)
+
 		)
 	}
 }
