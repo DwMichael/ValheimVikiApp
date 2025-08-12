@@ -1,149 +1,141 @@
 package com.rabbitv.valheimviki.presentation.detail.armor.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rabbitv.valheimviki.di.qualifiers.DefaultDispatcher
 import com.rabbitv.valheimviki.domain.model.armor.Armor
-import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
-import com.rabbitv.valheimviki.domain.model.favorite.Favorite
-import com.rabbitv.valheimviki.domain.model.material.MaterialUpgrade
+import com.rabbitv.valheimviki.domain.model.material.Material
+import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
+import com.rabbitv.valheimviki.domain.model.upgrader.MaterialUpgrade
 import com.rabbitv.valheimviki.domain.use_cases.armor.ArmorUseCases
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.CraftingObjectUseCases
 import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
-import com.rabbitv.valheimviki.presentation.detail.armor.model.ArmorUiState
+import com.rabbitv.valheimviki.presentation.detail.armor.model.ArmorDetailUiEvent
+import com.rabbitv.valheimviki.presentation.detail.armor.model.ArmorDetailUiState
 import com.rabbitv.valheimviki.utils.Constants.ARMOR_KEY
+import com.rabbitv.valheimviki.utils.relatedDataFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 
-@Suppress("UNCHECKED_CAST")
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class ArmorDetailViewModel @Inject constructor(
 	savedStateHandle: SavedStateHandle,
 	private val armorUseCases: ArmorUseCases,
-	private val relationUseCase: RelationUseCases,
+	private val relationsUseCases: RelationUseCases,
 	private val materialUseCases: MaterialUseCases,
 	private val craftingObjectUseCases: CraftingObjectUseCases,
 	private val favoriteUseCases: FavoriteUseCases,
+	@param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 	private val _armorId: String = checkNotNull(savedStateHandle[ARMOR_KEY])
-	private val _armor: MutableStateFlow<Armor?> = MutableStateFlow(null)
+	private val _isFavorite = MutableStateFlow(false)
 
-
-	private val _relatedMaterials: MutableStateFlow<List<MaterialUpgrade>> =
-		MutableStateFlow(emptyList())
-	private val _relatedCraftingObjects: MutableStateFlow<CraftingObject?> = MutableStateFlow(null)
-
-	private val _isLoading: MutableStateFlow<Boolean> = MutableStateFlow(true)
-	private val _error: MutableStateFlow<String?> = MutableStateFlow(null)
-
-
-	val uiState: StateFlow<ArmorUiState> = combine(
-		_armor,
-		_relatedMaterials,
-		_relatedCraftingObjects,
+	init {
 		favoriteUseCases.isFavorite(_armorId)
-			.flowOn(Dispatchers.IO),
-		_isLoading,
-		_error
-	) { values ->
-		ArmorUiState(
-			armor = values[0] as Armor?,
-			materials = values[1] as List<MaterialUpgrade>,
-			craftingObject = values[2] as CraftingObject?,
-			isFavorite = values[3] as Boolean,
-			isLoading = values[4] as Boolean,
-			error = values[5] as String?,
+			.distinctUntilChanged()
+			.onEach { value -> _isFavorite.value = value }
+			.launchIn(viewModelScope)
+	}
+
+	private val _armorFlow: StateFlow<Armor?> =
+		armorUseCases.getArmorByIdUseCase(_armorId)
+			.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
+	private val _relationsObjects: StateFlow<List<RelatedItem>> =
+		relationsUseCases.getRelatedIdsUseCase(_armorId)
+			.distinctUntilChanged()
+			.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+	private val _relatedMaterials: StateFlow<UIState<List<MaterialUpgrade>>> =
+		_relationsObjects.filter { it.isNotEmpty() }.flatMapLatest { relatedObjects ->
+			val relatedMap = relatedObjects.associateBy { it.id }
+			val ids = relatedObjects.map { it.id }
+
+			materialUseCases.getMaterialsByIds(ids)
+				.map { materials: List<Material> ->
+					materials.map { material ->
+						val rel = relatedMap[material.id]
+						MaterialUpgrade(
+							material = material,
+							quantityList = listOf(
+								rel?.quantity,
+								rel?.quantity2star,
+								rel?.quantity3star,
+								rel?.quantity4star
+							)
+						)
+					}
+				}
+		}.map<List<MaterialUpgrade>, UIState<List<MaterialUpgrade>>> { UIState.Success(it) }
+			.flowOn(defaultDispatcher)
+			.catch { e -> emit(UIState.Error(e.message ?: "Error fetching related materials")) }
+			.stateIn(
+				viewModelScope,
+				SharingStarted.WhileSubscribed(5_000),
+				UIState.Loading
+			)
+
+
+	private val _relatedCraftingObject = relatedDataFlow(
+		idsFlow = _relationsObjects.mapLatest { list -> list.map { item -> item.id } },
+		fetcher = { ids -> craftingObjectUseCases.getCraftingObjectByIds(ids) },
+	).flowOn(defaultDispatcher)
+
+	val uiState: StateFlow<ArmorDetailUiState> = combine(
+		_armorFlow,
+		_relatedMaterials,
+		_relatedCraftingObject,
+		_isFavorite,
+	) { armor, materials, craftingObjects, favorite ->
+		ArmorDetailUiState(
+			armor = armor,
+			materials = materials,
+			craftingObject = craftingObjects,
+			isFavorite = favorite,
 		)
 	}.stateIn(
 		scope = viewModelScope,
 		started = SharingStarted.WhileSubscribed(5000),
-		initialValue = ArmorUiState()
+		initialValue = ArmorDetailUiState()
 	)
 
-	init {
-		loadArmorData()
-	}
-
-
-	internal fun loadArmorData() {
-
-		viewModelScope.launch(Dispatchers.IO) {
-			try {
-				_isLoading.value = true
-				val armorDeferred = async { armorUseCases.getArmorByIdUseCase(_armorId).first() }
-				val relatedObjectsDeferred =
-					async { relationUseCase.getRelatedIdsUseCase(_armorId).first() }
-
-				val armor = armorDeferred.await()
-				val relatedObjects = relatedObjectsDeferred.await()
-
-				_armor.value = armor
-
-				val relatedIds = relatedObjects.map { it.id }
-
-				val materialsDeferred = async {
-					val materials = materialUseCases.getMaterialsByIds(relatedIds).first()
-					val tempList = mutableListOf<MaterialUpgrade>()
-					val relatedItemsMap = relatedObjects.associateBy { it.id }
-
-					for (material in materials) {
-						val relatedItem = relatedItemsMap[material.id]
-						val quantityList = listOf<Int?>(
-							relatedItem?.quantity,
-							relatedItem?.quantity2star,
-							relatedItem?.quantity3star,
-							relatedItem?.quantity4star
-						)
-						tempList.add(
-							MaterialUpgrade(
-								material = material,
-								quantityList = quantityList,
-							)
-						)
+	fun uiEvent(event: ArmorDetailUiEvent) {
+		when (event) {
+			is ArmorDetailUiEvent.ToggleFavorite ->
+				viewModelScope.launch {
+					val target = !_isFavorite.value
+					_isFavorite.value = target
+					if (target) {
+						favoriteUseCases.addFavoriteUseCase(event.favorite)
+					} else {
+						favoriteUseCases.deleteFavoriteUseCase(event.favorite)
 					}
-
-					_relatedMaterials.value = tempList
 				}
-				val craftingObjectsDeferred = async {
-					val craftingObject =
-						craftingObjectUseCases.getCraftingObjectByIds(relatedIds).first()
-					_relatedCraftingObjects.value = craftingObject
-				}
-
-				awaitAll(materialsDeferred, craftingObjectsDeferred)
-			} catch (e: Exception) {
-				Log.e("General fetch error ArmorDetailViewModel", e.message.toString())
-				_isLoading.value = false
-				_error.value = e.message
-			} finally {
-				_isLoading.value = false
-			}
 		}
 	}
 
-	fun toggleFavorite(favorite: Favorite, currentIsFavorite: Boolean) {
-		viewModelScope.launch {
-			if (currentIsFavorite) {
-				favoriteUseCases.deleteFavoriteUseCase(favorite)
-			} else {
-				favoriteUseCases.addFavoriteUseCase(favorite)
-			}
-		}
-	}
 
 }
