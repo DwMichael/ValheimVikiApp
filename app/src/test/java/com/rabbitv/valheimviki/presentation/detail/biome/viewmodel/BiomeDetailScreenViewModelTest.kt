@@ -45,7 +45,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
-import org.mockito.MockitoAnnotations
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
 import org.mockito.kotlin.never
@@ -63,7 +62,7 @@ import kotlin.test.assertTrue
 class BiomeDetailScreenViewModelTest {
 
 	private val testDispatcher = StandardTestDispatcher()
-	private lateinit var closeMocks: AutoCloseable
+
 
 	private val testBiome = Biome(
 		id = "biome1",
@@ -202,8 +201,7 @@ class BiomeDetailScreenViewModelTest {
 	private lateinit var savedStateHandle: SavedStateHandle
 
 	@BeforeEach
-	fun setUp() = runTest {
-		closeMocks = MockitoAnnotations.openMocks(this@BiomeDetailScreenViewModelTest)
+	fun setUp() {
 		Dispatchers.setMain(testDispatcher)
 
 
@@ -223,7 +221,6 @@ class BiomeDetailScreenViewModelTest {
 	@AfterEach
 	fun tearDown() {
 		Dispatchers.resetMain()
-		closeMocks.close()
 	}
 
 	private fun createViewModel() =
@@ -240,10 +237,6 @@ class BiomeDetailScreenViewModelTest {
 			defaultDispatcher = testDispatcher
 		)
 
-	private fun linkFavoriteMutationUseCases() {
-		whenever(favoriteUseCases.addFavoriteUseCase).thenReturn(addFavoriteUseCase)
-		whenever(favoriteUseCases.deleteFavoriteUseCase).thenReturn(deleteFavoriteUseCase)
-	}
 
 	private fun linkContentUseCases() {
 		whenever(creaturesUseCase.getCreaturesByIds).thenReturn(getCreaturesByIds)
