@@ -60,7 +60,7 @@ import com.rabbitv.valheimviki.ui.theme.YellowDTBorder
 @Stable
 @Composable
 fun CardImageWithTopLabel(
-	onClickedItem: () -> Unit,
+	onClickedItem: (itemData: ItemData) -> Unit ={},
 	modifier: Modifier = Modifier,
 	itemData: ItemData,
 	horizontalDividerWidth: Dp = 150.dp,
@@ -84,9 +84,7 @@ fun CardImageWithTopLabel(
 				shape = RoundedCornerShape(8.dp),
 				spotColor = Color.Black.copy(alpha = 0.25f)
 			)
-			.clickable {
-				onClickedItem()
-			},
+			.clickable { onClickedItem(itemData) },
 		colors = CardDefaults.cardColors(
 			containerColor = Color.Transparent,
 			contentColor = Color.Transparent,
@@ -197,7 +195,6 @@ fun PreviewCardImageWithTopLabel() {
 	)
 	ValheimVikiAppTheme {
 		CardImageWithTopLabel(
-			onClickedItem = {},
 			itemData = fakeMainBoss,
 			subTitle = "Przykładowy opis głównego bossa Przykładowy.",
 			contentScale = ContentScale.FillBounds
