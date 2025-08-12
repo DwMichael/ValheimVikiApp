@@ -3,8 +3,8 @@ package com.rabbitv.valheimviki.presentation.detail.tool.model
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.model.item_tool.ItemTool
-import com.rabbitv.valheimviki.domain.model.material.MaterialUpgrade
 import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
+import com.rabbitv.valheimviki.domain.model.upgrader.MaterialUpgrade
 
 data class ToolDetailUiState(
 	val tool: ItemTool? = null,

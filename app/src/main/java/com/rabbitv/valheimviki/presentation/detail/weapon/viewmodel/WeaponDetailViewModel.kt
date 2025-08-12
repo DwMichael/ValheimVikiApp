@@ -6,8 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 import com.rabbitv.valheimviki.domain.model.favorite.Favorite
-import com.rabbitv.valheimviki.domain.model.food.FoodAsMaterialUpgrade
-import com.rabbitv.valheimviki.domain.model.material.MaterialUpgrade
+import com.rabbitv.valheimviki.domain.model.upgrader.FoodAsMaterialUpgrade
+import com.rabbitv.valheimviki.domain.model.upgrader.MaterialUpgrade
 import com.rabbitv.valheimviki.domain.model.weapon.Weapon
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.CraftingObjectUseCases
 import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases

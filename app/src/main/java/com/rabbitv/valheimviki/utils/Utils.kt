@@ -92,6 +92,7 @@ fun <Id, Raw, Ui> Flow<List<Id>>.toUiState(
 			.catch { e -> emit(UIState.Error(e.message ?: errorMsg)) }
 	}
 
+
 fun String?.valid() =
 	takeIf { !isNullOrBlank() && !equals("null", ignoreCase = true) }
 

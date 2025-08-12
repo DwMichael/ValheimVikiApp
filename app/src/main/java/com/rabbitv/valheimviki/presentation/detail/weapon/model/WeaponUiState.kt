@@ -1,8 +1,8 @@
 package com.rabbitv.valheimviki.presentation.detail.weapon.model
 
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
-import com.rabbitv.valheimviki.domain.model.food.FoodAsMaterialUpgrade
-import com.rabbitv.valheimviki.domain.model.material.MaterialUpgrade
+import com.rabbitv.valheimviki.domain.model.upgrader.FoodAsMaterialUpgrade
+import com.rabbitv.valheimviki.domain.model.upgrader.MaterialUpgrade
 import com.rabbitv.valheimviki.domain.model.weapon.Weapon
 
 data class WeaponUiState(

@@ -51,8 +51,8 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.rabbitv.valheimviki.R
-import com.rabbitv.valheimviki.domain.model.food.FoodAsMaterialUpgrade
-import com.rabbitv.valheimviki.domain.model.material.MaterialUpgrade
+import com.rabbitv.valheimviki.domain.model.upgrader.FoodAsMaterialUpgrade
+import com.rabbitv.valheimviki.domain.model.upgrader.MaterialUpgrade
 import com.rabbitv.valheimviki.domain.model.weapon.UpgradeInfo
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ForestGreen20Dark
@@ -75,7 +75,7 @@ data class GridLevelInfo(
 
 @Composable
 fun LevelInfoCard(
-    modifier: Modifier = Modifier,
+	modifier: Modifier = Modifier,
 	onItemClick: (itemId: String, category: String) -> Unit,
 	level: Int = 0,
 	upgradeStats: List<GridLevelInfo> = emptyList(),
@@ -97,8 +97,8 @@ fun LevelInfoCard(
 
 	Card(
 		modifier = modifier
-            .fillMaxWidth()
-            .wrapContentHeight(),
+			.fillMaxWidth()
+			.wrapContentHeight(),
 		shape = Shapes.medium,
 		colors = CardDefaults.cardColors(
 			contentColor = PrimaryWhite,
@@ -114,18 +114,18 @@ fun LevelInfoCard(
 		AnimatedVisibility(visibleContent.value) {
 			Column(
 				Modifier
-                    .background(color = Color(0xFF0d1c1d))
-                    .heightIn(max = 600.dp)
-                    .verticalScroll(rememberScrollState())
+					.background(color = Color(0xFF0d1c1d))
+					.heightIn(max = 600.dp)
+					.verticalScroll(rememberScrollState())
 			) {
 				FlowRow(
 					modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            end = BODY_CONTENT_PADDING.dp,
-                            start = BODY_CONTENT_PADDING.dp,
-                            top = BODY_CONTENT_PADDING.dp
-                        ),
+						.fillMaxWidth()
+						.padding(
+							end = BODY_CONTENT_PADDING.dp,
+							start = BODY_CONTENT_PADDING.dp,
+							top = BODY_CONTENT_PADDING.dp
+						),
 					horizontalArrangement = Arrangement.Start,
 					verticalArrangement = Arrangement.Top
 				) {
@@ -139,12 +139,12 @@ fun LevelInfoCard(
 						LevelInfoGridItem(
 							modifier = if (isLongText) {
 								Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 8.dp)
+									.fillMaxWidth()
+									.padding(start = 8.dp)
 							} else {
 								Modifier
-                                    .fillMaxWidth(0.5f)
-                                    .padding(start = 8.dp)
+									.fillMaxWidth(0.5f)
+									.padding(start = 8.dp)
 							},
 							upgradeInfo = info
 						)
@@ -161,13 +161,13 @@ fun LevelInfoCard(
 				} else {
 					Row(
 						modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(BODY_CONTENT_PADDING.dp)
-                            .background(
-                                color = Color(0xFF1a2a2b),
-                                shape = RoundedCornerShape(8.dp)
-                            )
-                            .padding(16.dp),
+							.fillMaxWidth()
+							.padding(BODY_CONTENT_PADDING.dp)
+							.background(
+								color = Color(0xFF1a2a2b),
+								shape = RoundedCornerShape(8.dp)
+							)
+							.padding(16.dp),
 						horizontalArrangement = Arrangement.Center,
 						verticalAlignment = Alignment.CenterVertically
 					) {
@@ -207,40 +207,40 @@ fun RequiredMaterialColumn(
 	)
 	Column(
 		modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = BODY_CONTENT_PADDING.dp)
-            .padding(start = 8.dp),
+			.fillMaxWidth()
+			.padding(horizontal = BODY_CONTENT_PADDING.dp)
+			.padding(start = 8.dp),
 		verticalArrangement = Arrangement.spacedBy(8.dp)
 	) {
-        materialsForUpgrade.forEach { material ->
-            material.quantityList.getOrNull(level)?.let { quantity ->
-                if (quantity > 0) {
-                    MaterialForUpgrade(
-                        onItemClick = {
-                            onItemClick(material.material.id, material.material.subCategory)
-                        },
-                        name = material.material.name,
-                        imageUrl = material.material.imageUrl,
-                        quantity = quantity
-                    )
-                }
-            }
-        }
+		materialsForUpgrade.forEach { material ->
+			material.quantityList.getOrNull(level)?.let { quantity ->
+				if (quantity > 0) {
+					MaterialForUpgrade(
+						onItemClick = {
+							onItemClick(material.material.id, material.material.subCategory)
+						},
+						name = material.material.name,
+						imageUrl = material.material.imageUrl,
+						quantity = quantity
+					)
+				}
+			}
+		}
 
-        foodForUpgrade.forEach { material ->
-            material.quantityList.getOrNull(level)?.let { quantity ->
-                if (quantity > 0) {
-                    MaterialForUpgrade(
-                        onItemClick = {
-                            onItemClick(material.materialFood.id, material.materialFood.subCategory)
-                        },
-                        name = material.materialFood.name,
-                        imageUrl = material.materialFood.imageUrl,
-                        quantity = quantity
-                    )
-                }
-            }
-        }
+		foodForUpgrade.forEach { material ->
+			material.quantityList.getOrNull(level)?.let { quantity ->
+				if (quantity > 0) {
+					MaterialForUpgrade(
+						onItemClick = {
+							onItemClick(material.materialFood.id, material.materialFood.subCategory)
+						},
+						name = material.materialFood.name,
+						imageUrl = material.materialFood.imageUrl,
+						quantity = quantity
+					)
+				}
+			}
+		}
 	}
 }
 
@@ -266,8 +266,8 @@ fun MaterialForUpgrade(
 			contentScale = ContentScale.Fit,
 
 			modifier = Modifier
-                .size(56.dp)
-                .clip(RoundedCornerShape(8.dp))
+				.size(56.dp)
+				.clip(RoundedCornerShape(8.dp))
 
 		)
 		Spacer(modifier = Modifier.width(12.dp))
@@ -328,20 +328,20 @@ fun TopExpandableItem(
 ) {
 	Row(
 		modifier = Modifier
-            .fillMaxWidth()
-            .height(50.dp)
-            .background(color = ForestGreen20Dark)
-            .clickable { onToggleExpansion() }
-            .drawBehind {
-                val borderStrokeWidth = 1.dp.toPx()
-                drawLine(
-                    color = Color.Gray,
-                    start = Offset(0f, size.height),
-                    end = Offset(size.width, size.height),
-                    strokeWidth = borderStrokeWidth
-                )
-            }
-            .padding(BODY_CONTENT_PADDING.dp),
+			.fillMaxWidth()
+			.height(50.dp)
+			.background(color = ForestGreen20Dark)
+			.clickable { onToggleExpansion() }
+			.drawBehind {
+				val borderStrokeWidth = 1.dp.toPx()
+				drawLine(
+					color = Color.Gray,
+					start = Offset(0f, size.height),
+					end = Offset(size.width, size.height),
+					strokeWidth = borderStrokeWidth
+				)
+			}
+			.padding(BODY_CONTENT_PADDING.dp),
 		verticalAlignment = Alignment.CenterVertically,
 		horizontalArrangement = Arrangement.SpaceBetween
 	) {
@@ -419,8 +419,8 @@ private fun PreviewLevelInfoCard_AllStats() {
 	ValheimVikiAppTheme {
 		Column(
 			modifier = Modifier
-                .background(Color.Black)
-                .padding(16.dp)
+				.background(Color.Black)
+				.padding(16.dp)
 		) {
 			LevelInfoCard(
 				onItemClick = { _, _ -> {} },
