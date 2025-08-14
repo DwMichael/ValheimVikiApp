@@ -3,6 +3,7 @@ package com.rabbitv.valheimviki.presentation.detail.armor.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.rabbitv.valheimviki.di.qualifiers.DefaultDispatcher
 import com.rabbitv.valheimviki.domain.model.armor.Armor
 import com.rabbitv.valheimviki.domain.model.material.Material
@@ -14,9 +15,9 @@ import com.rabbitv.valheimviki.domain.use_cases.crafting_object.CraftingObjectUs
 import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
+import com.rabbitv.valheimviki.navigation.EquipmentDetailDestination
 import com.rabbitv.valheimviki.presentation.detail.armor.model.ArmorDetailUiEvent
 import com.rabbitv.valheimviki.presentation.detail.armor.model.ArmorDetailUiState
-import com.rabbitv.valheimviki.utils.Constants.ARMOR_KEY
 import com.rabbitv.valheimviki.utils.relatedDataFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -50,7 +51,8 @@ class ArmorDetailViewModel @Inject constructor(
 	private val favoriteUseCases: FavoriteUseCases,
 	@param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
-	private val _armorId: String = checkNotNull(savedStateHandle[ARMOR_KEY])
+	private val _armorId: String =
+		savedStateHandle.toRoute<EquipmentDetailDestination.ArmorDetail>().armorId
 	private val _isFavorite = MutableStateFlow(false)
 
 	init {
@@ -128,12 +130,9 @@ class ArmorDetailViewModel @Inject constructor(
 				viewModelScope.launch {
 					val target = !_isFavorite.value
 					_isFavorite.value = target
-					if (target) {
-						favoriteUseCases.addFavoriteUseCase(event.favorite)
-					} else {
-						favoriteUseCases.deleteFavoriteUseCase(event.favorite)
-					}
+					favoriteUseCases.toggleFavoriteUseCase(event.favorite, target)
 				}
+
 		}
 	}
 
