@@ -11,6 +11,7 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,7 +30,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.style.TextAlign
@@ -38,14 +38,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.composables.icons.lucide.Gauge
 import com.composables.icons.lucide.Lucide
-import com.rabbitv.valheimviki.R
-import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
-import com.rabbitv.valheimviki.domain.model.favorite.Favorite
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.navigation.BuildingDetailDestination
 import com.rabbitv.valheimviki.navigation.ConsumableDetailDestination
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
+import com.rabbitv.valheimviki.presentation.components.LoadingIndicator
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
@@ -55,6 +54,7 @@ import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.flow_row.flow_as_grid.TwoColumnGrid
 import com.rabbitv.valheimviki.presentation.components.grid.grid_item.CustomItemCard
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
+import com.rabbitv.valheimviki.presentation.detail.building_material.model.BuildingMaterialUiEvent
 import com.rabbitv.valheimviki.presentation.detail.building_material.model.BuildingMaterialUiState
 import com.rabbitv.valheimviki.presentation.detail.building_material.viewmodel.BuildingMaterialDetailViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
@@ -69,12 +69,7 @@ fun BuildingMaterialDetailScreen(
 	viewModel: BuildingMaterialDetailViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-	val onToggleFavorite = { favorite: Favorite, isFavorite: Boolean ->
-		viewModel.toggleFavorite(
-			favorite = favorite,
-			currentIsFavorite = isFavorite
-		)
-	}
+	val onToggleFavorite = { viewModel.uiEvent(BuildingMaterialUiEvent.ToggleFavorite) }
 
 	BuildingMaterialDetailContent(
 		onBack = onBack,
@@ -91,7 +86,7 @@ fun BuildingMaterialDetailScreen(
 fun BuildingMaterialDetailContent(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
-	onToggleFavorite: (favorite: Favorite, currentIsFavorite: Boolean) -> Unit,
+	onToggleFavorite: () -> Unit,
 	uiState: BuildingMaterialUiState,
 
 	) {
@@ -99,8 +94,32 @@ fun BuildingMaterialDetailContent(
 	val scrollState = rememberScrollState()
 	val isStatInfoExpanded1 = remember { mutableStateOf(false) }
 	val isExpandable = remember { mutableStateOf(false) }
-	painterResource(R.drawable.main_background)
 
+	val materialsData = when (val materialsState = uiState.materials) {
+		is UIState.Error -> {
+			return
+		}
+
+		is UIState.Loading -> {
+			LoadingIndicator(paddingValues = PaddingValues(16.dp))
+			return
+		}
+
+		is UIState.Success -> materialsState.data
+	}
+
+	val foodsData = when (val foodsState = uiState.foods) {
+		is UIState.Error -> {
+			return
+		}
+
+		is UIState.Loading -> {
+			LoadingIndicator(paddingValues = PaddingValues(16.dp))
+			return
+		}
+
+		is UIState.Success -> foodsState.data
+	}
 	val comfortDescription =
 		"<p><b>Comfort</b> level determines the duration of <a href=\"/wiki/Resting_Effect\" class=\"mw-redirect\" title=\"Resting Effect\">Resting Effect</a>. Base duration is 8 minutes, with each comfort level stacking 1 minute up to 24 minutes with usual items and 26 minutes with rare seasonal items.  \n" +
 				"</p><p>The max comfort reachable normally is 17. If near a <a href=\"/wiki/Maypole\" title=\"Maypole\">Maypole</a> 18 or with the seasonal <a href=\"/wiki/Yule_tree\" title=\"Yule tree\">Yule tree</a> 19.  \n" +
@@ -171,26 +190,38 @@ fun BuildingMaterialDetailContent(
 							)
 						}
 					}
-					if (uiState.craftingStation.isNotEmpty()) {
-						SlavicDivider()
-						uiState.craftingStation.forEach { craftingStation ->
-							CardImageWithTopLabel(
-								onClickedItem = {
-									val destination =
-										BuildingDetailDestination.CraftingObjectDetail(
-											craftingObjectId = craftingStation.id
-										)
-									onItemClick(destination)
-								},
-								itemData = craftingStation,
-								subTitle = "Crafting station that must be near the construction",
-								contentScale = ContentScale.Fit,
+					when (val craftingState = uiState.craftingStation) {
+						is UIState.Error -> {}
+						is UIState.Loading -> {
+							LoadingIndicator(
+								paddingValues = PaddingValues(16.dp)
+							)
+						}
 
-								)
-							Spacer(modifier = Modifier.padding(BODY_CONTENT_PADDING.dp))
+						is UIState.Success -> {
+							if (craftingState.data.isNotEmpty()) {
+								SlavicDivider()
+								craftingState.data.forEach { craftingStation ->
+									CardImageWithTopLabel(
+										onClickedItem = {
+											val destination =
+												BuildingDetailDestination.CraftingObjectDetail(
+													craftingObjectId = craftingStation.id
+												)
+											onItemClick(destination)
+										},
+										itemData = craftingStation,
+										subTitle = "Crafting station that must be near the construction",
+										contentScale = ContentScale.Fit,
+
+										)
+									Spacer(modifier = Modifier.padding(BODY_CONTENT_PADDING.dp))
+								}
+							}
 						}
 					}
-					if (uiState.materials.isNotEmpty() || uiState.foods.isNotEmpty()) {
+
+					if (materialsData.isNotEmpty() || foodsData.isNotEmpty()) {
 						SlavicDivider()
 						Text(
 							"Required Materials",
@@ -209,7 +240,7 @@ fun BuildingMaterialDetailContent(
 							color = Color.White
 						)
 						TwoColumnGrid {
-							for (material in uiState.materials) {
+							for (material in materialsData) {
 								CustomItemCard(
 									onItemClick = {
 										material.itemDrop.subCategory?.let { subCategory ->
@@ -227,7 +258,7 @@ fun BuildingMaterialDetailContent(
 									quantity = material.quantityList.firstOrNull()
 								)
 							}
-							for (food in uiState.foods) {
+							for (food in foodsData) {
 								CustomItemCard(
 									onItemClick = {
 										food.itemDrop.subCategory?.let {
@@ -260,31 +291,10 @@ fun BuildingMaterialDetailContent(
 						.align(Alignment.TopEnd)
 						.padding(16.dp),
 					isFavorite = uiState.isFavorite,
-					onToggleFavorite = {
-						onToggleFavorite(uiState.buildingMaterial.toFavorite(), uiState.isFavorite)
-					},
+					onToggleFavorite = onToggleFavorite,
 				)
 			}
 		}
 	}
 }
 
-
-//@RequiresApi(Build.VERSION_CODES.S)
-//@Preview("ToolDetailContentPreview", showBackground = true)
-//@Composable
-//fun PreviewToolDetailContentCooked() {
-//
-//
-//	ValheimVikiAppTheme {
-//		GeneralMaterialDetailContent(
-//			uiState = GeneralMaterialUiState(
-//				material = FakeData.generateFakeMaterials()[0],
-//				isLoading = false,
-//				error = null
-//			),
-//			onBack = {},
-//		)
-//	}
-//
-//}
