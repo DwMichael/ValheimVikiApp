@@ -70,7 +70,7 @@ inline fun <T1, T2, T3, T4, T5, T6, T7, T8, R> combine(
 	}
 }
 
-inline fun <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, R> combine(
+inline fun <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, R> combine(
 	flow: Flow<T1>,
 	flow2: Flow<T2>,
 	flow3: Flow<T3>,
@@ -83,9 +83,7 @@ inline fun <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, R> comb
 	flow10: Flow<T10>,
 	flow11: Flow<T11>,
 	flow12: Flow<T12>,
-	flow13: Flow<T13>,
-	flow14: Flow<T14>,
-	crossinline transform: suspend (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14) -> R
+	crossinline transform: suspend (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12) -> R
 ): Flow<R> {
 	return combine(
 		flow,
@@ -99,9 +97,7 @@ inline fun <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, R> comb
 		flow9,
 		flow10,
 		flow11,
-		flow12,
-		flow13,
-		flow14
+		flow12
 	) { args: Array<*> ->
 		@Suppress("UNCHECKED_CAST")
 		transform(
@@ -116,9 +112,7 @@ inline fun <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, R> comb
 			args[8] as T9,
 			args[9] as T10,
 			args[10] as T11,
-			args[11] as T12,
-			args[12] as T13,
-			args[13] as T14
+			args[11] as T12
 		)
 	}
 }
