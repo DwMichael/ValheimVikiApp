@@ -2,11 +2,45 @@
 
 ## 🎥 App Demo
 
-![Main Animation](doc/MainAnimation.gif)
-![Animal Animation](doc/AnimalAnimation.gif)
-![Favorite Animation](doc/FavoriteAnimation.gif)
-![Search Animation](doc/SearchAnimation.gif)
-![Filter Animation](doc/FilterAnimation.gif)
+<table>
+  <tr>
+    <td align="center">
+      <sub>🏠 <b>Home</b> — smooth section transitions, animated lists, and polished cards.</sub>
+        <br/>
+       <br/>
+      <img src="doc/MainAnimation.gif" width="360" alt="Home screen with smooth transitions" />
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+        <sub>🔎 <b>Search</b> — instant queries, and inline results.</sub>
+         <br/>
+       <br/>
+      <img src="doc/SearchAnimation.gif" width="360" alt="Search with suggestions" />
+    </td>
+    <td align="center">
+     <sub>🧩 <b>Filters & Sorting</b> — narrow results by category and rarity, adjust sort order.</sub>
+      <br/>
+       <br/>
+      <img src="doc/FilterAnimation.gif" width="360" alt="Filters and sorting" />
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <sub>⭐ <b>Favorites</b> — one-tap add/remove with animations and persisted state.</sub>
+      <br/>
+       <br/>
+      <img src="doc/FavoriteAnimation.gif" width="360" alt="Adding to favorites" />
+    </td>
+    <td align="center">
+      <sub>🦌 <b>Creatures</b> — detailed sheets with stats, descriptions, and drop info.</sub>
+       <br/>
+       <br/>
+      <img src="doc/AnimalAnimation.gif" width="360" alt="Creature detail card" />
+    </td>
+  </tr>
+</table>
+
 
 ## 📱 Overview
 **ValheimVikiApp** is a fully functional mobile application built in **Kotlin** and **Jetpack Compose** using the **MVVM architecture pattern**.  
