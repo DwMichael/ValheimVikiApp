@@ -5,6 +5,12 @@
 <table>
   <tr>
     <td align="center">
+        <sub>🔎 <b>Search</b> — instant queries, and inline results.</sub>
+         <br/>
+        <br/>
+      <img src="doc/logo.jpg" width="360" alt="logo" />
+    </td>
+    <td align="center">
       <sub>🏠 <b>Home</b> — smooth section transitions, animated lists, and polished cards.</sub>
         <br/>
        <br/>
@@ -41,12 +47,15 @@
   </tr>
 </table>
 
-
 ## 📱 Overview
-**ValheimVikiApp** is a fully functional mobile application built in **Kotlin** and **Jetpack Compose** using the **MVVM architecture pattern**.  
-It serves as an extensive, user-friendly companion for the game **Valheim**, providing detailed information on items, crafting, biomes, creatures, and more — all in a clean, modern UI.
 
-While the app is complete and production-ready, it is **not yet published** on the Google Play Store.  
+**ValheimVikiApp** is a fully functional mobile application built in **Kotlin** and **Jetpack
+Compose** using the **MVVM architecture pattern**.  
+It serves as an extensive, user-friendly companion for the game **Valheim**, providing detailed
+information on items, crafting, biomes, creatures, and more — all in a clean, modern UI.
+
+While the app is complete and production-ready, it is **not yet published** on the Google Play
+Store.  
 A private backend exists for data retrieval, but it is **not publicly accessible**.
 
 ---
@@ -57,10 +66,10 @@ A private backend exists for data retrieval, but it is **not publicly accessible
 - **Jetpack Compose UI** for a modern, reactive user interface
 - **Offline-friendly** (data can be cached locally)
 - **Detailed in-game database** for:
-  - Items & crafting recipes
-  - Materials & upgrades
-  - Biomes & points of interest
-  - Creatures & drops
+    - Items & crafting recipes
+    - Materials & upgrades
+    - Biomes & points of interest
+    - Creatures & drops
 - **Powerful search and filtering**
 - **Favorites system** to quickly access frequently used information
 - **Smooth animations** and navigation transitions
@@ -71,19 +80,22 @@ A private backend exists for data retrieval, but it is **not publicly accessible
 ## 🛠️ Tech Stack
 
 **Language & Frameworks**
-- [Kotlin](https://kotlinlang.org/)  
-- [Jetpack Compose](https://developer.android.com/jetpack/compose)  
-- [Coroutines & Flow](https://kotlinlang.org/docs/coroutines-overview.html)  
+
+- [Kotlin](https://kotlinlang.org/)
+- [Jetpack Compose](https://developer.android.com/jetpack/compose)
+- [Coroutines & Flow](https://kotlinlang.org/docs/coroutines-overview.html)
 - [Hilt](https://dagger.dev/hilt/) for dependency injection
 
 **Architecture**
-- MVVM (Model-View-ViewModel)  
-- Repository pattern  
+
+- MVVM (Model-View-ViewModel)
+- Repository pattern
 - UseCase layer for business logic
 
 **Testing**
-- JUnit 5  
-- Mockito 
+
+- JUnit 5
+- Mockito
 
 ---
 
@@ -108,12 +120,14 @@ com.rabbitv.valheimviki/
 > You can still build the project, but live data fetching will not work without the backend.
 
 ### Prerequisites
+
 - Android Studio **Giraffe** or newer
 - JDK 17+
 - Gradle (bundled with Android Studio)
 - Internet connection (for fetching dependencies)
 
 ### Installation
+
 1. Clone the repository:
    ```bash
    git clone https://github.com/DwMichael/ValheimVikiApp.git
@@ -145,6 +159,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
 ---
 
 ## 📅 Roadmap
+
 - [ ] Publish to Google Play Store
 - [ ] Add multi-language support (EN/PL)
 - [ ] Expand content database
@@ -155,11 +170,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
 ---
 
 ## 🤝 Contributions
+
 This project is **not accepting pull requests** at this time due to the private backend.  
 However, feedback and suggestions are welcome via the Issues tab.
 
 ---
 
 ## 📬 Contact
-**Author:** Michał D (RABBITV) 
+
+**Author:** Michał D (RABBITV)
 🔗 www.linkedin.com/in/michał-dwernicki-2900b1274  
