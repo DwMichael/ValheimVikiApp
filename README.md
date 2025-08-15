@@ -1,12 +1,12 @@
 # ValheimVikiApp
 
-<!-- ===========================
- PLACEHOLDER FOR APP DEMO GIFs
- ===========================
- Example:
- ![App Demo 1](docs/demo1.gif)
- ![App Demo 2](docs/demo2.gif)
- -->
+## 🎥 App Demo
+
+![Main Animation](doc/MainAnimation.gif)
+![Animal Animation](doc/AnimalAnimation.gif)
+![Favorite Animation](doc/FavoriteAnimation.gif)
+![Search Animation](doc/SearchAnimation.gif)
+![Filter Animation](doc/FilterAnimation.gif)
 
 ## 📱 Overview
 **ValheimVikiApp** is a fully functional mobile application built in **Kotlin** and **Jetpack Compose** using the **MVVM architecture pattern**.  
