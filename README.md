@@ -5,7 +5,7 @@
 <table>
   <tr>
     <td align="center">
-        <sub>🔎 <b>Search</b> — instant queries, and inline results.</sub>
+        <sub><b>Valheim Viki Logo</b></sub>
          <br/>
         <br/>
       <img src="doc/logo.jpg" width="360" alt="logo" />
