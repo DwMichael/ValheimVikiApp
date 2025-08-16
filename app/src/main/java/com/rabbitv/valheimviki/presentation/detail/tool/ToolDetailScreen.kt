@@ -112,7 +112,7 @@ fun ToolDetailContent(
 	val scrollState = rememberScrollState()
 	val craftingStationPainter = painterResource(R.drawable.food_bg)
 	val isExpandable = remember { mutableStateOf(false) }
-	val handleItemClick = remember {
+	val handleClick = remember(onItemClick) {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
 	}
 	BgImage()
@@ -177,14 +177,8 @@ fun ToolDetailContent(
 						TwoColumnGrid {
 							for (item in uiState.relatedMaterials) {
 								CustomItemCard(
-									onItemClick = {
-										val destination =
-											NavigationHelper.routeToMaterial(
-												item.material.subCategory,
-												item.material.id
-											)
-										onItemClick(destination)
-									},
+									itemData = item.material,
+									onItemClick = handleClick,
 									fillWidth = CUSTOM_ITEM_CARD_FILL_WIDTH,
 									imageUrl = item.material.imageUrl,
 									name = item.material.name,
@@ -268,7 +262,7 @@ fun ToolDetailContent(
 						HorizontalPagerSection(
 							list = uiState.relatedOreDeposits,
 							data = oreDepositData,
-							onItemClick = handleItemClick,
+							onItemClick = handleClick,
 						)
 					}
 					if (uiState.relatedNpc != null) {

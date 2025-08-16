@@ -109,7 +109,7 @@ fun OreDepositDetailContent(
 ) {
 	val isRunning by remember { derivedStateOf { animatedVisibilityScope.transition.isRunning } }
 	val scrollState = rememberScrollState()
-	val handleItemClick = remember {
+	val handleClick = remember(onItemClick) {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
 	}
 	val pickaxesData = HorizontalPagerData(
@@ -242,7 +242,7 @@ fun OreDepositDetailContent(
 							HorizontalPagerSection(
 								list = uiState.relatedTools,
 								data = pickaxesData,
-								onItemClick = handleItemClick,
+								onItemClick = handleClick,
 							)
 						}
 						if (uiState.craftingStation.isNotEmpty()) {
@@ -250,17 +250,13 @@ fun OreDepositDetailContent(
 							HorizontalPagerSection(
 								list = uiState.craftingStation,
 								data = craftingObjectData,
-								onItemClick = handleItemClick,
+								onItemClick = handleClick,
 							)
 						}
 						if (uiState.relatedMaterials.isNotEmpty()) {
 							TridentsDividedRow()
 							DroppedItemsSection(
-								onItemClick = { clickedItemId, subCategory ->
-									val destination =
-										NavigationHelper.routeToMaterial(subCategory, clickedItemId)
-									onItemClick(destination)
-								},
+								onItemClick =handleClick,
 								list = uiState.relatedMaterials,
 								icon = Lucide.Gem,
 								starLevel = 0,

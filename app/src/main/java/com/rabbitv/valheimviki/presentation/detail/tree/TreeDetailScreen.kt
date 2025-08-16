@@ -116,7 +116,7 @@ fun TreeDetailContent(
 			itemContentScale = ContentScale.Crop
 		)
 	}
-	val handleItemClick = remember {
+	val handleClick = remember(onItemClick) {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
 	}
 
@@ -198,21 +198,14 @@ fun TreeDetailContent(
 						HorizontalPagerSection(
 							list = uiState.relatedAxes,
 							data = axesData,
-							onItemClick = handleItemClick,
+							onItemClick = handleClick,
 						)
 					}
 
 					if (uiState.relatedMaterials.isNotEmpty()) {
 						TridentsDividedRow()
 						DroppedItemsSection(
-							onItemClick = { clickedItemId, subCategory ->
-								val destination =
-									NavigationHelper.routeToMaterial(
-										subCategory,
-										clickedItemId
-									)
-								onItemClick(destination)
-							},
+							onItemClick = handleClick,
 							list = uiState.relatedMaterials,
 							icon = Lucide.Gem,
 							starLevel = 0,

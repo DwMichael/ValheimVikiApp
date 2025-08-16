@@ -88,6 +88,7 @@ fun FoodDetailScreen(
 			currentIsFavorite = isFavorite
 		)
 	}
+
 	FoodDetailContent(
 		uiState = uiState,
 		onBack = onBack,
@@ -117,7 +118,9 @@ fun FoodDetailContent(
 	val scrollState = rememberScrollState()
 
 	val isExpandable = remember { mutableStateOf(false) }
-
+	val handleClick = remember(onItemClick) {
+		NavigationHelper.createItemDetailClickHandler(onItemClick)
+	}
 	fun shouldShowValue(value: Any?): Boolean {
 		return when (value) {
 			null -> false
@@ -358,14 +361,8 @@ fun FoodDetailContent(
 						TwoColumnGrid {
 							for (item in uiState.materialsForRecipe) {
 								CustomItemCard(
-									onItemClick = {
-										val destination =
-											NavigationHelper.routeToMaterial(
-												item.itemDrop.subCategory,
-												item.itemDrop.id
-											)
-										onItemClick(destination)
-									},
+									itemData = item.itemDrop,
+									onItemClick = handleClick,
 									fillWidth = CUSTOM_ITEM_CARD_FILL_WIDTH,
 									imageUrl = item.itemDrop.imageUrl,
 									name = item.itemDrop.name,
@@ -374,13 +371,8 @@ fun FoodDetailContent(
 							}
 							for (item in uiState.foodForRecipe) {
 								CustomItemCard(
-									onItemClick = {
-										val destination = ConsumableDetailDestination.FoodDetail(
-											item.itemDrop.id,
-											item.itemDrop.subCategory.toFoodSubCategory()
-										)
-										onItemClick(destination)
-									},
+									itemData = item.itemDrop,
+									onItemClick = handleClick,
 									fillWidth = CUSTOM_ITEM_CARD_FILL_WIDTH,
 									imageUrl = item.itemDrop.imageUrl,
 									name = item.itemDrop.name,

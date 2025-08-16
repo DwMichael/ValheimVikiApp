@@ -104,7 +104,7 @@ fun MetalMaterialDetailContent(
 
 	val scrollState = rememberScrollState()
 	val isExpandable = remember { mutableStateOf(false) }
-	val handleItemClick = remember {
+	val handleClick = remember(onItemClick) {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
 	}
 
@@ -214,7 +214,7 @@ fun MetalMaterialDetailContent(
 						HorizontalPagerSection(
 							list = uiState.pointOfInterests,
 							data = pointOfInterestData,
-							onItemClick = handleItemClick
+							onItemClick = handleClick
 						)
 					}
 					if (uiState.oreDeposits.isNotEmpty()) {
@@ -222,7 +222,7 @@ fun MetalMaterialDetailContent(
 						HorizontalPagerSection(
 							list = uiState.oreDeposits,
 							data = oreDepositData,
-							onItemClick = handleItemClick,
+							onItemClick = handleClick,
 						)
 					}
 					if (uiState.creatures.isNotEmpty()) {
@@ -230,7 +230,7 @@ fun MetalMaterialDetailContent(
 						HorizontalPagerSection(
 							list = uiState.creatures,
 							data = creatureData,
-							onItemClick = handleItemClick,
+							onItemClick = handleClick,
 						)
 					}
 					if (uiState.requiredMaterials.isNotEmpty()) {
@@ -258,15 +258,8 @@ fun MetalMaterialDetailContent(
 						TwoColumnGrid {
 							for (item in uiState.requiredMaterials) {
 								CustomItemCard(
-									onItemClick = {
-										val destination =
-											NavigationHelper.routeToMaterial(
-												item.itemDrop.subCategory,
-												item.itemDrop.id
-											)
-										onItemClick(destination)
-
-									},
+									itemData = item.itemDrop,
+									onItemClick = handleClick,
 									fillWidth = CUSTOM_ITEM_CARD_FILL_WIDTH,
 									imageUrl = item.itemDrop.imageUrl,
 									name = item.itemDrop.name,

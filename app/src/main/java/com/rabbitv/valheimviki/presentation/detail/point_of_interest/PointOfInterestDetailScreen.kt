@@ -87,7 +87,7 @@ fun PointOfInterestDetailContent(
 	uiState: PointOfInterestUiState,
 ) {
 	val scrollState = rememberScrollState()
-	val handleItemClick = remember {
+	val handleClick = remember(onItemClick) {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
 	}
 	val altarOfferings = HorizontalPagerData(
@@ -186,18 +186,14 @@ fun PointOfInterestDetailContent(
 						HorizontalPagerSection(
 							list = uiState.relatedOfferings,
 							data = altarOfferings,
-							onItemClick = handleItemClick,
+							onItemClick = handleClick,
 						)
 					}
 
 					if (uiState.relatedMaterialDrops.isNotEmpty()) {
 						TridentsDividedRow()
 						DroppedItemsSection(
-							onItemClick = { clickedItemId, subCategory ->
-								val destination =
-									NavigationHelper.routeToMaterial(subCategory, clickedItemId)
-								onItemClick(destination)
-							},
+							onItemClick = handleClick,
 							list = uiState.relatedMaterialDrops,
 							icon = Lucide.Gem,
 							starLevel = 0,
@@ -210,7 +206,7 @@ fun PointOfInterestDetailContent(
 						HorizontalPagerSection(
 							list = uiState.relatedWeapons,
 							data = weaponsData,
-							onItemClick = handleItemClick,
+							onItemClick = handleClick,
 						)
 					}
 					if (uiState.relatedCreatures.isNotEmpty()) {
@@ -218,7 +214,7 @@ fun PointOfInterestDetailContent(
 						HorizontalPagerSection(
 							list = uiState.relatedCreatures,
 							data = creatureData,
-							onItemClick = handleItemClick
+							onItemClick = handleClick
 						)
 					}
 

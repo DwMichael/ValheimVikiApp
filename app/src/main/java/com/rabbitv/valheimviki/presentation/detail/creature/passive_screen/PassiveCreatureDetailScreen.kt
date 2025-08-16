@@ -111,6 +111,10 @@ fun PassiveCreatureDetailContent(
 	val isExpandable = remember { mutableStateOf(false) }
 	val isExpandableNote = remember { mutableStateOf(false) }
 	val coroutineScope = rememberCoroutineScope()
+	val handleClick = remember(onItemClick) {
+		NavigationHelper.createItemDetailClickHandler(onItemClick)
+	}
+
 	Scaffold { padding ->
 		uiState.passiveCreature?.let { passiveCreature ->
 			HorizontalPager(
@@ -205,12 +209,7 @@ fun PassiveCreatureDetailContent(
 								starLevel = pageIndex,
 								title = "Drop Items",
 								subTitle = "Materials that drop from creature after defeating",
-								onItemClick = { clickedItemId, subCategory ->
-									val destination =
-										NavigationHelper.routeToMaterial(subCategory, clickedItemId)
-									onItemClick(destination)
-
-								}
+								onItemClick = handleClick,
 							)
 						}
 

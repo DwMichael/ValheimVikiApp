@@ -115,7 +115,9 @@ fun MeadDetailContent(
 	}
 	val scrollState = rememberScrollState()
 	val craftingStationPainter = painterResource(R.drawable.food_bg)
-
+	val handleClick = remember(onItemClick) {
+		NavigationHelper.createItemDetailClickHandler(onItemClick)
+	}
 
 	val isExpandable = remember { mutableStateOf(false) }
 	fun shouldShowValue(value: Any?): Boolean {
@@ -202,14 +204,8 @@ fun MeadDetailContent(
 						TwoColumnGrid {
 							for (item in uiState.materialsForRecipe) {
 								CustomItemCard(
-									onItemClick = {
-										val destination =
-											NavigationHelper.routeToMaterial(
-												item.itemDrop.subCategory,
-												item.itemDrop.id
-											)
-										onItemClick(destination)
-									},
+									itemData = item.itemDrop,
+									onItemClick =handleClick,
 									fillWidth = CUSTOM_ITEM_CARD_FILL_WIDTH,
 									imageUrl = item.itemDrop.imageUrl,
 									name = item.itemDrop.name,
@@ -218,13 +214,8 @@ fun MeadDetailContent(
 							}
 							for (item in uiState.foodForRecipe) {
 								CustomItemCard(
-									onItemClick = {
-										val destination = ConsumableDetailDestination.FoodDetail(
-											item.itemDrop.id,
-											item.itemDrop.subCategory.toFoodSubCategory()
-										)
-										onItemClick(destination)
-									},
+									itemData = item.itemDrop,
+									onItemClick =handleClick,
 									fillWidth = CUSTOM_ITEM_CARD_FILL_WIDTH,
 									imageUrl = item.itemDrop.imageUrl,
 									name = item.itemDrop.name,
@@ -233,14 +224,8 @@ fun MeadDetailContent(
 							}
 							for (item in uiState.meadForRecipe) {
 								CustomItemCard(
-									onItemClick = {
-
-										val destination = ConsumableDetailDestination.MeadDetail(
-											item.itemDrop.id,
-											item.itemDrop.subCategory.toMeadSubCategory()
-										)
-										onItemClick(destination)
-									},
+									itemData = item.itemDrop,
+									onItemClick =handleClick,
 									fillWidth = CUSTOM_ITEM_CARD_FILL_WIDTH,
 									imageUrl = item.itemDrop.imageUrl,
 									name = item.itemDrop.name,
