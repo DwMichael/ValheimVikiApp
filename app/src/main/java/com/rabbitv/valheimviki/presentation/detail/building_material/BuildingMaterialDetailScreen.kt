@@ -39,8 +39,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.composables.icons.lucide.Gauge
 import com.composables.icons.lucide.Lucide
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
-import com.rabbitv.valheimviki.navigation.BuildingDetailDestination
-import com.rabbitv.valheimviki.navigation.ConsumableDetailDestination
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
@@ -59,7 +57,6 @@ import com.rabbitv.valheimviki.presentation.detail.building_material.model.Build
 import com.rabbitv.valheimviki.presentation.detail.building_material.viewmodel.BuildingMaterialDetailViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
-import com.rabbitv.valheimviki.utils.toFoodSubCategory
 
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
@@ -94,7 +91,9 @@ fun BuildingMaterialDetailContent(
 	val scrollState = rememberScrollState()
 	val isStatInfoExpanded1 = remember { mutableStateOf(false) }
 	val isExpandable = remember { mutableStateOf(false) }
-
+	val handleClick = remember(onItemClick) {
+		NavigationHelper.createItemDetailClickHandler(onItemClick)
+	}
 	val materialsData = when (val materialsState = uiState.materials) {
 		is UIState.Error -> {
 			return
@@ -203,13 +202,7 @@ fun BuildingMaterialDetailContent(
 								SlavicDivider()
 								craftingState.data.forEach { craftingStation ->
 									CardImageWithTopLabel(
-										onClickedItem = {
-											val destination =
-												BuildingDetailDestination.CraftingObjectDetail(
-													craftingObjectId = craftingStation.id
-												)
-											onItemClick(destination)
-										},
+										onClickedItem = handleClick,
 										itemData = craftingStation,
 										subTitle = "Crafting station that must be near the construction",
 										contentScale = ContentScale.Fit,
@@ -242,16 +235,8 @@ fun BuildingMaterialDetailContent(
 						TwoColumnGrid {
 							for (material in materialsData) {
 								CustomItemCard(
-									onItemClick = {
-										material.itemDrop.subCategory?.let { subCategory ->
-											val destination =
-												NavigationHelper.routeToMaterial(
-													subCategory,
-													material.itemDrop.id
-												)
-											onItemClick(destination)
-										}
-									},
+									itemData = material.itemDrop,
+									onItemClick = handleClick,
 									fillWidth = 0.45f,
 									imageUrl = material.itemDrop.imageUrl,
 									name = material.itemDrop.name,
@@ -260,16 +245,8 @@ fun BuildingMaterialDetailContent(
 							}
 							for (food in foodsData) {
 								CustomItemCard(
-									onItemClick = {
-										food.itemDrop.subCategory?.let {
-											val destination =
-												ConsumableDetailDestination.FoodDetail(
-													food.itemDrop.id,
-													it.toFoodSubCategory()
-												)
-											onItemClick(destination)
-										}
-									},
+									itemData = food.itemDrop,
+									onItemClick = handleClick,
 									fillWidth = 0.45f,
 									imageUrl = food.itemDrop.imageUrl,
 									name = food.itemDrop.name,

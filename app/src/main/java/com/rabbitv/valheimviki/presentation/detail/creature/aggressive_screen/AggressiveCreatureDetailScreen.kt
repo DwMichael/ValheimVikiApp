@@ -118,7 +118,9 @@ fun AggressiveCreatureDetailContent(
 	val sharedScrollState = rememberScrollState()
 	val isExpandable = remember { mutableStateOf(false) }
 	val coroutineScope = rememberCoroutineScope()
-
+	val handleClick = remember(onItemClick) {
+		NavigationHelper.createItemDetailClickHandler(onItemClick)
+	}
 	Scaffold { padding ->
 		uiState.aggressiveCreature?.let { aggressiveCreature ->
 			HorizontalPager(
@@ -211,11 +213,7 @@ fun AggressiveCreatureDetailContent(
 						if (uiState.materialDrops.isNotEmpty()) {
 							SlavicDivider()
 							DroppedItemsSection(
-								onItemClick = { clickedItemId, subCategory ->
-									val destination =
-										NavigationHelper.routeToMaterial(subCategory, clickedItemId)
-									onItemClick(destination)
-								},
+								onItemClick = handleClick,
 								list = uiState.materialDrops,
 								starLevel = pageIndex,
 								title = "Drop Items",
@@ -226,13 +224,7 @@ fun AggressiveCreatureDetailContent(
 						if (uiState.foodDrops.isNotEmpty()) {
 							SlavicDivider()
 							DroppedItemsSection(
-								onItemClick = { clickedItemId, subCategory ->
-									val destination = ConsumableDetailDestination.FoodDetail(
-										foodId = clickedItemId,
-										category = subCategory.toFoodSubCategory()
-									)
-									onItemClick(destination)
-								},
+								onItemClick = handleClick,
 								list = uiState.foodDrops,
 								icon = Lucide.Beef,
 								starLevel = pageIndex,
