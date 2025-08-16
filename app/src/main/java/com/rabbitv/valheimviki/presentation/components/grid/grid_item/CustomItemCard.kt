@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -20,6 +21,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -47,7 +49,7 @@ fun CustomItemCard(
 	Card(
 		modifier = Modifier
 			.fillMaxWidth(fillWidth)
-			.height(150.dp)
+			.heightIn(160.dp)
 			.shadow(
 				elevation = 8.dp,
 				shape = CardDefaults.shape,
@@ -80,21 +82,22 @@ fun CustomItemCard(
 			Column(
 				modifier = Modifier
 					.fillMaxWidth()
-					.padding(2.dp),
+					.padding(4.dp),
 				horizontalAlignment = Alignment.CenterHorizontally
 			) {
 				Text(
 					text = name,
-					maxLines = 1,
+					maxLines = 2,
 					overflow = TextOverflow.Ellipsis,
 					color = PrimaryWhite,
-					style = MaterialTheme.typography.bodyLarge,
+					style = MaterialTheme.typography.labelLarge,
+					textAlign = TextAlign.Center
 				)
 				if (quantity != null) {
 					Text(
 						text = "x${quantity}",
 						color = PrimaryWhite,
-						style = MaterialTheme.typography.bodyLarge,
+						style = MaterialTheme.typography.labelLarge,
 					)
 				}
 			}
