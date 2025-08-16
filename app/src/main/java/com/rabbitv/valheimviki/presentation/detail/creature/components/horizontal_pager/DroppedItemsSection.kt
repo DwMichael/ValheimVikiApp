@@ -48,7 +48,7 @@ import com.rabbitv.valheimviki.utils.FakeData
 @Composable
 fun DroppedItemsSection(
 	modifier: Modifier = Modifier,
-	onItemClick: (itemId: String, category: String) -> Unit = { _, _ -> {} },
+	onItemClick: (itemData: ItemData) -> Unit ={},
 	list: List<Droppable> = emptyList(),
 	starLevel: Int,
 	icon: ImageVector = Lucide.Trophy,
@@ -74,8 +74,8 @@ fun DroppedItemsSection(
 		modifier = modifier,
 	) { item, pageIndex ->
 		DropItemCard(
-			onItemClick = { itemId, subCategory ->
-				onItemClick(itemId, subCategory)
+			onItemClick = { item ->
+				onItemClick(item)
 			},
 			itemData = item.itemDrop,
 			quantityList = item.quantityList,
@@ -88,7 +88,7 @@ fun DroppedItemsSection(
 
 @Composable
 fun DropItemCard(
-	onItemClick: (itemId: String, subCategory: String) -> Unit,
+	onItemClick: (itemData: ItemData) -> Unit ={},
 	itemData: ItemData,
 	quantityList: List<Int?>,
 	chanceStarList: List<Int?>,
@@ -108,7 +108,7 @@ fun DropItemCard(
 				spotColor = Color.White.copy(alpha = 0.25f)
 			)
 			.clickable {
-				itemData.subCategory?.let { onItemClick(itemData.id, it) }
+				itemData.subCategory?.let { onItemClick(itemData) }
 			},
 		colors = CardDefaults.cardColors(containerColor = LightDark),
 		border = BorderStroke(2.dp, DarkWood)
@@ -185,7 +185,7 @@ fun PreviewCreatureHorizontalPagerMaterial() {
 		DroppedItemsSection(
 			list = materialDrops,
 			starLevel = 0,
-			onItemClick = { _, _ -> {} }
+			onItemClick = { _ -> {} }
 		)
 	}
 }
@@ -207,7 +207,7 @@ fun PreviewCreatureDropCard() {
 			quantityList = materialDrop.quantityList,
 			chanceStarList = materialDrop.chanceStarList,
 			starLevel = 1,
-			onItemClick = { _, _ -> {} }
+			onItemClick = { _ -> {} }
 		)
 	}
 }
@@ -240,7 +240,7 @@ fun PreviewCreatureHorizontalPagerStarLevels() {
 			DroppedItemsSection(
 				list = materialDrops,
 				starLevel = 0,
-				onItemClick = { _, _ -> {} }
+				onItemClick = { _-> {} }
 			)
 
 			Spacer(modifier = Modifier.height(16.dp))
@@ -249,7 +249,7 @@ fun PreviewCreatureHorizontalPagerStarLevels() {
 			DroppedItemsSection(
 				list = materialDrops,
 				starLevel = 1,
-				onItemClick = { _, _ -> {} }
+				onItemClick = { _-> {} }
 			)
 
 			Spacer(modifier = Modifier.height(16.dp))
@@ -258,7 +258,7 @@ fun PreviewCreatureHorizontalPagerStarLevels() {
 			DroppedItemsSection(
 				list = materialDrops,
 				starLevel = 2,
-				onItemClick = { _, _ -> {} }
+				onItemClick = { _-> {} }
 			)
 		}
 	}

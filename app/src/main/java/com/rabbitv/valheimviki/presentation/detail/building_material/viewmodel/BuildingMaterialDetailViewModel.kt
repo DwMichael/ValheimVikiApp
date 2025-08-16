@@ -26,6 +26,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -48,6 +49,7 @@ class BuildingMaterialDetailViewModel @Inject constructor(
 	@param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
+	
 	private val _buildingMaterialId: String =
 		savedStateHandle.toRoute<BuildingDetailDestination.BuildingMaterialDetail>().buildingMaterialId
 	private val _buildingMaterial =
@@ -69,7 +71,7 @@ class BuildingMaterialDetailViewModel @Inject constructor(
 			initialValue = emptyList()
 		)
 
-	private val relatedItemsMap = _relationObjects.map { list ->
+	private val relatedItemsMap = _relationObjects.filter { it.isNotEmpty() }.map { list ->
 		list.associateBy { it.id }
 	}.flowOn(defaultDispatcher)
 		.stateIn(
@@ -77,7 +79,7 @@ class BuildingMaterialDetailViewModel @Inject constructor(
 			started = SharingStarted.WhileSubscribed(5_000),
 			initialValue = emptyMap()
 		)
-	private val _relatedIds = _relationObjects.map { list ->
+	private val _relatedIds = _relationObjects.filter { it.isNotEmpty() }.map { list ->
 		list.map { it.id }
 	}.flowOn(defaultDispatcher)
 		.stateIn(
