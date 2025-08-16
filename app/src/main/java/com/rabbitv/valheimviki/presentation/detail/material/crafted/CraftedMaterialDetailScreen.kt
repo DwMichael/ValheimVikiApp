@@ -90,7 +90,9 @@ fun CraftedMaterialDetailContent(
 
 	val scrollState = rememberScrollState()
 	val isExpandable = remember { mutableStateOf(false) }
-
+	val handleClick = remember(onItemClick) {
+		NavigationHelper.createItemDetailClickHandler(onItemClick)
+	}
 	BgImage()
 	Scaffold(
 		modifier = Modifier.fillMaxSize(),
@@ -174,14 +176,8 @@ fun CraftedMaterialDetailContent(
 						TwoColumnGrid {
 							for (items in uiState.relatedMaterial) {
 								CustomItemCard(
-									onItemClick = {
-										val destination =
-											NavigationHelper.routeToMaterial(
-												items.itemDrop.subCategory,
-												items.itemDrop.id
-											)
-										onItemClick(destination)
-									},
+									itemData = items.itemDrop,
+									onItemClick = handleClick,
 									fillWidth = CUSTOM_ITEM_CARD_FILL_WIDTH,
 									imageUrl = items.itemDrop.imageUrl,
 									name = items.itemDrop.name,
