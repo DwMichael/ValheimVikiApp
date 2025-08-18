@@ -91,97 +91,82 @@ class CraftingDetailViewModel @Inject constructor(
 			initialValue = emptyList()
 		)
 
-	private val relatedItemsMap = _relationObjects.filter { it.isNotEmpty() }.map { list ->
-		list.associateBy { it.id }
-	}.flowOn(defaultDispatcher)
-		.stateIn(
-			scope = viewModelScope,
-			started = SharingStarted.WhileSubscribed(5_000),
-			initialValue = emptyMap()
-		)
-	private val _relatedIds = _relationObjects.filter { it.isNotEmpty() }
-		.map { list ->
-			list.map { it.id }
-		}.flowOn(defaultDispatcher)
-		.stateIn(
-			scope = viewModelScope,
-			started = SharingStarted.WhileSubscribed(5_000),
-			initialValue = emptyList()
-		)
+	private val relatedItemsMap: Flow<Map<String, RelatedItem>> = _relationObjects
+		.map { list -> list.associateBy { it.id } }
+		.distinctUntilChanged()
+	private val _relatedIds: Flow<List<String>> = _relationObjects
+		.map { list -> list.map { it.id } }
+		.distinctUntilChanged()
 
+	private val idsAndMap: Flow<Pair<List<String>, Map<String, RelatedItem>>> =
+		combine(_relatedIds, relatedItemsMap) { ids, map -> ids to map }
+			.filter { (ids, map) -> ids.isNotEmpty() && map.isNotEmpty() }
+			.distinctUntilChanged()
 	private val _craftingUpgraderObjects =
-		_relatedIds.filter { it.isNotEmpty() }.flatMapLatest { ids ->
-			combine(
-				_craftingObjectUseCases.getCraftingObjectsByIds(ids),
-				relatedItemsMap
-			) { craftingObjects, currentItemsMap ->
-				craftingObjects.map { craftingObject ->
-					val relatedItem = currentItemsMap[craftingObject.id]
-					CraftingProducts(
-						itemDrop = craftingObject,
-						quantityList = listOf(relatedItem?.quantity),
-						chanceStarList = emptyList(),
-						droppableType = DroppableType.CRAFTING_OBJECT,
-					)
+		idsAndMap.flatMapLatest { (ids, currentItemsMap) ->
+			_craftingObjectUseCases.getCraftingObjectsByIds(ids)
+				.map { list ->
+					list.map { craftingObject ->
+						val relatedItem = currentItemsMap[craftingObject.id]
+						CraftingProducts(
+							itemDrop = craftingObject,
+							quantityList = listOf(relatedItem?.quantity),
+							chanceStarList = emptyList(),
+							droppableType = DroppableType.CRAFTING_OBJECT,
+						)
+					}
+
 				}
-			}
 		}.distinctUntilChanged()
 			.map { UIState.Success(it) }
 			.flowOn(defaultDispatcher)
 
 
 	private val _craftingFoodProducts =
-		_relatedIds.filter { it.isNotEmpty() }.flatMapLatest { ids ->
-			combine(
-				_foodUseCase.getFoodListByIdsUseCase(ids),
-				relatedItemsMap
-			) { foods, currentItemsMap ->
-				foods.map { food ->
-					val relatedItem = currentItemsMap[food.id]
-					CraftingProducts(
-						itemDrop = food,
-						quantityList = listOf(relatedItem?.quantity),
-						chanceStarList = emptyList(),
-						droppableType = DroppableType.FOOD,
-					)
+		idsAndMap.flatMapLatest { (ids, currentItemsMap) ->
+			_foodUseCase.getFoodListByIdsUseCase(ids)
+				.map { list ->
+					list.map { food ->
+						val relatedItem = currentItemsMap[food.id]
+						CraftingProducts(
+							itemDrop = food,
+							quantityList = listOf(relatedItem?.quantity),
+							chanceStarList = emptyList(),
+							droppableType = DroppableType.FOOD,
+						)
+					}
 				}
-			}
 		}.distinctUntilChanged().map { UIState.Success(it) }
 			.flowOn(defaultDispatcher)
 
 	private val _craftingMeadProducts =
-		_relatedIds.filter { it.isNotEmpty() }.flatMapLatest { ids ->
-			combine(
-				_meadUseCase.getMeadsByIdsUseCase(ids),
-				relatedItemsMap
-			) { meads, currentItemsMap ->
-				meads.map { mead ->
-					val relatedItem = currentItemsMap[mead.id]
-					CraftingProducts(
-						itemDrop = mead,
-						quantityList = listOf(relatedItem?.quantity),
-						chanceStarList = emptyList(),
-						droppableType = DroppableType.MEAD,
-					)
+		idsAndMap.flatMapLatest { (ids, currentItemsMap) ->
+			_meadUseCase.getMeadsByIdsUseCase(ids)
+				.map { list ->
+					list.map { mead ->
+						val relatedItem = currentItemsMap[mead.id]
+						CraftingProducts(
+							itemDrop = mead,
+							quantityList = listOf(relatedItem?.quantity),
+							chanceStarList = emptyList(),
+							droppableType = DroppableType.MEAD,
+						)
+					}
 				}
-			}
 		}.distinctUntilChanged().map { UIState.Success(it) }
 			.flowOn(defaultDispatcher)
 
 	private val craftingCtx: SharedFlow<CraftingCtx> =
-		_relatedIds.filter { it.isNotEmpty() }
-			.flatMapLatest { ids ->
-				combine(
-					_materialUseCase.getMaterialsByIds(ids),
-					relatedItemsMap
-				) { materials, currentItemsMap ->
+		idsAndMap.flatMapLatest { (ids, currentItemsMap) ->
+			_materialUseCase.getMaterialsByIds(ids)
+				.map { materials ->
 					CraftingCtx(
 						active = true,
 						materials = materials,
 						relatedMap = currentItemsMap
 					)
 				}
-			}.shareIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), replay = 1)
+		}.shareIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), replay = 1)
 	private val _craftingMaterialProducts: Flow<UIState<List<CraftingProducts>>> =
 		craftingCtx.map { it.asUiState { toListFor(RelationType.PRODUCES) } }
 			.distinctUntilChanged()
@@ -198,9 +183,7 @@ class CraftingDetailViewModel @Inject constructor(
 			.flowOn(defaultDispatcher)
 
 	private val _craftingBuildingMaterialProducts =
-		_relatedIds.filter { it.isNotEmpty() }.combine(relatedItemsMap) { ids, currentItemsMap ->
-			ids to currentItemsMap
-		}.flatMapLatest { (ids, currentItemsMap) ->
+		idsAndMap.flatMapLatest { (ids, currentItemsMap) ->
 			if (ids.isEmpty()) {
 				flowOf(UIState.Success(emptyList()))
 			} else {
@@ -226,9 +209,7 @@ class CraftingDetailViewModel @Inject constructor(
 		}.distinctUntilChanged().flowOn(defaultDispatcher)
 
 	private val _craftingWeaponProducts: Flow<UIState<List<CraftingProducts>>> =
-		_relatedIds.filter { it.isNotEmpty() }.combine(relatedItemsMap) { ids, currentItemsMap ->
-			ids to currentItemsMap
-		}.flatMapLatest { (ids, currentItemsMap) ->
+		idsAndMap.flatMapLatest { (ids, currentItemsMap) ->
 			if (ids.isEmpty()) {
 				flowOf(UIState.Success(emptyList()))
 			} else {
@@ -252,9 +233,7 @@ class CraftingDetailViewModel @Inject constructor(
 		}.distinctUntilChanged().flowOn(defaultDispatcher)
 
 	private val _craftingArmorProducts: Flow<UIState<List<CraftingProducts>>> =
-		_relatedIds.filter { it.isNotEmpty() }.combine(relatedItemsMap) { ids, currentItemsMap ->
-			ids to currentItemsMap
-		}.flatMapLatest { (ids, currentItemsMap) ->
+		idsAndMap.flatMapLatest { (ids, currentItemsMap) ->
 			if (ids.isEmpty()) {
 				flowOf(UIState.Success(emptyList()))
 			} else {
@@ -279,9 +258,7 @@ class CraftingDetailViewModel @Inject constructor(
 
 
 	private val _craftingToolProducts: Flow<UIState<List<CraftingProducts>>> =
-		_relatedIds.filter { it.isNotEmpty() }.combine(relatedItemsMap) { ids, currentItemsMap ->
-			ids to currentItemsMap
-		}.flatMapLatest { (ids, currentItemsMap) ->
+		idsAndMap.flatMapLatest { (ids, currentItemsMap) ->
 			if (ids.isEmpty()) {
 				flowOf(UIState.Success(emptyList()))
 			} else {
