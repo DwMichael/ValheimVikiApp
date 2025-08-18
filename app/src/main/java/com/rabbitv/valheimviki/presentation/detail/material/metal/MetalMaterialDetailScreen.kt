@@ -44,7 +44,7 @@ import com.rabbitv.valheimviki.navigation.BuildingDetailDestination
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.navigation.WorldDetailDestination
-import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
+import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
@@ -54,9 +54,9 @@ import com.rabbitv.valheimviki.presentation.components.flow_row.flow_as_grid.Two
 import com.rabbitv.valheimviki.presentation.components.grid.grid_item.CustomItemCard
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerSection
-import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerWithHeaderData
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
 import com.rabbitv.valheimviki.presentation.components.section_header.SectionHeader
+import com.rabbitv.valheimviki.presentation.components.section_header.SectionHeaderData
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.OverlayLabel
@@ -242,15 +242,12 @@ fun MetalMaterialDetailContent(
 								.padding(horizontal = BODY_CONTENT_PADDING.dp)
 						) {
 							SectionHeader(
-								data = HorizontalPagerWithHeaderData(
+								data = SectionHeaderData(
 									title = "Required Items",
 									subTitle = "Items needed to build this material.",
 									icon = Lucide.ScrollText,
-									iconRotationDegrees = 0f,
-									contentScale = ContentScale.Crop,
-									starLevelIndex = 0,
 								),
-								modifier = Modifier,
+
 							)
 						}
 

@@ -112,7 +112,6 @@ fun HorizontalPagerSection(
 			modifier = Modifier.fillMaxWidth(),
 			contentPadding = PaddingValues(horizontal = horizontalPadding),
 			pageSize = PageSize.Fixed(pageWidth),
-			beyondViewportPageCount = 2,
 			flingBehavior = PagerDefaults.flingBehavior(
 				state = state,
 				pagerSnapDistance = PagerSnapDistance.atMost(list.size)
