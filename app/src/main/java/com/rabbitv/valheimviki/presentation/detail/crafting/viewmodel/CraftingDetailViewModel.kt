@@ -1,6 +1,5 @@
 package com.rabbitv.valheimviki.presentation.detail.crafting.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -30,20 +29,15 @@ import com.rabbitv.valheimviki.presentation.detail.crafting.model.CraftingProduc
 import com.rabbitv.valheimviki.utils.extensions.combine
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
-
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
-
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
-
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
@@ -51,7 +45,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-
 import javax.inject.Inject
 
 private data class CraftingCtx(
@@ -77,12 +70,6 @@ class CraftingDetailViewModel @Inject constructor(
 	savedStateHandle: SavedStateHandle,
 	@param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
-
-	private val contentStart = MutableStateFlow(false)
-
-	fun startContent() {
-		contentStart.value = true
-	}
 
 	private val _craftingObjectId: String =
 		savedStateHandle.toRoute<BuildingDetailDestination.CraftingObjectDetail>().craftingObjectId
@@ -112,9 +99,10 @@ class CraftingDetailViewModel @Inject constructor(
 			started = SharingStarted.WhileSubscribed(5_000),
 			initialValue = emptyMap()
 		)
-	private val _relatedIds = _relationObjects.filter { it.isNotEmpty() }.map { list ->
-		list.map { it.id }
-	}.flowOn(defaultDispatcher)
+	private val _relatedIds = _relationObjects.filter { it.isNotEmpty() }
+		.map { list ->
+			list.map { it.id }
+		}.flowOn(defaultDispatcher)
 		.stateIn(
 			scope = viewModelScope,
 			started = SharingStarted.WhileSubscribed(5_000),
@@ -122,13 +110,11 @@ class CraftingDetailViewModel @Inject constructor(
 		)
 
 	private val _craftingUpgraderObjects =
-		_relatedIds.flatMapLatest { ids ->
-			Log.e("FUN _craftingUpgraderObjects", "was called agian before combine")
+		_relatedIds.filter { it.isNotEmpty() }.flatMapLatest { ids ->
 			combine(
 				_craftingObjectUseCases.getCraftingObjectsByIds(ids),
 				relatedItemsMap
 			) { craftingObjects, currentItemsMap ->
-				Log.e("FUN _craftingUpgraderObjects", "RUN AGAIN in combine")
 				craftingObjects.map { craftingObject ->
 					val relatedItem = currentItemsMap[craftingObject.id]
 					CraftingProducts(
@@ -139,12 +125,13 @@ class CraftingDetailViewModel @Inject constructor(
 					)
 				}
 			}
-		}.map { UIState.Success(it) }
+		}.distinctUntilChanged()
+			.map { UIState.Success(it) }
 			.flowOn(defaultDispatcher)
 
 
 	private val _craftingFoodProducts =
-		_relatedIds.flatMapLatest { ids ->
+		_relatedIds.filter { it.isNotEmpty() }.flatMapLatest { ids ->
 			combine(
 				_foodUseCase.getFoodListByIdsUseCase(ids),
 				relatedItemsMap
@@ -159,11 +146,11 @@ class CraftingDetailViewModel @Inject constructor(
 					)
 				}
 			}
-		}.map { UIState.Success(it) }
+		}.distinctUntilChanged().map { UIState.Success(it) }
 			.flowOn(defaultDispatcher)
 
 	private val _craftingMeadProducts =
-		_relatedIds.flatMapLatest { ids ->
+		_relatedIds.filter { it.isNotEmpty() }.flatMapLatest { ids ->
 			combine(
 				_meadUseCase.getMeadsByIdsUseCase(ids),
 				relatedItemsMap
@@ -178,11 +165,11 @@ class CraftingDetailViewModel @Inject constructor(
 					)
 				}
 			}
-		}.map { UIState.Success(it) }
+		}.distinctUntilChanged().map { UIState.Success(it) }
 			.flowOn(defaultDispatcher)
 
 	private val craftingCtx: SharedFlow<CraftingCtx> =
-		_relatedIds
+		_relatedIds.filter { it.isNotEmpty() }
 			.flatMapLatest { ids ->
 				combine(
 					_materialUseCase.getMaterialsByIds(ids),
@@ -194,8 +181,7 @@ class CraftingDetailViewModel @Inject constructor(
 						relatedMap = currentItemsMap
 					)
 				}
-			}
-			.shareIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), replay = 1)
+			}.shareIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), replay = 1)
 	private val _craftingMaterialProducts: Flow<UIState<List<CraftingProducts>>> =
 		craftingCtx.map { it.asUiState { toListFor(RelationType.PRODUCES) } }
 			.distinctUntilChanged()
@@ -211,8 +197,8 @@ class CraftingDetailViewModel @Inject constructor(
 			.distinctUntilChanged()
 			.flowOn(defaultDispatcher)
 
-	private val _craftingBuildingMaterialProducts = contentStart.flatMapLatest { active ->
-		combine(_relatedIds, relatedItemsMap) { ids, currentItemsMap ->
+	private val _craftingBuildingMaterialProducts =
+		_relatedIds.filter { it.isNotEmpty() }.combine(relatedItemsMap) { ids, currentItemsMap ->
 			ids to currentItemsMap
 		}.flatMapLatest { (ids, currentItemsMap) ->
 			if (ids.isEmpty()) {
@@ -237,11 +223,10 @@ class CraftingDetailViewModel @Inject constructor(
 					}
 					.catch { e -> emit(UIState.Error(e.message ?: "Error")) }
 			}
-		}
-	}.flowOn(defaultDispatcher)
+		}.distinctUntilChanged().flowOn(defaultDispatcher)
 
 	private val _craftingWeaponProducts: Flow<UIState<List<CraftingProducts>>> =
-		combine(_relatedIds, relatedItemsMap) { ids, currentItemsMap ->
+		_relatedIds.filter { it.isNotEmpty() }.combine(relatedItemsMap) { ids, currentItemsMap ->
 			ids to currentItemsMap
 		}.flatMapLatest { (ids, currentItemsMap) ->
 			if (ids.isEmpty()) {
@@ -264,10 +249,10 @@ class CraftingDetailViewModel @Inject constructor(
 						)
 					}.catch { e -> emit(UIState.Error(e.message ?: "Error")) }
 			}
-		}.flowOn(defaultDispatcher)
+		}.distinctUntilChanged().flowOn(defaultDispatcher)
 
 	private val _craftingArmorProducts: Flow<UIState<List<CraftingProducts>>> =
-		combine(_relatedIds, relatedItemsMap) { ids, currentItemsMap ->
+		_relatedIds.filter { it.isNotEmpty() }.combine(relatedItemsMap) { ids, currentItemsMap ->
 			ids to currentItemsMap
 		}.flatMapLatest { (ids, currentItemsMap) ->
 			if (ids.isEmpty()) {
@@ -290,11 +275,11 @@ class CraftingDetailViewModel @Inject constructor(
 						)
 					}.catch { e -> emit(UIState.Error(e.message ?: "Error")) }
 			}
-		}.flowOn(defaultDispatcher)
+		}.distinctUntilChanged().flowOn(defaultDispatcher)
 
 
 	private val _craftingToolProducts: Flow<UIState<List<CraftingProducts>>> =
-		combine(_relatedIds, relatedItemsMap) { ids, currentItemsMap ->
+		_relatedIds.filter { it.isNotEmpty() }.combine(relatedItemsMap) { ids, currentItemsMap ->
 			ids to currentItemsMap
 		}.flatMapLatest { (ids, currentItemsMap) ->
 			if (ids.isEmpty()) {
@@ -317,7 +302,7 @@ class CraftingDetailViewModel @Inject constructor(
 						)
 					}.catch { e -> emit(UIState.Error(e.message ?: "Error")) }
 			}
-		}.flowOn(defaultDispatcher)
+		}.distinctUntilChanged().flowOn(defaultDispatcher)
 
 
 	val uiState: StateFlow<CraftingDetailUiState> = combine(
@@ -374,8 +359,7 @@ class CraftingDetailViewModel @Inject constructor(
 
 private fun <T : ItemData> buildCraftingProducts(
 	itemData: T,
-	rel: RelatedItem,
-	droppableType: DroppableType = DroppableType.MATERIAL
+	rel: RelatedItem
 ): CraftingProducts {
 	return CraftingProducts(
 		itemDrop = itemData,
@@ -386,7 +370,7 @@ private fun <T : ItemData> buildCraftingProducts(
 			rel.quantity4star
 		),
 		chanceStarList = emptyList(),
-		droppableType = droppableType
+		droppableType = DroppableType.MATERIAL
 	)
 }
 
@@ -397,5 +381,5 @@ private fun CraftingCtx.toListFor(type: RelationType): List<CraftingProducts> =
 	materials.mapNotNull { material ->
 		val rel = relatedMap[material.id] ?: return@mapNotNull null
 		if (rel.relationType != type.name) return@mapNotNull null
-		buildCraftingProducts(material, rel, DroppableType.MATERIAL)
+		buildCraftingProducts(material, rel)
 	}
