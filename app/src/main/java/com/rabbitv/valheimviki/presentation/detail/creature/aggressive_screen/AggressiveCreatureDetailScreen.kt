@@ -47,6 +47,7 @@ import com.composables.icons.lucide.Grab
 import com.composables.icons.lucide.Heart
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Swords
+import com.composables.icons.lucide.Trophy
 import com.composables.icons.lucide.Unlink
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
@@ -58,27 +59,25 @@ import com.rabbitv.valheimviki.domain.model.food.Food
 import com.rabbitv.valheimviki.domain.model.food.FoodDrop
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.material.MaterialDrop
-import com.rabbitv.valheimviki.navigation.ConsumableDetailDestination
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.navigation.WorldDetailDestination
-import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
+import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
 import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCard
 import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.horizontal_pager.DroppedItemsSection
 import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDetailImage
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.creature.aggressive_screen.model.AggressiveCreatureDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.creature.aggressive_screen.viewModel.AggressiveCreatureDetailScreenViewModel
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
 import com.rabbitv.valheimviki.presentation.detail.creature.components.column.StatColumn
-import com.rabbitv.valheimviki.presentation.detail.creature.components.horizontal_pager.DroppedItemsSection
 import com.rabbitv.valheimviki.presentation.detail.creature.components.rows.StarLevelRow
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
-import com.rabbitv.valheimviki.utils.toFoodSubCategory
 import kotlinx.coroutines.launch
 
 @Composable
@@ -218,6 +217,7 @@ fun AggressiveCreatureDetailContent(
 								starLevel = pageIndex,
 								title = "Drop Items",
 								subTitle = "Materials that drop from creature after defeating",
+								icon = { Lucide.Trophy }
 							)
 						}
 
@@ -226,7 +226,7 @@ fun AggressiveCreatureDetailContent(
 							DroppedItemsSection(
 								onItemClick = handleClick,
 								list = uiState.foodDrops,
-								icon = Lucide.Beef,
+								icon = { Lucide.Beef },
 								starLevel = pageIndex,
 								title = "Food Drops",
 								subTitle = "Food items that drop from creature and can be instantly eaten",
