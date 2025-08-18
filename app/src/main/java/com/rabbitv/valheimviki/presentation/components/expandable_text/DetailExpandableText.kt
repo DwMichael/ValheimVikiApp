@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.components
+package com.rabbitv.valheimviki.presentation.components.expandable_text
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
@@ -46,21 +46,21 @@ fun DetailExpandableText(
 
 	var clickable by remember { mutableStateOf(false) }
 	var lastCharIndex by remember { mutableIntStateOf(0) }
-    val htmlFormattedText = remember(text) {
-        AnnotatedString.fromHtml(text)
-    }
+	val htmlFormattedText = remember(text) {
+		AnnotatedString.fromHtml(text)
+	}
 	Box(
 		modifier = modifier
-            .padding(boxPadding)
-            .clickable(clickable) {
-                isExpanded.value = !isExpanded.value
-            }
-            .then(modifier)
+			.padding(boxPadding)
+			.clickable(clickable) {
+				isExpanded.value = !isExpanded.value
+			}
+			.then(modifier)
 	) {
 		Text(
 			modifier = textModifier
-                .fillMaxWidth()
-                .animateContentSize(),
+				.fillMaxWidth()
+				.animateContentSize(),
 			text = buildAnnotatedString {
 				if (clickable) {
 					if (isExpanded.value) {
