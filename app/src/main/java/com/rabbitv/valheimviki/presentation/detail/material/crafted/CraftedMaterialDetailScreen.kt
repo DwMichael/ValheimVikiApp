@@ -29,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.composables.icons.lucide.CookingPot
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.ScrollText
 import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
@@ -36,7 +37,7 @@ import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.navigation.BuildingDetailDestination
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
-import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
+import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
@@ -44,9 +45,9 @@ import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImage
 import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.flow_row.flow_as_grid.TwoColumnGrid
 import com.rabbitv.valheimviki.presentation.components.grid.grid_item.CustomItemCard
-import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerWithHeaderData
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
 import com.rabbitv.valheimviki.presentation.components.section_header.SectionHeader
+import com.rabbitv.valheimviki.presentation.components.section_header.SectionHeaderData
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.material.crafted.model.CraftedMaterialUiState
 import com.rabbitv.valheimviki.presentation.detail.material.crafted.viewmodel.CraftedMaterialDetailViewModel
@@ -159,16 +160,13 @@ fun CraftedMaterialDetailContent(
 								.wrapContentHeight()
 								.padding(horizontal = BODY_CONTENT_PADDING.dp)
 						) {
+
 							SectionHeader(
-								data = HorizontalPagerWithHeaderData(
+								data = SectionHeaderData(
 									title = "Required Items",
 									subTitle = "Items needed to build this material.",
 									icon = Lucide.ScrollText,
-									iconRotationDegrees = 0f,
-									contentScale = ContentScale.Crop,
-									starLevelIndex = 0,
 								),
-								modifier = Modifier,
 							)
 						}
 
