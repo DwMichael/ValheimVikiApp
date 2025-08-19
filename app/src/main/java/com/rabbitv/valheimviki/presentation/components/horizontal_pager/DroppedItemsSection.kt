@@ -17,7 +17,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -97,7 +99,12 @@ fun DropItemCard(
 	chanceStarList: List<Int?>,
 	starLevel: Int
 ) {
+	val currentTab = rememberSaveable { mutableStateOf(itemData.name) }
 	val quantity: Int? = quantityList[starLevel]
+	if (quantity != null) {
+		currentTab.value = itemData.name + " x${quantity}"
+	}
+
 	Card(
 		modifier = modifier
 			.fillMaxWidth()
@@ -137,24 +144,17 @@ fun DropItemCard(
 					.padding(start = 10.dp)
 			) {
 				Text(
-					text = itemData.name.uppercase(),
+					text = currentTab.value,
 					maxLines = 2,
 					overflow = TextOverflow.Ellipsis,
 					color = PrimaryWhite,
-					style = MaterialTheme.typography.labelLarge,
+					style = MaterialTheme.typography.bodyLarge,
 				)
-				if (quantity != null) {
-					Text(
-						text = "x${quantityList[starLevel]}",
-						color = PrimaryWhite,
-						style = MaterialTheme.typography.labelLarge,
-					)
-				}
 				chanceStarList.getOrNull(starLevel)?.let { chance ->
 					Text(
-						text = "DROP CHANCE: $chance%",
+						text = "Drop chance: $chance%",
 						color = PrimaryWhite,
-						style = MaterialTheme.typography.labelLarge,
+						style = MaterialTheme.typography.bodyLarge,
 					)
 				}
 			}

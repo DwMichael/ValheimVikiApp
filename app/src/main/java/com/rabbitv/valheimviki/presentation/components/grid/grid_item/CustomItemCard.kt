@@ -82,7 +82,7 @@ fun CustomItemCard(
 			Column(
 				modifier = Modifier
 					.fillMaxWidth()
-					.padding(4.dp),
+					.padding(6.dp),
 				horizontalAlignment = Alignment.CenterHorizontally
 			) {
 				Text(
@@ -90,14 +90,14 @@ fun CustomItemCard(
 					maxLines = 2,
 					overflow = TextOverflow.Ellipsis,
 					color = PrimaryWhite,
-					style = MaterialTheme.typography.labelLarge,
+					style = MaterialTheme.typography.bodyLarge,
 					textAlign = TextAlign.Center
 				)
 				if (quantity != null) {
 					Text(
 						text = "x${quantity}",
 						color = PrimaryWhite,
-						style = MaterialTheme.typography.labelLarge,
+						style = MaterialTheme.typography.bodyLarge,
 					)
 				}
 			}
