@@ -8,6 +8,7 @@ import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.di.qualifiers.DefaultDispatcher
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.presentation.DroppableType
+import com.rabbitv.valheimviki.domain.model.relation.RelatedData
 import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
 import com.rabbitv.valheimviki.domain.model.relation.RelationType
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
@@ -35,7 +36,6 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
@@ -90,18 +90,20 @@ class CraftingDetailViewModel @Inject constructor(
 			started = SharingStarted.WhileSubscribed(5_000),
 			initialValue = emptyList()
 		)
-
-	private val relatedItemsMap: Flow<Map<String, RelatedItem>> = _relationObjects
-		.map { list -> list.associateBy { it.id } }
-		.distinctUntilChanged()
-	private val _relatedIds: Flow<List<String>> = _relationObjects
-		.map { list -> list.map { it.id } }
-		.distinctUntilChanged()
-
-	private val idsAndMap: Flow<Pair<List<String>, Map<String, RelatedItem>>> =
-		combine(_relatedIds, relatedItemsMap) { ids, map -> ids to map }
-			.filter { (ids, map) -> ids.isNotEmpty() && map.isNotEmpty() }
+	private val idsAndMap: Flow<RelatedData> =
+		_relationObjects
+			.map { list ->
+				val relatedMap = list.associateBy(RelatedItem::id)
+				val ids = relatedMap.keys.sorted()
+				RelatedData(
+					ids = ids,
+					relatedMap = relatedMap
+				)
+			}
+			.filter { it.ids.isNotEmpty() }
 			.distinctUntilChanged()
+			.flowOn(defaultDispatcher)
+
 	private val _craftingUpgraderObjects =
 		idsAndMap.flatMapLatest { (ids, currentItemsMap) ->
 			_craftingObjectUseCases.getCraftingObjectsByIds(ids)
