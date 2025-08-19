@@ -14,6 +14,7 @@ import com.rabbitv.valheimviki.domain.use_cases.favorite.add_to_favorite.AddFavo
 import com.rabbitv.valheimviki.domain.use_cases.favorite.delete_from_favorite.DeleteFavoriteUseCase
 import com.rabbitv.valheimviki.domain.use_cases.favorite.get_all_favorite_items.GetAllFavoritesUseCase
 import com.rabbitv.valheimviki.domain.use_cases.favorite.is_favorite.IsFavoriteUseCase
+import com.rabbitv.valheimviki.domain.use_cases.favorite.toggle_favorite.ToggleFavoriteUseCase
 import com.rabbitv.valheimviki.presentation.favorite.model.FavoriteUiEvent
 import com.rabbitv.valheimviki.presentation.favorite.model.FavoriteUiState
 import kotlinx.coroutines.Dispatchers
@@ -57,6 +58,9 @@ class FavoriteViewModelTest {
 	private lateinit var addFavoriteUseCase: AddFavoriteUseCase
 
 	@Mock
+	private lateinit var toggleFavoriteUseCase: ToggleFavoriteUseCase
+
+	@Mock
 	private lateinit var connectivityObserver: NetworkConnectivity
 
 	@BeforeEach
@@ -67,7 +71,8 @@ class FavoriteViewModelTest {
 			isFavorite = isFavorite,
 			getAllFavoritesUseCase = getAllFavoritesUseCase,
 			deleteFavoriteUseCase = deleteFavoriteUseCase,
-			addFavoriteUseCase = addFavoriteUseCase
+			addFavoriteUseCase = addFavoriteUseCase,
+			toggleFavoriteUseCase = toggleFavoriteUseCase,
 		)
 	}
 

@@ -63,23 +63,21 @@ fun AnimatedGridItem(
 	val context = LocalContext.current
 	val imageLoader: ImageLoader = remember { ImageLoader(context) }
 
-	/* -------- wspólny ImageRequest -------- */
 	val request = remember(item.imageUrl) {
 		ImageRequest.Builder(context)
 			.data(item.imageUrl)
-			.memoryCacheKey("image-${item.id}")            // identyczny klucz dla grid + detail
-			.placeholderMemoryCacheKey("image-${item.id}") // ta sama bitmapa jako placeholder
-			.size(400)                                     // ≈ rozmiar kafelka → szybki load
+			.memoryCacheKey("image-${item.id}")
+			.placeholderMemoryCacheKey("image-${item.id}")
+			.size(400)
 			.crossfade(true)
 			.build()
 	}
 
-	/* -------- prefetch dużej bitmapy do pamięci -------- */
 	LaunchedEffect(prefetchOriginal, item.imageUrl) {
 		if (prefetchOriginal) {
 			imageLoader.enqueue(
 				request.newBuilder()
-					.size(Size.ORIGINAL)                   // full-HD → detail użyje bez I/O
+					.size(Size.ORIGINAL)
 					.crossfade(false)
 					.build()
 			)

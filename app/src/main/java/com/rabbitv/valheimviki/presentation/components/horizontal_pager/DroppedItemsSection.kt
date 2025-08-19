@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.detail.creature.components.horizontal_pager
+package com.rabbitv.valheimviki.presentation.components.horizontal_pager
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
@@ -16,6 +16,10 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -34,8 +38,6 @@ import com.composables.icons.lucide.Trophy
 import com.rabbitv.valheimviki.domain.model.material.MaterialDrop
 import com.rabbitv.valheimviki.domain.repository.Droppable
 import com.rabbitv.valheimviki.domain.repository.ItemData
-import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerWithHeader
-import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerWithHeaderData
 import com.rabbitv.valheimviki.presentation.modifiers.carouselEffect
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.DarkWood
@@ -48,54 +50,61 @@ import com.rabbitv.valheimviki.utils.FakeData
 @Composable
 fun DroppedItemsSection(
 	modifier: Modifier = Modifier,
-	onItemClick: (itemId: String, category: String) -> Unit = { _, _ -> {} },
-	list: List<Droppable> = emptyList(),
+	onItemClick: (itemData: ItemData) -> Unit = {},
+	list: List<Droppable>,
 	starLevel: Int,
-	icon: ImageVector = Lucide.Trophy,
-	iconRotationDegrees: Float = -85f,
-	contentScale: ContentScale = ContentScale.Crop,
+	icon: () -> ImageVector,
 	title: String? = "Drop Items",
 	subTitle: String? = "Materials that drop from creature after defeating",
 ) {
 
+
 	val pagerState = rememberPagerState(pageCount = { list.size })
 
+	val headerData = remember(title, subTitle, icon, starLevel) {
+		PagerHeaderData(
+			title = title,
+			subTitle = subTitle,
+			icon = icon()
+		)
+	}
 	HorizontalPagerWithHeader(
 		list = list,
 		pagerState = pagerState,
-		headerData = HorizontalPagerWithHeaderData(
-			title = title,
-			subTitle = subTitle,
-			icon = icon,
-			iconRotationDegrees = iconRotationDegrees,
-			contentScale = contentScale,
-			starLevelIndex = starLevel,
-		),
+		headerData = headerData,
 		modifier = modifier,
 	) { item, pageIndex ->
-		DropItemCard(
-			onItemClick = { itemId, subCategory ->
-				onItemClick(itemId, subCategory)
-			},
-			itemData = item.itemDrop,
-			quantityList = item.quantityList,
-			chanceStarList = item.chanceStarList,
-			starLevel = starLevel,
-			modifier = Modifier.carouselEffect(pagerState, pageIndex)
-		)
+		key(item.itemDrop.id) {
+			DropItemCard(
+				onItemClick = { item ->
+					onItemClick(item)
+				},
+				itemData = item.itemDrop,
+				quantityList = item.quantityList,
+				chanceStarList = item.chanceStarList,
+				starLevel = starLevel,
+				modifier = Modifier.carouselEffect(pagerState, pageIndex)
+			)
+		}
+
 	}
 }
 
 @Composable
 fun DropItemCard(
-	onItemClick: (itemId: String, subCategory: String) -> Unit,
+	modifier: Modifier = Modifier,
+	onItemClick: (itemData: ItemData) -> Unit = {},
 	itemData: ItemData,
 	quantityList: List<Int?>,
 	chanceStarList: List<Int?>,
-	starLevel: Int,
-	modifier: Modifier = Modifier
+	starLevel: Int
 ) {
+	val currentTab = rememberSaveable { mutableStateOf(itemData.name) }
 	val quantity: Int? = quantityList[starLevel]
+	if (quantity != null) {
+		currentTab.value = itemData.name + " x${quantity}"
+	}
+
 	Card(
 		modifier = modifier
 			.fillMaxWidth()
@@ -108,9 +117,10 @@ fun DropItemCard(
 				spotColor = Color.White.copy(alpha = 0.25f)
 			)
 			.clickable {
-				itemData.subCategory?.let { onItemClick(itemData.id, it) }
+				itemData.subCategory?.let { onItemClick(itemData) }
 			},
 		colors = CardDefaults.cardColors(containerColor = LightDark),
+
 		border = BorderStroke(2.dp, DarkWood)
 	) {
 		Row(
@@ -134,24 +144,17 @@ fun DropItemCard(
 					.padding(start = 10.dp)
 			) {
 				Text(
-					text = itemData.name.uppercase(),
-					maxLines = 1,
+					text = currentTab.value,
+					maxLines = 2,
 					overflow = TextOverflow.Ellipsis,
 					color = PrimaryWhite,
 					style = MaterialTheme.typography.bodyLarge,
 				)
-				if (quantity != null) {
-					Text(
-						text = "x${quantityList[starLevel]}",
-						color = PrimaryWhite,
-						style = MaterialTheme.typography.bodyLarge,
-					)
-				}
 				chanceStarList.getOrNull(starLevel)?.let { chance ->
 					Text(
-						text = "DROP CHANCE: $chance%",
+						text = "Drop chance: $chance%",
 						color = PrimaryWhite,
-						style = MaterialTheme.typography.bodyMedium,
+						style = MaterialTheme.typography.bodyLarge,
 					)
 				}
 			}
@@ -185,7 +188,8 @@ fun PreviewCreatureHorizontalPagerMaterial() {
 		DroppedItemsSection(
 			list = materialDrops,
 			starLevel = 0,
-			onItemClick = { _, _ -> {} }
+			onItemClick = { _ -> {} },
+			icon = { Lucide.Trophy }
 		)
 	}
 }
@@ -207,7 +211,7 @@ fun PreviewCreatureDropCard() {
 			quantityList = materialDrop.quantityList,
 			chanceStarList = materialDrop.chanceStarList,
 			starLevel = 1,
-			onItemClick = { _, _ -> {} }
+			onItemClick = { _ -> {} }
 		)
 	}
 }
@@ -240,7 +244,8 @@ fun PreviewCreatureHorizontalPagerStarLevels() {
 			DroppedItemsSection(
 				list = materialDrops,
 				starLevel = 0,
-				onItemClick = { _, _ -> {} }
+				onItemClick = { _ -> {} },
+				icon = { Lucide.Trophy }
 			)
 
 			Spacer(modifier = Modifier.height(16.dp))
@@ -249,7 +254,8 @@ fun PreviewCreatureHorizontalPagerStarLevels() {
 			DroppedItemsSection(
 				list = materialDrops,
 				starLevel = 1,
-				onItemClick = { _, _ -> {} }
+				onItemClick = { _ -> {} },
+				icon = { Lucide.Trophy }
 			)
 
 			Spacer(modifier = Modifier.height(16.dp))
@@ -258,7 +264,8 @@ fun PreviewCreatureHorizontalPagerStarLevels() {
 			DroppedItemsSection(
 				list = materialDrops,
 				starLevel = 2,
-				onItemClick = { _, _ -> {} }
+				onItemClick = { _ -> {} },
+				icon = { Lucide.Trophy }
 			)
 		}
 	}

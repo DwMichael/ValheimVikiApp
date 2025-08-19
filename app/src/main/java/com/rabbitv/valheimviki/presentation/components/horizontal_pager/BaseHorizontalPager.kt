@@ -24,13 +24,13 @@ fun <T> BaseHorizontalPager(
 		state = pagerState,
 		modifier = modifier.fillMaxWidth(),
 		pageSize = PageSize.Fixed(pageWidth),
-		beyondViewportPageCount = list.size,
 		contentPadding = PaddingValues(end = 80.dp),
 		flingBehavior = PagerDefaults.flingBehavior(
 			state = pagerState,
 			pagerSnapDistance = PagerSnapDistance.atMost(list.size)
-		)
-	) { pageIndex ->
+		),
+
+		) { pageIndex ->
 		itemContent(list[pageIndex], pageIndex)
 	}
 }

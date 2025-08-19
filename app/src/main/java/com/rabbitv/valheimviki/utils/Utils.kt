@@ -54,20 +54,19 @@ fun <E, K : Comparable<K>> relatedListFlowGated(
 		} else {
 			idsFlow.flatMapLatest { ids ->
 				val source: Flow<List<E>> = fetcher(ids)
-				val sorted: Flow<List<E>> =
-					if (sortBy != null) {
-						val selector = sortBy
-						source.map { list: List<E> -> list.sortedBy(selector) }
-					} else {
-						source
-					}
-				sorted
+				val sortedFlow = if (sortBy != null) {
+					source.map { list -> list.sortedBy(sortBy) }
+				} else {
+					source
+				}
+				sortedFlow
 					.distinctUntilChanged()
 					.map<List<E>, UIState<List<E>>> { UIState.Success(it) }
 					.catch { e -> emit(UIState.Error(e.message ?: "Error")) }
 			}
 		}
 	}
+
 
 @OptIn(ExperimentalCoroutinesApi::class)
 fun <T> relatedDataFlow(

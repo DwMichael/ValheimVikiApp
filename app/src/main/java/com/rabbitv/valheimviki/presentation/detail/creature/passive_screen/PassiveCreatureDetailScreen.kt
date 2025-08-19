@@ -43,6 +43,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.rememberAsyncImagePainter
 import com.composables.icons.lucide.Atom
 import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.Trophy
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.creature.aggresive.AggressiveCreature
@@ -51,7 +52,7 @@ import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.navigation.WorldDetailDestination
-import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
+import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
 import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
@@ -60,7 +61,7 @@ import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsD
 import com.rabbitv.valheimviki.presentation.detail.creature.aggressive_screen.PageIndicator
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardStatDetails
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
-import com.rabbitv.valheimviki.presentation.detail.creature.components.horizontal_pager.DroppedItemsSection
+import com.rabbitv.valheimviki.presentation.components.horizontal_pager.DroppedItemsSection
 import com.rabbitv.valheimviki.presentation.detail.creature.components.rows.StarLevelRow
 import com.rabbitv.valheimviki.presentation.detail.creature.passive_screen.model.PassiveCreatureDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.creature.passive_screen.viewmodel.PassiveCreatureDetailScreenViewModel
@@ -111,6 +112,10 @@ fun PassiveCreatureDetailContent(
 	val isExpandable = remember { mutableStateOf(false) }
 	val isExpandableNote = remember { mutableStateOf(false) }
 	val coroutineScope = rememberCoroutineScope()
+	val handleClick = remember(onItemClick) {
+		NavigationHelper.createItemDetailClickHandler(onItemClick)
+	}
+
 	Scaffold { padding ->
 		uiState.passiveCreature?.let { passiveCreature ->
 			HorizontalPager(
@@ -205,12 +210,8 @@ fun PassiveCreatureDetailContent(
 								starLevel = pageIndex,
 								title = "Drop Items",
 								subTitle = "Materials that drop from creature after defeating",
-								onItemClick = { clickedItemId, subCategory ->
-									val destination =
-										NavigationHelper.routeToMaterial(subCategory, clickedItemId)
-									onItemClick(destination)
-
-								}
+								onItemClick = handleClick,
+								icon = { Lucide.Trophy},
 							)
 						}
 

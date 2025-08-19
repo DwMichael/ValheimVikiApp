@@ -43,7 +43,7 @@ import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.LocalSharedTransitionScope
 import com.rabbitv.valheimviki.navigation.NavigationHelper
-import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
+import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.LoadingIndicator
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
@@ -58,7 +58,6 @@ import com.rabbitv.valheimviki.presentation.detail.biome.model.BiomeDetailUiStat
 import com.rabbitv.valheimviki.presentation.detail.biome.viewmodel.BiomeDetailScreenViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
-import kotlinx.coroutines.delay
 
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -202,12 +201,10 @@ fun BiomeDetailContent(
 					when (val bossState = uiState.mainBoss) {
 						is UIState.Error -> {}
 						is UIState.Loading -> {
-
 							LoadingIndicator(PaddingValues(16.dp))
 						}
 
 						is UIState.Success -> {
-
 							bossState.data?.let { boss ->
 								SlavicDivider()
 								ImageWithTopLabel(

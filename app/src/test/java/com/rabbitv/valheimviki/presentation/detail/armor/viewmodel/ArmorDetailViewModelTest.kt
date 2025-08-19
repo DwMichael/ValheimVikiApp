@@ -15,9 +15,6 @@ import com.rabbitv.valheimviki.domain.use_cases.armor.get_armor_by_id.GetArmorBy
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.CraftingObjectUseCases
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.get_crafting_object_by_ids.GetCraftingObjectByIdsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
-import com.rabbitv.valheimviki.domain.use_cases.favorite.add_to_favorite.AddFavoriteUseCase
-import com.rabbitv.valheimviki.domain.use_cases.favorite.delete_from_favorite.DeleteFavoriteUseCase
-import com.rabbitv.valheimviki.domain.use_cases.favorite.is_favorite.IsFavoriteUseCase
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.get_materials_by_ids.GetMaterialsByIdsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
@@ -38,6 +35,7 @@ import org.junit.jupiter.api.fail
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -114,15 +112,6 @@ class ArmorDetailViewModelTest {
 	@Mock
 	private lateinit var favoriteUseCases: FavoriteUseCases
 
-	@Mock
-	lateinit var isFavorite: IsFavoriteUseCase
-
-	@Mock
-	lateinit var addFavoriteUseCase: AddFavoriteUseCase
-
-	@Mock
-	lateinit var deleteFavoriteUseCase: DeleteFavoriteUseCase
-
 	private lateinit var savedStateHandle: SavedStateHandle
 
 	@BeforeEach
@@ -136,6 +125,14 @@ class ArmorDetailViewModelTest {
 		)
 
 		whenever(armorUseCases.getArmorByIdUseCase).thenReturn(getArmorByIdUseCase)
+
+		favoriteUseCases = FavoriteUseCases(
+			isFavorite = mock(),
+			getAllFavoritesUseCase = mock(),
+			deleteFavoriteUseCase = mock(),
+			addFavoriteUseCase = mock(),
+			toggleFavoriteUseCase = mock(),
+		)
 	}
 
 	@AfterEach
@@ -173,14 +170,12 @@ class ArmorDetailViewModelTest {
 		whenever(craftingObjectUseCases.getCraftingObjectByIds).thenReturn(getCraftingObjectByIds)
 		whenever(getCraftingObjectByIds(any())).thenReturn(flowOf(crafting))
 
-		whenever(favoriteUseCases.isFavorite).thenReturn(isFavorite)
-		whenever(isFavorite(any())).thenReturn(flowOf(isFav))
+		whenever(favoriteUseCases.isFavorite(any())).thenReturn(flowOf(isFav))
 	}
 
 
 	@Test
 	fun initial_EmissionContentEmpty_ShouldEmitInitValues() = runTest {
-		whenever(favoriteUseCases.isFavorite).thenReturn(isFavorite)
 		emitValuesFromUseCases()
 
 		val vm = armorViewModel()
@@ -201,7 +196,6 @@ class ArmorDetailViewModelTest {
 
 	@Test
 	fun uiState_DataFetched_ShouldEmitSuccessWithData() = runTest {
-		whenever(favoriteUseCases.isFavorite).thenReturn(isFavorite)
 
 		val materials = listOf(
 			testMaterial.copy(id = "m5"),
@@ -286,9 +280,6 @@ class ArmorDetailViewModelTest {
 
 	@Test
 	fun uiEvent_NotSelected_ShouldAddToFavorite() = runTest {
-		whenever(favoriteUseCases.isFavorite).thenReturn(isFavorite)
-		whenever(favoriteUseCases.addFavoriteUseCase).thenReturn(addFavoriteUseCase)
-
 		emitValuesFromUseCases(isFav = false)
 		val vm = armorViewModel()
 
@@ -317,8 +308,6 @@ class ArmorDetailViewModelTest {
 
 	@Test
 	fun uiEvent_SelectedFavorite_ShouldDeletedFromFavorite() = runTest {
-		whenever(favoriteUseCases.isFavorite).thenReturn(isFavorite)
-		whenever(favoriteUseCases.deleteFavoriteUseCase).thenReturn(deleteFavoriteUseCase)
 
 		emitValuesFromUseCases(isFav = true)
 		val vm = armorViewModel()

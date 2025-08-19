@@ -44,7 +44,7 @@ import com.rabbitv.valheimviki.domain.model.upgrader.MaterialUpgrade
 import com.rabbitv.valheimviki.navigation.BuildingDetailDestination
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
-import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
+import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
@@ -55,9 +55,9 @@ import com.rabbitv.valheimviki.presentation.components.flow_row.flow_as_grid.Two
 import com.rabbitv.valheimviki.presentation.components.grid.grid_item.CustomItemCard
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerSection
-import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerWithHeaderData
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
 import com.rabbitv.valheimviki.presentation.components.section_header.SectionHeader
+import com.rabbitv.valheimviki.presentation.components.section_header.SectionHeaderData
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.tool.model.ToolDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.tool.viewmodel.ToolDetailViewModel
@@ -112,7 +112,7 @@ fun ToolDetailContent(
 	val scrollState = rememberScrollState()
 	val craftingStationPainter = painterResource(R.drawable.food_bg)
 	val isExpandable = remember { mutableStateOf(false) }
-	val handleItemClick = remember {
+	val handleClick = remember(onItemClick) {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
 	}
 	BgImage()
@@ -161,15 +161,11 @@ fun ToolDetailContent(
 								.padding(horizontal = BODY_CONTENT_PADDING.dp)
 						) {
 							SectionHeader(
-								data = HorizontalPagerWithHeaderData(
+								data = SectionHeaderData(
 									title = "Crafting Ingredients",
 									subTitle = "Items required to craft this item",
-									icon = Lucide.Hammer,
-									iconRotationDegrees = 0f,
-									contentScale = ContentScale.Crop,
-									starLevelIndex = 0,
-								),
-								modifier = Modifier,
+									icon = Lucide.Hammer
+								)
 							)
 						}
 
@@ -177,14 +173,8 @@ fun ToolDetailContent(
 						TwoColumnGrid {
 							for (item in uiState.relatedMaterials) {
 								CustomItemCard(
-									onItemClick = {
-										val destination =
-											NavigationHelper.routeToMaterial(
-												item.material.subCategory,
-												item.material.id
-											)
-										onItemClick(destination)
-									},
+									itemData = item.material,
+									onItemClick = handleClick,
 									fillWidth = CUSTOM_ITEM_CARD_FILL_WIDTH,
 									imageUrl = item.material.imageUrl,
 									name = item.material.name,
@@ -268,7 +258,7 @@ fun ToolDetailContent(
 						HorizontalPagerSection(
 							list = uiState.relatedOreDeposits,
 							data = oreDepositData,
-							onItemClick = handleItemClick,
+							onItemClick = handleClick,
 						)
 					}
 					if (uiState.relatedNpc != null) {

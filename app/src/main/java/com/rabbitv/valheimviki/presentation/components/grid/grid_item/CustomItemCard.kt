@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -20,12 +21,15 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import com.rabbitv.valheimviki.domain.model.biome.Biome
+import com.rabbitv.valheimviki.domain.repository.ItemData
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.DarkWood
 import com.rabbitv.valheimviki.ui.theme.LightDark
@@ -34,7 +38,8 @@ import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
 @Composable
 fun CustomItemCard(
-	onItemClick: () -> Unit = {},
+	itemData: ItemData,
+	onItemClick: (itemData: ItemData) -> Unit ={},
 	fillWidth: Float = 1.0f,
 	imageUrl: String,
 	name: String,
@@ -44,7 +49,7 @@ fun CustomItemCard(
 	Card(
 		modifier = Modifier
 			.fillMaxWidth(fillWidth)
-			.height(150.dp)
+			.heightIn(160.dp)
 			.shadow(
 				elevation = 8.dp,
 				shape = CardDefaults.shape,
@@ -52,7 +57,7 @@ fun CustomItemCard(
 				ambientColor = Color.White.copy(alpha = 0.1f),
 				spotColor = Color.White.copy(alpha = 0.25f)
 			)
-			.clickable { onItemClick() },
+			.clickable { onItemClick(itemData) },
 		colors = CardDefaults.cardColors(containerColor = LightDark),
 		border = BorderStroke(2.dp, DarkWood)
 	) {
@@ -77,15 +82,16 @@ fun CustomItemCard(
 			Column(
 				modifier = Modifier
 					.fillMaxWidth()
-					.padding(2.dp),
+					.padding(6.dp),
 				horizontalAlignment = Alignment.CenterHorizontally
 			) {
 				Text(
 					text = name,
-					maxLines = 1,
+					maxLines = 2,
 					overflow = TextOverflow.Ellipsis,
 					color = PrimaryWhite,
 					style = MaterialTheme.typography.bodyLarge,
+					textAlign = TextAlign.Center
 				)
 				if (quantity != null) {
 					Text(
@@ -108,7 +114,16 @@ fun PreviewCustomItemCard() {
 			fillWidth = 1.0f,
 			imageUrl = "https://example.com/item.png",
 			name = "Iron Sword",
-			quantity = 5
+			quantity = 5,
+			itemData = Biome(
+				id = "",
+				category = "",
+				subCategory = "",
+				imageUrl ="",
+				name = "",
+				description = "",
+				order = 1
+			)
 		)
 	}
 }
@@ -122,7 +137,16 @@ fun PreviewCustomItemCardNoQuantity() {
 			fillWidth = 1.0f,
 			imageUrl = "https://example.com/item.png",
 			name = "Very Long Item Name That Should Be Truncated",
-			quantity = null
+			quantity = null,
+			itemData = Biome(
+				id = "",
+				category = "",
+				subCategory = "",
+				imageUrl ="",
+				name = "",
+				description = "",
+				order = 1
+			)
 		)
 	}
 }
@@ -137,7 +161,16 @@ fun PreviewCustomItemCardHalfWidth() {
 				fillWidth = 0.5f,
 				imageUrl = "https://example.com/item.png",
 				name = "Shield",
-				quantity = 1
+				quantity = 1,
+				itemData = Biome(
+					id = "",
+					category = "",
+					subCategory = "",
+					imageUrl ="",
+					name = "",
+					description = "",
+					order = 1
+				)
 			)
 		}
 	}

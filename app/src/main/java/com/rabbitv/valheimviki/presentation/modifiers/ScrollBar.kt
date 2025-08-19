@@ -27,13 +27,12 @@ fun Modifier.lazyVerticalScrollbar(
 	scrollBarColor: Color = ForestGreen10Dark,
 	scrollBarCornerRadius: Float = 4f,
 	endPadding: Float = 8f,
-	fadeOutDelay: Long = 1000L // czas w ms po którym scrollbar znika
+	fadeOutDelay: Long = 1000L
 ): Modifier {
 	val isScrollInProgress by remember {
 		derivedStateOf { lazyListState.isScrollInProgress }
 	}
 
-	// Animacja przezroczystości
 	val alpha by animateFloatAsState(
 		targetValue = if (isScrollInProgress) 1f else 0f,
 		animationSpec = tween(durationMillis = 300),
@@ -41,33 +40,26 @@ fun Modifier.lazyVerticalScrollbar(
 	)
 
 	return drawWithContent {
-		// Rysuj zawartość kolumny
 		drawContent()
 
-		// Pobierz informacje o liście
 		val layoutInfo = lazyListState.layoutInfo
 		val viewportHeight = layoutInfo.viewportSize.height.toFloat()
 		val totalItemsCount = layoutInfo.totalItemsCount
 		val visibleItemsCount = layoutInfo.visibleItemsInfo.size
 
-		// Sprawdź czy scrollbar jest potrzebny
 		if (totalItemsCount <= visibleItemsCount || alpha == 0f) return@drawWithContent
 
-		// Oblicz wysokość i pozycję scrollbara
 		val firstVisibleItemIndex = layoutInfo.visibleItemsInfo.firstOrNull()?.index ?: 0
 		layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
 
-		// Proporcja widocznych elementów do wszystkich
 		val visibleItemsRatio = visibleItemsCount.toFloat() / totalItemsCount.toFloat()
 		val scrollBarHeight =
-			(visibleItemsRatio * viewportHeight).coerceAtLeast(30f) // min wysokość 30px
+			(visibleItemsRatio * viewportHeight).coerceAtLeast(30f)
 
-		// Pozycja scrollbara
 		val scrollProgress =
 			firstVisibleItemIndex.toFloat() / (totalItemsCount - visibleItemsCount).toFloat()
 		val scrollBarStartOffset = scrollProgress * (viewportHeight - scrollBarHeight)
 
-		// Rysuj track (opcjonalnie)
 		if (showScrollBarTrack) {
 			drawRoundRect(
 				cornerRadius = CornerRadius(scrollBarCornerRadius),
@@ -77,7 +69,6 @@ fun Modifier.lazyVerticalScrollbar(
 			)
 		}
 
-		// Rysuj scrollbar
 		drawRoundRect(
 			cornerRadius = CornerRadius(scrollBarCornerRadius),
 			color = scrollBarColor.copy(alpha = scrollBarColor.alpha * alpha),

@@ -45,21 +45,20 @@ import com.rabbitv.valheimviki.domain.model.food.Food
 import com.rabbitv.valheimviki.domain.model.mead.Mead
 import com.rabbitv.valheimviki.domain.model.mead.MeadSubCategory
 import com.rabbitv.valheimviki.navigation.BuildingDetailDestination
-import com.rabbitv.valheimviki.navigation.ConsumableDetailDestination
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
-import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
-import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCard
+import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.flow_row.flow_as_grid.TwoColumnGrid
 import com.rabbitv.valheimviki.presentation.components.grid.grid_item.CustomItemCard
-import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerWithHeaderData
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
 import com.rabbitv.valheimviki.presentation.components.section_header.SectionHeader
+import com.rabbitv.valheimviki.presentation.components.section_header.SectionHeaderData
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.food.model.RecipeFoodData
 import com.rabbitv.valheimviki.presentation.detail.food.model.RecipeMaterialData
@@ -71,8 +70,6 @@ import com.rabbitv.valheimviki.ui.theme.CUSTOM_ITEM_CARD_FILL_WIDTH
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
-import com.rabbitv.valheimviki.utils.toFoodSubCategory
-import com.rabbitv.valheimviki.utils.toMeadSubCategory
 
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
@@ -115,7 +112,9 @@ fun MeadDetailContent(
 	}
 	val scrollState = rememberScrollState()
 	val craftingStationPainter = painterResource(R.drawable.food_bg)
-
+	val handleClick = remember(onItemClick) {
+		NavigationHelper.createItemDetailClickHandler(onItemClick)
+	}
 
 	val isExpandable = remember { mutableStateOf(false) }
 	fun shouldShowValue(value: Any?): Boolean {
@@ -186,15 +185,12 @@ fun MeadDetailContent(
 								.padding(horizontal = BODY_CONTENT_PADDING.dp)
 						) {
 							SectionHeader(
-								data = HorizontalPagerWithHeaderData(
+
+								data = SectionHeaderData(
 									title = "Recipe",
 									subTitle = "Ingredients required to craft this item",
 									icon = if (category == MeadSubCategory.MEAD_BASE) Lucide.CookingPot else Lucide.FlaskRound,
-									iconRotationDegrees = 0f,
-									contentScale = ContentScale.Crop,
-									starLevelIndex = 0,
-								),
-								modifier = Modifier,
+								)
 							)
 						}
 
@@ -202,14 +198,8 @@ fun MeadDetailContent(
 						TwoColumnGrid {
 							for (item in uiState.materialsForRecipe) {
 								CustomItemCard(
-									onItemClick = {
-										val destination =
-											NavigationHelper.routeToMaterial(
-												item.itemDrop.subCategory,
-												item.itemDrop.id
-											)
-										onItemClick(destination)
-									},
+									itemData = item.itemDrop,
+									onItemClick = handleClick,
 									fillWidth = CUSTOM_ITEM_CARD_FILL_WIDTH,
 									imageUrl = item.itemDrop.imageUrl,
 									name = item.itemDrop.name,
@@ -218,13 +208,8 @@ fun MeadDetailContent(
 							}
 							for (item in uiState.foodForRecipe) {
 								CustomItemCard(
-									onItemClick = {
-										val destination = ConsumableDetailDestination.FoodDetail(
-											item.itemDrop.id,
-											item.itemDrop.subCategory.toFoodSubCategory()
-										)
-										onItemClick(destination)
-									},
+									itemData = item.itemDrop,
+									onItemClick = handleClick,
 									fillWidth = CUSTOM_ITEM_CARD_FILL_WIDTH,
 									imageUrl = item.itemDrop.imageUrl,
 									name = item.itemDrop.name,
@@ -233,14 +218,8 @@ fun MeadDetailContent(
 							}
 							for (item in uiState.meadForRecipe) {
 								CustomItemCard(
-									onItemClick = {
-
-										val destination = ConsumableDetailDestination.MeadDetail(
-											item.itemDrop.id,
-											item.itemDrop.subCategory.toMeadSubCategory()
-										)
-										onItemClick(destination)
-									},
+									itemData = item.itemDrop,
+									onItemClick = handleClick,
 									fillWidth = CUSTOM_ITEM_CARD_FILL_WIDTH,
 									imageUrl = item.itemDrop.imageUrl,
 									name = item.itemDrop.name,
@@ -319,7 +298,7 @@ fun MeadDetailContent(
 							SlavicDivider()
 						}
 						CardImageWithTopLabel(
-							onClickedItem ={
+							onClickedItem = {
 								val destination = BuildingDetailDestination.CraftingObjectDetail(
 									craftingObjectId = uiState.craftingCookingStation.id
 								)
@@ -466,7 +445,7 @@ fun PreviewMeadDetailContentCooked() {
 			onBack = {},
 			onItemClick = {},
 			category = MeadSubCategory.MEAD_BASE,
-			onToggleFavorite = {_,_->{}}
+			onToggleFavorite = { _, _ -> {} }
 		)
 	}
 

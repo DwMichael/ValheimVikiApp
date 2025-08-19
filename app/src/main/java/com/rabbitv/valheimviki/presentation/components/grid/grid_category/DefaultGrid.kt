@@ -42,7 +42,7 @@ fun DefaultGrid(
 		columns = GridCells.Fixed(numbersOfColumns),
 		horizontalArrangement = Arrangement.spacedBy(BODY_CONTENT_PADDING.dp),
 		verticalArrangement = Arrangement.spacedBy(BODY_CONTENT_PADDING.dp),
-		modifier = Modifier.clipToBounds(),
+		modifier = modifier.clipToBounds(),
 		contentPadding = PaddingValues(bottom = 70.dp),
 	) {
 		items(

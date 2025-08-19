@@ -4,9 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.PagerState
@@ -18,10 +16,10 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,30 +27,32 @@ import androidx.compose.ui.unit.dp
 import com.rabbitv.valheimviki.domain.model.food.Food
 import com.rabbitv.valheimviki.domain.repository.Droppable
 import com.rabbitv.valheimviki.presentation.components.section_header.SectionHeader
+import com.rabbitv.valheimviki.presentation.components.section_header.SectionHeaderData
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.utils.FakeData
 
-data class HorizontalPagerWithHeaderData(
+@Immutable
+data class PagerHeaderData(
 	val title: String?,
 	val subTitle: String?,
-	val icon: ImageVector,
-	val iconRotationDegrees: Float = -85f,
-	val contentScale: ContentScale,
-	val starLevelIndex: Int,
-)
+	val icon: ImageVector
+) {
+	fun toSectionHeaderData(): SectionHeaderData =
+		SectionHeaderData(title, subTitle, icon)
+}
 
 @Composable
-fun <T : Droppable> HorizontalPagerWithHeader(
+internal fun <T : Droppable> HorizontalPagerWithHeader(
 	list: List<T>,
-	headerData: HorizontalPagerWithHeaderData,
+	headerData: PagerHeaderData,
 	modifier: Modifier = Modifier,
-	pagerState: PagerState,
+	pagerState: PagerState? = null,
 	itemContent: @Composable (item: T, pageIndex: Int) -> Unit
 ) {
+	val pagerState = pagerState ?: rememberPagerState(pageCount = { list.size })
 	Column(
 		modifier = modifier
 			.fillMaxWidth()
-
 			.padding(
 				start = BODY_CONTENT_PADDING.dp,
 				end = BODY_CONTENT_PADDING.dp,
@@ -60,11 +60,7 @@ fun <T : Droppable> HorizontalPagerWithHeader(
 			),
 		horizontalAlignment = Alignment.Start
 	) {
-
-		SectionHeader(
-			data = headerData,
-			modifier = Modifier
-		)
+		SectionHeader(data = headerData.toSectionHeaderData())
 		Spacer(modifier = Modifier.padding(6.dp))
 		BaseHorizontalPager(
 			list = list,
@@ -129,13 +125,10 @@ fun HorizontalPagerWithHeaderPreview() {
 		)
 	)
 
-	val headerData = HorizontalPagerWithHeaderData(
+	val headerData = PagerHeaderData(
 		title = "Craftable Items",
 		subTitle = "Items that can be created at this crafting station",
 		icon = Icons.Default.Build,
-		iconRotationDegrees = -85f,
-		contentScale = ContentScale.Crop,
-		starLevelIndex = 0
 	)
 
 	val pagerState = rememberPagerState(pageCount = { sampleFoodList.size })

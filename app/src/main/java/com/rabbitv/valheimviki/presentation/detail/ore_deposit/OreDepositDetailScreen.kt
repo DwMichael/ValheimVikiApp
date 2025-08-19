@@ -52,7 +52,7 @@ import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.LocalSharedTransitionScope
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.navigation.WorldDetailDestination
-import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
+import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
@@ -62,7 +62,7 @@ import com.rabbitv.valheimviki.presentation.components.horizontal_pager.Horizont
 import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDetailImageAnimated
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
-import com.rabbitv.valheimviki.presentation.detail.creature.components.horizontal_pager.DroppedItemsSection
+import com.rabbitv.valheimviki.presentation.components.horizontal_pager.DroppedItemsSection
 import com.rabbitv.valheimviki.presentation.detail.ore_deposit.model.OreDepositUiState
 import com.rabbitv.valheimviki.presentation.detail.ore_deposit.viewmodel.OreDepositViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
@@ -109,7 +109,7 @@ fun OreDepositDetailContent(
 ) {
 	val isRunning by remember { derivedStateOf { animatedVisibilityScope.transition.isRunning } }
 	val scrollState = rememberScrollState()
-	val handleItemClick = remember {
+	val handleClick = remember(onItemClick) {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
 	}
 	val pickaxesData = HorizontalPagerData(
@@ -242,7 +242,7 @@ fun OreDepositDetailContent(
 							HorizontalPagerSection(
 								list = uiState.relatedTools,
 								data = pickaxesData,
-								onItemClick = handleItemClick,
+								onItemClick = handleClick,
 							)
 						}
 						if (uiState.craftingStation.isNotEmpty()) {
@@ -250,19 +250,15 @@ fun OreDepositDetailContent(
 							HorizontalPagerSection(
 								list = uiState.craftingStation,
 								data = craftingObjectData,
-								onItemClick = handleItemClick,
+								onItemClick = handleClick,
 							)
 						}
 						if (uiState.relatedMaterials.isNotEmpty()) {
 							TridentsDividedRow()
 							DroppedItemsSection(
-								onItemClick = { clickedItemId, subCategory ->
-									val destination =
-										NavigationHelper.routeToMaterial(subCategory, clickedItemId)
-									onItemClick(destination)
-								},
+								onItemClick =handleClick,
 								list = uiState.relatedMaterials,
-								icon = Lucide.Gem,
+								icon = { Lucide.Gem },
 								starLevel = 0,
 								title = "Materials",
 								subTitle = "Unique drops are obtained by mining this ore",

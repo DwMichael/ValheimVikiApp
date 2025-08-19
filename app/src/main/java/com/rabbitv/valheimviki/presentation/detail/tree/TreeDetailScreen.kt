@@ -47,7 +47,7 @@ import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.LocalSharedTransitionScope
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.navigation.WorldDetailDestination
-import com.rabbitv.valheimviki.presentation.components.DetailExpandableText
+import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
@@ -57,7 +57,7 @@ import com.rabbitv.valheimviki.presentation.components.horizontal_pager.Horizont
 import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDetailImageAnimated
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
-import com.rabbitv.valheimviki.presentation.detail.creature.components.horizontal_pager.DroppedItemsSection
+import com.rabbitv.valheimviki.presentation.components.horizontal_pager.DroppedItemsSection
 import com.rabbitv.valheimviki.presentation.detail.tree.model.TreeDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.tree.viewmodel.TreeDetailScreenViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
@@ -116,7 +116,7 @@ fun TreeDetailContent(
 			itemContentScale = ContentScale.Crop
 		)
 	}
-	val handleItemClick = remember {
+	val handleClick = remember(onItemClick) {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
 	}
 
@@ -198,23 +198,16 @@ fun TreeDetailContent(
 						HorizontalPagerSection(
 							list = uiState.relatedAxes,
 							data = axesData,
-							onItemClick = handleItemClick,
+							onItemClick = handleClick,
 						)
 					}
 
 					if (uiState.relatedMaterials.isNotEmpty()) {
 						TridentsDividedRow()
 						DroppedItemsSection(
-							onItemClick = { clickedItemId, subCategory ->
-								val destination =
-									NavigationHelper.routeToMaterial(
-										subCategory,
-										clickedItemId
-									)
-								onItemClick(destination)
-							},
+							onItemClick = handleClick,
 							list = uiState.relatedMaterials,
-							icon = Lucide.Gem,
+							icon = { Lucide.Gem },
 							starLevel = 0,
 							title = "Materials",
 							subTitle = "Unique drops are obtained by cutting this tree.",
