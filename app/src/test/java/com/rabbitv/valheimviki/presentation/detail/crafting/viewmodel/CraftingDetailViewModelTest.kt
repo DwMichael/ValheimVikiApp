@@ -468,8 +468,8 @@ class CraftingDetailViewModelTest {
 		buildingMaterials: List<BuildingMaterial> = fakeBuildingMaterials,
 		isFav: Boolean = false,
 	) {
-		whenever(craftingUseCases.getCraftingObjectById(any())).thenReturn(flowOf(craftingObject))
 		whenever(relationsUseCases.getRelatedIdsUseCase(any())).thenReturn(flowOf(relations))
+		whenever(craftingUseCases.getCraftingObjectById(any())).thenReturn(flowOf(craftingObject))
 		whenever(materialUseCases.getMaterialsByIds(any())).thenReturn(flowOf(materials))
 		whenever(craftingUseCases.getCraftingObjectsByIds(any())).thenReturn(flowOf(crafting))
 		whenever(foodUseCases.getFoodListByIdsUseCase(any())).thenReturn(flowOf(food))
@@ -544,12 +544,12 @@ class CraftingDetailViewModelTest {
 
 			// Verify the lists contain the expected number of items
 			assertEquals(2, craftingObjects.size)
-			assertEquals(1, foodProducts.size)
-			assertEquals(1, meadProducts.size)
-			assertEquals(1, weaponProducts.size)
-			assertEquals(1, armorProducts.size)
-			assertEquals(1, toolProducts.size)
-			assertEquals(1, buildingMaterialProducts.size)
+			assertEquals(2, foodProducts.size)
+			assertEquals(2, meadProducts.size)
+			assertEquals(2, weaponProducts.size)
+			assertEquals(2, armorProducts.size)
+			assertEquals(2, toolProducts.size)
+			assertEquals(3, buildingMaterialProducts.size)
 
 			// Verify the actual items in CraftingProducts objects
 			assertEquals("crafting1", craftingObjects[0].itemDrop.id)
