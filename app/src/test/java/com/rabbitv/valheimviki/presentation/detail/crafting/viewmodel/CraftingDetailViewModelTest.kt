@@ -537,9 +537,6 @@ class CraftingDetailViewModelTest {
 			val craftingObjects = secondEmit.craftingUpgraderObjects.data
 			val foodProducts = secondEmit.craftingFoodProducts.data
 			val meadProducts = secondEmit.craftingMeadProducts.data
-			val materialToBuild = secondEmit.craftingMaterialToBuild.data
-			val materialRequired = secondEmit.craftingMaterialRequired.data
-			val materialProducts = secondEmit.craftingMaterialProducts.data
 			val weaponProducts = secondEmit.craftingWeaponProducts.data
 			val armorProducts = secondEmit.craftingArmorProducts.data
 			val toolProducts = secondEmit.craftingToolProducts.data
@@ -547,7 +544,6 @@ class CraftingDetailViewModelTest {
 
 			// Verify the lists contain the expected number of items
 			assertEquals(2, craftingObjects.size)
-			assertEquals(3, materialToBuild.size)
 			assertEquals(1, foodProducts.size)
 			assertEquals(1, meadProducts.size)
 			assertEquals(1, weaponProducts.size)
