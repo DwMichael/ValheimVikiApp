@@ -3,7 +3,6 @@ package com.rabbitv.valheimviki.presentation.detail.crafting
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -45,7 +44,6 @@ import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.domain.repository.ItemData
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
-import com.rabbitv.valheimviki.presentation.components.LoadingIndicator
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
@@ -58,7 +56,7 @@ import com.rabbitv.valheimviki.presentation.components.horizontal_pager.DroppedI
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
 import com.rabbitv.valheimviki.presentation.components.section_header.SectionHeader
 import com.rabbitv.valheimviki.presentation.components.section_header.SectionHeaderData
-import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
+import com.rabbitv.valheimviki.presentation.components.ui_section.UiSection
 import com.rabbitv.valheimviki.presentation.detail.crafting.model.CraftingDetailUiEvent
 import com.rabbitv.valheimviki.presentation.detail.crafting.model.CraftingDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.crafting.model.CraftingProducts
@@ -186,7 +184,7 @@ fun CraftingDetailContent(
 						)
 					}
 
-					CraftingSection(
+					UiSection(
 						state = uiState.craftingMaterialToBuild
 					) { data ->
 						SectionHeader(
@@ -210,7 +208,7 @@ fun CraftingDetailContent(
 						}
 					}
 
-					CraftingSection(
+					UiSection(
 						state = uiState.craftingUpgraderObjects
 					) { data ->
 						SectionHeader(
@@ -321,26 +319,6 @@ fun CraftingDetailContent(
 	}
 }
 
-@Composable
-private fun CraftingSection(
-	state: UIState<List<CraftingProducts>>,
-	sectionContent: @Composable (List<CraftingProducts>) -> Unit
-) {
-	when (state) {
-		is UIState.Error -> Unit
-		is UIState.Loading -> {
-			TridentsDividedRow()
-			LoadingIndicator(paddingValues = PaddingValues(16.dp))
-		}
-
-		is UIState.Success -> {
-			if (state.data.isNotEmpty()) {
-				TridentsDividedRow()
-				sectionContent(state.data)
-			}
-		}
-	}
-}
 
 @Composable
 private fun DroppedItemSection(
@@ -351,7 +329,7 @@ private fun DroppedItemSection(
 	title: String,
 	subTitle: String
 ) {
-	CraftingSection(
+	UiSection(
 		state = state,
 	) { data ->
 		DroppedItemsSection(
