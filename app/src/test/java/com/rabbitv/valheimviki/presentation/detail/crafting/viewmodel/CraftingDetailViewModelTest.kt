@@ -2,6 +2,7 @@ package com.rabbitv.valheimviki.presentation.detail.crafting.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
+import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.armor.Armor
 import com.rabbitv.valheimviki.domain.model.building_material.BuildingMaterial
 import com.rabbitv.valheimviki.domain.model.category.AppCategory
@@ -23,10 +24,13 @@ import com.rabbitv.valheimviki.domain.use_cases.mead.MeadUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.domain.use_cases.tool.ToolUseCases
 import com.rabbitv.valheimviki.domain.use_cases.weapon.WeaponUseCases
+import com.rabbitv.valheimviki.presentation.detail.crafting.model.CraftingDetailUiEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -39,6 +43,7 @@ import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -467,6 +472,7 @@ class CraftingDetailViewModelTest {
 		tools: List<ItemTool> = fakeTools,
 		buildingMaterials: List<BuildingMaterial> = fakeBuildingMaterials,
 		isFav: Boolean = false,
+		errorTest: Boolean = false
 	) {
 		whenever(relationsUseCases.getRelatedIdsUseCase(any())).thenReturn(flowOf(relations))
 		whenever(craftingUseCases.getCraftingObjectById(any())).thenReturn(flowOf(craftingObject))
@@ -476,7 +482,14 @@ class CraftingDetailViewModelTest {
 
 
 		whenever(meadUseCases.getMeadsByIdsUseCase(any())).thenReturn(flowOf(meads))
-		whenever(weaponUseCases.getWeaponsByIdsUseCase(any())).thenReturn(flowOf(weapons))
+		if (errorTest) {
+			whenever(weaponUseCases.getWeaponsByIdsUseCase(any())).thenReturn(flow {
+				throw RuntimeException("Database error")
+			})
+		} else {
+			whenever(weaponUseCases.getWeaponsByIdsUseCase(any())).thenReturn(flowOf(weapons))
+		}
+
 		whenever(armorUseCase.getArmorsByIdsUseCase(any())).thenReturn(flowOf(armors))
 		whenever(toolsUseCase.getToolsByIdsUseCase(any())).thenReturn(flowOf(tools))
 		whenever(buildingMaterialUseCases.getBuildMaterialByIds(any())).thenReturn(
@@ -484,7 +497,6 @@ class CraftingDetailViewModelTest {
 				buildingMaterials
 			)
 		)
-
 		whenever(favoriteUseCases.isFavorite(any())).thenReturn(flowOf(isFav))
 	}
 
@@ -569,6 +581,72 @@ class CraftingDetailViewModelTest {
 			) // no quantity in testRelations
 
 			assertFalse(secondEmit.isFavorite)
+		}
+	}
+
+	@Test
+	fun uiState_WhenWeaponUseCaseFails_ShouldEmitErrorForWeapons() = runTest {
+		emitValuesFromUseCases(
+			errorTest = true
+		)
+
+
+		val viewModel = craftingDetailViewModel()
+
+		// Act & Assert
+		viewModel.uiState.test {
+			awaitItem()
+			val stateAfterFetch = awaitItem()
+
+			assertTrue(stateAfterFetch.craftingWeaponProducts is UIState.Error)
+
+			val errorMessage = (stateAfterFetch.craftingWeaponProducts as UIState.Error).message
+
+			assertEquals("Database error", errorMessage)
+			assertTrue(stateAfterFetch.craftingFoodProducts is UIState.Success)
+			assertTrue(stateAfterFetch.craftingArmorProducts is UIState.Success)
+			assertEquals(2, stateAfterFetch.craftingFoodProducts.data.size)
+		}
+	}
+
+	@Test
+	fun uiState_WhenNoRelatedWeapons_ShouldEmitSuccessWithEmptyList() = runTest {
+
+		emitValuesFromUseCases(
+			weapons = emptyList()
+		)
+		val viewModel = craftingDetailViewModel()
+
+
+		viewModel.uiState.test {
+			awaitItem()
+			val state = awaitItem()
+
+			assertTrue(state.craftingWeaponProducts is UIState.Success)
+			assertTrue(state.craftingWeaponProducts.data.isEmpty())
+		}
+	}
+
+	@Test
+	fun uiEvent_ToggleFavorite_ShouldCallUseCase() = runTest {
+		emitValuesFromUseCases(isFav = false)
+		val viewModel = craftingDetailViewModel()
+
+		viewModel.uiState.test {
+			awaitItem()
+			awaitItem()
+			advanceUntilIdle()
+
+			viewModel.uiEvent(CraftingDetailUiEvent.ToggleFavorite)
+			advanceUntilIdle()
+
+			verify(favoriteUseCases.toggleFavoriteUseCase).invoke(
+				favorite = testCraftingObject.toFavorite(),
+				shouldBeFavorite = true
+			)
+
+			cancelAndIgnoreRemainingEvents()
+
 		}
 	}
 }

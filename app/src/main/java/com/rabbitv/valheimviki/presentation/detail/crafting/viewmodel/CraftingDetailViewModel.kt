@@ -330,7 +330,6 @@ class CraftingDetailViewModel @Inject constructor(
 				}
 			}
 		}
-
 	}
 }
 
