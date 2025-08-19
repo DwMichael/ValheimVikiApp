@@ -50,27 +50,28 @@ import com.composables.icons.lucide.Swords
 import com.composables.icons.lucide.Trophy
 import com.composables.icons.lucide.Unlink
 import com.rabbitv.valheimviki.R
-import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.aggresive.AggressiveCreature
 import com.rabbitv.valheimviki.domain.model.creature.aggresive.LevelCreatureData
-import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.food.Food
 import com.rabbitv.valheimviki.domain.model.food.FoodDrop
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.material.MaterialDrop
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.navigation.WorldDetailDestination
-import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
 import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCard
 import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.DroppedItemsSection
 import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDetailImage
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
+import com.rabbitv.valheimviki.presentation.components.ui_section.UiSection
 import com.rabbitv.valheimviki.presentation.detail.creature.aggressive_screen.model.AggressiveCreatureDetailUiState
+import com.rabbitv.valheimviki.presentation.detail.creature.aggressive_screen.model.AggressiveCreatureUiEvent
 import com.rabbitv.valheimviki.presentation.detail.creature.aggressive_screen.viewModel.AggressiveCreatureDetailScreenViewModel
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
 import com.rabbitv.valheimviki.presentation.detail.creature.components.column.StatColumn
@@ -88,11 +89,8 @@ fun AggressiveCreatureDetailScreen(
 ) {
 
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-	val onToggleFavorite = { favorite: Favorite, isFavorite: Boolean ->
-		viewModel.toggleFavorite(
-			favorite = favorite,
-			currentIsFavorite = isFavorite
-		)
+	val onToggleFavorite = {
+		viewModel.uiEvent(AggressiveCreatureUiEvent.ToggleFavorite)
 	}
 	AggressiveCreatureDetailContent(
 		onBack = onBack,
@@ -108,7 +106,7 @@ fun AggressiveCreatureDetailScreen(
 fun AggressiveCreatureDetailContent(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
-	onToggleFavorite: (favorite: Favorite, currentIsFavorite: Boolean) -> Unit,
+	onToggleFavorite: () -> Unit,
 	uiState: AggressiveCreatureDetailUiState,
 ) {
 
@@ -127,7 +125,6 @@ fun AggressiveCreatureDetailContent(
 				modifier = Modifier
 					.padding(padding)
 					.fillMaxWidth(),
-				beyondViewportPageCount = 1,
 			) { pageIndex ->
 
 				Box(
@@ -209,11 +206,14 @@ fun AggressiveCreatureDetailContent(
 								}
 							)
 						}
-						if (uiState.materialDrops.isNotEmpty()) {
-							SlavicDivider()
+
+						UiSection(
+							divider = { SlavicDivider() },
+							state = uiState.materialDrops,
+						) { state ->
 							DroppedItemsSection(
 								onItemClick = handleClick,
-								list = uiState.materialDrops,
+								list = state,
 								starLevel = pageIndex,
 								title = "Drop Items",
 								subTitle = "Materials that drop from creature after defeating",
@@ -221,11 +221,13 @@ fun AggressiveCreatureDetailContent(
 							)
 						}
 
-						if (uiState.foodDrops.isNotEmpty()) {
-							SlavicDivider()
+						UiSection(
+							divider = { SlavicDivider() },
+							state = uiState.foodDrops,
+						) { state ->
 							DroppedItemsSection(
 								onItemClick = handleClick,
-								list = uiState.foodDrops,
+								list = state,
 								icon = { Lucide.Beef },
 								starLevel = pageIndex,
 								title = "Food Drops",
@@ -254,12 +256,7 @@ fun AggressiveCreatureDetailContent(
 							.align(Alignment.TopEnd)
 							.padding(16.dp),
 						isFavorite = uiState.isFavorite,
-						onToggleFavorite = {
-							onToggleFavorite(
-								uiState.aggressiveCreature.toFavorite(),
-								uiState.isFavorite
-							)
-						},
+						onToggleFavorite = { onToggleFavorite() },
 					)
 				}
 			}
@@ -467,94 +464,96 @@ fun PreviewCreaturePage() {
 			description = "A calm and peaceful biome with lush fields and gentle hills.",
 			order = 1
 		),
-		materialDrops = listOf(
-			MaterialDrop(
-				itemDrop = Material(
-					id = "troll_hide",
-					category = "resource",
-					imageUrl = "https://example.com/material/troll_hide.png",
-					name = "Troll Hide",
-					description = "Thick and durable hide dropped by trolls.",
-					order = 5,
-					subCategory = "",
-					usage = "",
-					growthTime = "",
-					needCultivatorGround = "",
-					price = 332,
-					effect = "",
-					sellPrice = 2,
-					subType = ""
+		materialDrops = UIState.Success(
+			listOf(
+				MaterialDrop(
+					itemDrop = Material(
+						id = "troll_hide",
+						category = "resource",
+						imageUrl = "https://example.com/material/troll_hide.png",
+						name = "Troll Hide",
+						description = "Thick and durable hide dropped by trolls.",
+						order = 5,
+						subCategory = "",
+						usage = "",
+						growthTime = "",
+						needCultivatorGround = "",
+						price = 332,
+						effect = "",
+						sellPrice = 2,
+						subType = ""
+					),
+					quantityList = listOf(3, 5, 7),
+					chanceStarList = listOf(100, 75, 50)
 				),
-				quantityList = listOf(3, 5, 7),
-				chanceStarList = listOf(100, 75, 50)
-			),
-			MaterialDrop(
-				itemDrop = Material(
-					id = "troll_hide",
-					category = "resource",
-					imageUrl = "https://example.com/material/troll_hide.png",
-					name = "Troll Hide",
-					description = "Thick and durable hide dropped by trolls.",
-					order = 5,
-					subCategory = "",
-					usage = "",
-					growthTime = "",
-					needCultivatorGround = "",
-					price = 332,
-					effect = "",
-					sellPrice = 2,
-					subType = ""
+				MaterialDrop(
+					itemDrop = Material(
+						id = "troll_hide",
+						category = "resource",
+						imageUrl = "https://example.com/material/troll_hide.png",
+						name = "Troll Hide",
+						description = "Thick and durable hide dropped by trolls.",
+						order = 5,
+						subCategory = "",
+						usage = "",
+						growthTime = "",
+						needCultivatorGround = "",
+						price = 332,
+						effect = "",
+						sellPrice = 2,
+						subType = ""
+					),
+					quantityList = listOf(3, 5, 7),
+					chanceStarList = listOf(100, 75, 50)
 				),
-				quantityList = listOf(3, 5, 7),
-				chanceStarList = listOf(100, 75, 50)
-			),
-			MaterialDrop(
-				itemDrop = Material(
-					id = "troll_hide",
-					category = "resource",
-					imageUrl = "https://example.com/material/troll_hide.png",
-					name = "Troll Hide",
-					description = "Thick and durable hide dropped by trolls.",
-					order = 5,
-					subCategory = "",
-					usage = "",
-					growthTime = "",
-					needCultivatorGround = "",
-					price = 332,
-					effect = "",
-					sellPrice = 2,
-					subType = ""
-				),
-				quantityList = listOf(3, 5, 7),
-				chanceStarList = listOf(100, 75, 50)
+				MaterialDrop(
+					itemDrop = Material(
+						id = "troll_hide",
+						category = "resource",
+						imageUrl = "https://example.com/material/troll_hide.png",
+						name = "Troll Hide",
+						description = "Thick and durable hide dropped by trolls.",
+						order = 5,
+						subCategory = "",
+						usage = "",
+						growthTime = "",
+						needCultivatorGround = "",
+						price = 332,
+						effect = "",
+						sellPrice = 2,
+						subType = ""
+					),
+					quantityList = listOf(3, 5, 7),
+					chanceStarList = listOf(100, 75, 50)
+				)
 			)
 
 		),
-		foodDrops = listOf(
-			FoodDrop(
-				itemDrop = Food(
-					id = "raw_meat",
-					category = "food",
-					imageUrl = "https://example.com/food/raw_meat.png",
-					name = "Raw Meat",
-					description = "Uncooked meat dropped by wild creatures.",
-					order = 2,
-					health = 20,
-					stamina = 15,
-					duration = "20:00",
-					healing = 2,
-					subCategory = "",
-					eitr = 2,
-					weight = 0.2,
-					forkType = "",
-					stackSize = 23,
-				),
-				quantityList = listOf(1, 2, 3),
-				chanceStarList = listOf(100, 80, 60)
+		foodDrops = UIState.Success(
+			listOf(
+				FoodDrop(
+					itemDrop = Food(
+						id = "raw_meat",
+						category = "food",
+						imageUrl = "https://example.com/food/raw_meat.png",
+						name = "Raw Meat",
+						description = "Uncooked meat dropped by wild creatures.",
+						order = 2,
+						health = 20,
+						stamina = 15,
+						duration = "20:00",
+						healing = 2,
+						subCategory = "",
+						eitr = 2,
+						weight = 0.2,
+						forkType = "",
+						stackSize = 23,
+					),
+					quantityList = listOf(1, 2, 3),
+					chanceStarList = listOf(100, 80, 60)
+				)
 			)
-		),
-		isLoading = false,
-		error = null
+		)
 	)
 
 
@@ -562,17 +561,9 @@ fun PreviewCreaturePage() {
 		AggressiveCreatureDetailContent(
 			onBack = {},
 			onItemClick = {},
-			onToggleFavorite = { _, _ -> {} },
+			onToggleFavorite = { },
 			uiState = exampleUiState
 		)
 	}
 }
 
-
-//@Preview(name = "AggressiveCreatureDetailScreen")
-//@Composable
-//private fun PreviewAggressiveCreatureDetailScreen() {
-//    AggressiveCreatureDetailContent(
-//        uiState = AggressiveCreatureDetailUiState()
-//    )
-//}
