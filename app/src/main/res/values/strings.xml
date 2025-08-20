@@ -52,4 +52,5 @@
     <string name="crafting_stations_section">Crafting Stations section</string>
     <string name="crafting_stations">Crafting Stations</string>
     <string name="health">Health</string>
+    <string name="what_is_health">The amount of health points this boss has</string>
 </resources>

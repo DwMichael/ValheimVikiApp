@@ -44,7 +44,7 @@ import com.rabbitv.valheimviki.utils.FakeData
 
 @Composable
 fun CustomRowLayout(
-	onItemClick: (itemId: String) -> Unit = { _ -> {} },
+	onItemClick: (itemData: ItemData) -> Unit = { _ -> {} },
 	relatedSummoningItems: List<Material>,
 	modifier: Modifier,
 ) {
@@ -69,7 +69,7 @@ fun CustomRowLayout(
 
 @Composable
 fun ItemCard(
-	onItemClick: (itemId: String) -> Unit,
+	onItemClick: (itemData: ItemData) -> Unit,
 	list: List<ItemData>,
 	pageIndex: Int,
 	contentScale: ContentScale,
@@ -83,7 +83,7 @@ fun ItemCard(
                 spotColor = Color.White.copy(alpha = 0.25f)
             )
             .clickable {
-                onItemClick(list[pageIndex].id)
+                onItemClick(list[pageIndex])
             }
 	) {
 		list.let {
