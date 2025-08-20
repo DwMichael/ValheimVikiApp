@@ -28,10 +28,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -128,11 +130,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun ValheimVikiApp() {
 	ValheimVikiAppTheme {
-		SharedTransitionLayout {
-			CompositionLocalProvider(LocalSharedTransitionScope provides this) {
-				MainContainer()
-			}
-		}
+		MainContainer()
 	}
 }
 
@@ -163,12 +161,7 @@ fun MainContainer(
 		}
 	}
 
-	val transitionScope = LocalSharedTransitionScope.current
-		?: error("No SharedTransitionScope")
-
-	val running by remember {
-		derivedStateOf { transitionScope.isTransitionActive }
-	}
+	val isTransitionActive = remember { mutableStateOf(false) }
 
 	NavigationDrawer(
 		modifier = modifier,
@@ -177,7 +170,7 @@ fun MainContainer(
 		childNavController = { valheimVikiNavController },
 		items = drawerCollection,
 		isDetailScreen = { showTopAppBar },
-		isTransitionActive = { running },
+		isTransitionActive = { isTransitionActive.value },
 	) {
 
 		Scaffold(
@@ -190,7 +183,7 @@ fun MainContainer(
 					MainAppBar(
 						scope = scope,
 						drawerState = drawerState,
-						enabled = { running },
+						enabled = { !isTransitionActive.value },
 						onSearchBarClick = {
 							valheimVikiNavController.navigate(TopLevelDestination.Search)
 						},
@@ -213,10 +206,18 @@ fun MainContainer(
 					.padding(top = animatedTopPadding)
 					.fillMaxSize()
 			) {
-				ValheimNavGraph(
-					valheimVikiNavController = valheimVikiNavController,
-					innerPadding = PaddingValues(0.dp)
-				)
+				SharedTransitionLayout {
+					CompositionLocalProvider(LocalSharedTransitionScope provides this) {
+						LaunchedEffect(this.isTransitionActive) {
+							isTransitionActive.value = !this@SharedTransitionLayout.isTransitionActive
+						}
+						
+						ValheimNavGraph(
+							valheimVikiNavController = valheimVikiNavController,
+							innerPadding = PaddingValues(0.dp)
+						)
+					}
+				}
 			}
 		}
 	}
