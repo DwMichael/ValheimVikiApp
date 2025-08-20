@@ -29,7 +29,7 @@ fun SimpleTopBar(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 40.dp, start = 10.dp)
+                .padding(top = 50.dp, start = 10.dp)
         ) {
             FilledIconButton(
                 onClick = onClick,
