@@ -12,6 +12,7 @@ import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.get_local_Materials.GetLocalMaterialsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.material.get_material_by_id.GetMaterialByIdUseCase
 import com.rabbitv.valheimviki.domain.use_cases.material.get_materials_by_ids.GetMaterialsByIdsUseCase
+import com.rabbitv.valheimviki.domain.use_cases.material.get_materials_by_subCategory_and_ids.GetMaterialsBySubCategoryIdsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.material.get_materials_by_subcategory.GetMaterialsBySubCategoryUseCase
 import com.rabbitv.valheimviki.domain.use_cases.material.get_materials_by_subcategory_and_subtype.GetMaterialsBySubCategoryAndSubTypeUseCase
 import com.rabbitv.valheimviki.presentation.material.model.MaterialUiEvent
@@ -64,6 +65,8 @@ class MaterialListViewModelTest {
 	@Mock
 	private lateinit var getMaterialsBySubCategoryAndSubType: GetMaterialsBySubCategoryAndSubTypeUseCase
 
+	@Mock
+	private lateinit var getMaterialsBySubCategoryIdsUseCase: GetMaterialsBySubCategoryIdsUseCase
 
 	@BeforeEach
 	fun setUp() {
@@ -74,7 +77,8 @@ class MaterialListViewModelTest {
 			getMaterialsByIds = getMaterialsByIds,
 			getMaterialById = getMaterialById,
 			getMaterialsBySubCategory = getMaterialsBySubCategory,
-			getMaterialsBySubCategoryAndSubType = getMaterialsBySubCategoryAndSubType
+			getMaterialsBySubCategoryAndSubType = getMaterialsBySubCategoryAndSubType,
+			getMaterialsBySubCategoryAndIds = getMaterialsBySubCategoryIdsUseCase
 		)
 	}
 

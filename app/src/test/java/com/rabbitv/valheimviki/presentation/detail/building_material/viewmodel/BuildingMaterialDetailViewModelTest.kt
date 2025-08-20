@@ -147,6 +147,7 @@ class BuildingMaterialDetailViewModelTest {
 			getMaterialById = mock(),
 			getMaterialsBySubCategory = mock(),
 			getMaterialsBySubCategoryAndSubType = mock(),
+			getMaterialsBySubCategoryAndIds = mock()
 		)
 		favoriteUseCases = FavoriteUseCases(
 			isFavorite = mock(),

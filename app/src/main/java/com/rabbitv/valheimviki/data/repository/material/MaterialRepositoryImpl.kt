@@ -33,6 +33,13 @@ class MaterialRepositoryImpl @Inject constructor(
 		return materialDao.getMaterialsBySubCategory(subCategory).flowOn(ioDispatcher)
 	}
 
+	override fun getMaterialsByCategoryAndIds(
+		subCategory: String,
+		ids: List<String>
+	): Flow<List<Material>> {
+		return materialDao.getMaterialsByIdsAndCategory(subCategory,ids).flowOn(ioDispatcher)
+	}
+
 	override fun getMaterialsBySubCategoryAndSubType(
 		subCategory: String,
 		subType: String,

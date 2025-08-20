@@ -21,6 +21,8 @@ interface MaterialDao {
 
     @Query("SELECT * FROM materials WHERE category = 'MATERIAL' AND subCategory = :subCategory ")
     fun getMaterialsBySubCategory(subCategory: String): Flow<List<Material>>
+    @Query("SELECT * FROM materials WHERE id IN (:ids) AND category = 'MATERIAL' AND subCategory = :subCategory")
+    fun getMaterialsByIdsAndCategory(subCategory: String,ids: List<String>): Flow<List<Material>>
 
     @Query("SELECT * FROM materials WHERE category = 'MATERIAL' AND subCategory = :subCategory AND subType = :subType")
     fun getMaterialsBySubCategoryAndSubType(

@@ -9,6 +9,7 @@ interface MaterialRepository {
     fun getMaterialsByIds(ids: List<String>): Flow<List<Material>>
     fun getMaterialById(id: String): Flow<Material?>
     fun getMaterialsBySubCategory(subCategory: String): Flow<List<Material>>
+    fun getMaterialsByCategoryAndIds(subCategory: String,ids: List<String>): Flow<List<Material>>
     fun getMaterialsBySubCategoryAndSubType(
         subCategory: String,
         subType: String
