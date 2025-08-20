@@ -4,34 +4,45 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
+import com.rabbitv.valheimviki.data.mappers.creatures.toAggressiveCreature
+import com.rabbitv.valheimviki.data.mappers.creatures.toNPC
+import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
+import com.rabbitv.valheimviki.di.qualifiers.DefaultDispatcher
 import com.rabbitv.valheimviki.domain.mapper.CreatureFactory
-import com.rabbitv.valheimviki.domain.model.biome.Biome
-import com.rabbitv.valheimviki.domain.model.creature.npc.NPC
 import com.rabbitv.valheimviki.domain.model.favorite.Favorite
-import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.material.MaterialSubCategory
-import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
 import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.PointOfInterestUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
+import com.rabbitv.valheimviki.navigation.CreatureDetailDestination
+import com.rabbitv.valheimviki.presentation.detail.creature.main_boss_screen.model.MainBossUiEvent
+import com.rabbitv.valheimviki.presentation.detail.creature.npc.model.NpcDetailUIEvent
 import com.rabbitv.valheimviki.presentation.detail.creature.npc.model.NpcDetailUiState
-import com.rabbitv.valheimviki.utils.Constants.NPC_KEY
+import com.rabbitv.valheimviki.utils.extensions.combine
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class NpcDetailScreenViewModel @Inject constructor(
 	savedStateHandle: SavedStateHandle,
@@ -41,17 +52,71 @@ class NpcDetailScreenViewModel @Inject constructor(
 	private val materialUseCases: MaterialUseCases,
 	private val pointOfInterestUseCases: PointOfInterestUseCases,
 	private val favoriteUseCases: FavoriteUseCases,
+	@param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
-	private val _npcId: String =
-		checkNotNull(savedStateHandle[NPC_KEY])
-	private val _creature = MutableStateFlow<NPC?>(null)
-	private val _biome = MutableStateFlow<Biome?>(null)
-	private val _shopItems = MutableStateFlow<List<Material>>(emptyList())
-	private val _shopSellItems = MutableStateFlow<List<Material>>(emptyList())
-	private val _hildirChests = MutableStateFlow<List<Material>>(emptyList())
-	private val _chestsLocation = MutableStateFlow<List<PointOfInterest>>(emptyList())
-	private val _isLoading = MutableStateFlow<Boolean>(false)
-	private val _error = MutableStateFlow<String?>(null)
+	private val _npcId: String =savedStateHandle.toRoute<CreatureDetailDestination.NpcDetail>().npcId
+
+	private val _creature = creatureUseCases.getCreatureById(_npcId)
+		.map { creature -> creature?.toNPC() }
+		.stateIn(
+			viewModelScope,
+			started = SharingStarted.WhileSubscribed(5000),
+			initialValue = null
+		)
+	private val _isFavorite = favoriteUseCases.isFavorite(_npcId)
+		.distinctUntilChanged()
+		.stateIn(
+			scope = viewModelScope,
+			started = SharingStarted.WhileSubscribed(5_000),
+			initialValue = false
+		)
+	private val _relationObjects =
+		relationUseCases.getRelatedIdsUseCase(_npcId).stateIn(
+			scope = viewModelScope,
+			started = SharingStarted.WhileSubscribed(5_000),
+			initialValue = emptyList()
+		)
+	private val idsAndMap: Flow<List<String>> =
+		_relationObjects
+			.map { list -> list.map { it.id } }
+			.distinctUntilChanged()
+			.flowOn(defaultDispatcher)
+	private val _biome = idsAndMap.combine(
+		biomeUseCases.getLocalBiomesUseCase(),
+	) { ids, biomes ->
+		biomes.find { it.id in ids}
+	}.stateIn(
+		viewModelScope,
+		started = SharingStarted.WhileSubscribed(5000),
+		initialValue = null
+	)
+	private val _shopItems =
+		idsAndMap.flatMapLatest { ids ->
+			materialUseCases.getMaterialsBySubCategoryAndIds(MaterialSubCategory.SHOP.toString(), ids)
+		}.distinctUntilChanged()
+			.map { UIState.Success(it.sortedBy { it.order }) }
+			.flowOn(defaultDispatcher)
+	private val _shopSellItems =
+		idsAndMap.flatMapLatest { ids ->
+			materialUseCases.getMaterialsBySubCategoryAndIds(MaterialSubCategory.VALUABLE.toString(), ids)
+		}.distinctUntilChanged()
+			.map { UIState.Success(it.sortedBy { it.order }) }
+			.flowOn(defaultDispatcher)
+	private val _hildirChests =
+		idsAndMap.flatMapLatest { ids ->
+			materialUseCases.getMaterialsBySubCategoryAndIds(MaterialSubCategory.MINI_BOSS_DROP.toString(), ids)
+		}.distinctUntilChanged()
+			.map { UIState.Success(it.sortedBy { it.order }) }
+			.flowOn(defaultDispatcher)
+
+
+	private val _chestsLocation =
+		idsAndMap.flatMapLatest { ids ->
+			pointOfInterestUseCases.getPointsOfInterestByIdsUseCase(ids)
+		}.distinctUntilChanged()
+			.map { UIState.Success(it.sortedBy { it.order }) }
+			.flowOn(defaultDispatcher)
+
 
 
 	val uiState = combine(
@@ -61,126 +126,35 @@ class NpcDetailScreenViewModel @Inject constructor(
 		_shopSellItems,
 		_hildirChests,
 		_chestsLocation,
-		favoriteUseCases.isFavorite(_npcId)
-			.flowOn(Dispatchers.IO),
-		_isLoading,
-		_error,
-	) { values ->
-		@Suppress("UNCHECKED_CAST")
-		(NpcDetailUiState(
-			npc = values[0] as NPC?,
-			biome = values[1] as Biome?,
-			shopItems = values[2] as List<Material>,
-			shopSellItems = values[3] as List<Material>,
-			hildirChests = values[4] as List<Material>,
-			chestsLocation = values[5] as List<PointOfInterest>,
-			isFavorite = values[6] as Boolean,
-			isLoading = values[7] as Boolean,
-			error = values[8] as String?
-		))
+		_isFavorite
+	) { npc, biome, shopItems, shopSellItems,hidirChests, chestsLocation,favorite ->
+		NpcDetailUiState(
+			npc = npc,
+			biome = biome,
+			shopItems = shopItems,
+			shopSellItems = shopSellItems,
+			hildirChests = hidirChests,
+			chestsLocation = chestsLocation,
+			isFavorite = favorite
+		)
 	}.stateIn(
 		scope = viewModelScope,
 		started = SharingStarted.Companion.WhileSubscribed(5000),
 		initialValue = NpcDetailUiState()
 	)
 
-	init {
-		launch()
-	}
 
-
-	internal fun launch() {
-		try {
-			_isLoading.value = true
-			viewModelScope.launch(Dispatchers.IO) {
-
-				_creature.value = CreatureFactory.createFromCreature(
-					creatureUseCases.getCreatureById(_npcId).first()
-				)
-
-				val relatedIds: List<String> = async {
-					relationUseCases.getRelatedIdsUseCase(_npcId)
-						.first()
-						.map { it.id }
-				}.await()
-
-				val deferreds = listOf(
-					async {
-						val biome = biomeUseCases.getLocalBiomesUseCase().first()
-						_biome.value = biome.find {
-							it.id in relatedIds
-						}
-					},
-					async {
-						try {
-							val materials =
-								materialUseCases.getMaterialsBySubCategory(MaterialSubCategory.SHOP)
-									.first()
-									.filter {
-										it.id in relatedIds
-									}
-							_shopItems.value = materials.sortedBy { it.order }
-						} catch (e: Exception) {
-							Log.e("NP shop Items Detail ViewModel", "$e")
-							_shopItems.value = emptyList()
-						}
-					},
-					async {
-						try {
-							val materials =
-								materialUseCases.getMaterialsBySubCategory(MaterialSubCategory.MINI_BOSS_DROP)
-									.first()
-									.filter {
-										it.id in relatedIds
-									}
-							_hildirChests.value = materials.sortedBy { it.order }
-						} catch (e: Exception) {
-							Log.e("hildir chests NPC Detail ViewModel", "$e")
-							_hildirChests.value = emptyList()
-						}
-					},
-					async {
-						try {
-							_chestsLocation.value =
-								pointOfInterestUseCases.getPointsOfInterestByIdsUseCase(relatedIds)
-									.first()
-									.sortedBy { it.order }
-						} catch (e: Exception) {
-							Log.e("chests locations NPC Detail ViewModel", "$e")
-							_chestsLocation.value = emptyList()
-						}
-					},
-					async {
-						try {
-							val materials =
-								materialUseCases.getMaterialsBySubCategory(MaterialSubCategory.VALUABLE)
-									.first()
-									.filter {
-										it.id in relatedIds
-									}
-							_shopSellItems.value = materials.sortedBy { it.order }
-						} catch (e: Exception) {
-							Log.e("Shop Sell Items NPC Detail ViewModel", "$e")
-							_shopSellItems.value = emptyList()
-						}
-					},
-				)
-				deferreds.awaitAll()
-			}
-			_isLoading.value = false
-		} catch (e: Exception) {
-			Log.e("General fetch error PassiveDetailViewModel", e.message.toString())
-			_isLoading.value = false
-			_error.value = e.message
-		}
-	}
-
-	fun toggleFavorite(favorite: Favorite, currentIsFavorite: Boolean) {
-		viewModelScope.launch {
-			if (currentIsFavorite) {
-				favoriteUseCases.deleteFavoriteUseCase(favorite)
-			} else {
-				favoriteUseCases.addFavoriteUseCase(favorite)
+	fun uiEvent(event: NpcDetailUIEvent) {
+		when (event) {
+			NpcDetailUIEvent.ToggleFavorite -> {
+				viewModelScope.launch {
+					_creature.value?.let { bM ->
+						favoriteUseCases.toggleFavoriteUseCase(
+							bM.toFavorite(),
+							shouldBeFavorite = !_isFavorite.value
+						)
+					}
+				}
 			}
 		}
 	}
