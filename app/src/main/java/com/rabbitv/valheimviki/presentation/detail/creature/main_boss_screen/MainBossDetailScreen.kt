@@ -1,17 +1,10 @@
 package com.rabbitv.valheimviki.presentation.detail.creature.main_boss_screen
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.animation.core.EaseOutCubic
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,7 +24,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -79,6 +71,7 @@ import com.rabbitv.valheimviki.presentation.components.grid.nested.NestedItems
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDetailImageAnimated
+
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.components.ui_section.UiSection
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithImageAndTitle
@@ -91,7 +84,6 @@ import com.rabbitv.valheimviki.presentation.detail.creature.main_boss_screen.mod
 import com.rabbitv.valheimviki.presentation.detail.creature.main_boss_screen.model.MainBossUiEvent
 import com.rabbitv.valheimviki.presentation.detail.creature.main_boss_screen.viewmodel.MainBossScreenViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
-import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -114,7 +106,9 @@ fun MainBossDetailScreen(
 		sharedTransitionScope = sharedTransitionScope,
 		mainBossUiState = mainBossUiState
 	)
+
 }
+
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -128,338 +122,278 @@ fun MainBossContent(
 ) {
 	val isRunning by remember { derivedStateOf { animatedVisibilityScope.transition.isRunning } }
 	val scrollState = rememberScrollState()
-	
-	// Optimize remember blocks by reducing computations
 	val handleClick = remember(onItemClick) {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
 	}
-	
-	val dropData = remember {
-		HorizontalPagerData(
-			title = "Drop Items",
-			subTitle = "Items that drop from boss after defeating him",
-			icon = Lucide.Trophy,
-			iconRotationDegrees = 0f,
-			itemContentScale = ContentScale.Crop
-		)
-	}
-	
+	val dropData = HorizontalPagerData(
+		title = "Drop Items",
+		subTitle = "Items that drop from boss after defeating him",
+		icon = Lucide.Trophy,
+		iconRotationDegrees = 0f,
+		itemContentScale = ContentScale.Crop
+	)
 	val painter = painterResource(R.drawable.summoning_bg)
-
-	
 	val isStatInfoExpanded = remember {
 		List(5) {
 			mutableStateOf(false)
 		}
 	}
 
-	// Track if content is fully loaded for lazy loading optimization
-	val isContentLoaded = remember {
-		mutableStateOf(false)
-	}
 
-	// Delay loading of heavy content until after initial render
-	LaunchedEffect(mainBossUiState.mainBoss) {
-		if (mainBossUiState.mainBoss != null) {
-			delay(100) // Small delay to prioritize initial render
-			isContentLoaded.value = true
-		}
-	}
 
 	Scaffold(
 		content = { padding ->
-			AnimatedContent(
-				targetState = mainBossUiState.mainBoss != null,
-				modifier = Modifier.fillMaxSize(),
-				transitionSpec = {
-					if (!targetState && initialState) {
-						fadeIn(
-							animationSpec = tween(
-								durationMillis = 650,
-								delayMillis = 0
-							)
-						) + slideInVertically(
-							initialOffsetY = { height -> height / 25 },
-							animationSpec = tween(
-								durationMillis = 650,
-								delayMillis = 0,
-								easing = EaseOutCubic
-							)
-						) togetherWith
-								fadeOut(
-									animationSpec = tween(
-										durationMillis = 200
-									)
-								)
-					} else {
-						fadeIn(animationSpec = tween(durationMillis = 300)) togetherWith
-								fadeOut(animationSpec = tween(durationMillis = 300))
-					}
-				},
-				label = "LoadingStateTransition"
-			) { isLoaded ->
-				if (isLoaded && mainBossUiState.mainBoss != null) {
-					BgImage()
-					Box(
+			if (mainBossUiState.mainBoss != null) {
+				BgImage()
+				Box(
+					modifier = Modifier
+						.fillMaxSize()
+						.padding(padding)
+				) {
+					Column(
 						modifier = Modifier
+							.testTag("MainBossDetailScreen")
 							.fillMaxSize()
-							.padding(padding)
+							.verticalScroll(scrollState, enabled = !isRunning),
+						verticalArrangement = Arrangement.Top,
+						horizontalAlignment = Alignment.Start,
 					) {
-						Column(
-							modifier = Modifier
-								.testTag("MainBossDetailScreen")
-								.fillMaxSize()
-								.verticalScroll(scrollState, enabled = !isRunning),
-							verticalArrangement = Arrangement.Top,
-							horizontalAlignment = Alignment.Start,
-						) {
-							// Critical content - load immediately
-							MainDetailImageAnimated(
-								sharedTransitionScope = sharedTransitionScope,
-								animatedVisibilityScope = animatedVisibilityScope,
-								textAlign = TextAlign.Center,
-								id = mainBossUiState.mainBoss.id,
-								imageUrl = mainBossUiState.mainBoss.imageUrl,
-								title = mainBossUiState.mainBoss.name
-							)
-							DetailExpandableText(
-								text = mainBossUiState.mainBoss.description,
-								boxPadding = BODY_CONTENT_PADDING.dp
-							)
-							
-							// Lazy load secondary content
-							if (isContentLoaded.value) {
-								TridentsDividedRow(text = "BOSS DETAIL")
-								mainBossUiState.relatedBiome?.let { biome ->
-									CardWithOverlayLabel(
-										painter = rememberAsyncImagePainter(biome.imageUrl),
-										content = {
-											Row(
-												modifier = Modifier.clickable { handleClick(biome) }
-											) {
-												Box(
-													modifier = Modifier.fillMaxHeight()
-												) {
-													OverlayLabel(
-														icon = Lucide.TreePine,
-														label = " PRIMARY SPAWN",
-													)
-												}
-												Text(
-													biome.name.uppercase(),
-													style = MaterialTheme.typography.bodyLarge,
-													modifier = Modifier
-														.align(Alignment.CenterVertically)
-														.fillMaxWidth()
-														.padding(8.dp),
-													color = Color.White,
-													textAlign = TextAlign.Center
-												)
-											}
-										}
-									)
-								}
-								mainBossUiState.relatedForsakenAltar?.let {
-									TridentsDividedRow()
-									ImageWithTopLabel(
-										onItemClick = handleClick,
-										itemData = mainBossUiState.relatedForsakenAltar,
-										horizontalDividerWidth = 250.dp,
-										textStyle = MaterialTheme.typography.titleLarge
-									)
-								}
-								SlavicDivider()
-								UiSection(
-									state = mainBossUiState.relatedSummoningItems
-								) { data ->
-									CardWithOverlayLabel(
-										height = 180.dp,
-										alpha = 0.1f,
-										painter = painter,
-										content = {
-											Column {
-												Box(
-													modifier = Modifier.fillMaxWidth()
-												) {
-													OverlayLabel(
-														icon = Lucide.Flame,
-														label = "SUMMONING ITEMS",
-													)
-												}
-												CustomRowLayout(
-													onItemClick = handleClick,
-													relatedSummoningItems = data,
-													modifier = Modifier.weight(1f)
-												)
-											}
-										}
-									)
-								}
-								UiSection(
-									state = mainBossUiState.relatedSummoningItems
-								) { data ->
-									HorizontalPagerSection(
-										onItemClick = handleClick,
-										list = data,
-										data = dropData
-									)
-								}
-								GreenTorchesDivider(text = "FORSAKEN POWER")
-								mainBossUiState.trophy?.let { trophy ->
+						MainDetailImageAnimated(
+							sharedTransitionScope = sharedTransitionScope,
+							animatedVisibilityScope = animatedVisibilityScope,
+							textAlign = TextAlign.Center,
+							id = mainBossUiState.mainBoss.id,
+							imageUrl = mainBossUiState.mainBoss.imageUrl,
+							title = mainBossUiState.mainBoss.name
+						)
+						DetailExpandableText(
+							text = mainBossUiState.mainBoss.description,
+							boxPadding = BODY_CONTENT_PADDING.dp
+						)
+						TridentsDividedRow(text = "BOSS DETAIL")
+						mainBossUiState.relatedBiome?.let { biome ->
+							CardWithOverlayLabel(
+								painter = rememberAsyncImagePainter(mainBossUiState.relatedBiome.imageUrl),
+								content = {
 									Row(
-										modifier = Modifier.padding(BODY_CONTENT_PADDING.dp)
+										modifier = Modifier.clickable { handleClick(biome) }
 									) {
 										Box(
-											modifier = Modifier.weight(1f)
+											modifier = Modifier.fillMaxHeight()
 										) {
-											CardWithTrophy(
-												onCardClicked = {handleClick(trophy)},
-												forsakenPower = mainBossUiState.mainBoss.forsakenPower,
-												trophyUrl = trophy.imageUrl
+											OverlayLabel(
+												icon = Lucide.TreePine,
+												label = " PRIMARY SPAWN",
 											)
 										}
-
-										Spacer(
-											modifier = Modifier.width(15.dp)
-										)
-
-										Box(
-											modifier = Modifier.weight(1f)
-										) {
-											mainBossUiState.sacrificialStones?.let { sacrificialStones ->
-												CardWithImageAndTitle(
-													onCardClick = {handleClick(sacrificialStones)},
-													title = "WHERE TO HANG THE BOSS TROPHY",
-													imageUrl = sacrificialStones.imageUrl,
-													itemName = sacrificialStones.name,
-													contentScale = ContentScale.Crop,
-												)
-											}
-										}
-									}
-								}
-								TridentsDividedRow(text = "BOSS STATS")
-
-								if (mainBossUiState.mainBoss.baseHP.toString().isNotBlank()) {
-									DarkGlassStatCard(
-										modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-										icon = Lucide.Heart,
-										label = stringResource(R.string.health),
-										value = mainBossUiState.mainBoss.baseHP.toString(),
-										expand = {
-											isStatInfoExpanded[0].value = !isStatInfoExpanded[0].value
-										},
-										isExpanded = isStatInfoExpanded[0].value
-									)
-									AnimatedVisibility(isStatInfoExpanded[0].value) {
 										Text(
-											text = stringResource(R.string.what_is_health),
-											modifier = Modifier.padding(
-												start = BODY_CONTENT_PADDING.dp * 2,
-												end = BODY_CONTENT_PADDING.dp
-											),
-											style = MaterialTheme.typography.bodyLarge
+											biome.name.uppercase(),
+											style = MaterialTheme.typography.bodyLarge,
+											modifier = Modifier
+												.align(Alignment.CenterVertically)
+												.fillMaxWidth()
+												.padding(8.dp),
+											color = Color.White,
+											textAlign = TextAlign.Center
+										)
+									}
+
+								}
+							)
+						}
+						mainBossUiState.relatedForsakenAltar?.let {
+							TridentsDividedRow()
+							ImageWithTopLabel(
+								onItemClick = handleClick,
+								itemData = mainBossUiState.relatedForsakenAltar,
+								horizontalDividerWidth = 250.dp,
+								textStyle = MaterialTheme.typography.titleLarge
+							)
+						}
+						SlavicDivider()
+						UiSection(
+							state = mainBossUiState.relatedSummoningItems
+						) { data ->
+							CardWithOverlayLabel(
+								height = 180.dp,
+								alpha = 0.1f,
+								painter = painter,
+								content = {
+									Column {
+										Box(
+											modifier = Modifier.fillMaxWidth()
+										) {
+											OverlayLabel(
+
+												icon = Lucide.Flame,
+												label = "SUMMONING ITEMS",
+											)
+										}
+										CustomRowLayout(
+											onItemClick = handleClick,
+											relatedSummoningItems = data,
+											modifier = Modifier.weight(1f)
+										)
+
+									}
+								}
+							)
+						}
+						UiSection(
+							state = mainBossUiState.relatedSummoningItems
+						) { data ->
+							HorizontalPagerSection(
+								onItemClick = handleClick,
+								list = data,
+								data = dropData
+							)
+						}
+						GreenTorchesDivider(text = "FORSAKEN POWER")
+						mainBossUiState.trophy?.let { trophy ->
+							Row(
+								modifier = Modifier.padding(BODY_CONTENT_PADDING.dp)
+							) {
+								Box(
+									modifier = Modifier.weight(1f)
+								) {
+									CardWithTrophy(
+										onCardClicked = {handleClick(trophy)},
+										forsakenPower = mainBossUiState.mainBoss.forsakenPower,
+										trophyUrl = trophy.imageUrl
+									)
+								}
+
+								Spacer(
+									modifier = Modifier.width(15.dp)
+								)
+
+								Box(
+									modifier = Modifier.weight(1f)
+								) {
+									mainBossUiState.sacrificialStones?.let { sacrificialStones ->
+										CardWithImageAndTitle(
+											onCardClick = {handleClick(sacrificialStones)},
+											title = "WHERE TO HANG THE BOSS TROPHY",
+											imageUrl = sacrificialStones.imageUrl,
+											itemName = sacrificialStones.name,
+											contentScale = ContentScale.Crop,
 										)
 									}
 								}
-
-								if (mainBossUiState.mainBoss.baseDamage.isNotBlank()) {
-									DarkGlassStatCard(
-										modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-										Lucide.Swords,
-										stringResource(R.string.base_damage),
-										"",
-										expand = {
-											isStatInfoExpanded[1].value = !isStatInfoExpanded[1].value
-										},
-										isExpanded = isStatInfoExpanded[1].value
-									)
-									AnimatedVisibility(isStatInfoExpanded[1].value) {
-										StatColumn(mainBossUiState.mainBoss.baseDamage)
-									}
-								}
-								if (mainBossUiState.mainBoss.weakness.isNotBlank()) {
-									DarkGlassStatCard(
-										modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-										Lucide.Unlink,
-										stringResource(R.string.weakness),
-										"",
-										expand = {
-											isStatInfoExpanded[2].value = !isStatInfoExpanded[2].value
-										},
-										isExpanded = isStatInfoExpanded[2].value
-									)
-									AnimatedVisibility(isStatInfoExpanded[2].value) {
-										StatColumn(mainBossUiState.mainBoss.weakness)
-									}
-								}
-								if (mainBossUiState.mainBoss.resistance.isNotBlank()) {
-									DarkGlassStatCard(
-										modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-										Lucide.Grab,
-										stringResource(R.string.resistance),
-										"",
-										expand = {
-											isStatInfoExpanded[3].value = !isStatInfoExpanded[3].value
-										},
-										isExpanded = isStatInfoExpanded[3].value
-									)
-									AnimatedVisibility(isStatInfoExpanded[3].value) {
-										StatColumn(mainBossUiState.mainBoss.resistance)
-									}
-								}
-								if (mainBossUiState.mainBoss.collapseImmune.isNotBlank()) {
-									DarkGlassStatCard(
-										modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-										icon = Lucide.Shield,
-										label = stringResource(R.string.immune),
-										value = "",
-										expand = {
-											isStatInfoExpanded[4].value = !isStatInfoExpanded[4].value
-										},
-										isExpanded = isStatInfoExpanded[4].value
-									)
-									AnimatedVisibility(isStatInfoExpanded[4].value) {
-										StatColumn(mainBossUiState.mainBoss.collapseImmune)
-									}
-								}
-
-								SlavicDivider()
 							}
-							Box(modifier = Modifier.size(70.dp))
 						}
-						if (!isRunning) {
-							AnimatedBackButton(
-								modifier = Modifier
-									.align(Alignment.TopStart)
-									.padding(16.dp),
-								scrollState = scrollState,
-								onBack = onBack,
+						TridentsDividedRow(text = "BOSS STATS")
+
+						if (mainBossUiState.mainBoss.baseHP.toString().isNotBlank()) {
+							DarkGlassStatCard(
+								modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+								icon = Lucide.Heart,
+								label = stringResource(R.string.health),
+								value = mainBossUiState.mainBoss.baseHP.toString(),
+								expand = {
+									isStatInfoExpanded[0].value = !isStatInfoExpanded[0].value
+								},
+								isExpanded = isStatInfoExpanded[0].value
 							)
-							FavoriteButton(
-								modifier = Modifier
-									.align(Alignment.TopEnd)
-									.padding(16.dp),
-								isFavorite = mainBossUiState.isFavorite,
-								onToggleFavorite = { onToggleFavorite() },
-							)
+							AnimatedVisibility(isStatInfoExpanded[0].value) {
+								Text(
+									text = stringResource(R.string.what_is_health),
+									modifier = Modifier.padding(
+										start = BODY_CONTENT_PADDING.dp * 2,
+										end = BODY_CONTENT_PADDING.dp
+									),
+									style = MaterialTheme.typography.bodyLarge
+								)
+							}
 						}
+
+						if (mainBossUiState.mainBoss.baseDamage.isNotBlank()) {
+							DarkGlassStatCard(
+								modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+								Lucide.Swords,
+								stringResource(R.string.base_damage),
+								"",
+								expand = {
+									isStatInfoExpanded[1].value = !isStatInfoExpanded[1].value
+								},
+								isExpanded = isStatInfoExpanded[1].value
+							)
+							AnimatedVisibility(isStatInfoExpanded[1].value) {
+								StatColumn(mainBossUiState.mainBoss.baseDamage)
+							}
+						}
+						if (mainBossUiState.mainBoss.weakness.isNotBlank()) {
+							DarkGlassStatCard(
+								modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+								Lucide.Unlink,
+								stringResource(R.string.weakness),
+								"",
+								expand = {
+									isStatInfoExpanded[2].value = !isStatInfoExpanded[2].value
+								},
+								isExpanded = isStatInfoExpanded[2].value
+							)
+							AnimatedVisibility(isStatInfoExpanded[2].value) {
+								StatColumn(mainBossUiState.mainBoss.weakness)
+							}
+						}
+						if (mainBossUiState.mainBoss.resistance.isNotBlank()) {
+							DarkGlassStatCard(
+								modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+								Lucide.Grab,
+								stringResource(R.string.resistance),
+								"",
+								expand = {
+									isStatInfoExpanded[3].value = !isStatInfoExpanded[3].value
+								},
+								isExpanded = isStatInfoExpanded[3].value
+							)
+							AnimatedVisibility(isStatInfoExpanded[3].value) {
+								StatColumn(mainBossUiState.mainBoss.resistance)
+							}
+						}
+						if (mainBossUiState.mainBoss.collapseImmune.isNotBlank()) {
+							DarkGlassStatCard(
+								modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+								icon = Lucide.Shield,
+								label = stringResource(R.string.immune),
+								value = "",
+								expand = {
+									isStatInfoExpanded[4].value = !isStatInfoExpanded[4].value
+								},
+								isExpanded = isStatInfoExpanded[4].value
+							)
+							AnimatedVisibility(isStatInfoExpanded[4].value) {
+								StatColumn(mainBossUiState.mainBoss.collapseImmune)
+							}
+						}
+
+						SlavicDivider()
+						Box(modifier = Modifier.size(70.dp))
 					}
-				} else {
-					// Loading state
-					Box(
-						modifier = Modifier
-							.fillMaxSize()
-							.padding(padding),
-						contentAlignment = Alignment.Center
-					) {
-						Box(modifier = Modifier.size(45.dp))
+					if (!isRunning) {
+						AnimatedBackButton(
+							modifier = Modifier
+								.align(Alignment.TopStart)
+								.padding(16.dp),
+							scrollState = scrollState,
+							onBack = onBack,
+						)
+						FavoriteButton(
+							modifier = Modifier
+								.align(Alignment.TopEnd)
+								.padding(16.dp),
+							isFavorite = mainBossUiState.isFavorite,
+							onToggleFavorite = { onToggleFavorite() },
+						)
 					}
 				}
 			}
+
 		}
 	)
 }
+
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Preview(
@@ -480,4 +414,5 @@ private fun PreviewCreatureDetail() {
 			)
 		}
 	}
+
 }
