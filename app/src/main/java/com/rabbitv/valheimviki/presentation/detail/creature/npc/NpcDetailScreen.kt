@@ -64,6 +64,7 @@ import com.rabbitv.valheimviki.domain.model.creature.npc.NPC
 import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.domain.repository.ItemData
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
@@ -74,8 +75,10 @@ import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
 import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDetailImage
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
+import com.rabbitv.valheimviki.presentation.components.ui_section.UiSection
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.OverlayLabel
+import com.rabbitv.valheimviki.presentation.detail.creature.npc.model.NpcDetailUIEvent
 import com.rabbitv.valheimviki.presentation.detail.creature.npc.model.NpcDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.creature.npc.viewmodel.NpcDetailScreenViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
@@ -83,7 +86,7 @@ import com.rabbitv.valheimviki.ui.theme.DarkGrey
 import com.rabbitv.valheimviki.ui.theme.DarkWood
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
-import com.rabbitv.valheimviki.utils.FakeData.fakeNpcDetailUiState
+
 import com.rabbitv.valheimviki.utils.valid
 
 @Composable
@@ -93,11 +96,8 @@ fun NpcDetailScreen(
 	viewModel: NpcDetailScreenViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-	val onToggleFavorite = { favorite: Favorite, isFavorite: Boolean ->
-		viewModel.toggleFavorite(
-			favorite = favorite,
-			currentIsFavorite = isFavorite
-		)
+	val onToggleFavorite = {
+		viewModel.uiEvent(NpcDetailUIEvent.ToggleFavorite)
 	}
 	NpcDetailContent(
 		onBack = onBack,
@@ -113,7 +113,7 @@ fun NpcDetailScreen(
 fun NpcDetailContent(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
-	onToggleFavorite: (favorite: Favorite, currentIsFavorite: Boolean) -> Unit,
+	onToggleFavorite: () -> Unit,
 	uiState: NpcDetailUiState,
 ) {
 	val isExpandable = remember { mutableStateOf(false) }
@@ -250,17 +250,28 @@ fun NpcDetailContent(
 							boxPadding = BODY_CONTENT_PADDING.dp
 						)
 					}
-					if (uiState.npc.name == "Hildir" && uiState.chestsLocation.isNotEmpty() && uiState.hildirChests.isNotEmpty()) {
-						SlavicDivider()
-						TridentsDividedRow(text = "QUESTS")
-						HildirQuestSection(
-							onItemClick = onItemClick,
-							chestsLocations = uiState.chestsLocation,
-							chestList = uiState.hildirChests,
-						)
+					if (uiState.npc.name == "Hildir") {
+						UiSection(
+
+							divider = { TridentsDividedRow(text = "QUESTS") },
+							state = uiState.chestsLocation
+						) { locations ->
+							UiSection(
+								state = uiState.hildirChests,
+								divider = {}
+							) { chests ->
+								HildirQuestSection(
+									onItemClick = onItemClick,
+									chestsLocations = locations,
+									chestList = chests,
+								)
+							}
+						}
 					}
-					if (uiState.shopItems.isNotEmpty()) {
-						TridentsDividedRow(text = "TRADING")
+					UiSection(
+						state =uiState.shopItems ,
+						divider = {	TridentsDividedRow(text = "TRADING")}
+					) { data ->
 						Row(
 							modifier = Modifier
 								.padding(
@@ -284,12 +295,16 @@ fun NpcDetailContent(
 						}
 						ShopItemsTable(
 							onItemClick = onItemClick,
-							itemList = uiState.shopItems,
+							itemList = data,
 							headers = headersShopTable,
 							modifier = sideBorder,
 						)
 					}
-					if (uiState.shopSellItems.isNotEmpty()) {
+
+					UiSection(
+						state =uiState.shopSellItems ,
+						divider = {	TridentsDividedRow(text = "TRADING")}
+					) { data ->
 						Row(
 							modifier = Modifier.padding(
 								top = BODY_CONTENT_PADDING.dp,
@@ -312,7 +327,7 @@ fun NpcDetailContent(
 						}
 						SellItemsTable(
 							onItemClick = onItemClick,
-							itemList = uiState.shopSellItems,
+							itemList = data,
 							headers = headersSellTable,
 							modifier = sideBorder
 						)
@@ -332,9 +347,7 @@ fun NpcDetailContent(
 						.align(Alignment.TopEnd)
 						.padding(16.dp),
 					isFavorite = uiState.isFavorite,
-					onToggleFavorite = {
-						onToggleFavorite(uiState.npc.toFavorite(), uiState.isFavorite)
-					},
+					onToggleFavorite = { onToggleFavorite() },
 				)
 			}
 		}
@@ -807,30 +820,30 @@ fun PreviewShopItemsTable() {
 }
 
 
-@Preview(name = "PreviewNPCPage")
-@Composable
-fun PreviewNPCPage() {
-	NPC(
-		id = "1",
-		category = "asd",
-		subCategory = "sdasd",
-		imageUrl = "sadasd",
-		name = "sadsdd",
-		description = "asdasd2",
-		order = 2,
-		biography = "ASDSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
-		location = "ASdasdaaaaaaasssssssssssssssssssssssssssssssssssssss",
-	)
-	remember { mutableStateOf(true) }
-	ValheimVikiAppTheme {
-		NpcDetailContent(
-			onBack = {},
-			onItemClick = {},
-			uiState = fakeNpcDetailUiState,
-			onToggleFavorite = { _, _ -> {} }
-		)
-	}
-}
+//@Preview(name = "PreviewNPCPage")
+//@Composable
+//fun PreviewNPCPage() {
+//	NPC(
+//		id = "1",
+//		category = "asd",
+//		subCategory = "sdasd",
+//		imageUrl = "sadasd",
+//		name = "sadsdd",
+//		description = "asdasd2",
+//		order = 2,
+//		biography = "ASDSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+//		location = "ASdasdaaaaaaasssssssssssssssssssssssssssssssssssssss",
+//	)
+//	remember { mutableStateOf(true) }
+//	ValheimVikiAppTheme {
+//		NpcDetailContent(
+//			onBack = {},
+//			onItemClick = {},
+//			uiState = UIState.Load,
+//			onToggleFavorite = {  }
+//		)
+//	}
+//}
 
 
 @Preview(name = "PreviewNPCPage")
@@ -852,7 +865,7 @@ fun PreviewNPCPageSmal() {
 		NpcDetailContent(
 			onBack = {},
 			onItemClick = {},
-			onToggleFavorite = { _, _ -> {} },
+			onToggleFavorite = { },
 			uiState = NpcDetailUiState(
 				npc = NPC(
 					id = "npc_blacksmith",
