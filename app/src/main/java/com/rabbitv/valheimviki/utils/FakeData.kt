@@ -571,63 +571,63 @@ object FakeData {
 	)
 
 
-	val fakeNpcDetailUiState = NpcDetailUiState(
-		npc = NPC(
-			id = "npc_blacksmith",
-			name = "Bjorn the Blacksmith",
-			imageUrl = "https://example.com/images/npcs/blacksmith.png",
-			description = "A sturdy dwarf who forges powerful weapons for travellers.",
-			order = 1,
-			category = "Overworld",
-			subCategory = "Overworld",
-			biography = "Overworld",
-			location = "Overworld",
-		),
-
-		biome = Biome(
-			id = "biome_plains",
-			category = "Overworld",
-			imageUrl = "https://example.com/images/biomes/plains.png",
-			name = "Sunny Plains",
-			description = "Rolling green fields with gentle hills and the occasional oak tree.",
-			order = 0
-		),
-
-		shopItems = listOf(
-			Material(
-				id = "mat_iron_ingot",
-				imageUrl = "https://example.com/images/materials/iron_ingot.png",
-				category = "Ore",
-				subCategory = "Metal",
-				name = "Iron Ingot",
-				description = "A bar of smelted iron, still warm from the forge.",
-				usage = "Crafting weapons and heavy armor.",
-				growthTime = null,
-				needCultivatorGround = null,
-				price = 15,
-				effect = null,
-				sellPrice = null,
-				order = 0,
-				subType = null
-			),
-			Material(
-				id = "mat_steel_sword",
-				imageUrl = "https://example.com/images/items/steel_sword.png",
-				category = "Weapon",
-				subCategory = "Sword",
-				name = "Steel Longsword",
-				description = "Reliable blade forged from high-quality steel.",
-				usage = "Primary weapon-slot item.",
-				growthTime = null,
-				needCultivatorGround = null,
-				price = 120,
-				effect = "+20 Slash Damage",
-				sellPrice = null,
-				order = 1,
-				subType = "Melee"
-			)
-		),
-	)
+//	val fakeNpcDetailUiState = NpcDetailUiState(
+//		npc = NPC(
+//			id = "npc_blacksmith",
+//			name = "Bjorn the Blacksmith",
+//			imageUrl = "https://example.com/images/npcs/blacksmith.png",
+//			description = "A sturdy dwarf who forges powerful weapons for travellers.",
+//			order = 1,
+//			category = "Overworld",
+//			subCategory = "Overworld",
+//			biography = "Overworld",
+//			location = "Overworld",
+//		),
+//
+//		biome = Biome(
+//			id = "biome_plains",
+//			category = "Overworld",
+//			imageUrl = "https://example.com/images/biomes/plains.png",
+//			name = "Sunny Plains",
+//			description = "Rolling green fields with gentle hills and the occasional oak tree.",
+//			order = 0
+//		),
+//
+//		shopItems = listOf(
+//			Material(
+//				id = "mat_iron_ingot",
+//				imageUrl = "https://example.com/images/materials/iron_ingot.png",
+//				category = "Ore",
+//				subCategory = "Metal",
+//				name = "Iron Ingot",
+//				description = "A bar of smelted iron, still warm from the forge.",
+//				usage = "Crafting weapons and heavy armor.",
+//				growthTime = null,
+//				needCultivatorGround = null,
+//				price = 15,
+//				effect = null,
+//				sellPrice = null,
+//				order = 0,
+//				subType = null
+//			),
+//			Material(
+//				id = "mat_steel_sword",
+//				imageUrl = "https://example.com/images/items/steel_sword.png",
+//				category = "Weapon",
+//				subCategory = "Sword",
+//				name = "Steel Longsword",
+//				description = "Reliable blade forged from high-quality steel.",
+//				usage = "Primary weapon-slot item.",
+//				growthTime = null,
+//				needCultivatorGround = null,
+//				price = 120,
+//				effect = "+20 Slash Damage",
+//				sellPrice = null,
+//				order = 1,
+//				subType = "Melee"
+//			)
+//		),
+//	)
 
 	fun generateFakeMaterials(): List<Material> {
 		return listOf(
