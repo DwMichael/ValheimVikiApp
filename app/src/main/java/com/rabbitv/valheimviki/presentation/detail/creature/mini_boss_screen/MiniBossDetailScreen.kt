@@ -67,8 +67,10 @@ import com.rabbitv.valheimviki.presentation.components.horizontal_pager.Horizont
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDetailImageAnimated
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
+import com.rabbitv.valheimviki.presentation.components.ui_section.UiSection
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
 import com.rabbitv.valheimviki.presentation.detail.creature.components.column.StatColumn
+import com.rabbitv.valheimviki.presentation.detail.creature.mini_boss_screen.model.MiniBossDetailUIEvent
 import com.rabbitv.valheimviki.presentation.detail.creature.mini_boss_screen.model.MiniBossDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.creature.mini_boss_screen.viewmodel.MiniBossDetailScreenViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
@@ -83,11 +85,8 @@ fun MiniBossDetailScreen(
 	animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
 	val miniBossUiState by viewModel.uiState.collectAsStateWithLifecycle()
-	val onToggleFavorite = { favorite: Favorite, isFavorite: Boolean ->
-		viewModel.toggleFavorite(
-			favorite = favorite,
-			currentIsFavorite = isFavorite
-		)
+	val onToggleFavorite = {
+		viewModel.uiEvent(MiniBossDetailUIEvent.ToggleFavorite)
 	}
 	val sharedTransitionScope = LocalSharedTransitionScope.current
 		?: throw IllegalStateException("No Scope found")
@@ -108,7 +107,7 @@ fun MiniBossDetailScreen(
 fun MiniBossContent(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
-	onToggleFavorite: (favorite: Favorite, currentIsFavorite: Boolean) -> Unit,
+	onToggleFavorite: () -> Unit,
 	miniBossUiSate: MiniBossDetailUiState,
 	sharedTransitionScope: SharedTransitionScope,
 	animatedVisibilityScope: AnimatedVisibilityScope
@@ -118,259 +117,202 @@ fun MiniBossContent(
 	val isStatInfoExpanded = remember {
 		List(5) { mutableStateOf(false) }
 	}
-	val handleItemClick = remember {
+	val handleClick = remember(onItemClick) {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
 	}
-	val dropItemData = HorizontalPagerData(
-		title = "Drop Items",
-		subTitle = "Items that drop from boss after defeating him",
-		icon = Lucide.Trophy,
-		iconRotationDegrees = 0f,
-		itemContentScale = ContentScale.Crop,
-	)
+	val dropItemData = remember {
+		HorizontalPagerData(
+			title = "Drop Items",
+			subTitle = "Items that drop from boss after defeating him",
+			icon = Lucide.Trophy,
+			iconRotationDegrees = 0f,
+			itemContentScale = ContentScale.Crop,
+		)
+	}
 
 	Scaffold(
 		content = { padding ->
-			AnimatedContent(
-				targetState = miniBossUiSate.isLoading,
-				modifier = Modifier.fillMaxSize(),
-				transitionSpec = {
-					if (!targetState && initialState) {
-						fadeIn(
-							animationSpec = tween(
-								durationMillis = 650,
-								delayMillis = 0
-							)
-						) + slideInVertically(
-							initialOffsetY = { height -> height / 25 },
-							animationSpec = tween(
-								durationMillis = 650,
-								delayMillis = 0,
-								easing = EaseOutCubic
-							)
-						) togetherWith
-								fadeOut(
-									animationSpec = tween(
-										durationMillis = 200
-									)
-								)
-					} else {
-						fadeIn(animationSpec = tween(durationMillis = 300)) togetherWith
-								fadeOut(animationSpec = tween(durationMillis = 300))
-					}
-				},
-				label = "LoadingStateTransition"
-			) { isLoading ->
-				if (isLoading) {
-					Box(
+			BgImage()
+			Box(
+				modifier = Modifier
+					.fillMaxSize()
+					.padding(padding)
+			) {
+				if (miniBossUiSate.miniBoss != null) {
+					Column(
 						modifier = Modifier
+							.testTag("MiniBossDetailScreen")
 							.fillMaxSize()
-							.padding(padding),
-						contentAlignment = Alignment.Center
+							.verticalScroll(scrollState, enabled = !isRunning),
+						verticalArrangement = Arrangement.Top,
+						horizontalAlignment = Alignment.Start,
 					) {
-						Box(modifier = Modifier.size(45.dp))
-					}
-				} else if (miniBossUiSate.miniBoss != null) {
-					BgImage()
-					Box(
-						modifier = Modifier
-							.fillMaxSize()
-							.padding(padding)
-					) {
-						Column(
-							modifier = Modifier
-								.testTag("MiniBossDetailScreen")
-								.fillMaxSize()
-								.verticalScroll(scrollState, enabled = !isRunning),
-							verticalArrangement = Arrangement.Top,
-							horizontalAlignment = Alignment.Start,
-						) {
-							MainDetailImageAnimated(
-								sharedTransitionScope = sharedTransitionScope,
-								animatedVisibilityScope = animatedVisibilityScope,
-								textAlign = TextAlign.Center,
-								id = miniBossUiSate.miniBoss.id,
-								imageUrl = miniBossUiSate.miniBoss.imageUrl,
-								title = miniBossUiSate.miniBoss.name
+						MainDetailImageAnimated(
+							sharedTransitionScope = sharedTransitionScope,
+							animatedVisibilityScope = animatedVisibilityScope,
+							textAlign = TextAlign.Center,
+							id = miniBossUiSate.miniBoss.id,
+							imageUrl = miniBossUiSate.miniBoss.imageUrl,
+							title = miniBossUiSate.miniBoss.name
+						)
+						DetailExpandableText(
+							text = miniBossUiSate.miniBoss.description,
+							boxPadding = BODY_CONTENT_PADDING.dp
+						)
+						TridentsDividedRow(text = "BOSS DETAIL")
+						miniBossUiSate.primarySpawn?.let { primarySpawn ->
+							Text(
+								modifier = Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp),
+								text = "PRIMARY SPAWN",
+								textAlign = TextAlign.Left,
+								style = MaterialTheme.typography.titleSmall,
+								maxLines = 1,
+								overflow = TextOverflow.Visible
 							)
-							DetailExpandableText(
-								text = miniBossUiSate.miniBoss.description,
-								boxPadding = BODY_CONTENT_PADDING.dp
-							)
-							TridentsDividedRow(text = "BOSS DETAIL")
-							miniBossUiSate.primarySpawn?.let { primarySpawn ->
-								Text(
-									modifier = Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp),
-									text = "PRIMARY SPAWN",
-									textAlign = TextAlign.Left,
-									style = MaterialTheme.typography.titleSmall,
-									maxLines = 1,
-									overflow = TextOverflow.Visible
-								)
-								CardWithOverlayLabel(
-									onClickedItem = {
-										val destination =
-											WorldDetailDestination.PointOfInterestDetail(
-												pointOfInterestId = primarySpawn.id
-											)
-										onItemClick(destination)
-									},
-									painter = rememberAsyncImagePainter(miniBossUiSate.primarySpawn.imageUrl),
-									content = {
-										Box(
-											modifier = Modifier
-												.fillMaxSize()
-												.wrapContentHeight(Alignment.CenterVertically)
-												.wrapContentWidth(Alignment.CenterHorizontally)
-										) {
-											Text(
-												primarySpawn.name.uppercase(),
-												style = MaterialTheme.typography.bodyLarge,
-												modifier = Modifier,
-												color = Color.White,
-												textAlign = TextAlign.Center
-											)
-										}
-									}
-								)
-							}
-							if (miniBossUiSate.dropItems.isNotEmpty()) {
-								SlavicDivider()
-								HorizontalPagerSection(
-									onItemClick = handleItemClick,
-									list = miniBossUiSate.dropItems,
-									data = dropItemData
-								)
-							}
-							if (miniBossUiSate.dropItems.isEmpty() && miniBossUiSate.primarySpawn == null) {
-								Row(modifier = Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp))
-								{
-									Spacer(Modifier.weight(1f))
-									Text(
-										"Connect to Internet to fetch boss detail data",
-										style = MaterialTheme.typography.bodyLarge,
-										modifier = Modifier.weight(2f),
-										color = Color.White,
-										textAlign = TextAlign.Center
-									)
-									Spacer(Modifier.weight(1f))
-								}
-
-							}
-							TridentsDividedRow(text = "BOSS STATS")
-
-							if (miniBossUiSate.miniBoss.baseHP.toString().isNotBlank()) {
-								DarkGlassStatCard(
-									modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-									icon = Lucide.Heart,
-									label = "Health",
-									value = miniBossUiSate.miniBoss.baseHP.toString(),
-									expand = {
-										isStatInfoExpanded[0].value = !isStatInfoExpanded[0].value
-									},
-									isExpanded = isStatInfoExpanded[0].value
-								)
-								AnimatedVisibility(isStatInfoExpanded[0].value) {
-									Text(
-										text = "The amount of health points this boss have",
-										modifier = Modifier.padding(
-											start = BODY_CONTENT_PADDING.dp * 2,
-											end = BODY_CONTENT_PADDING.dp
-										),
-										style = MaterialTheme.typography.bodyLarge
-									)
-								}
-							}
-
-							if (miniBossUiSate.miniBoss.baseDamage.isNotBlank()) {
-								DarkGlassStatCard(
-									modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-									Lucide.Swords,
-									stringResource(R.string.base_damage),
-									"",
-									expand = {
-										isStatInfoExpanded[1].value = !isStatInfoExpanded[1].value
-									},
-									isExpanded = isStatInfoExpanded[1].value
-								)
-								AnimatedVisibility(isStatInfoExpanded[1].value) {
-									StatColumn(miniBossUiSate.miniBoss.baseDamage)
-								}
-							}
-							if (!miniBossUiSate.miniBoss.weakness.isNullOrBlank()) {
-								DarkGlassStatCard(
-									modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-									Lucide.Unlink,
-									stringResource(R.string.weakness),
-									"",
-									expand = {
-										isStatInfoExpanded[2].value = !isStatInfoExpanded[2].value
-									},
-									isExpanded = isStatInfoExpanded[2].value
-								)
-								AnimatedVisibility(isStatInfoExpanded[2].value) {
-									StatColumn(miniBossUiSate.miniBoss.weakness)
-								}
-							}
-							if (!miniBossUiSate.miniBoss.resistance.isNullOrBlank()) {
-								DarkGlassStatCard(
-									modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-									Lucide.Grab,
-									stringResource(R.string.resistance),
-									"",
-									expand = {
-										isStatInfoExpanded[3].value = !isStatInfoExpanded[3].value
-									},
-									isExpanded = isStatInfoExpanded[3].value
-								)
-								AnimatedVisibility(isStatInfoExpanded[3].value) {
-									StatColumn(miniBossUiSate.miniBoss.resistance)
-								}
-							}
-							if (!miniBossUiSate.miniBoss.collapseImmune.isNullOrBlank()) {
-								DarkGlassStatCard(
-									modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-									icon = Lucide.Shield,
-									label = stringResource(R.string.immune),
-									value = "",
-									expand = {
-										isStatInfoExpanded[4].value = !isStatInfoExpanded[4].value
-									},
-									isExpanded = isStatInfoExpanded[4].value
-								)
-								AnimatedVisibility(isStatInfoExpanded[4].value) {
-									StatColumn(miniBossUiSate.miniBoss.collapseImmune)
-								}
-							}
-
-							SlavicDivider()
-							Box(modifier = Modifier.size(70.dp))
-						}
-						if (!isRunning) {
-							AnimatedBackButton(
-								modifier = Modifier
-									.align(Alignment.TopStart)
-									.padding(16.dp),
-								scrollState = scrollState,
-								onBack = onBack,
-							)
-							FavoriteButton(
-								modifier = Modifier
-									.align(Alignment.TopEnd)
-									.padding(16.dp),
-								isFavorite = miniBossUiSate.isFavorite,
-								onToggleFavorite = {
-									onToggleFavorite(
-										miniBossUiSate.miniBoss.toFavorite(),
-										miniBossUiSate.isFavorite
-									)
+							CardWithOverlayLabel(
+								onClickedItem = {
+									val destination =
+										WorldDetailDestination.PointOfInterestDetail(
+											pointOfInterestId = primarySpawn.id
+										)
+									onItemClick(destination)
 								},
+								painter = rememberAsyncImagePainter(miniBossUiSate.primarySpawn.imageUrl),
+								content = {
+									Box(
+										modifier = Modifier
+											.fillMaxSize()
+											.wrapContentHeight(Alignment.CenterVertically)
+											.wrapContentWidth(Alignment.CenterHorizontally)
+									) {
+										Text(
+											primarySpawn.name.uppercase(),
+											style = MaterialTheme.typography.bodyLarge,
+											modifier = Modifier,
+											color = Color.White,
+											textAlign = TextAlign.Center
+										)
+									}
+								}
 							)
 						}
+						UiSection(
+							state = miniBossUiSate.dropItems
+						) { data ->
+							HorizontalPagerSection(
+								onItemClick = handleClick,
+								list = data,
+								data = dropItemData
+							)
+						}
+						TridentsDividedRow(text = "BOSS STATS")
+
+						if (miniBossUiSate.miniBoss.baseHP.toString().isNotBlank()) {
+							DarkGlassStatCard(
+								modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+								icon = Lucide.Heart,
+								label = "Health",
+								value = miniBossUiSate.miniBoss.baseHP.toString(),
+								expand = {
+									isStatInfoExpanded[0].value = !isStatInfoExpanded[0].value
+								},
+								isExpanded = isStatInfoExpanded[0].value
+							)
+							AnimatedVisibility(isStatInfoExpanded[0].value) {
+								Text(
+									text = "The amount of health points this boss have",
+									modifier = Modifier.padding(
+										start = BODY_CONTENT_PADDING.dp * 2,
+										end = BODY_CONTENT_PADDING.dp
+									),
+									style = MaterialTheme.typography.bodyLarge
+								)
+							}
+						}
+
+						if (miniBossUiSate.miniBoss.baseDamage.isNotBlank()) {
+							DarkGlassStatCard(
+								modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+								Lucide.Swords,
+								stringResource(R.string.base_damage),
+								"",
+								expand = {
+									isStatInfoExpanded[1].value = !isStatInfoExpanded[1].value
+								},
+								isExpanded = isStatInfoExpanded[1].value
+							)
+							AnimatedVisibility(isStatInfoExpanded[1].value) {
+								StatColumn(miniBossUiSate.miniBoss.baseDamage)
+							}
+						}
+						if (!miniBossUiSate.miniBoss.weakness.isNullOrBlank()) {
+							DarkGlassStatCard(
+								modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+								Lucide.Unlink,
+								stringResource(R.string.weakness),
+								"",
+								expand = {
+									isStatInfoExpanded[2].value = !isStatInfoExpanded[2].value
+								},
+								isExpanded = isStatInfoExpanded[2].value
+							)
+							AnimatedVisibility(isStatInfoExpanded[2].value) {
+								StatColumn(miniBossUiSate.miniBoss.weakness)
+							}
+						}
+						if (!miniBossUiSate.miniBoss.resistance.isNullOrBlank()) {
+							DarkGlassStatCard(
+								modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+								Lucide.Grab,
+								stringResource(R.string.resistance),
+								"",
+								expand = {
+									isStatInfoExpanded[3].value = !isStatInfoExpanded[3].value
+								},
+								isExpanded = isStatInfoExpanded[3].value
+							)
+							AnimatedVisibility(isStatInfoExpanded[3].value) {
+								StatColumn(miniBossUiSate.miniBoss.resistance)
+							}
+						}
+						if (!miniBossUiSate.miniBoss.collapseImmune.isNullOrBlank()) {
+							DarkGlassStatCard(
+								modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+								icon = Lucide.Shield,
+								label = stringResource(R.string.immune),
+								value = "",
+								expand = {
+									isStatInfoExpanded[4].value = !isStatInfoExpanded[4].value
+								},
+								isExpanded = isStatInfoExpanded[4].value
+							)
+							AnimatedVisibility(isStatInfoExpanded[4].value) {
+								StatColumn(miniBossUiSate.miniBoss.collapseImmune)
+							}
+						}
+
+						SlavicDivider()
+						Box(modifier = Modifier.size(70.dp))
+					}
+
+					if (!isRunning) {
+						AnimatedBackButton(
+							modifier = Modifier
+								.align(Alignment.TopStart)
+								.padding(16.dp),
+							scrollState = scrollState,
+							onBack = onBack,
+						)
+						FavoriteButton(
+							modifier = Modifier
+								.align(Alignment.TopEnd)
+								.padding(16.dp),
+							isFavorite = miniBossUiSate.isFavorite,
+							onToggleFavorite = { onToggleFavorite() },
+						)
 					}
 				}
 			}
-
 		}
 	)
 }
