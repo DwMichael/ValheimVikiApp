@@ -72,16 +72,15 @@ class MainBossScreenViewModel @Inject constructor(
 	)
 	private val _mainBossId: String =savedStateHandle.toRoute<CreatureDetailDestination.MainBossDetail>().mainBossId
 
-	// Load main boss data first (highest priority)
-	private val _mainBoss: StateFlow<MainBoss?> = creatureUseCases.getCreatureById(_mainBossId).map { creature ->
-		creature?.toMainBoss()
-	}.stateIn(
-		viewModelScope,
-		started = SharingStarted.WhileSubscribed(5000),
-		initialValue = null
-	)
 
-	// Load favorite state (lightweight)
+	private val _mainBoss: StateFlow<MainBoss?> = creatureUseCases.getCreatureById(_mainBossId).map { creature ->
+	creature?.toMainBoss()
+	}.stateIn(
+			viewModelScope,
+			started = SharingStarted.WhileSubscribed(5000),
+			initialValue = null
+		)
+
 	private val _isFavorite = favoriteUseCases.isFavorite(_mainBossId)
 		.distinctUntilChanged()
 		.stateIn(
@@ -89,15 +88,12 @@ class MainBossScreenViewModel @Inject constructor(
 			started = SharingStarted.WhileSubscribed(5_000),
 			initialValue = false
 		)
-
-	// Load relation data (needed for other data)
 	private val _relationObjects =
 		relationUseCases.getRelatedIdsUseCase(_mainBossId).stateIn(
 			scope = viewModelScope,
 			started = SharingStarted.WhileSubscribed(5_000),
 			initialValue = emptyList()
 		)
-
 	private val idsAndMap: Flow<RelatedData> =
 		_relationObjects
 			.map { list ->
@@ -112,7 +108,6 @@ class MainBossScreenViewModel @Inject constructor(
 			.distinctUntilChanged()
 			.flowOn(defaultDispatcher)
 
-	// Load biome data (medium priority)
 	private val _biome = idsAndMap.combine(
 		biomeUseCases.getLocalBiomesUseCase(),
 	) { relatedData, biomes ->
@@ -123,7 +118,6 @@ class MainBossScreenViewModel @Inject constructor(
 		initialValue = null
 	)
 
-	// Load forsaken altar data (medium priority)
 	private val _forsakenAltar = idsAndMap.combine(
 		pointOfInterestUseCases
 			.getPointsOfInterestBySubCategoryUseCase(PointOfInterestSubCategory.FORSAKEN_ALTAR),
@@ -134,8 +128,6 @@ class MainBossScreenViewModel @Inject constructor(
 		started = SharingStarted.WhileSubscribed(5000),
 		initialValue = null
 	)
-
-	// Load sacrificial stones data (low priority - static data)
 	private val _sacrificialStones = idsAndMap.combine(
 		pointOfInterestUseCases
 			.getPointsOfInterestBySubCategoryUseCase(PointOfInterestSubCategory.STRUCTURE),
@@ -147,7 +139,7 @@ class MainBossScreenViewModel @Inject constructor(
 		initialValue = null
 	)
 
-	// Load summoning items data (medium priority)
+
 	private val _relatedSummoningItems = idsAndMap.flatMapLatest{ relatedData ->
 		merge(
 			materialUseCases.getMaterialsBySubCategoryAndIds(
@@ -164,8 +156,6 @@ class MainBossScreenViewModel @Inject constructor(
 		started = SharingStarted.WhileSubscribed(5000),
 		initialValue = UIState.Loading
 	)
-
-	// Load material boss data (low priority - can be loaded after main content)
 	private val _materialBossData :StateFlow<MaterialBossData> = idsAndMap.flatMapLatest{ relatedData ->
 		materialUseCases.getMaterialsBySubCategoryAndIds(MaterialSubCategory.BOSS_DROP.toString(), relatedData.ids )
 	}.map { materials ->
@@ -181,7 +171,6 @@ class MainBossScreenViewModel @Inject constructor(
 		initialValue = MaterialBossData()
 	)
 
-	// Combine all data with priority-based loading
 	val uiState = combine(
 		_mainBoss,
 		_biome,
@@ -189,15 +178,16 @@ class MainBossScreenViewModel @Inject constructor(
 		_sacrificialStones,
 		_materialBossData,
 		_relatedSummoningItems,
-		_isFavorite,
-	) { mainBoss, biome, forsakenAltar, sacrificialStones, materialBossData, summoningItems, favorite ->
+		favoriteUseCases.isFavorite(_mainBossId),
+
+	) { mainBoss,biome, forsakenAltar, sacrificialStones,materialBossData, summoningItems, favorite->
 		MainBossDetailUiState(
 			mainBoss = mainBoss,
-			relatedBiome = biome,
+			relatedBiome =  biome,
 			relatedForsakenAltar = forsakenAltar,
 			sacrificialStones = sacrificialStones,
-			dropItems = UIState.Success(materialBossData.dropItems),
-			relatedSummoningItems = summoningItems,
+			dropItems = UIState.Success( materialBossData.dropItems),
+			relatedSummoningItems =summoningItems,
 			trophy = materialBossData.trophy,
 			isFavorite = favorite
 		)
