@@ -4,33 +4,51 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
+import com.rabbitv.valheimviki.data.mappers.creatures.toNPC
+import com.rabbitv.valheimviki.data.mappers.creatures.toPassiveCreature
+import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
+import com.rabbitv.valheimviki.di.qualifiers.DefaultDispatcher
 import com.rabbitv.valheimviki.domain.mapper.CreatureFactory
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.passive.PassiveCreature
 import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.material.MaterialDrop
 import com.rabbitv.valheimviki.domain.model.material.MaterialSubCategory
+import com.rabbitv.valheimviki.domain.model.relation.RelatedData
 import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
 import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
+import com.rabbitv.valheimviki.navigation.CreatureDetailDestination
+import com.rabbitv.valheimviki.presentation.detail.creature.aggressive_screen.model.AggressiveCreatureUiEvent
+import com.rabbitv.valheimviki.presentation.detail.creature.passive_screen.model.PassiveCreatureDetailUiEvent
 import com.rabbitv.valheimviki.presentation.detail.creature.passive_screen.model.PassiveCreatureDetailUiState
 import com.rabbitv.valheimviki.utils.Constants.PASSIVE_CREATURE_KEY
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class PassiveCreatureDetailScreenViewModel @Inject constructor(
 	savedStateHandle: SavedStateHandle,
@@ -39,118 +57,104 @@ class PassiveCreatureDetailScreenViewModel @Inject constructor(
 	private val biomeUseCases: BiomeUseCases,
 	private val materialUseCases: MaterialUseCases,
 	private val favoriteUseCases: FavoriteUseCases,
+	@param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
-	private val _passiveCreatureId: String =
-		checkNotNull(savedStateHandle[PASSIVE_CREATURE_KEY])
-	private val _creature = MutableStateFlow<PassiveCreature?>(null)
-	private val _biome = MutableStateFlow<Biome?>(null)
-	private val _materialDropItem = MutableStateFlow<List<MaterialDrop>>(emptyList())
-	private val _isLoading = MutableStateFlow<Boolean>(false)
-	private val _error = MutableStateFlow<String?>(null)
+	private val _passiveCreatureId: String = savedStateHandle.toRoute<CreatureDetailDestination.PassiveCreatureDetail>().passiveCreatureId
+	private val _creature = creatureUseCases.getCreatureById(_passiveCreatureId)
+		.map { creature -> creature?.toPassiveCreature() }
+		.stateIn(
+			viewModelScope,
+			started = SharingStarted.WhileSubscribed(5000),
+			initialValue = null
+		)
+	private val _isFavorite = favoriteUseCases.isFavorite(_passiveCreatureId)
+		.distinctUntilChanged()
+		.stateIn(
+			scope = viewModelScope,
+			started = SharingStarted.WhileSubscribed(5_000),
+			initialValue = false
+		)
+	private val _relationObjects =
+		relationUseCases.getRelatedIdsUseCase(_passiveCreatureId).stateIn(
+			scope = viewModelScope,
+			started = SharingStarted.WhileSubscribed(5_000),
+			initialValue = emptyList()
+		)
+	private val idsAndMap: Flow<RelatedData> =
+		_relationObjects
+			.map { list ->
+				val relatedMap = list.associateBy(RelatedItem::id)
+				val ids = relatedMap.keys.sorted()
+				RelatedData(
+					ids = ids,
+					relatedMap = relatedMap
+				)
+			}
+			.filter { it.ids.isNotEmpty() }
+			.distinctUntilChanged()
+			.flowOn(defaultDispatcher)
 
+	private val _biome = idsAndMap.combine(
+		biomeUseCases.getLocalBiomesUseCase(),
+	) { relatedData, biomes ->
+		biomes.find { it.id in relatedData.ids}
+	}
+	private val _materialDropItem =
+		idsAndMap.flatMapLatest { (ids, currentItemsMap) ->
+			materialUseCases.getMaterialsByIds(ids)
+				.map { list ->
+					list.filter { it.subCategory != MaterialSubCategory.FORSAKEN_ALTAR_OFFERING.toString() }
+						.map { material ->
+						val relatedItem = currentItemsMap[material.id]
+						MaterialDrop(
+							itemDrop = material,
+							quantityList = listOf(
+								relatedItem?.quantity,
+								relatedItem?.quantity2star,
+								relatedItem?.quantity3star
+							),
+							chanceStarList = listOf(
+								relatedItem?.chance1star,
+								relatedItem?.chance2star,
+								relatedItem?.chance3star
+							),
+						)
+					}
+				}
+		}.distinctUntilChanged()
+			.map { UIState.Success(it) }
+			.flowOn(defaultDispatcher)
 
 	val uiState = combine(
 		_creature,
 		_biome,
 		_materialDropItem,
-		favoriteUseCases.isFavorite(_passiveCreatureId)
-			.flowOn(Dispatchers.IO),
-		_isLoading,
-		_error,
-	) { values ->
-		@Suppress("UNCHECKED_CAST")
-		(PassiveCreatureDetailUiState(
-			passiveCreature = values[0] as PassiveCreature?,
-			biome = values[1] as Biome?,
-			materialDrops = values[2] as List<MaterialDrop>,
-			isFavorite = values[3] as Boolean,
-			isLoading = values[4] as Boolean,
-			error = values[5] as String?
-		))
+		_isFavorite,
+	) { creature, biome, materialDropItems, favorite ->
+		PassiveCreatureDetailUiState(
+			passiveCreature = creature,
+			biome = biome,
+			materialDrops = materialDropItems,
+			isFavorite = favorite,
+		)
 	}.stateIn(
 		scope = viewModelScope,
 		started = SharingStarted.Companion.WhileSubscribed(5000),
 		initialValue = PassiveCreatureDetailUiState()
 	)
 
-	init {
-		launch()
-	}
 
-
-	internal fun launch() {
-		try {
-			_isLoading.value = true
-			viewModelScope.launch(Dispatchers.IO) {
-
-				_creature.value = CreatureFactory.createFromCreature(
-					creatureUseCases.getCreatureById(_passiveCreatureId).first()
-				)
-
-				val relatedObjects: List<RelatedItem> = async {
-					relationUseCases.getRelatedIdsUseCase(_passiveCreatureId)
-						.first()
-
-				}.await()
-				val relatedIds = relatedObjects.map { it.id }
-
-				val deferreds = listOf(
-					async {
-						val biome = biomeUseCases.getLocalBiomesUseCase().first()
-						_biome.value = biome.find {
-							it.id in relatedIds
-						}
-					},
-					async {
-						try {
-							val materials = materialUseCases.getMaterialsByIds(relatedIds).first()
-								.filter { it.subCategory != MaterialSubCategory.FORSAKEN_ALTAR_OFFERING.toString() }
-							val tempList = mutableListOf<MaterialDrop>()
-
-							val relatedItemsMap = relatedObjects.associateBy { it.id }
-							for (material in materials) {
-								val relatedItem = relatedItemsMap[material.id]
-								val quantityList = listOf<Int?>(
-									relatedItem?.quantity,
-									relatedItem?.quantity2star,
-									relatedItem?.quantity3star
-								)
-								val chanceStarList = listOf<Int?>(
-									relatedItem?.chance1star,
-									relatedItem?.chance2star,
-									relatedItem?.chance3star
-								)
-								tempList.add(
-									MaterialDrop(
-										itemDrop = material,
-										quantityList = quantityList,
-										chanceStarList = chanceStarList,
-									)
-								)
-							}
-							_materialDropItem.value = tempList
-						} catch (e: Exception) {
-							Log.e("PassiveCreatureDetail ViewModel", "$e")
-							_materialDropItem.value = emptyList()
-						}
-					},
-				)
-				deferreds.awaitAll()
-			}
-			_isLoading.value = false
-		} catch (e: Exception) {
-			Log.e("General fetch error PassiveDetailViewModel", e.message.toString())
-			_isLoading.value = false
-			_error.value = e.message
-		}
-	}
-
-	fun toggleFavorite(favorite: Favorite, currentIsFavorite: Boolean) {
-		viewModelScope.launch {
-			if (currentIsFavorite) {
-				favoriteUseCases.deleteFavoriteUseCase(favorite)
-			} else {
-				favoriteUseCases.addFavoriteUseCase(favorite)
+	fun uiEvent(event: PassiveCreatureDetailUiEvent) {
+		when (event) {
+			PassiveCreatureDetailUiEvent.ToggleFavorite -> {
+				viewModelScope.launch {
+					_creature.value?.let { bM ->
+						favoriteUseCases.toggleFavoriteUseCase(
+							bM.toFavorite(),
+							shouldBeFavorite = !_isFavorite.value
+						)
+					}
+				}
 			}
 		}
 	}
