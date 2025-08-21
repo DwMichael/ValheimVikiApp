@@ -1,11 +1,9 @@
 package com.rabbitv.valheimviki.presentation.detail.creature.passive_screen
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -13,10 +11,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Favorite
@@ -31,7 +27,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -45,24 +40,24 @@ import com.composables.icons.lucide.Atom
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Trophy
 import com.rabbitv.valheimviki.R
-import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.creature.aggresive.AggressiveCreature
 import com.rabbitv.valheimviki.domain.model.creature.aggresive.LevelCreatureData
-import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.navigation.WorldDetailDestination
-import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
 import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
+import com.rabbitv.valheimviki.presentation.components.horizontal_pager.DroppedItemsSection
 import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDetailImage
+import com.rabbitv.valheimviki.presentation.components.page_indicator.PageIndicator
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
-import com.rabbitv.valheimviki.presentation.detail.creature.aggressive_screen.PageIndicator
+import com.rabbitv.valheimviki.presentation.components.ui_section.UiSection
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardStatDetails
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
-import com.rabbitv.valheimviki.presentation.components.horizontal_pager.DroppedItemsSection
 import com.rabbitv.valheimviki.presentation.detail.creature.components.rows.StarLevelRow
+import com.rabbitv.valheimviki.presentation.detail.creature.passive_screen.model.PassiveCreatureDetailUiEvent
 import com.rabbitv.valheimviki.presentation.detail.creature.passive_screen.model.PassiveCreatureDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.creature.passive_screen.viewmodel.PassiveCreatureDetailScreenViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
@@ -77,11 +72,8 @@ fun PassiveCreatureDetailScreen(
 	viewModel: PassiveCreatureDetailScreenViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-	val onToggleFavorite = { favorite: Favorite, isFavorite: Boolean ->
-		viewModel.toggleFavorite(
-			favorite = favorite,
-			currentIsFavorite = isFavorite
-		)
+	val onToggleFavorite = {
+		viewModel.uiEvent(PassiveCreatureDetailUiEvent.ToggleFavorite)
 	}
 	PassiveCreatureDetailContent(
 		onBack = onBack,
@@ -98,7 +90,7 @@ fun PassiveCreatureDetailScreen(
 fun PassiveCreatureDetailContent(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
-	onToggleFavorite: (favorite: Favorite, currentIsFavorite: Boolean) -> Unit,
+	onToggleFavorite: () -> Unit,
 	uiState: PassiveCreatureDetailUiState,
 ) {
 
@@ -203,17 +195,21 @@ fun PassiveCreatureDetailContent(
 								}
 							)
 						}
-						if (uiState.materialDrops.isNotEmpty()) {
-							SlavicDivider()
+						UiSection(
+							state = uiState.materialDrops,
+							divider = { SlavicDivider() }
+						) { data ->
 							DroppedItemsSection(
-								list = uiState.materialDrops,
+								list = data,
 								starLevel = pageIndex,
 								title = "Drop Items",
 								subTitle = "Materials that drop from creature after defeating",
 								onItemClick = handleClick,
-								icon = { Lucide.Trophy},
+								icon = { Lucide.Trophy },
 							)
 						}
+
+
 
 						TridentsDividedRow(text = "BOSS STATS")
 						CardStatDetails(
@@ -269,12 +265,7 @@ fun PassiveCreatureDetailContent(
 							.align(Alignment.TopEnd)
 							.padding(16.dp),
 						isFavorite = uiState.isFavorite,
-						onToggleFavorite = {
-							onToggleFavorite(
-								uiState.passiveCreature.toFavorite(),
-								uiState.isFavorite
-							)
-						},
+						onToggleFavorite = { onToggleFavorite() },
 					)
 				}
 			}
@@ -282,32 +273,6 @@ fun PassiveCreatureDetailContent(
 	}
 }
 
-
-@Composable
-fun PageIndicator(
-	pagerState: PagerState,
-) {
-	Row(
-		Modifier
-			.wrapContentHeight()
-			.fillMaxWidth()
-			.padding(8.dp),
-		horizontalArrangement = Arrangement.Center,
-		verticalAlignment = Alignment.Bottom
-	) {
-		repeat(pagerState.pageCount) { iteration ->
-			val color =
-				if (pagerState.currentPage == iteration) Color.DarkGray else Color.LightGray
-			Box(
-				modifier = Modifier
-					.padding(2.dp)
-					.clip(CircleShape)
-					.background(color)
-					.size(8.dp)
-			)
-		}
-	}
-}
 
 
 @Preview(name = "CreaturePage")
