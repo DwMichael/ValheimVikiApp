@@ -4,33 +4,54 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
+import com.rabbitv.valheimviki.data.mappers.creatures.toPassiveCreature
+import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
+import com.rabbitv.valheimviki.di.qualifiers.DefaultDispatcher
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.food.Food
+import com.rabbitv.valheimviki.domain.model.material.MaterialDrop
+import com.rabbitv.valheimviki.domain.model.material.MaterialSubCategory
+import com.rabbitv.valheimviki.domain.model.relation.RelatedData
 import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.CraftingObjectUseCases
 import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
 import com.rabbitv.valheimviki.domain.use_cases.food.FoodUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
+import com.rabbitv.valheimviki.navigation.ConsumableDetailDestination
+import com.rabbitv.valheimviki.presentation.detail.creature.passive_screen.model.PassiveCreatureDetailUiEvent
+import com.rabbitv.valheimviki.presentation.detail.food.model.FoodDetailUiEvent
 import com.rabbitv.valheimviki.presentation.detail.food.model.FoodDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.food.model.RecipeFoodData
 import com.rabbitv.valheimviki.presentation.detail.food.model.RecipeMaterialData
 import com.rabbitv.valheimviki.utils.Constants.FOOD_KEY
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @Suppress("UNCHECKED_CAST")
 @HiltViewModel
 class FoodDetailViewModel @Inject constructor(
@@ -39,15 +60,92 @@ class FoodDetailViewModel @Inject constructor(
 	private val materialUseCases: MaterialUseCases,
 	private val relationUseCases: RelationUseCases,
 	private val favoriteUseCases: FavoriteUseCases,
-	private val savedStateHandle: SavedStateHandle
+	private val savedStateHandle: SavedStateHandle,
+	@param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
-	private val _foodId: String = checkNotNull(savedStateHandle[FOOD_KEY])
-	private val _food = MutableStateFlow<Food?>(null)
-	private val _craftingCookingStation = MutableStateFlow<CraftingObject?>(null)
-	private val _foodForRecipe = MutableStateFlow<List<RecipeFoodData>>(emptyList())
-	private val _materialsForRecipe = MutableStateFlow<List<RecipeMaterialData>>(emptyList())
-	private val _isLoading: MutableStateFlow<Boolean> = MutableStateFlow(true)
-	private val _error: MutableStateFlow<String?> = MutableStateFlow(null)
+	private val _foodId: String = savedStateHandle.toRoute<ConsumableDetailDestination.FoodDetail>().foodId
+	private val _food = foodUseCases.getFoodByIdUseCase(_foodId)
+		.stateIn(
+			viewModelScope,
+			started = SharingStarted.WhileSubscribed(5000),
+			initialValue = null
+		)
+
+	private val _isFavorite = favoriteUseCases.isFavorite(_foodId)
+		.distinctUntilChanged()
+		.stateIn(
+			scope = viewModelScope,
+			started = SharingStarted.WhileSubscribed(5_000),
+			initialValue = false
+		)
+	private val _relationObjects =
+		relationUseCases.getRelatedIdsForUseCase(_foodId)
+			.stateIn(
+				scope = viewModelScope,
+				started = SharingStarted.WhileSubscribed(5_000),
+				initialValue = emptyList()
+			)
+	private val idsAndMap: Flow<RelatedData> =
+		_relationObjects
+			.map { list ->
+				val relatedMap = list.associateBy(RelatedItem::id)
+				val ids = relatedMap.keys.sorted()
+				RelatedData(ids = ids, relatedMap = relatedMap)
+			}
+			.distinctUntilChanged()
+			.flowOn(defaultDispatcher)
+	private val _foodForRecipe: Flow<UIState<List<RecipeFoodData>>> =
+		idsAndMap.flatMapLatest { (ids, currentItemsMap) ->
+			if (ids.isEmpty()) {
+				flowOf(emptyList())
+			} else {
+				foodUseCases.getFoodListByIdsUseCase(ids).map { list ->
+					list.map { food ->
+						val r = currentItemsMap[food.id]
+						RecipeFoodData(
+							itemDrop = food,
+							quantityList = listOf(r?.quantity)
+						)
+					}.sortedBy { it.itemDrop.id }
+				}
+			}
+		}.map { UIState.Success(it) }
+			.flowOn(defaultDispatcher)
+
+	private val _materialsForRecipe: Flow<UIState<List<RecipeMaterialData>>> =
+		idsAndMap.flatMapLatest { (ids, currentItemsMap) ->
+			if (ids.isEmpty()) {
+				flowOf(emptyList())
+			} else {
+				materialUseCases.getMaterialsByIds(ids).map { list ->
+					list.map { material ->
+						val r = currentItemsMap[material.id]
+						RecipeMaterialData(
+							itemDrop = material,
+							quantityList = listOf(r?.quantity),
+							chanceStarList = emptyList(),
+						)
+					}.sortedBy { it.itemDrop.id }
+				}
+			}
+		}.map { UIState.Success(it) }
+			.flowOn(defaultDispatcher)
+
+	private val _craftingCookingStation =
+		idsAndMap.flatMapLatest { (ids, _) ->
+			if (ids.isEmpty()) {
+				flowOf<CraftingObject?>(null)
+			} else {
+				craftingObjectUseCases.getCraftingObjectByIds(ids)
+			}
+		}.stateIn(
+				scope = viewModelScope,
+				started = SharingStarted.WhileSubscribed(5_000),
+				initialValue = null
+			)
+
+
+
 
 
 	val uiState: StateFlow<FoodDetailUiState> = combine(
@@ -55,19 +153,14 @@ class FoodDetailViewModel @Inject constructor(
 		_craftingCookingStation,
 		_foodForRecipe,
 		_materialsForRecipe,
-		favoriteUseCases.isFavorite(_foodId)
-			.flowOn(Dispatchers.IO),
-		_isLoading,
-		_error
-	) { values ->
+		_isFavorite
+	) { food, craftingCookingStation, foodForRecipe, materialsForRecipe, favorite ->
 		FoodDetailUiState(
-			food = values[0] as Food?,
-			craftingCookingStation = values[1] as CraftingObject?,
-			foodForRecipe = values[2] as List<RecipeFoodData>,
-			materialsForRecipe = values[3] as List<RecipeMaterialData>,
-			isFavorite = values[4] as Boolean,
-			isLoading = values[5] as Boolean,
-			error = values[6] as String?
+			food = food,
+			craftingCookingStation = craftingCookingStation,
+			foodForRecipe = foodForRecipe,
+			materialsForRecipe = materialsForRecipe,
+			isFavorite = favorite
 		)
 	}.stateIn(
 		scope = viewModelScope,
@@ -76,89 +169,17 @@ class FoodDetailViewModel @Inject constructor(
 	)
 
 
-	init {
-		loadFoodData()
-	}
-
-
-	internal fun loadFoodData() {
-		viewModelScope.launch(Dispatchers.IO) {
-			try {
-				_isLoading.value = true
-
-
-				launch { _food.value = foodUseCases.getFoodByIdUseCase(_foodId).first() }
-
-				val relatedObjects: List<RelatedItem> =
-					relationUseCases.getRelatedIdsForUseCase(_foodId).first()
-
-				val relatedIds = relatedObjects.map { it.id }
-
-
-				val craftingDeferred = async {
-					_craftingCookingStation.value =
-						craftingObjectUseCases.getCraftingObjectByIds(relatedIds).first()
-
-				}
-				val foodDeferred = async {
-					val foods = foodUseCases.getFoodListByIdsUseCase(relatedIds).first()
-
-					val tempList = mutableListOf<RecipeFoodData>()
-					val relatedItemsMap = relatedObjects.associateBy { it.id }
-					foods.forEach { food ->
-						val relatedItem = relatedItemsMap[food.id]
-						val quantityList = listOf(
-							relatedItem?.quantity,
-						)
-						tempList.add(
-							RecipeFoodData(
-								itemDrop = food,
-								quantityList = quantityList,
-							)
+	fun uiEvent(event: FoodDetailUiEvent) {
+		when (event) {
+			FoodDetailUiEvent.ToggleFavorite -> {
+				viewModelScope.launch {
+					_food.value?.let { bM ->
+						favoriteUseCases.toggleFavoriteUseCase(
+							bM.toFavorite(),
+							shouldBeFavorite = !_isFavorite.value
 						)
 					}
-					_foodForRecipe.value = tempList
 				}
-
-				val materialsDeferred = async {
-					val materials = materialUseCases.getMaterialsByIds(relatedIds).first()
-
-					val tempList = mutableListOf<RecipeMaterialData>()
-					val relatedItemsMap = relatedObjects.associateBy { it.id }
-					materials.forEach { material ->
-						val relatedItem = relatedItemsMap[material.id]
-						val quantityList = listOf(
-							relatedItem?.quantity,
-						)
-						tempList.add(
-							RecipeMaterialData(
-								itemDrop = material,
-								quantityList = quantityList,
-								chanceStarList = emptyList(),
-							)
-						)
-					}
-					_materialsForRecipe.value = tempList
-				}
-
-				awaitAll(craftingDeferred, foodDeferred, materialsDeferred)
-
-			} catch (e: Exception) {
-				Log.e("General fetch error FoodDetailViewModel", e.message.toString())
-				_isLoading.value = false
-				_error.value = e.message
-			} finally {
-				_isLoading.value = false
-			}
-		}
-	}
-
-	fun toggleFavorite(favorite: Favorite, currentIsFavorite: Boolean) {
-		viewModelScope.launch {
-			if (currentIsFavorite) {
-				favoriteUseCases.deleteFavoriteUseCase(favorite)
-			} else {
-				favoriteUseCases.addFavoriteUseCase(favorite)
 			}
 		}
 	}
