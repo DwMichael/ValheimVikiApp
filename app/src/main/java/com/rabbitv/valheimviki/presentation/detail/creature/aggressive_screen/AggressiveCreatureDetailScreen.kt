@@ -68,6 +68,7 @@ import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.DroppedItemsSection
 import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDetailImage
+import com.rabbitv.valheimviki.presentation.components.page_indicator.PageIndicator
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.components.ui_section.UiSection
 import com.rabbitv.valheimviki.presentation.detail.creature.aggressive_screen.model.AggressiveCreatureDetailUiState
@@ -403,31 +404,6 @@ private fun StatCard(
 	}
 }
 
-@Composable
-fun PageIndicator(
-	pagerState: PagerState,
-) {
-	Row(
-		Modifier
-			.wrapContentHeight()
-			.fillMaxWidth()
-			.padding(8.dp),
-		horizontalArrangement = Arrangement.Center,
-		verticalAlignment = Alignment.Bottom
-	) {
-		repeat(pagerState.pageCount) { iteration ->
-			val color =
-				if (pagerState.currentPage == iteration) Color.LightGray else Color.DarkGray
-			Box(
-				modifier = Modifier
-					.padding(2.dp)
-					.clip(CircleShape)
-					.background(color)
-					.size(8.dp)
-			)
-		}
-	}
-}
 
 
 @Preview(name = "CreaturePage")

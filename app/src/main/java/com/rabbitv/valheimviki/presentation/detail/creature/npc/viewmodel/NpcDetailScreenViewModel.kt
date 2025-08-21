@@ -54,7 +54,7 @@ class NpcDetailScreenViewModel @Inject constructor(
 	private val favoriteUseCases: FavoriteUseCases,
 	@param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
-	private val _npcId: String =savedStateHandle.toRoute<CreatureDetailDestination.NpcDetail>().npcId
+	private val _npcId: String = savedStateHandle.toRoute<CreatureDetailDestination.NpcDetail>().npcId
 
 	private val _creature = creatureUseCases.getCreatureById(_npcId)
 		.map { creature -> creature?.toNPC() }
