@@ -39,11 +39,10 @@ import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Wand
 import com.composables.icons.lucide.Weight
 import com.rabbitv.valheimviki.R
-import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
-import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.food.Food
 import com.rabbitv.valheimviki.domain.model.food.FoodSubCategory
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.navigation.BuildingDetailDestination
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
@@ -55,12 +54,15 @@ import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImage
 import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCard
 import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCardPainter
 import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
-import com.rabbitv.valheimviki.presentation.components.flow_row.flow_as_grid.TwoColumnGrid
 import com.rabbitv.valheimviki.presentation.components.grid.grid_item.CustomItemCard
+import com.rabbitv.valheimviki.presentation.components.grid.nested.NestedGrid
+import com.rabbitv.valheimviki.presentation.components.grid.nested.NestedItems
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
 import com.rabbitv.valheimviki.presentation.components.section_header.SectionHeader
 import com.rabbitv.valheimviki.presentation.components.section_header.SectionHeaderData
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
+import com.rabbitv.valheimviki.presentation.components.ui_section.UiSection
+import com.rabbitv.valheimviki.presentation.detail.food.model.FoodDetailUiEvent
 import com.rabbitv.valheimviki.presentation.detail.food.model.FoodDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.food.model.RecipeFoodData
 import com.rabbitv.valheimviki.presentation.detail.food.model.RecipeMaterialData
@@ -71,7 +73,6 @@ import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
 
-@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun FoodDetailScreen(
 	onBack: () -> Unit,
@@ -80,12 +81,7 @@ fun FoodDetailScreen(
 	viewModel: FoodDetailViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-	val onToggleFavorite = { favorite: Favorite, isFavorite: Boolean ->
-		viewModel.toggleFavorite(
-			favorite = favorite,
-			currentIsFavorite = isFavorite
-		)
-	}
+	val onToggleFavorite = { viewModel.uiEvent(FoodDetailUiEvent.ToggleFavorite) }
 
 	FoodDetailContent(
 		uiState = uiState,
@@ -98,12 +94,11 @@ fun FoodDetailScreen(
 }
 
 
-@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun FoodDetailContent(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
-	onToggleFavorite: (favorite: Favorite, currentIsFavorite: Boolean) -> Unit,
+	onToggleFavorite: () -> Unit,
 	uiState: FoodDetailUiState,
 	category: FoodSubCategory
 ) {
@@ -118,6 +113,11 @@ fun FoodDetailContent(
 	val isExpandable = remember { mutableStateOf(false) }
 	val handleClick = remember(onItemClick) {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
+	}
+
+	val showRecipeSection = remember(uiState.materialsForRecipe, uiState.foodForRecipe) {
+		(uiState.materialsForRecipe as? UIState.Success)?.data?.isNotEmpty() == true ||
+				(uiState.foodForRecipe as? UIState.Success)?.data?.isNotEmpty() == true
 	}
 
 	fun shouldShowValue(value: Any?): Boolean {
@@ -330,12 +330,12 @@ fun FoodDetailContent(
 								onItemClick(destination)
 							},
 							itemData = craftingStation,
-							subTitle = if (category == FoodSubCategory.UNCOOKED_FOOD) "Cook at Station to Consume" else "Requires Cooking Station",
+							subTitle = if (category == FoodSubCategory.COOKED_FOOD) "Cook at Station to Consume" else "Requires Cooking Station To Make",
 							contentScale = ContentScale.Fit,
 							painter = painterResource(R.drawable.food_bg)
 						)
 					}
-					if (uiState.foodForRecipe.isNotEmpty() || uiState.materialsForRecipe.isNotEmpty()) {
+					if(showRecipeSection){
 						TridentsDividedRow()
 						Box(
 							modifier = Modifier
@@ -353,30 +353,45 @@ fun FoodDetailContent(
 						}
 
 						Spacer(modifier = Modifier.padding(6.dp))
-						TwoColumnGrid {
-							for (item in uiState.materialsForRecipe) {
-								CustomItemCard(
-									itemData = item.itemDrop,
-									onItemClick = handleClick,
-									fillWidth = CUSTOM_ITEM_CARD_FILL_WIDTH,
-									imageUrl = item.itemDrop.imageUrl,
-									name = item.itemDrop.name,
-									quantity = item.quantityList.firstOrNull()
-								)
-							}
-							for (item in uiState.foodForRecipe) {
-								CustomItemCard(
-									itemData = item.itemDrop,
-									onItemClick = handleClick,
-									fillWidth = CUSTOM_ITEM_CARD_FILL_WIDTH,
-									imageUrl = item.itemDrop.imageUrl,
-									name = item.itemDrop.name,
-									quantity = item.quantityList.firstOrNull()
-								)
-							}
-						}
+
 					}
 
+					UiSection(
+						state = uiState.materialsForRecipe,
+						divider = {}
+					) { data ->
+						NestedGrid(
+							nestedItems = NestedItems( items = data) ,
+							gridCells = 2
+						) { item ->
+							CustomItemCard(
+								itemData = item.itemDrop,
+								onItemClick = handleClick,
+								fillWidth = CUSTOM_ITEM_CARD_FILL_WIDTH,
+								imageUrl = item.itemDrop.imageUrl,
+								name = item.itemDrop.name,
+								quantity = item.quantityList.firstOrNull()
+							)
+						}
+					}
+					UiSection(
+						state = uiState.foodForRecipe,
+						divider = {}
+					) { data ->
+						NestedGrid(
+							nestedItems = NestedItems( items = data) ,
+							gridCells = 2
+						) { item ->
+							CustomItemCard(
+								itemData = item.itemDrop,
+								onItemClick = handleClick,
+								fillWidth = CUSTOM_ITEM_CARD_FILL_WIDTH,
+								imageUrl = item.itemDrop.imageUrl,
+								name = item.itemDrop.name,
+								quantity = item.quantityList.firstOrNull()
+							)
+						}
+					}
 				}
 			}
 			AnimatedBackButton(
@@ -392,9 +407,7 @@ fun FoodDetailContent(
 						.align(Alignment.TopEnd)
 						.padding(16.dp),
 					isFavorite = uiState.isFavorite,
-					onToggleFavorite = {
-						onToggleFavorite(food.toFavorite(), uiState.isFavorite)
-					}
+					onToggleFavorite = { onToggleFavorite() }
 				)
 			}
 		}
@@ -475,14 +488,12 @@ fun PreviewFoodDetailContentCooked() {
 		FoodDetailContent(
 			onBack = {},
 			onItemClick = {},
-			onToggleFavorite = { _, _ -> {} },
+			onToggleFavorite = {  },
 			uiState = FoodDetailUiState(
 				food = fakeFood,
 				craftingCookingStation = craftingStation,
-				foodForRecipe = fakeFoodList,
-				materialsForRecipe = fakeMaterialsList,
-				isLoading = false,
-				error = null
+				foodForRecipe = UIState.Success(fakeFoodList),
+				materialsForRecipe =UIState.Success( fakeMaterialsList)
 			),
 			category = FoodSubCategory.COOKED_FOOD,
 		)
