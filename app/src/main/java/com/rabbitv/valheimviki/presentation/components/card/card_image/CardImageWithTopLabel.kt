@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,7 +19,6 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -44,14 +44,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.ContentAlpha
-import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
-import coil3.request.ImageRequest
-import coil3.request.crossfade
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
 import com.rabbitv.valheimviki.domain.repository.ItemData
+import com.rabbitv.valheimviki.presentation.components.LoadingIndicator
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.DETAIL_ITEM_SHAPE_PADDING
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
@@ -60,8 +58,8 @@ import com.rabbitv.valheimviki.ui.theme.YellowDTBorder
 @Stable
 @Composable
 fun CardImageWithTopLabel(
-	onClickedItem: (itemData: ItemData) -> Unit ={},
 	modifier: Modifier = Modifier,
+	onClickedItem: (itemData: ItemData) -> Unit ={},
 	itemData: ItemData,
 	horizontalDividerWidth: Dp = 150.dp,
 	subTitle: String? = null,
@@ -150,7 +148,10 @@ fun CardImageWithTopLabel(
 				when (state) {
 					is AsyncImagePainter.State.Empty,
 					is AsyncImagePainter.State.Loading -> {
-						CircularProgressIndicator()
+						Box(modifier.align(Alignment.Center))
+						{
+							LoadingIndicator(PaddingValues(16.dp))
+						}
 					}
 
 					is AsyncImagePainter.State.Success -> {
