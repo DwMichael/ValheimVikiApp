@@ -1,8 +1,5 @@
 package com.rabbitv.valheimviki.presentation.detail.material.mob_drop
 
-
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,7 +12,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -27,14 +23,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.composables.icons.lucide.Cat
 import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.MapPinned
 import com.composables.icons.lucide.PawPrint
+import com.composables.icons.lucide.Rabbit
+import com.composables.icons.lucide.Sword
 import com.rabbitv.valheimviki.data.mappers.creatures.toAggressiveCreatures
 import com.rabbitv.valheimviki.data.mappers.creatures.toPassiveCreatures
 import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.model.favorite.Favorite
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
@@ -45,11 +44,10 @@ import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
-import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
-import com.rabbitv.valheimviki.presentation.detail.material.boss_drop.model.BossDropUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.mob_drop.model.MobDropUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.mob_drop.model.MobDropUiState
 import com.rabbitv.valheimviki.presentation.detail.material.mob_drop.viewmodel.MobDropDetailViewModel
+import com.rabbitv.valheimviki.presentation.components.ui_section.UiSection
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
@@ -86,31 +84,32 @@ fun MobDropDetailContent(
 ) {
 
 	val scrollState = rememberScrollState()
-	remember { mutableIntStateOf(0) }
-
 	val isExpandable = remember { mutableStateOf(false) }
 	val handleItemClick = remember {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
 	}
+
 	val aggressiveCreatureData = HorizontalPagerData(
 		title = "Aggressive Creatures",
-		subTitle = "Creatures from witch this material drop",
-		icon = Lucide.Cat,
+		subTitle = "Aggressive creatures that drop this material",
+		icon = Lucide.Sword,
 		iconRotationDegrees = 0f,
 		itemContentScale = ContentScale.Crop
 	)
+
 	val passiveCreatureData = HorizontalPagerData(
 		title = "Passive Creatures",
-		subTitle = "Creatures from witch this material drop",
-		icon = Lucide.PawPrint,
-		iconRotationDegrees = -85f,
+		subTitle = "Passive creatures that drop this material",
+		icon = Lucide.Rabbit,
+		iconRotationDegrees = 0f,
 		itemContentScale = ContentScale.Crop
 	)
+
 	val pointsOfInterestData = HorizontalPagerData(
 		title = "Points of interest",
-		subTitle = "Poi from witch this material drop",
-		icon = Lucide.PawPrint,
-		iconRotationDegrees = -85f,
+		subTitle = "Poi where you can find this item",
+		icon = Lucide.MapPinned,
+		iconRotationDegrees = 0f,
 		itemContentScale = ContentScale.Crop
 	)
 
@@ -155,26 +154,32 @@ fun MobDropDetailContent(
 						)
 
 					}
-					if (uiState.aggressive.isNotEmpty()) {
-						TridentsDividedRow()
+					
+					UiSection(
+						state = uiState.aggressive
+					) { aggressive ->
 						HorizontalPagerSection(
-							list = uiState.aggressive,
+							list = aggressive,
 							data = aggressiveCreatureData,
 							onItemClick = handleItemClick,
 						)
 					}
-					if (uiState.passive.isNotEmpty()) {
-						TridentsDividedRow()
+					
+					UiSection(
+						state = uiState.passive
+					) { passive ->
 						HorizontalPagerSection(
-							list = uiState.passive,
+							list = passive,
 							data = passiveCreatureData,
 							onItemClick = handleItemClick,
 						)
 					}
-					if (uiState.pointsOfInterest.isNotEmpty()) {
-						TridentsDividedRow()
+					
+					UiSection(
+						state = uiState.pointsOfInterest
+					) { pointsOfInterest ->
 						HorizontalPagerSection(
-							list = uiState.pointsOfInterest,
+							list = pointsOfInterest,
 							data = pointsOfInterestData,
 							onItemClick = handleItemClick
 						)
@@ -228,10 +233,9 @@ fun PreviewToolDetailContentCooked() {
 		MobDropDetailContent(
 			uiState = MobDropUiState(
 				material = FakeData.generateFakeMaterials()[0],
-				aggressive = agg.toAggressiveCreatures(),
-				passive = FakeData.generateFakeCreatures().toPassiveCreatures(),
-				isLoading = false,
-				error = null
+				aggressive = UIState.Success(agg.toAggressiveCreatures()),
+				passive = UIState.Success(agg.toPassiveCreatures()),
+				pointsOfInterest = UIState.Success( FakeData.pointOfInterest),
 			),
 			onBack = {},
 			onItemClick = {},

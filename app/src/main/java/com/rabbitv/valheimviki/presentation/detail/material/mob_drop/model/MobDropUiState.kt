@@ -4,14 +4,12 @@ import com.rabbitv.valheimviki.domain.model.creature.aggresive.AggressiveCreatur
 import com.rabbitv.valheimviki.domain.model.creature.passive.PassiveCreature
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
-
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 
 data class MobDropUiState(
 	val material: Material? = null,
-	val passive: List<PassiveCreature> = emptyList(),
-	val aggressive: List<AggressiveCreature> = emptyList(),
-	val pointsOfInterest: List<PointOfInterest> = emptyList(),
-	val isFavorite: Boolean = false,
-	val isLoading: Boolean = false,
-	val error: String? = null,
+	val passive: UIState<List<PassiveCreature>> = UIState.Loading,
+	val aggressive: UIState<List<AggressiveCreature>> = UIState.Loading,
+	val pointsOfInterest: UIState<List<PointOfInterest>> = UIState.Loading,
+	val isFavorite: Boolean = false
 )
