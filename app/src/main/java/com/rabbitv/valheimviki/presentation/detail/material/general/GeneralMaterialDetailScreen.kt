@@ -6,12 +6,12 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -53,11 +54,10 @@ import com.rabbitv.valheimviki.presentation.components.horizontal_pager.Horizont
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
-import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.OverlayLabel
-import com.rabbitv.valheimviki.presentation.detail.material.boss_drop.model.BossDropUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.general.model.GeneralMaterialUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.general.model.GeneralMaterialUiState
 import com.rabbitv.valheimviki.presentation.detail.material.general.viewmodel.GeneralMaterialDetailViewModel
+import com.rabbitv.valheimviki.presentation.components.ui_section.UiSection
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
@@ -89,16 +89,15 @@ fun GeneralMaterialDetailScreen(
 fun GeneralMaterialDetailContent(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
-	onToggleFavorite: (favorite: Favorite, currentIsFavorite: Boolean) -> Unit,
+	onToggleFavorite: () -> Unit,
 	uiState: GeneralMaterialUiState,
 ) {
-
 	val scrollState = rememberScrollState()
 	val isExpandable = remember { mutableStateOf(false) }
-
 	val handleItemClick = remember {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
 	}
+
 	val pointOfInterestData = HorizontalPagerData(
 		title = "Point Of Interest",
 		subTitle = "Places where you can find this item",
@@ -115,10 +114,10 @@ fun GeneralMaterialDetailContent(
 	)
 	val treesData = HorizontalPagerData(
 		title = "Trees",
-		subTitle = "Trees witch from you can obtain this resource",
+		subTitle = "Trees from witch this wood drop",
 		icon = Lucide.Trees,
 		iconRotationDegrees = 0f,
-		itemContentScale = ContentScale.Crop,
+		itemContentScale = ContentScale.Crop
 	)
 
 	BgImage()
@@ -153,7 +152,6 @@ fun GeneralMaterialDetailContent(
 						textAlign = TextAlign.Center
 					)
 					SlavicDivider()
-
 					material.description?.let {
 						DetailExpandableText(
 							text = material.description,
@@ -162,72 +160,78 @@ fun GeneralMaterialDetailContent(
 						)
 
 					}
-					uiState.biomes.forEach { biome ->
-						SlavicDivider()
-						CardWithOverlayLabel(
-							onClickedItem = {
-								val destination =
-									WorldDetailDestination.BiomeDetail(
-										biomeId = biome.id,
-										imageUrl = biome.imageUrl,
-										title = biome.name,
-									)
-								onItemClick(destination)
-							},
-							painter = rememberAsyncImagePainter(biome.imageUrl),
-							content = {
-								Row {
+					
+					UiSection(
+						state = uiState.biomes
+					) { biomes ->
+						biomes.forEach { biome ->
+							CardWithOverlayLabel(
+								onClickedItem = {
+									val destination =
+										WorldDetailDestination.BiomeDetail(
+											biomeId = biome.id,
+											imageUrl = biome.imageUrl,
+											title = biome.name,
+										)
+									onItemClick(destination)
+								},
+								painter = rememberAsyncImagePainter(biome.imageUrl),
+								content = {
 									Box(
-										modifier = Modifier.fillMaxHeight()
+										modifier = Modifier
+											.fillMaxSize()
+											.wrapContentHeight(Alignment.CenterVertically)
+											.wrapContentWidth(Alignment.CenterHorizontally)
 									) {
-										OverlayLabel(
-											icon = Lucide.TreePine,
-											label = " PRIMARY SPAWN",
+										Text(
+											biome.name.uppercase(),
+											style = MaterialTheme.typography.bodyLarge,
+											modifier = Modifier
+												.fillMaxWidth()
+												.padding(8.dp),
+											color = Color.White,
+											textAlign = TextAlign.Center
 										)
 									}
-									Text(
-										biome.name.uppercase(),
-										style = MaterialTheme.typography.bodyLarge,
-										modifier = Modifier
-											.align(Alignment.CenterVertically)
-											.fillMaxWidth()
-											.padding(8.dp),
-										color = Color.White,
-										textAlign = TextAlign.Center
-									)
 								}
-
-							}
-						)
-
+							)
+						}
 					}
-					if (uiState.pointOfInterests.isNotEmpty()) {
-						TridentsDividedRow()
+					
+					UiSection(
+						state = uiState.pointOfInterests
+					) { pointOfInterests ->
 						HorizontalPagerSection(
-							list = uiState.pointOfInterests,
+							list = pointOfInterests,
 							data = pointOfInterestData,
 							onItemClick = handleItemClick
 						)
 					}
-					if (uiState.oreDeposits.isNotEmpty()) {
-						TridentsDividedRow()
+					
+					UiSection(
+						state = uiState.oreDeposits
+					) { oreDeposits ->
 						HorizontalPagerSection(
-							list = uiState.oreDeposits,
+							list = oreDeposits,
 							data = oreDepositData,
 							onItemClick = handleItemClick,
 						)
 					}
-					if (uiState.trees.isNotEmpty()) {
-						TridentsDividedRow()
+					
+					UiSection(
+						state = uiState.trees
+					) { trees ->
 						HorizontalPagerSection(
-							list = uiState.trees,
+							list = trees,
 							data = treesData,
 							onItemClick = handleItemClick
 						)
 					}
-					if (uiState.craftingStations.isNotEmpty()) {
-						TridentsDividedRow()
-						uiState.craftingStations.forEach { craftingStation ->
+					
+					UiSection(
+						state = uiState.craftingStations
+					) { craftingStations ->
+						craftingStations.forEach { craftingStation ->
 							CardImageWithTopLabel(
 								onClickedItem = {
 									val destination =
@@ -260,7 +264,7 @@ fun GeneralMaterialDetailContent(
 						.padding(16.dp),
 					isFavorite = uiState.isFavorite,
 					onToggleFavorite = {
-						onToggleFavorite(material.toFavorite(), uiState.isFavorite)
+						onToggleFavorite()
 					}
 				)
 			}
@@ -278,14 +282,11 @@ fun PreviewToolDetailContentCooked() {
 	ValheimVikiAppTheme {
 		GeneralMaterialDetailContent(
 			uiState = GeneralMaterialUiState(
-				material = FakeData.generateFakeMaterials()[0],
-				isLoading = false,
-				error = null
+				material = FakeData.generateFakeMaterials()[0]
 			),
 			onBack = {},
 			onItemClick = {},
-			onToggleFavorite = { _, _ -> {} }
+			onToggleFavorite = {}
 		)
 	}
-
 }

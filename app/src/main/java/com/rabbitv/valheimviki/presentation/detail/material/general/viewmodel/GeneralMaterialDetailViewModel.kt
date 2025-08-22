@@ -1,17 +1,19 @@
 package com.rabbitv.valheimviki.presentation.detail.material.general.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
+import com.rabbitv.valheimviki.di.qualifiers.DefaultDispatcher
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
 import com.rabbitv.valheimviki.domain.model.relation.RelationType
+import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
 import com.rabbitv.valheimviki.domain.model.tree.Tree
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.CraftingObjectUseCases
 import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
@@ -20,27 +22,31 @@ import com.rabbitv.valheimviki.domain.use_cases.ore_deposit.OreDepositUseCases
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.PointOfInterestUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.domain.use_cases.tree.TreeUseCases
-import com.rabbitv.valheimviki.presentation.detail.material.gemstones.model.GemstoneUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.general.model.GeneralMaterialUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.general.model.GeneralMaterialUiState
 import com.rabbitv.valheimviki.utils.Constants.GENERAL_MATERIAL_KEY
 import com.rabbitv.valheimviki.utils.extensions.combine
+import com.rabbitv.valheimviki.utils.relatedDataFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
-@Suppress("UNCHECKED_CAST")
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class GeneralMaterialDetailViewModel @Inject constructor(
+	savedStateHandle: SavedStateHandle,
 	private val materialUseCases: MaterialUseCases,
 	private val craftingUseCases: CraftingObjectUseCases,
 	private val biomeUseCases: BiomeUseCases,
@@ -49,132 +55,88 @@ class GeneralMaterialDetailViewModel @Inject constructor(
 	private val treeUseCases: TreeUseCases,
 	private val relationUseCases: RelationUseCases,
 	private val favoriteUseCases: FavoriteUseCases,
-	savedStateHandle: SavedStateHandle,
+	@param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
 	private val _materialId: String = checkNotNull(savedStateHandle[GENERAL_MATERIAL_KEY])
-	private val _material = MutableStateFlow<Material?>(null)
-	private val _requiredCraftingStation = MutableStateFlow<List<CraftingObject>>(emptyList())
-	private val _biomes = MutableStateFlow<List<Biome>>(emptyList())
-	private val _oreDeposits = MutableStateFlow<List<OreDeposit>>(emptyList())
-	private val _pointOfInterests = MutableStateFlow<List<PointOfInterest>>(emptyList())
-	private val _trees = MutableStateFlow<List<Tree>>(emptyList())
-	private val _isLoading = MutableStateFlow<Boolean>(false)
-	private val _error = MutableStateFlow<String?>(null)
-	private val _isFavorite = favoriteUseCases.isFavorite(_materialId)
-		.distinctUntilChanged()
-		.stateIn(
-			scope = viewModelScope,
-			started = SharingStarted.WhileSubscribed(5_000),
-			initialValue = false
-		)
+	private val _isFavorite = MutableStateFlow(false)
 
+	init {
+		favoriteUseCases.isFavorite(_materialId)
+			.distinctUntilChanged()
+			.onEach { value -> _isFavorite.value = value }
+			.launchIn(viewModelScope)
+	}
 
-	val uiState = combine(
-		_material,
-		_biomes,
+	private val _materialFlow: StateFlow<Material?> =
+		materialUseCases.getMaterialById(_materialId)
+			.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
+	private val _relationsObjects: StateFlow<List<RelatedItem>> =
+		relationUseCases.getRelatedIdsUseCase(_materialId)
+			.distinctUntilChanged()
+			.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+	private val _relatedBiomes = relatedDataFlow(
+		idsFlow = _relationsObjects.map { list -> list.map { item -> item.id } },
+		fetcher = { ids -> biomeUseCases.getBiomesByIdsUseCase(ids) }
+	).flowOn(defaultDispatcher)
+
+	private val _relatedOreDeposits = relatedDataFlow(
+		idsFlow = _relationsObjects.map { list -> list.map { item -> item.id } },
+		fetcher = { ids -> oreDepositUseCases.getOreDepositsByIdsUseCase(ids) }
+	).flowOn(defaultDispatcher)
+
+	private val _relatedPointOfInterests = relatedDataFlow(
+		idsFlow = _relationsObjects.map { list -> list.map { item -> item.id } },
+		fetcher = { ids -> pointOfInterestUseCases.getPointsOfInterestByIdsUseCase(ids) }
+	).flowOn(defaultDispatcher)
+
+	private val _relatedTrees = relatedDataFlow(
+		idsFlow = _relationsObjects.map { list -> list.map { item -> item.id } },
+		fetcher = { ids -> treeUseCases.getTreesByIdsUseCase(ids) }
+	).flowOn(defaultDispatcher)
+
+	private val _requiredCraftingStation = relatedDataFlow(
+		idsFlow = _relationsObjects
+			.map { list -> 
+				list.filter { it.relationType == RelationType.PRODUCES.toString() }
+					.map { item -> item.id }
+			},
+		fetcher = { ids -> craftingUseCases.getCraftingObjectsByIds(ids) }
+	).flowOn(defaultDispatcher)
+
+	val uiState: StateFlow<GeneralMaterialUiState> = combine(
+		_materialFlow,
+		_relatedBiomes,
 		_requiredCraftingStation,
-		_pointOfInterests,
-		_oreDeposits,
-		_trees,
-		_isFavorite,
-		_isLoading,
-		_error
-	) { material,biomes,requiredCraftingStation, poitOfInterest, oreDeposits,trees,favorite,isLoading,error ->
+		_relatedPointOfInterests,
+		_relatedOreDeposits,
+		_relatedTrees,
+		_isFavorite
+	) { material, biomes, requiredCraftingStation, pointOfInterests, oreDeposits, trees, isFavorite ->
 		GeneralMaterialUiState(
 			material = material,
 			biomes = biomes,
 			craftingStations = requiredCraftingStation,
-			pointOfInterests = poitOfInterest,
-			oreDeposits = oreDeposits,
+			pointOfInterests =pointOfInterests,
+			oreDeposits =oreDeposits,
 			trees = trees,
-			isFavorite = favorite,
-			isLoading = isLoading,
-			error = error,
+			isFavorite = isFavorite
 		)
 	}.stateIn(
-		viewModelScope,
-		SharingStarted.WhileSubscribed(5000),
-		GeneralMaterialUiState()
+		scope = viewModelScope,
+		started = SharingStarted.WhileSubscribed(5000),
+		initialValue = GeneralMaterialUiState()
 	)
-
-	init {
-		loadGeneralDropData()
-	}
-
-	internal fun loadGeneralDropData() {
-
-		viewModelScope.launch {
-			try {
-				_isLoading.value = true
-				_error.value = null
-
-
-				val materialDeferred = async {
-					materialUseCases.getMaterialById(_materialId).first()
-				}
-
-
-				val relationObjectsDeferred = async {
-					relationUseCases.getRelatedIdsUseCase(_materialId).first()
-				}
-
-
-				val material = materialDeferred.await()
-				val relationObjects = relationObjectsDeferred.await()
-
-				_material.value = material
-
-				val relationsIds = relationObjects.map { it.id }
-				val relationProducesIds =
-					relationObjects.filter { it.relationType == RelationType.PRODUCES.toString() }
-						.map { it.id }
-
-
-				val biomesDeferred = async {
-					biomeUseCases.getBiomesByIdsUseCase(relationsIds).first()
-				}
-
-				val oreDepositsDeferred = async {
-					oreDepositUseCases.getOreDepositsByIdsUseCase(relationsIds).first()
-				}
-
-				val requiredCraftingStationDeferred = async {
-					craftingUseCases.getCraftingObjectsByIds(relationProducesIds).first()
-				}
-
-				val pointOfInterestsDeferred = async {
-					pointOfInterestUseCases.getPointsOfInterestByIdsUseCase(relationsIds).first()
-				}
-
-				val treesDeferred = async {
-					treeUseCases.getTreesByIdsUseCase(relationsIds).first()
-				}
-
-
-				_biomes.value = biomesDeferred.await()
-				_oreDeposits.value = oreDepositsDeferred.await()
-				_pointOfInterests.value = pointOfInterestsDeferred.await()
-				_trees.value = treesDeferred.await()
-				_requiredCraftingStation.value = requiredCraftingStationDeferred.await()
-
-			} catch (e: Exception) {
-				Log.e("GeneralMaterialDetailViewModel", "General fetch error: ${e.message}", e)
-				_error.value = e.message
-			} finally {
-				_isLoading.value = false
-			}
-
-		}
-	}
 
 	fun uiEvent(event: GeneralMaterialUiEvent) {
 		when (event) {
 			GeneralMaterialUiEvent.ToggleFavorite -> {
 				viewModelScope.launch {
-					_material.value?.let { bM ->
+					_materialFlow.value?.let { material ->
 						favoriteUseCases.toggleFavoriteUseCase(
-							bM.toFavorite(),
+							material.toFavorite(),
 							shouldBeFavorite = !_isFavorite.value
 						)
 					}
