@@ -54,6 +54,8 @@ import com.rabbitv.valheimviki.presentation.components.images.FramedImage
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.OverlayLabel
+import com.rabbitv.valheimviki.presentation.detail.material.boss_drop.model.BossDropUiEvent
+import com.rabbitv.valheimviki.presentation.detail.material.general.model.GeneralMaterialUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.general.model.GeneralMaterialUiState
 import com.rabbitv.valheimviki.presentation.detail.material.general.viewmodel.GeneralMaterialDetailViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
@@ -61,7 +63,7 @@ import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
 
-@RequiresApi(Build.VERSION_CODES.S)
+
 @Composable
 fun GeneralMaterialDetailScreen(
 	onBack: () -> Unit,
@@ -69,11 +71,8 @@ fun GeneralMaterialDetailScreen(
 	viewModel: GeneralMaterialDetailViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-	val onToggleFavorite = { favorite: Favorite, isFavorite: Boolean ->
-		viewModel.toggleFavorite(
-			favorite = favorite,
-			currentIsFavorite = isFavorite
-		)
+	val onToggleFavorite = {
+		viewModel.uiEvent(GeneralMaterialUiEvent.ToggleFavorite)
 	}
 	GeneralMaterialDetailContent(
 		onBack = onBack,
@@ -85,7 +84,7 @@ fun GeneralMaterialDetailScreen(
 }
 
 
-@RequiresApi(Build.VERSION_CODES.S)
+
 @Composable
 fun GeneralMaterialDetailContent(
 	onBack: () -> Unit,

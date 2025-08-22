@@ -38,13 +38,14 @@ import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
+import com.rabbitv.valheimviki.presentation.detail.material.boss_drop.model.BossDropUiEvent
+import com.rabbitv.valheimviki.presentation.detail.material.shop.model.ShopUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.shop.model.ShopUiState
 import com.rabbitv.valheimviki.presentation.detail.material.shop.viewmodel.ShopMaterialDetailViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
-@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun ShopMaterialDetailScreen(
 	onBack: () -> Unit,
@@ -52,11 +53,8 @@ fun ShopMaterialDetailScreen(
 	viewModel: ShopMaterialDetailViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-	val onToggleFavorite = { favorite: Favorite, isFavorite: Boolean ->
-		viewModel.toggleFavorite(
-			favorite = favorite,
-			currentIsFavorite = isFavorite
-		)
+	val onToggleFavorite = {
+		viewModel.uiEvent(ShopUiEvent.ToggleFavorite)
 	}
 	ShopMaterialDetailContent(
 		onBack = onBack,
@@ -68,12 +66,12 @@ fun ShopMaterialDetailScreen(
 }
 
 
-@RequiresApi(Build.VERSION_CODES.S)
+
 @Composable
 fun ShopMaterialDetailContent(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
-	onToggleFavorite: (favorite: Favorite, currentIsFavorite: Boolean) -> Unit,
+	onToggleFavorite: () -> Unit,
 	uiState: ShopUiState,
 ) {
 	val scrollState = rememberScrollState()
@@ -159,7 +157,7 @@ fun ShopMaterialDetailContent(
 						.padding(16.dp),
 					isFavorite = uiState.isFavorite,
 					onToggleFavorite = {
-						onToggleFavorite(material.toFavorite(), uiState.isFavorite)
+						onToggleFavorite()
 					}
 				)
 			}
@@ -168,7 +166,7 @@ fun ShopMaterialDetailContent(
 }
 
 
-@RequiresApi(Build.VERSION_CODES.S)
+
 @Preview("ToolDetailContentPreview", showBackground = true)
 @Composable
 fun PreviewToolDetailContentCooked() {
@@ -179,7 +177,7 @@ fun PreviewToolDetailContentCooked() {
 			uiState = ShopUiState(),
 			onBack = {},
 			onItemClick = {},
-			onToggleFavorite = {_,_->{}}
+			onToggleFavorite = {}
 			)
 	}
 

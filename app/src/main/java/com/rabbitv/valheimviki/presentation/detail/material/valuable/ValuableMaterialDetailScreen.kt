@@ -43,7 +43,9 @@ import com.rabbitv.valheimviki.presentation.components.horizontal_pager.Horizont
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
+import com.rabbitv.valheimviki.presentation.detail.material.boss_drop.model.BossDropUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.valuable.model.ValuableMaterialUiState
+import com.rabbitv.valheimviki.presentation.detail.material.valuable.model.ValuableUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.valuable.viewmodel.ValuableMaterialDetailViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
@@ -57,11 +59,8 @@ fun ValuableMaterialDetailScreen(
 	viewModel: ValuableMaterialDetailViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-	val onToggleFavorite = { favorite: Favorite, isFavorite: Boolean ->
-		viewModel.toggleFavorite(
-			favorite = favorite,
-			currentIsFavorite = isFavorite
-		)
+	val onToggleFavorite = {
+		viewModel.uiEvent(ValuableUiEvent.ToggleFavorite)
 	}
 	ValuableMaterialDetailContent(
 		onBack = onBack,
@@ -78,7 +77,7 @@ fun ValuableMaterialDetailScreen(
 fun ValuableMaterialDetailContent(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
-	onToggleFavorite: (favorite: Favorite, currentIsFavorite: Boolean) -> Unit,
+	onToggleFavorite: () -> Unit,
 	uiState: ValuableMaterialUiState,
 ) {
 
@@ -190,7 +189,7 @@ fun ValuableMaterialDetailContent(
 						.padding(16.dp),
 					isFavorite = uiState.isFavorite,
 					onToggleFavorite = {
-						onToggleFavorite(material.toFavorite(), uiState.isFavorite)
+						onToggleFavorite()
 					}
 				)
 			}
@@ -199,7 +198,7 @@ fun ValuableMaterialDetailContent(
 }
 
 
-@RequiresApi(Build.VERSION_CODES.S)
+
 @Preview("ValuableMaterialDetailContentPreview", showBackground = true)
 @Composable
 fun PreviewToolDetailContentCooked() {
@@ -210,7 +209,7 @@ fun PreviewToolDetailContentCooked() {
 			uiState = ValuableMaterialUiState(),
 			onBack = {},
 			onItemClick = {},
-			onToggleFavorite = { _, _ -> {} }
+			onToggleFavorite = {  }
 		)
 	}
 

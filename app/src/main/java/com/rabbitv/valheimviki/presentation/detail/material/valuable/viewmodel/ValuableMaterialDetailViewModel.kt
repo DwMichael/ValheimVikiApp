@@ -5,10 +5,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.data.mappers.creatures.toNPC
+import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.model.creature.CreatureSubCategory
 import com.rabbitv.valheimviki.domain.model.creature.npc.NPC
-import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterestSubCategory
@@ -18,15 +18,16 @@ import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.PointOfInterestUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.presentation.detail.material.valuable.model.ValuableMaterialUiState
+import com.rabbitv.valheimviki.presentation.detail.material.valuable.model.ValuableUiEvent
 import com.rabbitv.valheimviki.utils.Constants.VALUABLE_MATERIAL_KEY
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOn
+import com.rabbitv.valheimviki.utils.extensions.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -49,25 +50,30 @@ class ValuableMaterialDetailViewModel @Inject constructor(
 	private val _creatures = MutableStateFlow<List<Creature>>(emptyList())
 	private val _isLoading = MutableStateFlow<Boolean>(false)
 	private val _error = MutableStateFlow<String?>(null)
-
+	private val _isFavorite = favoriteUseCases.isFavorite(_materialId)
+		.distinctUntilChanged()
+		.stateIn(
+			scope = viewModelScope,
+			started = SharingStarted.WhileSubscribed(5_000),
+			initialValue = false
+		)
 	val uiState = combine(
 		_material,
 		_pointsOfInterest,
 		_npc,
 		_creatures,
-		favoriteUseCases.isFavorite(_materialId)
-			.flowOn(Dispatchers.IO),
+		_isFavorite,
 		_isLoading,
 		_error
-	) { values ->
+	) { material,poiOfInterest,npc,creatures,favorite, isLoading, error ->
 		ValuableMaterialUiState(
-			material = values[0] as Material?,
-			pointsOfInterest = values[1] as List<PointOfInterest>,
-			npc = values[2] as List<NPC>,
-			creatures = values[3] as List<Creature>,
-			isFavorite = values[4] as Boolean,
-			isLoading = values[5] as Boolean,
-			error = values[6] as String?,
+			material = material,
+			pointsOfInterest = poiOfInterest,
+			npc = npc,
+			creatures = creatures,
+			isFavorite = favorite,
+			isLoading = isLoading,
+			error = error
 		)
 
 	}.stateIn(
@@ -82,7 +88,7 @@ class ValuableMaterialDetailViewModel @Inject constructor(
 
 	internal fun loadMobDropData() {
 
-		viewModelScope.launch(Dispatchers.IO) {
+		viewModelScope.launch {
 			try {
 				_isLoading.value = true
 				_error.value = null
@@ -128,12 +134,17 @@ class ValuableMaterialDetailViewModel @Inject constructor(
 			}
 		}
 	}
-	fun toggleFavorite(favorite: Favorite, currentIsFavorite: Boolean) {
-		viewModelScope.launch {
-			if (currentIsFavorite) {
-				favoriteUseCases.deleteFavoriteUseCase(favorite)
-			} else {
-				favoriteUseCases.addFavoriteUseCase(favorite)
+	fun uiEvent(event: ValuableUiEvent) {
+		when (event) {
+			ValuableUiEvent.ToggleFavorite -> {
+				viewModelScope.launch {
+					_material.value?.let { bM ->
+						favoriteUseCases.toggleFavoriteUseCase(
+							bM.toFavorite(),
+							shouldBeFavorite = !_isFavorite.value
+						)
+					}
+				}
 			}
 		}
 	}

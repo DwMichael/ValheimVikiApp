@@ -38,6 +38,8 @@ import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
 import com.rabbitv.valheimviki.presentation.components.card.card_image.ImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
+import com.rabbitv.valheimviki.presentation.detail.material.boss_drop.model.BossDropUiEvent
+import com.rabbitv.valheimviki.presentation.detail.material.mini_boss_drop.model.MiniBossDropUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.mini_boss_drop.model.MiniBossDropUiState
 import com.rabbitv.valheimviki.presentation.detail.material.mini_boss_drop.viewmodel.MiniBossDropDetailViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
@@ -45,7 +47,7 @@ import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
 
-@RequiresApi(Build.VERSION_CODES.S)
+
 @Composable
 fun MiniBossDropDetailScreen(
 	onBack: () -> Unit,
@@ -54,11 +56,8 @@ fun MiniBossDropDetailScreen(
 	viewModel: MiniBossDropDetailViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-	val onToggleFavorite = { favorite: Favorite, isFavorite: Boolean ->
-		viewModel.toggleFavorite(
-			favorite = favorite,
-			currentIsFavorite = isFavorite
-		)
+	val onToggleFavorite = {
+		viewModel.uiEvent(MiniBossDropUiEvent.ToggleFavorite)
 	}
 
 	MiniBossDropDetailContent(
@@ -71,12 +70,12 @@ fun MiniBossDropDetailScreen(
 }
 
 
-@RequiresApi(Build.VERSION_CODES.S)
+
 @Composable
 fun MiniBossDropDetailContent(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
-	onToggleFavorite: (favorite: Favorite, currentIsFavorite: Boolean) -> Unit,
+	onToggleFavorite: () -> Unit,
 	uiState: MiniBossDropUiState,
 ) {
 
@@ -173,7 +172,7 @@ fun MiniBossDropDetailContent(
 						.padding(16.dp),
 					isFavorite = uiState.isFavorite,
 					onToggleFavorite = {
-						onToggleFavorite(material.toFavorite(), uiState.isFavorite)
+						onToggleFavorite()
 					}
 				)
 			}
@@ -182,7 +181,7 @@ fun MiniBossDropDetailContent(
 }
 
 
-@RequiresApi(Build.VERSION_CODES.S)
+
 @Preview("ToolDetailContentPreview", showBackground = true)
 @Composable
 fun PreviewToolDetailContentCooked() {
@@ -198,7 +197,7 @@ fun PreviewToolDetailContentCooked() {
 			),
 			onBack = {},
 			onItemClick = {},
-			onToggleFavorite = { _, _ -> {} }
+			onToggleFavorite = { }
 		)
 	}
 

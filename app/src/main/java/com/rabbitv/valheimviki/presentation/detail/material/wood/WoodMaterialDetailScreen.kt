@@ -46,13 +46,15 @@ import com.rabbitv.valheimviki.presentation.components.horizontal_pager.Horizont
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
+import com.rabbitv.valheimviki.presentation.detail.material.boss_drop.model.BossDropUiEvent
+import com.rabbitv.valheimviki.presentation.detail.material.wood.model.WoodUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.wood.model.WoodUiState
 import com.rabbitv.valheimviki.presentation.detail.material.wood.viewmodel.WoodMaterialDetailViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
-@RequiresApi(Build.VERSION_CODES.S)
+
 @Composable
 fun WoodMaterialDetailScreen(
 	onBack: () -> Unit,
@@ -60,11 +62,8 @@ fun WoodMaterialDetailScreen(
 	viewModel: WoodMaterialDetailViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-	val onToggleFavorite = { favorite: Favorite, isFavorite: Boolean ->
-		viewModel.toggleFavorite(
-			favorite = favorite,
-			currentIsFavorite = isFavorite
-		)
+	val onToggleFavorite = {
+		viewModel.uiEvent(WoodUiEvent.ToggleFavorite)
 	}
 	WoodMaterialDetailContent(
 		onBack = onBack,
@@ -76,12 +75,12 @@ fun WoodMaterialDetailScreen(
 }
 
 
-@RequiresApi(Build.VERSION_CODES.S)
+
 @Composable
 fun WoodMaterialDetailContent(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
-	onToggleFavorite: (favorite: Favorite, currentIsFavorite: Boolean) -> Unit,
+	onToggleFavorite: () -> Unit,
 	uiState: WoodUiState,
 ) {
 	val scrollState = rememberScrollState()
@@ -203,7 +202,7 @@ fun WoodMaterialDetailContent(
 						.padding(16.dp),
 					isFavorite = uiState.isFavorite,
 					onToggleFavorite = {
-						onToggleFavorite(material.toFavorite(), uiState.isFavorite)
+						onToggleFavorite()
 					},
 				)
 			}
@@ -212,7 +211,7 @@ fun WoodMaterialDetailContent(
 }
 
 
-@RequiresApi(Build.VERSION_CODES.S)
+
 @Preview("ToolDetailContentPreview", showBackground = true)
 @Composable
 fun PreviewToolDetailContentCooked() {
@@ -223,7 +222,7 @@ fun PreviewToolDetailContentCooked() {
 			uiState = WoodUiState(),
 			onBack = {},
 			onItemClick = {},
-			onToggleFavorite = { _, _ -> {} }
+			onToggleFavorite = { }
 		)
 	}
 

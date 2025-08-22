@@ -60,6 +60,8 @@ import com.rabbitv.valheimviki.presentation.components.section_header.SectionHea
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.OverlayLabel
+import com.rabbitv.valheimviki.presentation.detail.material.boss_drop.model.BossDropUiEvent
+import com.rabbitv.valheimviki.presentation.detail.material.metal.model.MetalMaterialUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.metal.model.MetalMaterialUiState
 import com.rabbitv.valheimviki.presentation.detail.material.metal.viewmodel.MetalMaterialDetailViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
@@ -68,7 +70,7 @@ import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
 
-@RequiresApi(Build.VERSION_CODES.S)
+
 @Composable
 fun MetalMaterialDetailScreen(
 	onBack: () -> Unit,
@@ -76,11 +78,8 @@ fun MetalMaterialDetailScreen(
 	viewModel: MetalMaterialDetailViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-	val onToggleFavorite = { favorite: Favorite, isFavorite: Boolean ->
-		viewModel.toggleFavorite(
-			favorite = favorite,
-			currentIsFavorite = isFavorite
-		)
+	val onToggleFavorite = {
+		viewModel.uiEvent(MetalMaterialUiEvent.ToggleFavorite)
 	}
 	MetalMaterialDetailContent(
 		onBack = onBack,
@@ -92,12 +91,12 @@ fun MetalMaterialDetailScreen(
 }
 
 
-@RequiresApi(Build.VERSION_CODES.S)
+
 @Composable
 fun MetalMaterialDetailContent(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
-	onToggleFavorite: (favorite: Favorite, currentIsFavorite: Boolean) -> Unit,
+	onToggleFavorite: () -> Unit,
 	uiState: MetalMaterialUiState,
 
 	) {
@@ -309,7 +308,7 @@ fun MetalMaterialDetailContent(
 }
 
 
-@RequiresApi(Build.VERSION_CODES.S)
+
 @Preview("ToolDetailContentPreview", showBackground = true)
 @Composable
 fun PreviewToolDetailContentCooked() {
@@ -324,7 +323,7 @@ fun PreviewToolDetailContentCooked() {
 			),
 			onBack = {},
 			onItemClick = {},
-			onToggleFavorite = { _, _ -> {} }
+			onToggleFavorite = { }
 		)
 	}
 

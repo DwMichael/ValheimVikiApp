@@ -29,8 +29,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rabbitv.valheimviki.data.mappers.creatures.toMainBoss
-import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
-import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.material.MaterialSubType
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
@@ -42,6 +40,7 @@ import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
 import com.rabbitv.valheimviki.presentation.components.card.card_image.ImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
+import com.rabbitv.valheimviki.presentation.detail.material.boss_drop.model.BossDropUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.boss_drop.model.BossDropUiState
 import com.rabbitv.valheimviki.presentation.detail.material.boss_drop.viewmodel.BossDropDetailViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
@@ -49,7 +48,7 @@ import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
 
-@RequiresApi(Build.VERSION_CODES.S)
+
 @Composable
 fun BossDropDetailScreen(
 	onBack: () -> Unit,
@@ -57,11 +56,8 @@ fun BossDropDetailScreen(
 	viewModel: BossDropDetailViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-	val onToggleFavorite = { favorite: Favorite, isFavorite: Boolean ->
-		viewModel.toggleFavorite(
-			favorite = favorite,
-			currentIsFavorite = isFavorite
-		)
+	val onToggleFavorite = {
+		viewModel.uiEvent(BossDropUiEvent.ToggleFavorite)
 	}
 	BossDropDetailContent(
 		onBack = onBack,
@@ -73,12 +69,11 @@ fun BossDropDetailScreen(
 }
 
 
-@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun BossDropDetailContent(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
-	onToggleFavorite: (favorite: Favorite, currentIsFavorite: Boolean) -> Unit,
+	onToggleFavorite: () -> Unit,
 	uiState: BossDropUiState,
 ) {
 
@@ -177,7 +172,7 @@ fun BossDropDetailContent(
 						.padding(16.dp),
 					isFavorite = uiState.isFavorite,
 					onToggleFavorite = {
-						onToggleFavorite(material.toFavorite(), uiState.isFavorite)
+						onToggleFavorite()
 					},
 				)
 			}
@@ -203,7 +198,7 @@ fun PreviewToolDetailContentCooked() {
 			),
 			onBack = {},
 			onItemClick = {},
-			onToggleFavorite = {_,_ ->{}}
+			onToggleFavorite = {}
 		)
 	}
 

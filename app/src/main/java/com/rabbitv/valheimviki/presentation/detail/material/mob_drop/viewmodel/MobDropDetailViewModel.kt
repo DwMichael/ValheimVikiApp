@@ -6,10 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.data.mappers.creatures.toAggressiveCreatures
 import com.rabbitv.valheimviki.data.mappers.creatures.toPassiveCreatures
+import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.creature.CreatureSubCategory
 import com.rabbitv.valheimviki.domain.model.creature.aggresive.AggressiveCreature
 import com.rabbitv.valheimviki.domain.model.creature.passive.PassiveCreature
-import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
@@ -17,16 +17,16 @@ import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.PointOfInterestUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
+import com.rabbitv.valheimviki.presentation.detail.material.mob_drop.model.MobDropUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.mob_drop.model.MobDropUiState
 import com.rabbitv.valheimviki.utils.Constants.MOB_DROP_KEY
+import com.rabbitv.valheimviki.utils.extensions.combine
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -49,25 +49,31 @@ class MobDropDetailViewModel @Inject constructor(
 	private val _pointsOfInterest = MutableStateFlow<List<PointOfInterest>>(emptyList())
 	private val _isLoading = MutableStateFlow<Boolean>(false)
 	private val _error = MutableStateFlow<String?>(null)
+	private val _isFavorite = favoriteUseCases.isFavorite(_materialId)
+		.distinctUntilChanged()
+		.stateIn(
+			scope = viewModelScope,
+			started = SharingStarted.WhileSubscribed(5_000),
+			initialValue = false
+		)
 
 	val uiState = combine(
 		_material,
 		_passiveCreatures,
 		_aggressiveCreature,
 		_pointsOfInterest,
-		favoriteUseCases.isFavorite(_materialId)
-			.flowOn(Dispatchers.IO),
+		_isFavorite,
 		_isLoading,
 		_error
-	) { values ->
+	) { material, passiveC,aggressiveC,poiOfInterest,favorite, isLoading, error ->
 		MobDropUiState(
-			material = values[0] as Material?,
-			passive = values[1] as List<PassiveCreature>,
-			aggressive = values[2] as List<AggressiveCreature>,
-			pointsOfInterest = values[3] as List<PointOfInterest>,
-			isFavorite = values[4] as Boolean,
-			isLoading = values[5] as Boolean,
-			error = values[6] as String?
+			material = material,
+			passive =  passiveC,
+			aggressive = aggressiveC,
+			pointsOfInterest = poiOfInterest,
+			isFavorite = favorite,
+			isLoading = isLoading,
+			error = error
 		)
 
 	}.stateIn(
@@ -82,7 +88,7 @@ class MobDropDetailViewModel @Inject constructor(
 
 	internal fun loadMobDropData() {
 
-		viewModelScope.launch(Dispatchers.IO) {
+		viewModelScope.launch {
 			try {
 				_isLoading.value = true
 				_error.value = null
@@ -143,12 +149,17 @@ class MobDropDetailViewModel @Inject constructor(
 		}
 	}
 
-	fun toggleFavorite(favorite: Favorite, currentIsFavorite: Boolean) {
-		viewModelScope.launch {
-			if (currentIsFavorite) {
-				favoriteUseCases.deleteFavoriteUseCase(favorite)
-			} else {
-				favoriteUseCases.addFavoriteUseCase(favorite)
+	fun uiEvent(event: MobDropUiEvent) {
+		when (event) {
+			MobDropUiEvent.ToggleFavorite -> {
+				viewModelScope.launch {
+					_material.value?.let { bM ->
+						favoriteUseCases.toggleFavoriteUseCase(
+							bM.toFavorite(),
+							shouldBeFavorite = !_isFavorite.value
+						)
+					}
+				}
 			}
 		}
 	}

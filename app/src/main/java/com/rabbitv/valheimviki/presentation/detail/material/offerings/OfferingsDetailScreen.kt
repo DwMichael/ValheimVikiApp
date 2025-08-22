@@ -50,6 +50,8 @@ import com.rabbitv.valheimviki.presentation.components.horizontal_pager.Horizont
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
+import com.rabbitv.valheimviki.presentation.detail.material.boss_drop.model.BossDropUiEvent
+import com.rabbitv.valheimviki.presentation.detail.material.offerings.model.OfferingUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.offerings.model.OfferingUiState
 import com.rabbitv.valheimviki.presentation.detail.material.offerings.viewmodel.OfferingsDetailViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
@@ -57,7 +59,6 @@ import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
 
-@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun OfferingsDetailScreen(
 	onBack: () -> Unit,
@@ -65,11 +66,8 @@ fun OfferingsDetailScreen(
 	viewModel: OfferingsDetailViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-	val onToggleFavorite = { favorite: Favorite, isFavorite: Boolean ->
-		viewModel.toggleFavorite(
-			favorite = favorite,
-			currentIsFavorite = isFavorite
-		)
+	val onToggleFavorite = {
+		viewModel.uiEvent(OfferingUiEvent.ToggleFavorite)
 	}
 	OfferingsDetailContent(
 		onBack = onBack,
@@ -81,12 +79,12 @@ fun OfferingsDetailScreen(
 }
 
 
-@RequiresApi(Build.VERSION_CODES.S)
+
 @Composable
 fun OfferingsDetailContent(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
-	onToggleFavorite: (favorite: Favorite, currentIsFavorite: Boolean) -> Unit,
+	onToggleFavorite: () -> Unit,
 	uiState: OfferingUiState,
 
 	) {
@@ -234,7 +232,7 @@ fun OfferingsDetailContent(
 						.padding(16.dp),
 					isFavorite = uiState.isFavorite,
 					onToggleFavorite = {
-						onToggleFavorite(material.toFavorite(), uiState.isFavorite)
+						onToggleFavorite()
 					}
 				)
 			}
@@ -243,7 +241,7 @@ fun OfferingsDetailContent(
 }
 
 
-@RequiresApi(Build.VERSION_CODES.S)
+
 @Preview("ToolDetailContentPreview", showBackground = true)
 @Composable
 fun PreviewToolDetailContentCooked() {
@@ -275,7 +273,7 @@ fun PreviewToolDetailContentCooked() {
 			),
 			onBack = {},
 			onItemClick = {},
-			onToggleFavorite = { _, _ -> {} }
+			onToggleFavorite = {  }
 		)
 	}
 

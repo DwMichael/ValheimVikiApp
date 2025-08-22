@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 import com.rabbitv.valheimviki.domain.model.creature.Creature
@@ -20,6 +21,9 @@ import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.ore_deposit.OreDepositUseCases
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.PointOfInterestUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
+import com.rabbitv.valheimviki.presentation.detail.material.gemstones.model.GemstoneUiEvent
+import com.rabbitv.valheimviki.presentation.detail.material.general.model.GeneralMaterialUiEvent
+import com.rabbitv.valheimviki.presentation.detail.material.metal.model.MetalMaterialUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.metal.model.MetalMaterialUiState
 import com.rabbitv.valheimviki.presentation.detail.material.model.MaterialToCraft
 import com.rabbitv.valheimviki.utils.Constants.METAL_MATERIAL_KEY
@@ -29,6 +33,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
@@ -61,7 +66,13 @@ class MetalMaterialDetailViewModel @Inject constructor(
 
 	private val _isLoading = MutableStateFlow<Boolean>(false)
 	private val _error = MutableStateFlow<String?>(null)
-
+	private val _isFavorite = favoriteUseCases.isFavorite(_materialId)
+		.distinctUntilChanged()
+		.stateIn(
+			scope = viewModelScope,
+			started = SharingStarted.WhileSubscribed(5_000),
+			initialValue = false
+		)
 	val uiState = combine(
 		_material,
 		_biomes,
@@ -70,8 +81,7 @@ class MetalMaterialDetailViewModel @Inject constructor(
 		_pointOfInterests,
 		_oreDeposits,
 		_requiredMaterials,
-		favoriteUseCases.isFavorite(_materialId)
-			.flowOn(Dispatchers.IO),
+		_isFavorite,
 		_isLoading,
 		_error
 	) { values ->
@@ -187,12 +197,17 @@ class MetalMaterialDetailViewModel @Inject constructor(
 		}
 	}
 
-	fun toggleFavorite(favorite: Favorite, currentIsFavorite: Boolean) {
-		viewModelScope.launch {
-			if (currentIsFavorite) {
-				favoriteUseCases.deleteFavoriteUseCase(favorite)
-			} else {
-				favoriteUseCases.addFavoriteUseCase(favorite)
+	fun uiEvent(event: MetalMaterialUiEvent) {
+		when (event) {
+			MetalMaterialUiEvent.ToggleFavorite -> {
+				viewModelScope.launch {
+					_material.value?.let { bM ->
+						favoriteUseCases.toggleFavoriteUseCase(
+							bM.toFavorite(),
+							shouldBeFavorite = !_isFavorite.value
+						)
+					}
+				}
 			}
 		}
 	}

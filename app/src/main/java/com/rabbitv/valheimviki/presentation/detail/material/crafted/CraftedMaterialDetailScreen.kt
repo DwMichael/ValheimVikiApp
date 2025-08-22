@@ -49,6 +49,8 @@ import com.rabbitv.valheimviki.presentation.components.images.FramedImage
 import com.rabbitv.valheimviki.presentation.components.section_header.SectionHeader
 import com.rabbitv.valheimviki.presentation.components.section_header.SectionHeaderData
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
+import com.rabbitv.valheimviki.presentation.detail.crafting.model.CraftingDetailUiEvent
+import com.rabbitv.valheimviki.presentation.detail.material.boss_drop.model.BossDropUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.crafted.model.CraftedMaterialUiState
 import com.rabbitv.valheimviki.presentation.detail.material.crafted.viewmodel.CraftedMaterialDetailViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
@@ -65,11 +67,8 @@ fun CraftedMaterialDetailScreen(
 	viewModel: CraftedMaterialDetailViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-	val onToggleFavorite = { favorite: Favorite, isFavorite: Boolean ->
-		viewModel.toggleFavorite(
-			favorite = favorite,
-			currentIsFavorite = isFavorite
-		)
+	val onToggleFavorite = {
+		viewModel.uiEvent(CraftingDetailUiEvent.ToggleFavorite)
 	}
 	CraftedMaterialDetailContent(
 		onBack = onBack,
@@ -85,7 +84,7 @@ fun CraftedMaterialDetailScreen(
 fun CraftedMaterialDetailContent(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
-	onToggleFavorite: (favorite: Favorite, currentIsFavorite: Boolean) -> Unit,
+	onToggleFavorite: () -> Unit,
 	uiState: CraftedMaterialUiState,
 ) {
 
@@ -200,7 +199,7 @@ fun CraftedMaterialDetailContent(
 						.padding(16.dp),
 					isFavorite = uiState.isFavorite,
 					onToggleFavorite = {
-						onToggleFavorite(material.toFavorite(), uiState.isFavorite)
+						onToggleFavorite()
 					}
 				)
 			}
@@ -225,7 +224,7 @@ fun PreviewToolDetailContentCooked() {
 			),
 			onBack = {},
 			onItemClick = {},
-			onToggleFavorite = { _, _ -> {} }
+			onToggleFavorite = {  }
 		)
 	}
 

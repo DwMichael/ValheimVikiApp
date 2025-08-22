@@ -4,9 +4,9 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
-import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
@@ -20,16 +20,19 @@ import com.rabbitv.valheimviki.domain.use_cases.ore_deposit.OreDepositUseCases
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.PointOfInterestUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.domain.use_cases.tree.TreeUseCases
+import com.rabbitv.valheimviki.presentation.detail.material.gemstones.model.GemstoneUiEvent
+import com.rabbitv.valheimviki.presentation.detail.material.general.model.GeneralMaterialUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.general.model.GeneralMaterialUiState
 import com.rabbitv.valheimviki.utils.Constants.GENERAL_MATERIAL_KEY
+import com.rabbitv.valheimviki.utils.extensions.combine
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
+
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -58,6 +61,14 @@ class GeneralMaterialDetailViewModel @Inject constructor(
 	private val _trees = MutableStateFlow<List<Tree>>(emptyList())
 	private val _isLoading = MutableStateFlow<Boolean>(false)
 	private val _error = MutableStateFlow<String?>(null)
+	private val _isFavorite = favoriteUseCases.isFavorite(_materialId)
+		.distinctUntilChanged()
+		.stateIn(
+			scope = viewModelScope,
+			started = SharingStarted.WhileSubscribed(5_000),
+			initialValue = false
+		)
+
 
 	val uiState = combine(
 		_material,
@@ -66,21 +77,20 @@ class GeneralMaterialDetailViewModel @Inject constructor(
 		_pointOfInterests,
 		_oreDeposits,
 		_trees,
-		favoriteUseCases.isFavorite(_materialId)
-			.flowOn(Dispatchers.IO),
+		_isFavorite,
 		_isLoading,
 		_error
-	) { values ->
+	) { material,biomes,requiredCraftingStation, poitOfInterest, oreDeposits,trees,favorite,isLoading,error ->
 		GeneralMaterialUiState(
-			material = values[0] as Material?,
-			biomes = values[1] as List<Biome>,
-			craftingStations = values[2] as List<CraftingObject>,
-			pointOfInterests = values[3] as List<PointOfInterest>,
-			oreDeposits = values[4] as List<OreDeposit>,
-			trees = values[5] as List<Tree>,
-			isFavorite = values[6] as Boolean,
-			isLoading = values[7] as Boolean,
-			error = values[8] as String?,
+			material = material,
+			biomes = biomes,
+			craftingStations = requiredCraftingStation,
+			pointOfInterests = poitOfInterest,
+			oreDeposits = oreDeposits,
+			trees = trees,
+			isFavorite = favorite,
+			isLoading = isLoading,
+			error = error,
 		)
 	}.stateIn(
 		viewModelScope,
@@ -94,7 +104,7 @@ class GeneralMaterialDetailViewModel @Inject constructor(
 
 	internal fun loadGeneralDropData() {
 
-		viewModelScope.launch(Dispatchers.IO) {
+		viewModelScope.launch {
 			try {
 				_isLoading.value = true
 				_error.value = null
@@ -158,12 +168,17 @@ class GeneralMaterialDetailViewModel @Inject constructor(
 		}
 	}
 
-	fun toggleFavorite(favorite: Favorite, currentIsFavorite: Boolean) {
-		viewModelScope.launch {
-			if (currentIsFavorite) {
-				favoriteUseCases.deleteFavoriteUseCase(favorite)
-			} else {
-				favoriteUseCases.addFavoriteUseCase(favorite)
+	fun uiEvent(event: GeneralMaterialUiEvent) {
+		when (event) {
+			GeneralMaterialUiEvent.ToggleFavorite -> {
+				viewModelScope.launch {
+					_material.value?.let { bM ->
+						favoriteUseCases.toggleFavoriteUseCase(
+							bM.toFavorite(),
+							shouldBeFavorite = !_isFavorite.value
+						)
+					}
+				}
 			}
 		}
 	}

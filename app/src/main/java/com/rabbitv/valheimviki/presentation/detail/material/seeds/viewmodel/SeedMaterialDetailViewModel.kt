@@ -30,6 +30,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
@@ -59,6 +60,13 @@ class SeedMaterialDetailViewModel @Inject constructor(
 	private val _trees = MutableStateFlow<List<Tree>>(emptyList())
 	private val _isLoading = MutableStateFlow<Boolean>(false)
 	private val _error = MutableStateFlow<String?>(null)
+	private val _isFavorite = favoriteUseCases.isFavorite(_materialId)
+		.distinctUntilChanged()
+		.stateIn(
+			scope = viewModelScope,
+			started = SharingStarted.WhileSubscribed(5_000),
+			initialValue = false
+		)
 
 	val uiState = combine(
 		_material,
@@ -67,8 +75,7 @@ class SeedMaterialDetailViewModel @Inject constructor(
 		_npc,
 		_tools,
 		_trees,
-		favoriteUseCases.isFavorite(_materialId)
-			.flowOn(Dispatchers.IO),
+		_isFavorite,
 		_isLoading,
 		_error
 	) { values ->
