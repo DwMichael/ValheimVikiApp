@@ -43,6 +43,7 @@ import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsD
 import com.rabbitv.valheimviki.presentation.detail.material.boss_drop.model.BossDropUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.boss_drop.model.BossDropUiState
 import com.rabbitv.valheimviki.presentation.detail.material.boss_drop.viewmodel.BossDropDetailViewModel
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
@@ -133,28 +134,34 @@ fun BossDropDetailContent(
 							style = MaterialTheme.typography.bodyLarge,
 						)
 					}
-					if (uiState.boss != null && uiState.material.subType == MaterialSubType.TROPHY.toString()) {
-						TridentsDividedRow("Power")
-						Text(
-							text = uiState.boss.forsakenPower,
-							modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-							style = MaterialTheme.typography.bodyLarge,
-						)
-					}
-					if (uiState.boss != null) {
-						TridentsDividedRow()
-						ImageWithTopLabel(
-							itemData = uiState.boss,
-							subTitle = "Boss from witch this item drop",
-							contentScale = ContentScale.Crop,
-							onItemClick = { clickedItemId ->
-								val destination = NavigationHelper.routeToCreature(
-									uiState.boss.subCategory,
-									uiState.boss.id
+					
+					when (val bossState = uiState.boss) {
+						is UIState.Success -> {
+							bossState.data?.let { boss ->
+								if (material.subType == MaterialSubType.TROPHY.toString()) {
+									TridentsDividedRow("Power")
+									Text(
+										text = boss.forsakenPower,
+										modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+										style = MaterialTheme.typography.bodyLarge,
+									)
+								}
+								TridentsDividedRow()
+								ImageWithTopLabel(
+									itemData = boss,
+									subTitle = "Boss from witch this item drop",
+									contentScale = ContentScale.Crop,
+									onItemClick = { clickedItemId ->
+										val destination = NavigationHelper.routeToCreature(
+											boss.subCategory,
+											boss.id
+										)
+										onItemClick(destination)
+									},
 								)
-								onItemClick(destination)
-							},
-						)
+							}
+						}
+						else -> {}
 					}
 				}
 			}
@@ -182,7 +189,6 @@ fun BossDropDetailContent(
 }
 
 
-@RequiresApi(Build.VERSION_CODES.S)
 @Preview("ToolDetailContentPreview", showBackground = true)
 @Composable
 fun PreviewToolDetailContentCooked() {
@@ -192,9 +198,7 @@ fun PreviewToolDetailContentCooked() {
 		BossDropDetailContent(
 			uiState = BossDropUiState(
 				material = FakeData.generateFakeMaterials()[0],
-				boss = FakeData.generateFakeCreatures()[0].toMainBoss(),
-				isLoading = false,
-				error = null
+				boss = UIState.Success(FakeData.generateFakeCreatures()[0].toMainBoss()),
 			),
 			onBack = {},
 			onItemClick = {},
