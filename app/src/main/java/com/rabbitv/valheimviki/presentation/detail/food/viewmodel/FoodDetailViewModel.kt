@@ -5,14 +5,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
-import com.rabbitv.valheimviki.data.mappers.creatures.toPassiveCreature
 import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.di.qualifiers.DefaultDispatcher
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
-import com.rabbitv.valheimviki.domain.model.favorite.Favorite
-import com.rabbitv.valheimviki.domain.model.food.Food
-import com.rabbitv.valheimviki.domain.model.material.MaterialDrop
-import com.rabbitv.valheimviki.domain.model.material.MaterialSubCategory
 import com.rabbitv.valheimviki.domain.model.relation.RelatedData
 import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
@@ -27,7 +22,6 @@ import com.rabbitv.valheimviki.presentation.detail.food.model.FoodDetailUiEvent
 import com.rabbitv.valheimviki.presentation.detail.food.model.FoodDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.food.model.RecipeFoodData
 import com.rabbitv.valheimviki.presentation.detail.food.model.RecipeMaterialData
-import com.rabbitv.valheimviki.utils.Constants.FOOD_KEY
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -143,9 +137,6 @@ class FoodDetailViewModel @Inject constructor(
 				started = SharingStarted.WhileSubscribed(5_000),
 				initialValue = null
 			)
-
-
-
 
 
 	val uiState: StateFlow<FoodDetailUiState> = combine(
