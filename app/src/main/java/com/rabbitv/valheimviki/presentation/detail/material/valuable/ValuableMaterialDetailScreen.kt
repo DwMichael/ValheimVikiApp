@@ -27,9 +27,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.composables.icons.lucide.Lucide
-import com.composables.icons.lucide.MapPinned
-import com.composables.icons.lucide.Rabbit
-import com.composables.icons.lucide.ShoppingBag
+import com.composables.icons.lucide.PawPrint
+import com.composables.icons.lucide.User
 import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.navigation.DetailDestination
@@ -42,16 +41,16 @@ import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
-import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
-import com.rabbitv.valheimviki.presentation.detail.material.boss_drop.model.BossDropUiEvent
+import com.rabbitv.valheimviki.presentation.detail.material.valuable.model.ValuableMaterialUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.valuable.model.ValuableMaterialUiState
-import com.rabbitv.valheimviki.presentation.detail.material.valuable.model.ValuableUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.valuable.viewmodel.ValuableMaterialDetailViewModel
+import com.rabbitv.valheimviki.presentation.components.ui_section.UiSection
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
+import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 
-@RequiresApi(Build.VERSION_CODES.S)
+
 @Composable
 fun ValuableMaterialDetailScreen(
 	onBack: () -> Unit,
@@ -60,7 +59,7 @@ fun ValuableMaterialDetailScreen(
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 	val onToggleFavorite = {
-		viewModel.uiEvent(ValuableUiEvent.ToggleFavorite)
+		viewModel.uiEvent(ValuableMaterialUiEvent.ToggleFavorite)
 	}
 	ValuableMaterialDetailContent(
 		onBack = onBack,
@@ -72,7 +71,7 @@ fun ValuableMaterialDetailScreen(
 }
 
 
-@RequiresApi(Build.VERSION_CODES.S)
+
 @Composable
 fun ValuableMaterialDetailContent(
 	onBack: () -> Unit,
@@ -86,24 +85,27 @@ fun ValuableMaterialDetailContent(
 	val handleItemClick = remember {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
 	}
-	val creatureData = HorizontalPagerData(
-		title = "Creatures",
-		subTitle = "From those creatures this item drop",
-		icon = Lucide.Rabbit,
-		iconRotationDegrees = 0f,
-		itemContentScale = ContentScale.Crop
-	)
-	val npcData = HorizontalPagerData(
-		title = "Npc",
-		subTitle = "Those Npcs buy this item from you",
-		icon = Lucide.ShoppingBag,
-		iconRotationDegrees = 0f,
-		itemContentScale = ContentScale.Crop
-	)
+
 	val pointsOfInterestData = HorizontalPagerData(
 		title = "Points of interest",
-		subTitle = "Poi where you can find this seed",
-		icon = Lucide.MapPinned,
+		subTitle = "Poi where you can find this item",
+		icon = Lucide.PawPrint,
+		iconRotationDegrees = -85f,
+		itemContentScale = ContentScale.Crop
+	)
+
+	val creatureData = HorizontalPagerData(
+		title = "Creatures",
+		subTitle = "Creatures that drop this material",
+		icon = Lucide.PawPrint,
+		iconRotationDegrees = -85f,
+		itemContentScale = ContentScale.Crop
+	)
+
+	val npcData = HorizontalPagerData(
+		title = "NPC",
+		subTitle = "NPC from whom you can buy this item",
+		icon = Lucide.User,
 		iconRotationDegrees = 0f,
 		itemContentScale = ContentScale.Crop
 	)
@@ -149,26 +151,33 @@ fun ValuableMaterialDetailContent(
 						)
 
 					}
-					if (uiState.pointsOfInterest.isNotEmpty()) {
-						TridentsDividedRow()
+					
+					UiSection(
+						state = uiState.pointsOfInterest
+					) { pointsOfInterest ->
 						HorizontalPagerSection(
-							list = uiState.pointsOfInterest,
+							list = pointsOfInterest,
 							data = pointsOfInterestData,
 							onItemClick = handleItemClick
 						)
 					}
-					if (uiState.creatures.isNotEmpty()) {
-						TridentsDividedRow()
+					
+					UiSection(
+						state = uiState.creatures
+					) { creatures ->
+
 						HorizontalPagerSection(
-							list = uiState.creatures,
+							list = creatures,
 							data = creatureData,
 							onItemClick = handleItemClick,
 						)
 					}
-					if (uiState.npc.isNotEmpty()) {
-						TridentsDividedRow()
+					
+					UiSection(
+						state = uiState.npc
+					) { npc ->
 						HorizontalPagerSection(
-							list = uiState.npc,
+							list = npc,
 							data = npcData,
 							onItemClick = handleItemClick,
 						)
