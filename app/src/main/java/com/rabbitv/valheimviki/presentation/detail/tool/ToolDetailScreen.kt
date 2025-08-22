@@ -36,9 +36,7 @@ import com.composables.icons.lucide.Hammer
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Pickaxe
 import com.rabbitv.valheimviki.R
-import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
-import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.item_tool.ItemTool
 import com.rabbitv.valheimviki.domain.model.upgrader.MaterialUpgrade
 import com.rabbitv.valheimviki.navigation.BuildingDetailDestination
@@ -59,8 +57,8 @@ import com.rabbitv.valheimviki.presentation.components.images.FramedImage
 import com.rabbitv.valheimviki.presentation.components.section_header.SectionHeader
 import com.rabbitv.valheimviki.presentation.components.section_header.SectionHeaderData
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
-import com.rabbitv.valheimviki.presentation.detail.point_of_interest.model.PointOfInterestUiEvent
 import com.rabbitv.valheimviki.presentation.detail.tool.model.ToolDetailUiState
+import com.rabbitv.valheimviki.presentation.detail.tool.model.ToolDetailUiEvent
 import com.rabbitv.valheimviki.presentation.detail.tool.viewmodel.ToolDetailViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.CUSTOM_ITEM_CARD_FILL_WIDTH
@@ -77,7 +75,7 @@ fun ToolDetailScreen(
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 	val onToggleFavorite = {
-		viewModel.uiEvent(PointOfInterestUiEvent.ToggleFavorite)
+		viewModel.uiEvent(ToolDetailUiEvent.ToggleFavorite)
 	}
 	ToolDetailContent(
 		onBack = onBack,

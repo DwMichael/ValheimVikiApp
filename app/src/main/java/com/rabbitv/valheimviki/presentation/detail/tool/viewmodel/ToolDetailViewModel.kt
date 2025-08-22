@@ -4,9 +4,9 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 import com.rabbitv.valheimviki.domain.model.creature.Creature
-import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.item_tool.ItemTool
 import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
 import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
@@ -19,18 +19,17 @@ import com.rabbitv.valheimviki.domain.use_cases.ore_deposit.OreDepositUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.domain.use_cases.tool.ToolUseCases
 import com.rabbitv.valheimviki.presentation.detail.tool.model.ToolDetailUiState
+import com.rabbitv.valheimviki.presentation.detail.tool.model.ToolDetailUiEvent
 import com.rabbitv.valheimviki.utils.Constants.TOOL_KEY
+import com.rabbitv.valheimviki.utils.extensions.combine
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -62,7 +61,7 @@ class ToolDetailViewModel @Inject constructor(
 			started = SharingStarted.WhileSubscribed(5_000),
 			initialValue = false
 		)
-
+//TODO VALUES
 	val uiState: StateFlow<ToolDetailUiState> = combine(
 		_tool,
 		_relatedCraftingObject,
@@ -72,16 +71,16 @@ class ToolDetailViewModel @Inject constructor(
 		_isFavorite,
 		_isLoading,
 		_error
-	) { values ->
+	) { tool, relatedCraftingObject, relatedMaterials, relatedOreDeposits, relatedNpc, isFavorite, isLoading, error ->
 		ToolDetailUiState(
-			tool = values[0] as ItemTool,
-			relatedCraftingStation = values[1] as CraftingObject?,
-			relatedMaterials = values[2] as List<MaterialUpgrade>,
-			relatedOreDeposits = values[3] as List<OreDeposit>,
-			relatedNpc = values[4] as Creature?,
-			isFavorite = values[5] as Boolean,
-			isLoading = values[6] as Boolean,
-			error = values[7] as String?
+			tool = tool,
+			relatedCraftingStation = relatedCraftingObject,
+			relatedMaterials = relatedMaterials,
+			relatedOreDeposits = relatedOreDeposits,
+			relatedNpc = relatedNpc,
+			isFavorite = isFavorite,
+			isLoading = isLoading,
+			error = error
 		)
 	}.stateIn(
 		scope = viewModelScope,
@@ -96,7 +95,7 @@ class ToolDetailViewModel @Inject constructor(
 
 
 	internal fun loadFoodData() {
-		viewModelScope.launch(Dispatchers.IO) {
+		viewModelScope.launch {
 			try {
 				_isLoading.value = true
 
@@ -122,15 +121,14 @@ class ToolDetailViewModel @Inject constructor(
 					val relatedItemsMap = relatedObjects.associateBy { it.id }
 					materials.forEach { material ->
 						val relatedItem = relatedItemsMap[material.id]
-						val quantityList = listOf<Int?>(
-							relatedItem?.quantity,
-							relatedItem?.quantity2star,
-							relatedItem?.quantity3star
-						)
 						tempList.add(
 							MaterialUpgrade(
 								material = material,
-								quantityList = quantityList,
+								quantityList = listOf(
+									relatedItem?.quantity,
+									relatedItem?.quantity2star,
+									relatedItem?.quantity3star
+								),
 							)
 						)
 					}
@@ -169,12 +167,17 @@ class ToolDetailViewModel @Inject constructor(
 		}
 	}
 
-	fun toggleFavorite(favorite: Favorite, currentIsFavorite: Boolean) {
-		viewModelScope.launch {
-			if (currentIsFavorite) {
-				favoriteUseCases.deleteFavoriteUseCase(favorite)
-			} else {
-				favoriteUseCases.addFavoriteUseCase(favorite)
+	fun uiEvent(event: ToolDetailUiEvent) {
+		when (event) {
+			ToolDetailUiEvent.ToggleFavorite -> {
+				viewModelScope.launch {
+					_tool.value?.let { bM ->
+						favoriteUseCases.toggleFavoriteUseCase(
+							bM.toFavorite(),
+							shouldBeFavorite = !_isFavorite.value
+						)
+					}
+				}
 			}
 		}
 	}
