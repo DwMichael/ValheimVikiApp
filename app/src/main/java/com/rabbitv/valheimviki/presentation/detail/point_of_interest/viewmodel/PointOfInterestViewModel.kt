@@ -4,9 +4,9 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.Creature
-import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.food.Food
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.material.MaterialDrop
@@ -24,15 +24,17 @@ import com.rabbitv.valheimviki.domain.use_cases.ore_deposit.OreDepositUseCases
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.PointOfInterestUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.domain.use_cases.weapon.WeaponUseCases
+import com.rabbitv.valheimviki.presentation.detail.ore_deposit.model.OreDepositUiEvent
+import com.rabbitv.valheimviki.presentation.detail.point_of_interest.model.PointOfInterestUiEvent
 import com.rabbitv.valheimviki.presentation.detail.point_of_interest.model.PointOfInterestUiState
 import com.rabbitv.valheimviki.utils.Constants.POINT_OF_INTEREST_KEY
+import com.rabbitv.valheimviki.utils.extensions.combine
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
@@ -88,19 +90,20 @@ class PointOfInterestViewModel @Inject constructor(
 		_isFavorite,
 		_isLoading,
 		_error
-	) { values ->
+	) { pointOfInterest, relatedBiomes, relatedCreatures, relatedWeapons, relatedFoods, relatedOreDeposits,
+	    relatedOfferings, relatedMaterialDrops, isFavorite, isLoading, error ->
 		PointOfInterestUiState(
-			pointOfInterest = values[0] as PointOfInterest?,
-			relatedBiomes = values[1] as List<Biome>,
-			relatedCreatures = values[2] as List<Creature>,
-			relatedWeapons = values[3] as List<Weapon>,
-			relatedFoods = values[4] as List<Food>,
-			relatedOreDeposits = values[5] as List<OreDeposit>,
-			relatedOfferings = values[6] as List<Material>,
-			relatedMaterialDrops = values[7] as List<MaterialDrop>,
-			isFavorite = values[8] as Boolean,
-			isLoading = values[9] as Boolean,
-			error = values[10] as String?
+			pointOfInterest = pointOfInterest,
+			relatedBiomes = relatedBiomes,
+			relatedCreatures = relatedCreatures,
+			relatedWeapons = relatedWeapons,
+			relatedFoods = relatedFoods,
+			relatedOreDeposits = relatedOreDeposits,
+			relatedOfferings = relatedOfferings,
+			relatedMaterialDrops = relatedMaterialDrops,
+			isFavorite = isFavorite,
+			isLoading = isLoading,
+			error = error
 		)
 
 	}.stateIn(
@@ -115,7 +118,7 @@ class PointOfInterestViewModel @Inject constructor(
 
 	internal fun loadPointOfInterestData() {
 		try {
-			viewModelScope.launch(Dispatchers.IO) {
+			viewModelScope.launch {
 				_isLoading.value = true
 				_pointOfInterest.value =
 					_pointOfInterestUseCases.getPointOfInterestByIdUseCase(_pointOfInterestId)
@@ -186,12 +189,17 @@ class PointOfInterestViewModel @Inject constructor(
 		}
 	}
 
-	fun toggleFavorite(favorite: Favorite, currentIsFavorite: Boolean) {
-		viewModelScope.launch {
-			if (currentIsFavorite) {
-				favoriteUseCases.deleteFavoriteUseCase(favorite)
-			} else {
-				favoriteUseCases.addFavoriteUseCase(favorite)
+	fun uiEvent(event: PointOfInterestUiEvent) {
+		when (event) {
+			PointOfInterestUiEvent.ToggleFavorite -> {
+				viewModelScope.launch {
+					_pointOfInterest.value?.let { bM ->
+						favoriteUseCases.toggleFavoriteUseCase(
+							bM.toFavorite(),
+							shouldBeFavorite = !_isFavorite.value
+						)
+					}
+				}
 			}
 		}
 	}
