@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.upgrader.FoodAsMaterialUpgrade
@@ -15,8 +16,12 @@ import com.rabbitv.valheimviki.domain.use_cases.food.FoodUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.domain.use_cases.weapon.WeaponUseCases
+import com.rabbitv.valheimviki.presentation.detail.tree.model.TreeUiEvent
+import com.rabbitv.valheimviki.presentation.detail.weapon.model.WeaponDetailUiEvent
 import com.rabbitv.valheimviki.presentation.detail.weapon.model.WeaponUiState
+import com.rabbitv.valheimviki.presentation.weapons.model.WeaponUiEvent
 import com.rabbitv.valheimviki.utils.Constants.WEAPON_KEY
+import com.rabbitv.valheimviki.utils.extensions.combine
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
@@ -25,7 +30,6 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
@@ -62,7 +66,7 @@ class WeaponDetailViewModel @Inject constructor(
 			started = SharingStarted.WhileSubscribed(5_000),
 			initialValue = false
 		)
-
+	//TODO VALUSE
 	val uiState: StateFlow<WeaponUiState> = combine(
 		_weapon,
 		_relatedMaterials,
@@ -71,15 +75,15 @@ class WeaponDetailViewModel @Inject constructor(
 		_isFavorite,
 		_isLoading,
 		_error
-	) { value ->
+	) { weapon, materials, foodAsMaterials, craftingObjects, isFavorite, isLoading, error ->
 		WeaponUiState(
-			weapon = value[0] as Weapon?,
-			materials = value[1] as List<MaterialUpgrade>,
-			foodAsMaterials = value[2] as List<FoodAsMaterialUpgrade>,
-			craftingObjects = value[3] as CraftingObject?,
-			isFavorite = value[4] as Boolean,
-			isLoading = value[5] as Boolean,
-			error = value[6] as String?
+			weapon = weapon,
+			materials = materials,
+			foodAsMaterials = foodAsMaterials,
+			craftingObjects = craftingObjects,
+			isFavorite = isFavorite,
+			isLoading = isLoading,
+			error = error
 		)
 	}.stateIn(
 		scope = viewModelScope,
@@ -94,7 +98,7 @@ class WeaponDetailViewModel @Inject constructor(
 
 	internal fun loadWeaponData() {
 
-		viewModelScope.launch(Dispatchers.IO) {
+		viewModelScope.launch {
 			try {
 				_isLoading.value = true
 				val weaponDeferred =
@@ -114,16 +118,15 @@ class WeaponDetailViewModel @Inject constructor(
 						val relatedItemsMap = relatedObjects.associateBy { it.id }
 						for (material in materials) {
 							val relatedItem = relatedItemsMap[material.id]
-							val quantityList = listOf<Int?>(
-								relatedItem?.quantity,
-								relatedItem?.quantity2star,
-								relatedItem?.quantity3star,
-								relatedItem?.quantity4star
-							)
 							tempList.add(
 								MaterialUpgrade(
 									material = material,
-									quantityList = quantityList,
+									quantityList =  listOf(
+										relatedItem?.quantity,
+										relatedItem?.quantity2star,
+										relatedItem?.quantity3star,
+										relatedItem?.quantity4star
+									),
 								)
 							)
 						}
@@ -173,12 +176,17 @@ class WeaponDetailViewModel @Inject constructor(
 		}
 	}
 
-	fun toggleFavorite(favorite: Favorite, currentIsFavorite: Boolean) {
-		viewModelScope.launch {
-			if (currentIsFavorite) {
-				favoriteUseCases.deleteFavoriteUseCase(favorite)
-			} else {
-				favoriteUseCases.addFavoriteUseCase(favorite)
+	fun uiEvent(event: WeaponDetailUiEvent) {
+		when (event) {
+			WeaponDetailUiEvent.ToggleFavorite -> {
+				viewModelScope.launch {
+					_weapon.value?.let { bM ->
+						favoriteUseCases.toggleFavoriteUseCase(
+							bM.toFavorite(),
+							shouldBeFavorite = !_isFavorite.value
+						)
+					}
+				}
 			}
 		}
 	}

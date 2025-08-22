@@ -26,9 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
-import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.navigation.BuildingDetailDestination
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
@@ -41,8 +39,7 @@ import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImage
 import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
-import com.rabbitv.valheimviki.presentation.detail.point_of_interest.model.PointOfInterestUiEvent
-import com.rabbitv.valheimviki.presentation.detail.weapon.model.WeaponUiEvent
+import com.rabbitv.valheimviki.presentation.detail.weapon.model.WeaponDetailUiEvent
 import com.rabbitv.valheimviki.presentation.detail.weapon.model.WeaponUiState
 import com.rabbitv.valheimviki.presentation.detail.weapon.viewmodel.WeaponDetailViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
@@ -60,7 +57,7 @@ fun WeaponDetailScreen(
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 	val onToggleFavorite = {
-		viewModel.uiEvent(WeaponUiEvent.ToggleFavorite)
+		viewModel.uiEvent(WeaponDetailUiEvent.ToggleFavorite)
 	}
 	WeaponDetailContent(
 		onBack = onBack,
