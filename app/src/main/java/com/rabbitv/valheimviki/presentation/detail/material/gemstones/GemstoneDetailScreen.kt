@@ -31,6 +31,7 @@ import com.composables.icons.lucide.PawPrint
 import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.model.favorite.Favorite
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
@@ -45,6 +46,7 @@ import com.rabbitv.valheimviki.presentation.detail.material.boss_drop.model.Boss
 import com.rabbitv.valheimviki.presentation.detail.material.gemstones.model.GemstoneDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.material.gemstones.model.GemstoneUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.gemstones.viewmodel.GemstoneDetailViewModel
+import com.rabbitv.valheimviki.presentation.components.ui_section.UiSection
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
@@ -135,9 +137,12 @@ fun GemstoneDetailContent(
 						)
 						SlavicDivider()
 					}
-					if (uiState.pointsOfInterest.isNotEmpty()) {
+					
+					UiSection(
+						state = uiState.pointsOfInterest
+					) { pointsOfInterest ->
 						HorizontalPagerSection(
-							list = uiState.pointsOfInterest,
+							list = pointsOfInterest,
 							data = pointsOfInterestData,
 							onItemClick = handleItemClick
 						)
@@ -193,9 +198,8 @@ fun PreviewToolDetailContentCooked() {
 		GemstoneDetailContent(
 			uiState = GemstoneDetailUiState(
 				material = FakeData.generateFakeMaterials()[0],
-				pointsOfInterest = FakeData.pointOfInterest,
-				isLoading = false,
-				error = null
+				pointsOfInterest = UIState.Success( FakeData.pointOfInterest),
+
 			),
 			onBack = {},
 			onItemClick = {},
