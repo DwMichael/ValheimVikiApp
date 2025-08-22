@@ -6,15 +6,14 @@ import com.rabbitv.valheimviki.domain.model.item_tool.ItemTool
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
 import com.rabbitv.valheimviki.domain.model.tree.Tree
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 
 data class SeedUiState(
 	val material: Material? = null,
-	val biomes: List<Biome> = emptyList(),
-	val pointsOfInterest: List<PointOfInterest> = emptyList(),
-	val npc: NPC? = null,
-	val tools: List<ItemTool> = emptyList(),
-	val trees: List<Tree> = emptyList(),
-	val isFavorite: Boolean = false,
-	val isLoading: Boolean = false,
-	val error: String? = null,
+	val biomes: UIState<List<Biome>> = UIState.Loading,
+	val pointsOfInterest: UIState<List<PointOfInterest>> = UIState.Loading,
+	val npc: UIState<NPC?> = UIState.Loading,
+	val tools: UIState<List<ItemTool>> = UIState.Loading,
+	val trees: UIState<List<Tree>> = UIState.Loading,
+	val isFavorite: Boolean = false
 )
