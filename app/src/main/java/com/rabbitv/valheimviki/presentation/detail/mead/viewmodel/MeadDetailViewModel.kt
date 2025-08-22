@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.mead.Mead
@@ -16,10 +17,12 @@ import com.rabbitv.valheimviki.domain.use_cases.mead.MeadUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.presentation.detail.food.model.RecipeFoodData
 import com.rabbitv.valheimviki.presentation.detail.food.model.RecipeMaterialData
+import com.rabbitv.valheimviki.presentation.detail.material.wood.model.WoodUiEvent
+import com.rabbitv.valheimviki.presentation.detail.mead.model.MeadDetailUiEvent
 import com.rabbitv.valheimviki.presentation.detail.mead.model.MeadDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.mead.model.RecipeMeadData
-import com.rabbitv.valheimviki.utils.Constants.FOOD_KEY
 import com.rabbitv.valheimviki.utils.Constants.MEAD_KEY
+import com.rabbitv.valheimviki.utils.extensions.combine
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -27,10 +30,8 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -71,16 +72,16 @@ class MeadDetailViewModel @Inject constructor(
 		_isFavorite,
 		_isLoading,
 		_error
-	) { values ->
+	) { mead, craftingCookingStation,foodForRecipe,meadForRecipe, materialsForRecipe,isFavorite ,isLoading, error ->
 		MeadDetailUiState(
-			mead = values[0] as Mead?,
-			craftingCookingStation = values[1] as CraftingObject?,
-			foodForRecipe = values[2] as List<RecipeFoodData>,
-			meadForRecipe = values[3] as List<RecipeMeadData>,
-			materialsForRecipe = values[4] as List<RecipeMaterialData>,
-			isFavorite = values[5] as Boolean,
-			isLoading = values[6] as Boolean,
-			error = values[7] as String?
+			mead = mead,
+			craftingCookingStation = craftingCookingStation,
+			foodForRecipe = foodForRecipe,
+			meadForRecipe = meadForRecipe,
+			materialsForRecipe = materialsForRecipe,
+			isFavorite = isFavorite,
+			isLoading = isLoading,
+			error = error
 		)
 	}.stateIn(
 		scope = viewModelScope,
@@ -95,7 +96,7 @@ class MeadDetailViewModel @Inject constructor(
 
 
 	internal fun loadFoodData() {
-		viewModelScope.launch(Dispatchers.IO) {
+		viewModelScope.launch{
 			try {
 				_isLoading.value = true
 
@@ -204,12 +205,18 @@ class MeadDetailViewModel @Inject constructor(
 			}
 		}
 	}
-	fun toggleFavorite(favorite: Favorite, currentIsFavorite: Boolean) {
-		viewModelScope.launch {
-			if (currentIsFavorite) {
-				favoriteUseCases.deleteFavoriteUseCase(favorite)
-			} else {
-				favoriteUseCases.addFavoriteUseCase(favorite)
+
+	fun uiEvent(event: MeadDetailUiEvent) {
+		when (event) {
+			MeadDetailUiEvent.ToggleFavorite -> {
+				viewModelScope.launch {
+					_mead.value?.let { bM ->
+						favoriteUseCases.toggleFavoriteUseCase(
+							bM.toFavorite(),
+							shouldBeFavorite = !_isFavorite.value
+						)
+					}
+				}
 			}
 		}
 	}

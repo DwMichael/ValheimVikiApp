@@ -63,6 +63,7 @@ import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsD
 import com.rabbitv.valheimviki.presentation.detail.food.model.RecipeFoodData
 import com.rabbitv.valheimviki.presentation.detail.food.model.RecipeMaterialData
 import com.rabbitv.valheimviki.presentation.detail.material.boss_drop.model.BossDropUiEvent
+import com.rabbitv.valheimviki.presentation.detail.mead.model.MeadDetailUiEvent
 import com.rabbitv.valheimviki.presentation.detail.mead.model.MeadDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.mead.model.RecipeMeadData
 import com.rabbitv.valheimviki.presentation.detail.mead.viewmodel.MeadDetailViewModel
@@ -81,7 +82,7 @@ fun MeadDetailScreen(
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 	val onToggleFavorite = {
-		viewModel.uiEvent(BossDropUiEvent.ToggleFavorite)
+		viewModel.uiEvent(MeadDetailUiEvent.ToggleFavorite)
 	}
 	MeadDetailContent(
 		onBack = onBack,
