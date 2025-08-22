@@ -1,187 +1,153 @@
 package com.rabbitv.valheimviki.presentation.detail.material.offerings.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rabbitv.valheimviki.data.mappers.creatures.toAggressiveCreature
 import com.rabbitv.valheimviki.data.mappers.creatures.toAggressiveCreatures
 import com.rabbitv.valheimviki.data.mappers.creatures.toPassiveCreatures
 import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
+import com.rabbitv.valheimviki.di.qualifiers.DefaultDispatcher
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 import com.rabbitv.valheimviki.domain.model.creature.CreatureSubCategory
 import com.rabbitv.valheimviki.domain.model.creature.aggresive.AggressiveCreature
 import com.rabbitv.valheimviki.domain.model.creature.passive.PassiveCreature
-import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterestSubCategory
+import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.CraftingObjectUseCases
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
 import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.PointOfInterestUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
-import com.rabbitv.valheimviki.presentation.detail.material.mob_drop.model.MobDropUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.offerings.model.OfferingUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.offerings.model.OfferingUiState
 import com.rabbitv.valheimviki.utils.Constants.OFFERINGS_MATERIAL_KEY
 import com.rabbitv.valheimviki.utils.extensions.combine
+import com.rabbitv.valheimviki.utils.relatedDataFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
-@Suppress("UNCHECKED_CAST")
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class OfferingsDetailViewModel @Inject constructor(
+	savedStateHandle: SavedStateHandle,
 	private val materialUseCases: MaterialUseCases,
 	private val creatureUseCases: CreatureUseCases,
 	private val pointOfInterestUseCases: PointOfInterestUseCases,
 	private val craftingObjectUseCases: CraftingObjectUseCases,
 	private val relationUseCases: RelationUseCases,
 	private val favoriteUseCases: FavoriteUseCases,
-	savedStateHandle: SavedStateHandle,
+	@param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
+	
 	private val _materialId: String = checkNotNull(savedStateHandle[OFFERINGS_MATERIAL_KEY])
-	private val _material = MutableStateFlow<Material?>(null)
-	private val _passiveCreatures = MutableStateFlow<List<PassiveCreature>>(emptyList())
-	private val _aggressiveCreature = MutableStateFlow<List<AggressiveCreature>>(emptyList())
-	private val _pointsOfInterest = MutableStateFlow<List<PointOfInterest>>(emptyList())
-	private val _altars = MutableStateFlow<List<PointOfInterest>>(emptyList())
-	private val _craftingStation = MutableStateFlow<List<CraftingObject>>(emptyList())
-	private val _isLoading = MutableStateFlow<Boolean>(false)
-	private val _error = MutableStateFlow<String?>(null)
-
-	private val _isFavorite = favoriteUseCases.isFavorite(_materialId)
-		.distinctUntilChanged()
-		.stateIn(
-			scope = viewModelScope,
-			started = SharingStarted.WhileSubscribed(5_000),
-			initialValue = false
-		)
-
-	val uiState = combine(
-		_material,
-		_passiveCreatures,
-		_aggressiveCreature,
-		_pointsOfInterest,
-		_altars,
-		_craftingStation,
-		_isFavorite,
-		_isLoading,
-		_error
-	) { material, passiveC,aggressiveC,poiOfInterest, altars, craftingStation, favorite, isLoading, error ->
-		OfferingUiState(
-			material = material,
-			passive =  passiveC,
-			aggressive = aggressiveC,
-			pointsOfInterest = poiOfInterest,
-			altars = altars,
-			craftingStation = craftingStation,
-			isFavorite = favorite,
-			isLoading = isLoading,
-			error = error
-		)
-
-	}.stateIn(
-		viewModelScope,
-		SharingStarted.WhileSubscribed(5000),
-		OfferingUiState()
-	)
+	private val _isFavorite = MutableStateFlow(false)
 
 	init {
-		loadMobDropData()
+		favoriteUseCases.isFavorite(_materialId)
+			.distinctUntilChanged()
+			.onEach { value -> _isFavorite.value = value }
+			.launchIn(viewModelScope)
 	}
 
-	internal fun loadMobDropData() {
+	private val _materialFlow: StateFlow<Material?> =
+		materialUseCases.getMaterialById(_materialId)
+			.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
-		viewModelScope.launch {
-			try {
-				_isLoading.value = true
-				_error.value = null
+	private val _relationsObjects: StateFlow<List<RelatedItem>> =
+		relationUseCases.getRelatedIdsUseCase(_materialId)
+			.distinctUntilChanged()
+			.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
-
-				val materialDeferred = async {
-					materialUseCases.getMaterialById(_materialId).first()
-				}
-
-
-				val relationObjectsDeferred = async {
-					relationUseCases.getRelatedIdsUseCase(_materialId).first()
-				}
-
-
-				val material = materialDeferred.await()
-				val relationObjects = relationObjectsDeferred.await()
-
-				_material.value = material
-
-				val relationIds = relationObjects.map { it.id }
-
-
-				val passiveDeferred = async {
-					val creatures = creatureUseCases.getCreaturesByIds(
-						relationIds
-					).first()
-					creatures.filter { it.subCategory == CreatureSubCategory.PASSIVE_CREATURE.toString() }
-						.toPassiveCreatures()
-				}
-
-				val aggressiveDeferred = async {
-					val creatures = creatureUseCases.getCreaturesByIds(
-						relationIds
-					).first()
-					creatures.filter { it.subCategory == CreatureSubCategory.AGGRESSIVE_CREATURE.toString() }
-						.toAggressiveCreatures()
-				}
-
-				val pointOfInterestDeferred = async {
-					pointOfInterestUseCases.getPointsOfInterestByIdsUseCase(
-						relationIds
-					).first()
-
-				}
-
-				val craftingStationDeferred = async {
-					craftingObjectUseCases.getCraftingObjectsByIds(
-						relationIds
-					).first()
-
-				}
-
-
-				_passiveCreatures.value = passiveDeferred.await()
-				_aggressiveCreature.value = aggressiveDeferred.await()
-				_pointsOfInterest.value = pointOfInterestDeferred.await()
-					.filter { it.subCategory == PointOfInterestSubCategory.STRUCTURE.toString() }
-				_altars.value = pointOfInterestDeferred.await()
-					.filter { it.subCategory == PointOfInterestSubCategory.FORSAKEN_ALTAR.toString() }
-				_craftingStation.value = craftingStationDeferred.await()
-
-			} catch (e: Exception) {
-				Log.e("MobDropDetailViewModel", "General fetch error: ${e.message}", e)
-				_error.value = e.message
-			} finally {
-				_isLoading.value = false
-			}
+	private val _relatedPassiveCreatures = relatedDataFlow(
+		idsFlow = _relationsObjects.map { list -> list.map { item -> item.id } },
+		fetcher = { ids ->
+			creatureUseCases.getCreaturesByRelationAndSubCategory(ids, CreatureSubCategory.PASSIVE_CREATURE)
+				.map { creatures -> creatures.toPassiveCreatures() }
 		}
-	}
+	).flowOn(defaultDispatcher)
+
+	private val _relatedAggressiveCreatures = relatedDataFlow(
+		idsFlow = _relationsObjects.map { list -> list.map { item -> item.id } },
+		fetcher = { ids -> 
+			creatureUseCases.getCreaturesByRelationAndSubCategory(ids, CreatureSubCategory.AGGRESSIVE_CREATURE)
+				.map { creatures -> creatures.toAggressiveCreatures() }
+		}
+	).flowOn(defaultDispatcher)
+
+	private val _relatedPointsOfInterest = relatedDataFlow(
+		idsFlow = _relationsObjects.map { list -> list.map { item -> item.id } },
+		fetcher = { ids -> 
+			pointOfInterestUseCases.getPointsOfInterestByIdsUseCase(ids)
+				.map { points -> 
+					points.filter { it.subCategory != PointOfInterestSubCategory.FORSAKEN_ALTAR.toString() }
+				}
+		}
+	).flowOn(defaultDispatcher)
+
+	private val _relatedAltars = relatedDataFlow(
+		idsFlow = _relationsObjects.map { list -> list.map { item -> item.id } },
+		fetcher = { ids -> 
+			pointOfInterestUseCases.getPointsOfInterestByIdsUseCase(ids)
+				.map { points -> 
+					points.filter { it.subCategory == PointOfInterestSubCategory.FORSAKEN_ALTAR.toString() }
+				}
+		}
+	).flowOn(defaultDispatcher)
+
+	private val _relatedCraftingStation = relatedDataFlow(
+		idsFlow = _relationsObjects.map { list -> list.map { item -> item.id } },
+		fetcher = { ids -> craftingObjectUseCases.getCraftingObjectsByIds(ids) }
+	).flowOn(defaultDispatcher)
+
+	val uiState: StateFlow<OfferingUiState> = combine(
+		_materialFlow,
+		_relatedPassiveCreatures,
+		_relatedAggressiveCreatures,
+		_relatedPointsOfInterest,
+		_relatedAltars,
+		_relatedCraftingStation,
+		_isFavorite
+	) { material, passiveCreatures, aggressiveCreatures, pointsOfInterest, altars, craftingStation, isFavorite ->
+		OfferingUiState(
+			material = material,
+			passive = passiveCreatures,
+			aggressive = aggressiveCreatures,
+			pointsOfInterest = pointsOfInterest,
+			altars = altars,
+			craftingStation = craftingStation,
+			isFavorite = isFavorite
+		)
+	}.stateIn(
+		scope = viewModelScope,
+		started = SharingStarted.WhileSubscribed(5000),
+		initialValue = OfferingUiState()
+	)
 
 	fun uiEvent(event: OfferingUiEvent) {
 		when (event) {
 			OfferingUiEvent.ToggleFavorite -> {
 				viewModelScope.launch {
-					_material.value?.let { bM ->
+					_materialFlow.value?.let { material ->
 						favoriteUseCases.toggleFavoriteUseCase(
-							bM.toFavorite(),
+							material.toFavorite(),
 							shouldBeFavorite = !_isFavorite.value
 						)
 					}
