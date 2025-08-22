@@ -58,7 +58,9 @@ import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDet
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.DroppedItemsSection
+import com.rabbitv.valheimviki.presentation.detail.point_of_interest.model.PointOfInterestUiEvent
 import com.rabbitv.valheimviki.presentation.detail.tree.model.TreeDetailUiState
+import com.rabbitv.valheimviki.presentation.detail.tree.model.TreeUiEvent
 import com.rabbitv.valheimviki.presentation.detail.tree.viewmodel.TreeDetailScreenViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
@@ -76,11 +78,8 @@ fun TreeDetailScreen(
 	val uiState by viewModel.treeUiState.collectAsStateWithLifecycle()
 	val sharedTransitionScope = LocalSharedTransitionScope.current
 		?: throw IllegalStateException("No Scope found")
-	val onToggleFavorite = { favorite: Favorite, isFavorite: Boolean ->
-		viewModel.toggleFavorite(
-			favorite = favorite,
-			currentIsFavorite = isFavorite
-		)
+	val onToggleFavorite = {
+		viewModel.uiEvent(TreeUiEvent.ToggleFavorite)
 	}
 	TreeDetailContent(
 		onBack = onBack,
@@ -99,7 +98,7 @@ fun TreeDetailScreen(
 fun TreeDetailContent(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
-	onToggleFavorite: (favorite: Favorite, currentIsFavorite: Boolean) -> Unit,
+	onToggleFavorite: () -> Unit,
 	uiState: TreeDetailUiState,
 	sharedTransitionScope: SharedTransitionScope,
 	animatedVisibilityScope: AnimatedVisibilityScope,
@@ -229,7 +228,7 @@ fun TreeDetailContent(
 							.padding(16.dp),
 						isFavorite = uiState.isFavorite,
 						onToggleFavorite = {
-							onToggleFavorite(uiState.tree.toFavorite(), uiState.isFavorite)
+							onToggleFavorite()
 						},
 					)
 
@@ -276,7 +275,7 @@ fun PreviewBiomeDetailContent() {
 				TreeDetailContent(
 					onBack = { },
 					onItemClick = {},
-					onToggleFavorite = { _, _ -> {} },
+					onToggleFavorite = { },
 					uiState = uiState,
 					sharedTransitionScope = this@SharedTransitionLayout,
 					animatedVisibilityScope = this,

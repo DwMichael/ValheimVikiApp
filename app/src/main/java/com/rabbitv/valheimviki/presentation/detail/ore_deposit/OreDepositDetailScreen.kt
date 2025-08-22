@@ -63,6 +63,8 @@ import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDet
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.DroppedItemsSection
+import com.rabbitv.valheimviki.presentation.detail.material.boss_drop.model.BossDropUiEvent
+import com.rabbitv.valheimviki.presentation.detail.ore_deposit.model.OreDepositUiEvent
 import com.rabbitv.valheimviki.presentation.detail.ore_deposit.model.OreDepositUiState
 import com.rabbitv.valheimviki.presentation.detail.ore_deposit.viewmodel.OreDepositViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
@@ -80,11 +82,8 @@ fun OreDepositDetailScreen(
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 	val sharedTransitionScope = LocalSharedTransitionScope.current
 		?: throw IllegalStateException("No Scope found")
-	val onToggleFavorite = { favorite: Favorite, isFavorite: Boolean ->
-		viewModel.toggleFavorite(
-			favorite = favorite,
-			currentIsFavorite = isFavorite
-		)
+	val onToggleFavorite = {
+		viewModel.uiEvent(OreDepositUiEvent.ToggleFavorite)
 	}
 	OreDepositDetailContent(
 		onBack = onBack,
@@ -102,7 +101,7 @@ fun OreDepositDetailScreen(
 fun OreDepositDetailContent(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
-	onToggleFavorite: (favorite: Favorite, currentIsFavorite: Boolean) -> Unit,
+	onToggleFavorite: () -> Unit,
 	uiState: OreDepositUiState,
 	sharedTransitionScope: SharedTransitionScope,
 	animatedVisibilityScope: AnimatedVisibilityScope,
@@ -280,10 +279,7 @@ fun OreDepositDetailContent(
 								.padding(16.dp),
 							isFavorite = uiState.isFavorite,
 							onToggleFavorite = {
-								onToggleFavorite(
-									uiState.oreDeposit.toFavorite(),
-									uiState.isFavorite
-								)
+								onToggleFavorite()
 							}
 						)
 
@@ -348,7 +344,7 @@ fun PreviewOreDepositDetailContent() {
 				OreDepositDetailContent(
 					onBack = {},
 					onItemClick = {},
-					onToggleFavorite = { _, _ -> {} },
+					onToggleFavorite = {},
 					uiState = mockUiState,
 					sharedTransitionScope = this@SharedTransitionLayout,
 					animatedVisibilityScope = this,

@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
@@ -54,15 +55,20 @@ class MeadDetailViewModel @Inject constructor(
 	private val _isLoading: MutableStateFlow<Boolean> = MutableStateFlow(true)
 	private val _error: MutableStateFlow<String?> = MutableStateFlow(null)
 
-
+	private val _isFavorite = favoriteUseCases.isFavorite(_meadId)
+		.distinctUntilChanged()
+		.stateIn(
+			scope = viewModelScope,
+			started = SharingStarted.WhileSubscribed(5_000),
+			initialValue = false
+		)
 	val uiState: StateFlow<MeadDetailUiState> = combine(
 		_mead,
 		_craftingCookingStation,
 		_foodForRecipe,
 		_meadForRecipe,
 		_materialsForRecipe,
-		favoriteUseCases.isFavorite(_meadId)
-			.flowOn(Dispatchers.IO),
+		_isFavorite,
 		_isLoading,
 		_error
 	) { values ->

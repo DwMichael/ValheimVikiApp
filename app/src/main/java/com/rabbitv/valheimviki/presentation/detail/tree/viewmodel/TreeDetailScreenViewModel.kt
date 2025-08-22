@@ -29,6 +29,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -53,13 +54,19 @@ class TreeDetailScreenViewModel @Inject constructor(
 	private val _relatedAxes = MutableStateFlow<List<Weapon>>(emptyList())
 	private val _isLoading = MutableStateFlow(true) // Initialize as true
 	private val _error = MutableStateFlow<String?>(null)
-
+	private val _isFavorite = favoriteUseCases.isFavorite(_treeId)
+		.distinctUntilChanged()
+		.stateIn(
+			scope = viewModelScope,
+			started = SharingStarted.WhileSubscribed(5_000),
+			initialValue = false
+		)
 	val treeUiState: StateFlow<TreeDetailUiState> = combine(
 		_treeFlow,
 		_relatedBiomes,
 		_relatedMaterials,
 		_relatedAxes,
-		favoriteUseCases.isFavorite(_treeId),
+		_isFavorite,
 		_isLoading,
 		_error
 	) { values ->

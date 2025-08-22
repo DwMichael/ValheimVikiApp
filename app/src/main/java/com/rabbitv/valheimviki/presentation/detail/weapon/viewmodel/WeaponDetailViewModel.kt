@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
@@ -54,14 +55,20 @@ class WeaponDetailViewModel @Inject constructor(
 
 	private val _isLoading: MutableStateFlow<Boolean> = MutableStateFlow(true)
 	private val _error: MutableStateFlow<String?> = MutableStateFlow(null)
+	private val _isFavorite = favoriteUseCases.isFavorite(_weaponId)
+		.distinctUntilChanged()
+		.stateIn(
+			scope = viewModelScope,
+			started = SharingStarted.WhileSubscribed(5_000),
+			initialValue = false
+		)
 
 	val uiState: StateFlow<WeaponUiState> = combine(
 		_weapon,
 		_relatedMaterials,
 		_relatedFoodAsMaterials,
 		_relatedCraftingObjects,
-		favoriteUseCases.isFavorite(_weaponId)
-			.flowOn(Dispatchers.IO),
+		_isFavorite,
 		_isLoading,
 		_error
 	) { value ->

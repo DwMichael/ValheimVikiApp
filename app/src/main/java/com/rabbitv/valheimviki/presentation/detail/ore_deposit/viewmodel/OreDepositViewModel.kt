@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
@@ -50,10 +51,15 @@ class OreDepositViewModel @Inject constructor(
 	private val _materials = MutableStateFlow<List<MaterialDrop>>(emptyList())
 	private val _tools = MutableStateFlow<List<ItemTool>>(emptyList())
 	private val _craftingStation = MutableStateFlow<List<CraftingObject>>(emptyList())
-
-
 	private val _isLoading = MutableStateFlow<Boolean>(false)
 	private val _error = MutableStateFlow<String?>(null)
+	private val _isFavorite = favoriteUseCases.isFavorite(_oreDepositId)
+		.distinctUntilChanged()
+		.stateIn(
+			scope = viewModelScope,
+			started = SharingStarted.WhileSubscribed(5_000),
+			initialValue = false
+		)
 
 	val uiState: StateFlow<OreDepositUiState> = combine(
 		_oreDeposit,
@@ -61,8 +67,7 @@ class OreDepositViewModel @Inject constructor(
 		_materials,
 		_tools,
 		_craftingStation,
-		favoriteUseCases.isFavorite(_oreDepositId)
-			.flowOn(Dispatchers.IO),
+		_isFavorite,
 		_isLoading,
 		_error
 	) { values ->

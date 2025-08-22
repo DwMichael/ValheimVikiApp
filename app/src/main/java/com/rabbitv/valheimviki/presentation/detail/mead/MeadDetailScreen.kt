@@ -62,6 +62,7 @@ import com.rabbitv.valheimviki.presentation.components.section_header.SectionHea
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.food.model.RecipeFoodData
 import com.rabbitv.valheimviki.presentation.detail.food.model.RecipeMaterialData
+import com.rabbitv.valheimviki.presentation.detail.material.boss_drop.model.BossDropUiEvent
 import com.rabbitv.valheimviki.presentation.detail.mead.model.MeadDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.mead.model.RecipeMeadData
 import com.rabbitv.valheimviki.presentation.detail.mead.viewmodel.MeadDetailViewModel
@@ -71,7 +72,6 @@ import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
 
-@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun MeadDetailScreen(
 	onBack: () -> Unit,
@@ -80,11 +80,8 @@ fun MeadDetailScreen(
 	viewModel: MeadDetailViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-	val onToggleFavorite = { favorite: Favorite, isFavorite: Boolean ->
-		viewModel.toggleFavorite(
-			favorite = favorite,
-			currentIsFavorite = isFavorite
-		)
+	val onToggleFavorite = {
+		viewModel.uiEvent(BossDropUiEvent.ToggleFavorite)
 	}
 	MeadDetailContent(
 		onBack = onBack,
@@ -97,12 +94,11 @@ fun MeadDetailScreen(
 }
 
 
-@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun MeadDetailContent(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
-	onToggleFavorite: (favorite: Favorite, currentIsFavorite: Boolean) -> Unit,
+	onToggleFavorite: () -> Unit,
 	uiState: MeadDetailUiState,
 
 	category: MeadSubCategory
@@ -326,7 +322,7 @@ fun MeadDetailContent(
 						.padding(16.dp),
 					isFavorite = uiState.isFavorite,
 					onToggleFavorite = {
-						onToggleFavorite(mead.toFavorite(), uiState.isFavorite)
+						onToggleFavorite()
 					}
 				)
 			}
@@ -335,7 +331,6 @@ fun MeadDetailContent(
 }
 
 
-@RequiresApi(Build.VERSION_CODES.S)
 @Preview("MeadDetailContentPreview", showBackground = true)
 @Composable
 fun PreviewMeadDetailContentCooked() {
@@ -445,7 +440,7 @@ fun PreviewMeadDetailContentCooked() {
 			onBack = {},
 			onItemClick = {},
 			category = MeadSubCategory.MEAD_BASE,
-			onToggleFavorite = { _, _ -> {} }
+			onToggleFavorite = {}
 		)
 	}
 

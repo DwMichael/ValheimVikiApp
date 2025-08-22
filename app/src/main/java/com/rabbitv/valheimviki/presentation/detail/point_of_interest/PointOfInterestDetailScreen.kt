@@ -50,6 +50,8 @@ import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDet
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.DroppedItemsSection
+import com.rabbitv.valheimviki.presentation.detail.material.boss_drop.model.BossDropUiEvent
+import com.rabbitv.valheimviki.presentation.detail.point_of_interest.model.PointOfInterestUiEvent
 import com.rabbitv.valheimviki.presentation.detail.point_of_interest.model.PointOfInterestUiState
 import com.rabbitv.valheimviki.presentation.detail.point_of_interest.viewmodel.PointOfInterestViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
@@ -64,11 +66,8 @@ fun PointOfInterestDetailScreen(
 	viewModel: PointOfInterestViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-	val onToggleFavorite = { favorite: Favorite, isFavorite: Boolean ->
-		viewModel.toggleFavorite(
-			favorite = favorite,
-			currentIsFavorite = isFavorite
-		)
+	val onToggleFavorite = {
+		viewModel.uiEvent(PointOfInterestUiEvent.ToggleFavorite)
 	}
 	PointOfInterestDetailContent(
 		onBack = onBack,
@@ -83,7 +82,7 @@ fun PointOfInterestDetailScreen(
 fun PointOfInterestDetailContent(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
-	onToggleFavorite: (favorite: Favorite, currentIsFavorite: Boolean) -> Unit,
+	onToggleFavorite: () -> Unit,
 	uiState: PointOfInterestUiState,
 ) {
 	val scrollState = rememberScrollState()
@@ -235,7 +234,7 @@ fun PointOfInterestDetailContent(
 						.padding(16.dp),
 					isFavorite = uiState.isFavorite,
 					onToggleFavorite = {
-						onToggleFavorite(pointOfInterest.toFavorite(), uiState.isFavorite)
+						onToggleFavorite()
 					},
 				)
 			}
@@ -269,7 +268,7 @@ fun PreviewPointOfInterestDetailScreen() {
 		PointOfInterestDetailContent(
 			onBack = {},
 			onItemClick = {},
-			onToggleFavorite = { _, _ -> {} },
+			onToggleFavorite = { },
 			uiState = uiState
 		)
 	}

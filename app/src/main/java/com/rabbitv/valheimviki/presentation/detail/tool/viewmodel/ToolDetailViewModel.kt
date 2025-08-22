@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
@@ -54,7 +55,13 @@ class ToolDetailViewModel @Inject constructor(
 	private val _relatedNpc = MutableStateFlow<Creature?>(null)
 	private val _isLoading: MutableStateFlow<Boolean> = MutableStateFlow(true)
 	private val _error: MutableStateFlow<String?> = MutableStateFlow(null)
-
+	private val _isFavorite = favoriteUseCases.isFavorite(_toolId)
+		.distinctUntilChanged()
+		.stateIn(
+			scope = viewModelScope,
+			started = SharingStarted.WhileSubscribed(5_000),
+			initialValue = false
+		)
 
 	val uiState: StateFlow<ToolDetailUiState> = combine(
 		_tool,
@@ -62,8 +69,7 @@ class ToolDetailViewModel @Inject constructor(
 		_relatedMaterials,
 		_relatedOreDeposits,
 		_relatedNpc,
-		favoriteUseCases.isFavorite(_toolId)
-			.flowOn(Dispatchers.IO),
+		_isFavorite,
 		_isLoading,
 		_error
 	) { values ->

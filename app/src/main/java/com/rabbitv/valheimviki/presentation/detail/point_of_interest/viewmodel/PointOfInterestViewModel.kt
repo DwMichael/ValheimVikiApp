@@ -33,6 +33,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
@@ -66,7 +67,14 @@ class PointOfInterestViewModel @Inject constructor(
 	private val _relatedMaterialDrops = MutableStateFlow<List<MaterialDrop>>(emptyList())
 	private val _isLoading = MutableStateFlow<Boolean>(false)
 	private val _error = MutableStateFlow<String?>(null)
-
+	private val _isFavorite = favoriteUseCases.isFavorite(_pointOfInterestId)
+		.distinctUntilChanged()
+		.stateIn(
+			scope = viewModelScope,
+			started = SharingStarted.WhileSubscribed(5_000),
+			initialValue = false
+		)
+	//ToDo Values
 
 	val uiState: StateFlow<PointOfInterestUiState> = combine(
 		_pointOfInterest,
@@ -77,8 +85,7 @@ class PointOfInterestViewModel @Inject constructor(
 		_relatedOreDeposits,
 		_relatedOfferings,
 		_relatedMaterialDrops,
-		favoriteUseCases.isFavorite(_pointOfInterestId)
-			.flowOn(Dispatchers.IO),
+		_isFavorite,
 		_isLoading,
 		_error
 	) { values ->

@@ -41,6 +41,8 @@ import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImage
 import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
+import com.rabbitv.valheimviki.presentation.detail.point_of_interest.model.PointOfInterestUiEvent
+import com.rabbitv.valheimviki.presentation.detail.weapon.model.WeaponUiEvent
 import com.rabbitv.valheimviki.presentation.detail.weapon.model.WeaponUiState
 import com.rabbitv.valheimviki.presentation.detail.weapon.viewmodel.WeaponDetailViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
@@ -57,11 +59,8 @@ fun WeaponDetailScreen(
 	viewModel: WeaponDetailViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-	val onToggleFavorite = { favorite: Favorite, isFavorite: Boolean ->
-		viewModel.toggleFavorite(
-			favorite = favorite,
-			currentIsFavorite = isFavorite
-		)
+	val onToggleFavorite = {
+		viewModel.uiEvent(WeaponUiEvent.ToggleFavorite)
 	}
 	WeaponDetailContent(
 		onBack = onBack,
@@ -75,7 +74,7 @@ fun WeaponDetailScreen(
 fun WeaponDetailContent(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
-	onToggleFavorite: (favorite: Favorite, currentIsFavorite: Boolean) -> Unit,
+	onToggleFavorite: () -> Unit,
 	uiState: WeaponUiState
 ) {
 	val isExpandable = remember { mutableStateOf(false) }
@@ -179,7 +178,7 @@ fun WeaponDetailContent(
 						.padding(16.dp),
 					isFavorite = uiState.isFavorite,
 					onToggleFavorite = {
-						onToggleFavorite(uiState.weapon.toFavorite(), uiState.isFavorite)
+						onToggleFavorite()
 					},
 				)
 			}
@@ -211,7 +210,7 @@ private fun PreviewWeaponDetailScreen() {
 				isLoading = false,
 				error = null
 			),
-			onToggleFavorite = { _, _ -> {} }
+			onToggleFavorite = {}
 		)
 	}
 

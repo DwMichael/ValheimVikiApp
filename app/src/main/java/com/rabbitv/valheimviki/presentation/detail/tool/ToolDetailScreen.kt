@@ -59,6 +59,7 @@ import com.rabbitv.valheimviki.presentation.components.images.FramedImage
 import com.rabbitv.valheimviki.presentation.components.section_header.SectionHeader
 import com.rabbitv.valheimviki.presentation.components.section_header.SectionHeaderData
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
+import com.rabbitv.valheimviki.presentation.detail.point_of_interest.model.PointOfInterestUiEvent
 import com.rabbitv.valheimviki.presentation.detail.tool.model.ToolDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.tool.viewmodel.ToolDetailViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
@@ -68,7 +69,6 @@ import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
 import com.rabbitv.valheimviki.utils.mapUpgradeToolsInfoToGridList
 
-@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun ToolDetailScreen(
 	onBack: () -> Unit,
@@ -76,11 +76,8 @@ fun ToolDetailScreen(
 	viewModel: ToolDetailViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-	val onToggleFavorite = { favorite: Favorite, isFavorite: Boolean ->
-		viewModel.toggleFavorite(
-			favorite = favorite,
-			currentIsFavorite = isFavorite
-		)
+	val onToggleFavorite = {
+		viewModel.uiEvent(PointOfInterestUiEvent.ToggleFavorite)
 	}
 	ToolDetailContent(
 		onBack = onBack,
@@ -92,12 +89,12 @@ fun ToolDetailScreen(
 }
 
 
-@RequiresApi(Build.VERSION_CODES.S)
+
 @Composable
 fun ToolDetailContent(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
-	onToggleFavorite: (favorite: Favorite, currentIsFavorite: Boolean) -> Unit,
+	onToggleFavorite: () -> Unit,
 	uiState: ToolDetailUiState,
 
 	) {
@@ -296,7 +293,7 @@ fun ToolDetailContent(
 						.padding(16.dp),
 					isFavorite = uiState.isFavorite,
 					onToggleFavorite = {
-						onToggleFavorite(tool.toFavorite(), uiState.isFavorite)
+						onToggleFavorite()
 					},
 				)
 			}
@@ -352,7 +349,7 @@ fun PreviewToolDetailContentCooked() {
 		ToolDetailContent(
 			onBack = {},
 			onItemClick = {},
-			onToggleFavorite = { _, _ -> {} },
+			onToggleFavorite = { },
 			uiState = ToolDetailUiState(
 				isLoading = false,
 				error = null,
