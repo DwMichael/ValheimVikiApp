@@ -111,20 +111,24 @@ fun OreDepositDetailContent(
 	val handleClick = remember(onItemClick) {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
 	}
-	val pickaxesData = HorizontalPagerData(
-		title = "Pickaxes",
-		subTitle = "List of pickaxes that can mine this ore out",
-		icon = Lucide.Pickaxe,
-		iconRotationDegrees = 0f,
-		itemContentScale = ContentScale.Crop
-	)
-	val craftingObjectData = HorizontalPagerData(
-		title = "Extractor",
-		subTitle = "List of extractors that can extract resource",
-		icon = Lucide.Combine,
-		iconRotationDegrees = 0f,
-		itemContentScale = ContentScale.Crop
-	)
+	val pickaxesData = remember{
+		HorizontalPagerData(
+			title = "Pickaxes",
+			subTitle = "List of pickaxes that can mine this ore out",
+			icon = Lucide.Pickaxe,
+			iconRotationDegrees = 0f,
+			itemContentScale = ContentScale.Crop
+		)
+	}
+	val craftingObjectData = remember {
+		HorizontalPagerData(
+			title = "Extractor",
+			subTitle = "List of extractors that can extract resource",
+			icon = Lucide.Combine,
+			iconRotationDegrees = 0f,
+			itemContentScale = ContentScale.Crop
+		)
+	} //TODO REFACKTORYZACJA TEGO SCREENU
 	Scaffold { padding ->
 		AnimatedContent(
 			targetState = uiState.isLoading,
@@ -188,30 +192,30 @@ fun OreDepositDetailContent(
 							title = uiState.oreDeposit.name
 						)
 
-						DetailExpandableText(
-							text = uiState.oreDeposit.description.toString(),
-							boxPadding = BODY_CONTENT_PADDING.dp
+					DetailExpandableText(
+						text = uiState.oreDeposit.description.toString(),
+						boxPadding = BODY_CONTENT_PADDING.dp
+					)
+					if (uiState.relatedBiomes.isNotEmpty()) {
+						SlavicDivider()
+						Text(
+							modifier = Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp),
+							text = "PRIMARY SPAWNS",
+							textAlign = TextAlign.Left,
+							style = MaterialTheme.typography.titleSmall,
+							maxLines = 1,
+							overflow = TextOverflow.Visible
 						)
-						if (uiState.relatedBiomes.isNotEmpty()) {
-							SlavicDivider()
-							Text(
-								modifier = Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp),
-								text = "PRIMARY SPAWNS",
-								textAlign = TextAlign.Left,
-								style = MaterialTheme.typography.titleSmall,
-								maxLines = 1,
-								overflow = TextOverflow.Visible
-							)
-							uiState.relatedBiomes.forEach { biome ->
-								CardWithOverlayLabel(
-									onClickedItem = {
-										val destination =
-											WorldDetailDestination.BiomeDetail(
-												biomeId = biome.id,
-												imageUrl = biome.imageUrl,
-												title = biome.name,
-											)
-										onItemClick(destination)
+						uiState.relatedBiomes.forEach { biome ->
+							CardWithOverlayLabel(
+								onClickedItem = {
+									val destination =
+										WorldDetailDestination.BiomeDetail(
+											biomeId = biome.id,
+											imageUrl = biome.imageUrl,
+											title = biome.name,
+										)
+									onItemClick(destination)
 
 									},
 									painter = rememberAsyncImagePainter(biome.imageUrl),

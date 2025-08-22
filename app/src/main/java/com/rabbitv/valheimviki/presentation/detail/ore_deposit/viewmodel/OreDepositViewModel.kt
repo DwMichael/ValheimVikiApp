@@ -4,9 +4,10 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
+import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
-import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.item_tool.ItemTool
 import com.rabbitv.valheimviki.domain.model.material.MaterialDrop
 import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
@@ -17,18 +18,18 @@ import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.ore_deposit.OreDepositUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.domain.use_cases.tool.ToolUseCases
+import com.rabbitv.valheimviki.navigation.WorldDetailDestination
+import com.rabbitv.valheimviki.presentation.detail.ore_deposit.model.OreDepositUiEvent
 import com.rabbitv.valheimviki.presentation.detail.ore_deposit.model.OreDepositUiState
-import com.rabbitv.valheimviki.utils.Constants.ORE_DEPOSIT_KEY
+import com.rabbitv.valheimviki.utils.extensions.combine
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -45,7 +46,7 @@ class OreDepositViewModel @Inject constructor(
 	private val favoriteUseCases: FavoriteUseCases,
 	val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-	private val _oreDepositId: String = checkNotNull(savedStateHandle[ORE_DEPOSIT_KEY])
+	private val _oreDepositId: String = savedStateHandle.toRoute<WorldDetailDestination.OreDepositDetail>().oreDepositId
 	private val _oreDeposit = MutableStateFlow<OreDeposit?>(null)
 	private val _biomes = MutableStateFlow<List<Biome>>(emptyList())
 	private val _materials = MutableStateFlow<List<MaterialDrop>>(emptyList())
@@ -70,18 +71,17 @@ class OreDepositViewModel @Inject constructor(
 		_isFavorite,
 		_isLoading,
 		_error
-	) { values ->
+	) { oredDeposit,biomes, materials,tools,craftingStation,isFavorite ,isLoading, error ->
 		OreDepositUiState(
-			oreDeposit = values[0] as OreDeposit?,
-			relatedBiomes = values[1] as List<Biome>,
-			relatedMaterials = values[2] as List<MaterialDrop>,
-			relatedTools = values[3] as List<ItemTool>,
-			craftingStation = values[4] as List<CraftingObject>,
-			isFavorite = values[5] as Boolean,
-			isLoading = values[6] as Boolean,
-			error = values[7] as String?,
+			oreDeposit = oredDeposit,
+			relatedBiomes = biomes,
+			relatedMaterials = materials,
+			relatedTools = tools,
+			craftingStation = craftingStation,
+			isFavorite = isFavorite,
+			isLoading = isLoading,
+			error = error
 		)
-
 	}.stateIn(
 		scope = viewModelScope,
 		started = SharingStarted.Companion.WhileSubscribed(5000),
@@ -94,7 +94,7 @@ class OreDepositViewModel @Inject constructor(
 
 
 	internal fun loadOreDepositDetail() {
-		viewModelScope.launch(Dispatchers.IO) {
+		viewModelScope.launch{
 			try {
 				_isLoading.value = true
 				_error.value = null
@@ -127,15 +127,13 @@ class OreDepositViewModel @Inject constructor(
 					val tempList = mutableListOf<MaterialDrop>()
 					val relatedItemsMap = relationObjects.associateBy { it.id }
 
-					for (material in materials) {
+					materials.forEach {  material ->
 						val relatedItem = relatedItemsMap[material.id]
-						val quantityList = listOf<Int?>(relatedItem?.quantity)
-						val chanceStarList = listOf(relatedItem?.chance1star)
 						tempList.add(
 							MaterialDrop(
 								itemDrop = material,
-								quantityList = quantityList,
-								chanceStarList = chanceStarList
+								quantityList = listOf(relatedItem?.quantity),
+								chanceStarList = listOf(relatedItem?.chance1star)
 							)
 						)
 					}
@@ -164,12 +162,17 @@ class OreDepositViewModel @Inject constructor(
 		}
 	}
 
-	fun toggleFavorite(favorite: Favorite, currentIsFavorite: Boolean) {
-		viewModelScope.launch {
-			if (currentIsFavorite) {
-				favoriteUseCases.deleteFavoriteUseCase(favorite)
-			} else {
-				favoriteUseCases.addFavoriteUseCase(favorite)
+	fun uiEvent(event: OreDepositUiEvent) {
+		when (event) {
+			OreDepositUiEvent.ToggleFavorite -> {
+				viewModelScope.launch {
+					_oreDeposit.value?.let { bM ->
+						favoriteUseCases.toggleFavoriteUseCase(
+							bM.toFavorite(),
+							shouldBeFavorite = !_isFavorite.value
+						)
+					}
+				}
 			}
 		}
 	}
