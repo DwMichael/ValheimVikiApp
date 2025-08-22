@@ -1,135 +1,102 @@
 package com.rabbitv.valheimviki.presentation.detail.material.shop.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.data.mappers.creatures.toNPC
 import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
+import com.rabbitv.valheimviki.di.qualifiers.DefaultDispatcher
 import com.rabbitv.valheimviki.domain.model.creature.CreatureSubCategory
 import com.rabbitv.valheimviki.domain.model.creature.npc.NPC
-import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.material.Material
+import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
 import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
-import com.rabbitv.valheimviki.presentation.detail.material.offerings.model.OfferingUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.shop.model.ShopUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.shop.model.ShopUiState
 import com.rabbitv.valheimviki.utils.Constants.SHOP_MATERIAL_KEY
+
+import com.rabbitv.valheimviki.utils.relatedDataFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
-@Suppress("UNCHECKED_CAST")
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class ShopMaterialDetailViewModel @Inject constructor(
+	savedStateHandle: SavedStateHandle,
 	private val materialUseCases: MaterialUseCases,
 	private val creatureUseCases: CreatureUseCases,
 	private val relationUseCases: RelationUseCases,
 	private val favoriteUseCases: FavoriteUseCases,
-	savedStateHandle: SavedStateHandle,
+	@param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
+	
 	private val _materialId: String = checkNotNull(savedStateHandle[SHOP_MATERIAL_KEY])
-	private val _material = MutableStateFlow<Material?>(null)
-	private val _npc = MutableStateFlow<NPC?>(null)
-	private val _isLoading = MutableStateFlow<Boolean>(false)
-	private val _error = MutableStateFlow<String?>(null)
-	private val _isFavorite = favoriteUseCases.isFavorite(_materialId)
-		.distinctUntilChanged()
-		.stateIn(
-			scope = viewModelScope,
-			started = SharingStarted.WhileSubscribed(5_000),
-			initialValue = false
-		)
-	val uiState = combine(
-		_material,
-		_npc,
-		_isFavorite,
-		_isLoading,
-		_error
-	) { material, npc, isFavorite, isLoading, error ->
+	private val _isFavorite = MutableStateFlow(false)
+
+	init {
+		favoriteUseCases.isFavorite(_materialId)
+			.distinctUntilChanged()
+			.onEach { value -> _isFavorite.value = value }
+			.launchIn(viewModelScope)
+	}
+
+	private val _materialFlow: StateFlow<Material?> =
+		materialUseCases.getMaterialById(_materialId)
+			.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
+	private val _relationsObjects: StateFlow<List<RelatedItem>> =
+		relationUseCases.getRelatedIdsUseCase(_materialId)
+			.distinctUntilChanged()
+			.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+	private val _relatedNpc = relatedDataFlow(
+		idsFlow = _relationsObjects.map { list -> list.map { item -> item.id } },
+		fetcher = { ids -> 
+			creatureUseCases.getCreatureByRelationAndSubCategory(ids, CreatureSubCategory.NPC)
+				.map { creature -> creature?.toNPC() }
+		}
+	).flowOn(defaultDispatcher)
+
+	val uiState: StateFlow<ShopUiState> = combine(
+		_materialFlow,
+		_relatedNpc,
+		_isFavorite
+	) { material, npc, isFavorite ->
 		ShopUiState(
 			material = material,
 			npc = npc,
-			isFavorite = isFavorite,
-			isLoading = isLoading,
-			error = error
+			isFavorite = isFavorite
 		)
-
 	}.stateIn(
-		viewModelScope,
-		SharingStarted.WhileSubscribed(5000),
-		ShopUiState()
+		scope = viewModelScope,
+		started = SharingStarted.WhileSubscribed(5000),
+		initialValue = ShopUiState()
 	)
-
-	init {
-		loadMobDropData()
-	}
-
-	internal fun loadMobDropData() {
-
-		viewModelScope.launch(Dispatchers.IO) {
-			try {
-				_isLoading.value = true
-				_error.value = null
-
-
-				val materialDeferred = async {
-					materialUseCases.getMaterialById(_materialId).first()
-				}
-
-
-				val relationObjectsDeferred = async {
-					relationUseCases.getRelatedIdsUseCase(_materialId).first()
-				}
-
-
-				val material = materialDeferred.await()
-				val relationObjects = relationObjectsDeferred.await()
-
-				_material.value = material
-
-				val relationIds = relationObjects.map { it.id }
-
-
-				val npcDeferred = async {
-					creatureUseCases.getCreatureByRelationAndSubCategory(
-						relationIds,
-						CreatureSubCategory.NPC
-					).first()?.toNPC()
-				}
-
-
-				_npc.value = npcDeferred.await()
-
-			} catch (e: Exception) {
-				Log.e("ShopMaterialDetailViewModel", "General fetch error: ${e.message}", e)
-				_error.value = e.message
-			} finally {
-				_isLoading.value = false
-			}
-		}
-	}
 
 	fun uiEvent(event: ShopUiEvent) {
 		when (event) {
 			ShopUiEvent.ToggleFavorite -> {
 				viewModelScope.launch {
-					_material.value?.let { bM ->
+					_materialFlow.value?.let { material ->
 						favoriteUseCases.toggleFavoriteUseCase(
-							bM.toFavorite(),
+							material.toFavorite(),
 							shouldBeFavorite = !_isFavorite.value
 						)
 					}

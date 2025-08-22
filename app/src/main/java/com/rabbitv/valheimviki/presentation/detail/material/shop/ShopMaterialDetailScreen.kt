@@ -38,10 +38,11 @@ import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
-import com.rabbitv.valheimviki.presentation.detail.material.boss_drop.model.BossDropUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.shop.model.ShopUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.shop.model.ShopUiState
 import com.rabbitv.valheimviki.presentation.detail.material.shop.viewmodel.ShopMaterialDetailViewModel
+import com.rabbitv.valheimviki.presentation.components.ui_section.UiSection
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
@@ -126,20 +127,26 @@ fun ShopMaterialDetailContent(
 							textAlign = TextAlign.Center
 						)
 					}
-					uiState.npc?.let { npc ->
-						TridentsDividedRow()
-						CardImageWithTopLabel(
-							onClickedItem = {
-								val destination = NavigationHelper.routeToCreature(
-									creatureType = npc.subCategory,
-									itemId = npc.id
+					
+					when (val npcState = uiState.npc) {
+						is UIState.Success -> {
+							npcState.data?.let { npc ->
+								TridentsDividedRow()
+								CardImageWithTopLabel(
+									onClickedItem = {
+										val destination = NavigationHelper.routeToCreature(
+											creatureType = npc.subCategory,
+											itemId = npc.id
+										)
+										onItemClick(destination)
+									},
+									itemData = npc,
+									subTitle = "NPC whom you can sell this item",
+									contentScale = ContentScale.FillBounds,
 								)
-								onItemClick(destination)
-							},
-							itemData = npc,
-							subTitle = "NPC whom you can sell this item",
-							contentScale = ContentScale.FillBounds,
-						)
+							}
+						}
+						else -> {}
 					}
 				}
 			}
