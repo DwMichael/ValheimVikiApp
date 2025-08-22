@@ -38,10 +38,11 @@ import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
 import com.rabbitv.valheimviki.presentation.components.card.card_image.ImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
-import com.rabbitv.valheimviki.presentation.detail.material.boss_drop.model.BossDropUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.mini_boss_drop.model.MiniBossDropUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.mini_boss_drop.model.MiniBossDropUiState
 import com.rabbitv.valheimviki.presentation.detail.material.mini_boss_drop.viewmodel.MiniBossDropDetailViewModel
+import com.rabbitv.valheimviki.presentation.components.ui_section.UiSection
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
@@ -124,37 +125,45 @@ fun MiniBossDropDetailContent(
 						SlavicDivider()
 					}
 
-
-
-					if (uiState.miniBoss != null) {
-						ImageWithTopLabel(
-							onItemClick = { clickedItemId ->
-								val destination = NavigationHelper.routeToCreature(
-									uiState.miniBoss.subCategory,
-									uiState.miniBoss.id
+					when (val miniBossState = uiState.miniBoss) {
+						is UIState.Success -> {
+							miniBossState.data?.let { miniBoss ->
+								ImageWithTopLabel(
+									onItemClick = { clickedItemId ->
+										val destination = NavigationHelper.routeToCreature(
+											miniBoss.subCategory,
+											miniBoss.id
+										)
+										onItemClick(destination)
+									},
+									itemData = miniBoss,
+									subTitle = "Boss from witch this item drop",
+									contentScale = ContentScale.Crop,
 								)
-								onItemClick(destination)
-							},
-							itemData = uiState.miniBoss,
-							subTitle = "Boss from witch this item drop",
-							contentScale = ContentScale.Crop,
-						)
-						SlavicDivider()
+								SlavicDivider()
+							}
+						}
+						else -> {}
 					}
 
-					if (uiState.npc != null) {
-						ImageWithTopLabel(
-							onItemClick = { clickedItemId ->
-								val destination = NavigationHelper.routeToCreature(
-									uiState.npc.subCategory,
-									uiState.npc.id
+					when (val npcState = uiState.npc) {
+						is UIState.Success -> {
+							npcState.data?.let { npc ->
+								ImageWithTopLabel(
+									onItemClick = { clickedItemId ->
+										val destination = NavigationHelper.routeToCreature(
+											npc.subCategory,
+											npc.id
+										)
+										onItemClick(destination)
+									},
+									itemData = npc,
+									subTitle = "Npc that give you quest for this item",
+									contentScale = ContentScale.Crop,
 								)
-								onItemClick(destination)
-							},
-							itemData = uiState.npc,
-							subTitle = "Npc that give you quest for this item",
-							contentScale = ContentScale.Crop,
-						)
+							}
+						}
+						else -> {}
 					}
 				}
 			}
@@ -191,9 +200,7 @@ fun PreviewToolDetailContentCooked() {
 		MiniBossDropDetailContent(
 			uiState = MiniBossDropUiState(
 				material = FakeData.generateFakeMaterials()[0],
-				miniBoss = FakeData.generateFakeCreatures()[0].toMiniBoss(),
-				isLoading = false,
-				error = null
+				miniBoss =  UIState.Success( FakeData.generateFakeCreatures()[0].toMiniBoss()),
 			),
 			onBack = {},
 			onItemClick = {},

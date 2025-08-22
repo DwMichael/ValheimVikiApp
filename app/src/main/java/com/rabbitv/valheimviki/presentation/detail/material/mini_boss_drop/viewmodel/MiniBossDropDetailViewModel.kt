@@ -1,17 +1,18 @@
 package com.rabbitv.valheimviki.presentation.detail.material.mini_boss_drop.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.data.mappers.creatures.toMiniBoss
 import com.rabbitv.valheimviki.data.mappers.creatures.toNPC
 import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
+import com.rabbitv.valheimviki.di.qualifiers.DefaultDispatcher
 import com.rabbitv.valheimviki.domain.model.creature.CreatureSubCategory
 import com.rabbitv.valheimviki.domain.model.creature.mini_boss.MiniBoss
 import com.rabbitv.valheimviki.domain.model.creature.npc.NPC
-import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.material.Material
+import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
 import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
@@ -19,128 +20,95 @@ import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.presentation.detail.material.mini_boss_drop.model.MiniBossDropUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.mini_boss_drop.model.MiniBossDropUiState
 import com.rabbitv.valheimviki.utils.Constants.MINI_BOSS_DROP_KEY
-import com.rabbitv.valheimviki.utils.extensions.combine
+
+import com.rabbitv.valheimviki.utils.relatedDataFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class MiniBossDropDetailViewModel @Inject constructor(
+	savedStateHandle: SavedStateHandle,
 	private val materialUseCases: MaterialUseCases,
 	private val creatureUseCases: CreatureUseCases,
 	private val relationUseCases: RelationUseCases,
 	private val favoriteUseCases: FavoriteUseCases,
-	savedStateHandle: SavedStateHandle,
+	@param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
+	
 	private val _materialId: String = checkNotNull(savedStateHandle[MINI_BOSS_DROP_KEY])
-	private val _material = MutableStateFlow<Material?>(null)
-	private val _boss = MutableStateFlow<MiniBoss?>(null)
-	private val _npc = MutableStateFlow<NPC?>(null)
-	private val _isLoading = MutableStateFlow<Boolean>(false)
-	private val _error = MutableStateFlow<String?>(null)
-	private val _isFavorite = favoriteUseCases.isFavorite(_materialId)
-		.distinctUntilChanged()
-		.stateIn(
-			scope = viewModelScope,
-			started = SharingStarted.WhileSubscribed(5_000),
-			initialValue = false
-		)
-
-
-	val uiState = combine(
-		_material,
-		_boss,
-		_npc,
-		_isFavorite,
-		_isLoading,
-		_error
-	) { material, boss, npc,favorite,isLoading,error ->
-		MiniBossDropUiState(
-			material = material,
-			miniBoss = boss,
-			npc = npc,
-			isFavorite = favorite,
- 			isLoading = isLoading,
-			error = error,
-		)
-
-	}.stateIn(
-		viewModelScope,
-		SharingStarted.WhileSubscribed(5000),
-		MiniBossDropUiState()
-	)
+	private val _isFavorite = MutableStateFlow(false)
 
 	init {
-		loadMiniBossDropData()
+		favoriteUseCases.isFavorite(_materialId)
+			.distinctUntilChanged()
+			.onEach { value -> _isFavorite.value = value }
+			.launchIn(viewModelScope)
 	}
 
-	internal fun loadMiniBossDropData() {
+	private val _materialFlow: StateFlow<Material?> =
+		materialUseCases.getMaterialById(_materialId)
+			.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
-		viewModelScope.launch {
-			try {
-				_isLoading.value = true
-				_error.value = null
+	private val _relationsObjects: StateFlow<List<RelatedItem>> =
+		relationUseCases.getRelatedIdsUseCase(_materialId)
+			.distinctUntilChanged()
+			.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
-
-				val materialDeferred = async {
-					materialUseCases.getMaterialById(_materialId).first()
-				}
-
-
-				val relationObjectsDeferred = async {
-					relationUseCases.getRelatedIdsUseCase(_materialId).first()
-				}
-
-
-				val material = materialDeferred.await()
-				val relationObjects = relationObjectsDeferred.await()
-
-				_material.value = material
-
-				val relationIds = relationObjects.map { it.id }
-
-
-				val miniBossDeferred = async {
-					creatureUseCases.getCreatureByRelationAndSubCategory(
-						relationIds,
-						CreatureSubCategory.MINI_BOSS
-					).first()?.toMiniBoss()
-				}
-
-				val npcDeferred = async {
-					creatureUseCases.getCreatureByRelationAndSubCategory(
-						relationIds,
-						CreatureSubCategory.NPC
-					).first()?.toNPC()
-				}
-
-				_boss.value = miniBossDeferred.await()
-				_npc.value = npcDeferred.await()
-
-			} catch (e: Exception) {
-				Log.e("MiniBossDropDetailViewModel", "General fetch error: ${e.message}", e)
-				_error.value = e.message
-			} finally {
-				_isLoading.value = false
-			}
+	private val _relatedMiniBoss = relatedDataFlow(
+		idsFlow = _relationsObjects.map { list -> list.map { item -> item.id } },
+		fetcher = { ids -> 
+			creatureUseCases.getCreatureByRelationAndSubCategory(ids, CreatureSubCategory.MINI_BOSS)
+				.map { creature -> creature?.toMiniBoss() }
 		}
-	}
+	).flowOn(defaultDispatcher)
+
+	private val _relatedNpc = relatedDataFlow(
+		idsFlow = _relationsObjects.map { list -> list.map { item -> item.id } },
+		fetcher = { ids -> 
+			creatureUseCases.getCreatureByRelationAndSubCategory(ids, CreatureSubCategory.NPC)
+				.map { creature -> creature?.toNPC() }
+		}
+	).flowOn(defaultDispatcher)
+
+	val uiState: StateFlow<MiniBossDropUiState> = combine(
+		_materialFlow,
+		_relatedMiniBoss,
+		_relatedNpc,
+		_isFavorite
+	) { material, miniBoss, npc, isFavorite ->
+		MiniBossDropUiState(
+			material = material,
+			miniBoss = miniBoss,
+			npc =npc,
+			isFavorite = isFavorite
+		)
+	}.stateIn(
+		scope = viewModelScope,
+		started = SharingStarted.WhileSubscribed(5000),
+		initialValue = MiniBossDropUiState()
+	)
 
 	fun uiEvent(event: MiniBossDropUiEvent) {
 		when (event) {
 			MiniBossDropUiEvent.ToggleFavorite -> {
 				viewModelScope.launch {
-					_material.value?.let { bM ->
+					_materialFlow.value?.let { material ->
 						favoriteUseCases.toggleFavoriteUseCase(
-							bM.toFavorite(),
+							material.toFavorite(),
 							shouldBeFavorite = !_isFavorite.value
 						)
 					}
