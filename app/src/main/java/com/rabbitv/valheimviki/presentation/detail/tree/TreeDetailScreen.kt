@@ -105,7 +105,6 @@ fun TreeDetailContent(
 ) {
 	val isRunning by remember { derivedStateOf { animatedVisibilityScope.transition.isRunning } }
 	val scrollState = rememberScrollState()
-	painterResource(id = R.drawable.main_background)
 	val axesData = remember {
 		HorizontalPagerData(
 			title = "Axes",

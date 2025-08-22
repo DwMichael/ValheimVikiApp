@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.material.MaterialDrop
@@ -18,8 +19,11 @@ import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.domain.use_cases.tree.TreeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.weapon.WeaponUseCases
+import com.rabbitv.valheimviki.presentation.detail.point_of_interest.model.PointOfInterestUiEvent
 import com.rabbitv.valheimviki.presentation.detail.tree.model.TreeDetailUiState
+import com.rabbitv.valheimviki.presentation.detail.tree.model.TreeUiEvent
 import com.rabbitv.valheimviki.utils.Constants.TREE_KEY
+import com.rabbitv.valheimviki.utils.extensions.combine
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -28,7 +32,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
@@ -48,7 +51,11 @@ class TreeDetailScreenViewModel @Inject constructor(
 ) : ViewModel() {
 	private val _treeId: String = checkNotNull(savedStateHandle[TREE_KEY])
 
-	private val _treeFlow: Flow<Tree?> = treeUseCases.getTreeByIdUseCase(_treeId)
+	private val _tree: StateFlow<Tree?> = treeUseCases.getTreeByIdUseCase(_treeId).stateIn(
+		viewModelScope,
+		started = SharingStarted.WhileSubscribed(5000),
+		initialValue = null
+	)
 	private val _relatedBiomes = MutableStateFlow<List<Biome>>(emptyList())
 	private val _relatedMaterials = MutableStateFlow<List<MaterialDrop>>(emptyList())
 	private val _relatedAxes = MutableStateFlow<List<Weapon>>(emptyList())
@@ -61,23 +68,24 @@ class TreeDetailScreenViewModel @Inject constructor(
 			started = SharingStarted.WhileSubscribed(5_000),
 			initialValue = false
 		)
+	//TODO VALUSES
 	val treeUiState: StateFlow<TreeDetailUiState> = combine(
-		_treeFlow,
+		_tree,
 		_relatedBiomes,
 		_relatedMaterials,
 		_relatedAxes,
 		_isFavorite,
 		_isLoading,
 		_error
-	) { values ->
+	) { tree, relatedBiomes, relatedMaterials, relatedAxes, isFavorite, isLoading, error ->
 		TreeDetailUiState(
-			tree = values[0] as Tree,
-			relatedBiomes = values[1] as List<Biome>,
-			relatedMaterials = values[2] as List<MaterialDrop>,
-			relatedAxes = values[3] as List<Weapon>,
-			isFavorite = values[4] as Boolean,
-			isLoading = values[5] as Boolean,
-			error = values[6] as String?
+			tree = tree,
+			relatedBiomes = relatedBiomes,
+			relatedMaterials = relatedMaterials,
+			relatedAxes = relatedAxes,
+			isFavorite = isFavorite,
+			isLoading = isLoading,
+			error = error
 		)
 	}.stateIn(
 		scope = viewModelScope,
@@ -140,12 +148,17 @@ class TreeDetailScreenViewModel @Inject constructor(
 		}
 	}
 
-	fun toggleFavorite(favorite: Favorite, currentIsFavorite: Boolean) {
-		viewModelScope.launch {
-			if (currentIsFavorite) {
-				favoriteUseCases.deleteFavoriteUseCase(favorite)
-			} else {
-				favoriteUseCases.addFavoriteUseCase(favorite)
+	fun uiEvent(event: TreeUiEvent) {
+		when (event) {
+			TreeUiEvent.ToggleFavorite -> {
+				viewModelScope.launch {
+					_tree.value?.let { bM ->
+						favoriteUseCases.toggleFavoriteUseCase(
+							bM.toFavorite(),
+							shouldBeFavorite = !_isFavorite.value
+						)
+					}
+				}
 			}
 		}
 	}
