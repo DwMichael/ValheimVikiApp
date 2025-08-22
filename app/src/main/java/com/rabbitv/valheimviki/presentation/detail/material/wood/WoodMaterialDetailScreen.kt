@@ -50,6 +50,7 @@ import com.rabbitv.valheimviki.presentation.detail.material.boss_drop.model.Boss
 import com.rabbitv.valheimviki.presentation.detail.material.wood.model.WoodUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.wood.model.WoodUiState
 import com.rabbitv.valheimviki.presentation.detail.material.wood.viewmodel.WoodMaterialDetailViewModel
+import com.rabbitv.valheimviki.presentation.components.ui_section.UiSection
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
@@ -135,8 +136,10 @@ fun WoodMaterialDetailContent(
 						)
 
 					}
-					if (uiState.biomes.isNotEmpty()) {
-						SlavicDivider()
+					
+					UiSection(
+						state = uiState.biomes
+					) { biomes ->
 						Text(
 							modifier = Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp),
 							text = "PRIMARY SPAWNS",
@@ -145,7 +148,7 @@ fun WoodMaterialDetailContent(
 							maxLines = 1,
 							overflow = TextOverflow.Visible
 						)
-						uiState.biomes.forEach { biome ->
+						biomes.forEach { biome ->
 							CardWithOverlayLabel(
 								onClickedItem = {
 									val destination =
@@ -177,10 +180,11 @@ fun WoodMaterialDetailContent(
 						}
 					}
 
-					if (uiState.trees.isNotEmpty()) {
-						SlavicDivider()
+					UiSection(
+						state = uiState.trees
+					) { trees ->
 						HorizontalPagerSection(
-							list = uiState.trees,
+							list = trees,
 							data = treesData,
 							onItemClick = handleItemClick
 						)
