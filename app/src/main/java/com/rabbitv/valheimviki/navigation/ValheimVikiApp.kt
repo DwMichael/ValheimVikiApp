@@ -672,7 +672,9 @@ fun ValheimNavGraph(
 				},
 			)
 		}
-		composable<WorldDetailDestination.OreDepositDetail> {
+		composable<WorldDetailDestination.OreDepositDetail>(
+			popExitTransition = { popExitTransition() }
+		) {
 			OreDepositDetailScreen(
 				onBack = {
 					valheimVikiNavController.popBackStack()
@@ -683,7 +685,9 @@ fun ValheimNavGraph(
 				animatedVisibilityScope = this@composable,
 			)
 		}
-		composable<WorldDetailDestination.TreeDetail> {
+		composable<WorldDetailDestination.TreeDetail>(
+			popExitTransition = { popExitTransition() }
+		) {
 			TreeDetailScreen(
 				onBack = {
 					valheimVikiNavController.popBackStack()
