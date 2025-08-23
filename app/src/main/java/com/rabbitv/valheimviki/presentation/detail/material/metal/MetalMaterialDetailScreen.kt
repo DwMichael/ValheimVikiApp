@@ -166,11 +166,12 @@ fun MetalMaterialDetailContent(
 							boxPadding = BODY_CONTENT_PADDING.dp,
 							isExpanded = isExpandable
 						)
-						SlavicDivider()
+
 					}
 
 					UiSection(
-						state = uiState.biomes
+						state = uiState.biomes,
+						divider = {	SlavicDivider()}
 					) { biomes ->
 						HorizontalPagerSection(
 							list = biomes,

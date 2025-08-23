@@ -135,11 +135,11 @@ fun GemstoneDetailContent(
 							boxPadding = BODY_CONTENT_PADDING.dp,
 							isExpanded = isExpandable
 						)
-						SlavicDivider()
 					}
 					
 					UiSection(
-						state = uiState.pointsOfInterest
+						state = uiState.pointsOfInterest,
+						divider = {	SlavicDivider()}
 					) { pointsOfInterest ->
 						HorizontalPagerSection(
 							list = pointsOfInterest,
