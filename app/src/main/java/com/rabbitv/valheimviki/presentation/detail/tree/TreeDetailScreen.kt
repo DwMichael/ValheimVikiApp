@@ -8,7 +8,9 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -43,6 +45,7 @@ import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.tree.Tree
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.LocalSharedTransitionScope
 import com.rabbitv.valheimviki.navigation.NavigationHelper
@@ -58,6 +61,7 @@ import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDet
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.DroppedItemsSection
+import com.rabbitv.valheimviki.presentation.components.ui_section.UiSection
 import com.rabbitv.valheimviki.presentation.detail.point_of_interest.model.PointOfInterestUiEvent
 import com.rabbitv.valheimviki.presentation.detail.tree.model.TreeDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.tree.model.TreeUiEvent
@@ -114,7 +118,7 @@ fun TreeDetailContent(
 			itemContentScale = ContentScale.Crop
 		)
 	}
-	val handleClick = remember(onItemClick) {
+	val handleClick = remember {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
 	}
 
@@ -147,8 +151,11 @@ fun TreeDetailContent(
 						text = uiState.tree?.description ?: "",
 						boxPadding = BODY_CONTENT_PADDING.dp
 					)
-					if (uiState.relatedBiomes.isNotEmpty()) {
-						SlavicDivider()
+					UiSection(
+						state = uiState.relatedBiomes,
+						divider = { SlavicDivider() }
+					) { data ->
+
 						Text(
 							modifier = Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp),
 							text = "PRIMARY SPAWNS",
@@ -157,18 +164,9 @@ fun TreeDetailContent(
 							maxLines = 1,
 							overflow = TextOverflow.Visible
 						)
-						uiState.relatedBiomes.forEach { biome ->
+						data.forEach { biome ->
 							CardWithOverlayLabel(
-								onClickedItem = {
-									val destination =
-										WorldDetailDestination.BiomeDetail(
-											biomeId = biome.id,
-											imageUrl = biome.imageUrl,
-											title = biome.name,
-										)
-									onItemClick(destination)
-
-								},
+								onClickedItem = { handleClick(biome) },
 								painter = rememberAsyncImagePainter(biome.imageUrl),
 								content = {
 									Box(
@@ -188,31 +186,29 @@ fun TreeDetailContent(
 								}
 							)
 						}
-
 					}
 
-					if (uiState.relatedAxes.isNotEmpty()) {
-						TridentsDividedRow()
+
+					UiSection(uiState.relatedAxes) { data ->
 						HorizontalPagerSection(
-							list = uiState.relatedAxes,
+							list = data,
 							data = axesData,
 							onItemClick = handleClick,
 						)
 					}
-
-					if (uiState.relatedMaterials.isNotEmpty()) {
-						TridentsDividedRow()
+					UiSection(uiState.relatedMaterials) { data ->
 						DroppedItemsSection(
 							onItemClick = handleClick,
-							list = uiState.relatedMaterials,
+							list = data,
 							icon = { Lucide.Gem },
 							starLevel = 0,
 							title = "Materials",
 							subTitle = "Unique drops are obtained by cutting this tree.",
 						)
+						Spacer(modifier = Modifier.height(90.dp))
 					}
-					Box(modifier = Modifier.size(45.dp))
 				}
+
 				if (!isRunning && uiState.tree != null) {
 					AnimatedBackButton(
 						modifier = Modifier
@@ -262,10 +258,8 @@ fun PreviewBiomeDetailContent() {
 			description = "sada",
 			order = 1
 		),
-		relatedBiomes = biomes,
-		relatedAxes = FakeData.fakeWeaponList,
-		isLoading = false,
-		error = null
+		relatedBiomes = UIState.Success(biomes),
+		relatedAxes =  UIState.Success (FakeData.fakeWeaponList)
 	)
 
 	ValheimVikiAppTheme {
