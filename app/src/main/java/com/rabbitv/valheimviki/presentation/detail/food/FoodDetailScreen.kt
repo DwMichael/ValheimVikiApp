@@ -46,7 +46,6 @@ import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.navigation.BuildingDetailDestination
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
-import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
@@ -54,6 +53,7 @@ import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImage
 import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCard
 import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCardPainter
 import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.grid.grid_item.CustomItemCard
 import com.rabbitv.valheimviki.presentation.components.grid.nested.NestedGrid
 import com.rabbitv.valheimviki.presentation.components.grid.nested.NestedItems
@@ -149,7 +149,7 @@ fun FoodDetailContent(
 						.verticalScroll(scrollState)
 						.padding(
 							top = 20.dp,
-							bottom = 70.dp
+							bottom = 80.dp
 						),
 					horizontalAlignment = Alignment.CenterHorizontally,
 					verticalArrangement = Arrangement.Top,
@@ -335,7 +335,7 @@ fun FoodDetailContent(
 							painter = painterResource(R.drawable.food_bg)
 						)
 					}
-					if(showRecipeSection){
+					if (showRecipeSection) {
 						TridentsDividedRow()
 						Box(
 							modifier = Modifier
@@ -361,7 +361,7 @@ fun FoodDetailContent(
 						divider = {}
 					) { data ->
 						NestedGrid(
-							nestedItems = NestedItems( items = data) ,
+							nestedItems = NestedItems(items = data),
 							gridCells = 2
 						) { item ->
 							CustomItemCard(
@@ -379,7 +379,7 @@ fun FoodDetailContent(
 						divider = {}
 					) { data ->
 						NestedGrid(
-							nestedItems = NestedItems( items = data) ,
+							nestedItems = NestedItems(items = data),
 							gridCells = 2
 						) { item ->
 							CustomItemCard(
@@ -488,12 +488,12 @@ fun PreviewFoodDetailContentCooked() {
 		FoodDetailContent(
 			onBack = {},
 			onItemClick = {},
-			onToggleFavorite = {  },
+			onToggleFavorite = { },
 			uiState = FoodDetailUiState(
 				food = fakeFood,
 				craftingCookingStation = craftingStation,
 				foodForRecipe = UIState.Success(fakeFoodList),
-				materialsForRecipe =UIState.Success( fakeMaterialsList)
+				materialsForRecipe = UIState.Success(fakeMaterialsList)
 			),
 			category = FoodSubCategory.COOKED_FOOD,
 		)

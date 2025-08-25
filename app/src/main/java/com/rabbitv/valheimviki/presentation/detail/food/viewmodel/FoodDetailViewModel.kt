@@ -8,6 +8,7 @@ import androidx.navigation.toRoute
 import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.di.qualifiers.DefaultDispatcher
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
+import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.relation.RelatedData
 import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
@@ -106,7 +107,7 @@ class FoodDetailViewModel @Inject constructor(
 		}.map { UIState.Success(it) }
 			.flowOn(defaultDispatcher)
 
-	private val _materialsForRecipe: Flow<UIState<List<RecipeMaterialData>>> =
+	private val _materialsForRecipe: Flow<UIState<List<RecipeMaterialData<Material>>>> =
 		idsAndMap.flatMapLatest { (ids, currentItemsMap) ->
 			if (ids.isEmpty()) {
 				flowOf(emptyList())
