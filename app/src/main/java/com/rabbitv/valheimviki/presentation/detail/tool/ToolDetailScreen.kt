@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
@@ -38,6 +40,7 @@ import com.composables.icons.lucide.Pickaxe
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 import com.rabbitv.valheimviki.domain.model.item_tool.ItemTool
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.domain.model.upgrader.MaterialUpgrade
 import com.rabbitv.valheimviki.navigation.BuildingDetailDestination
 import com.rabbitv.valheimviki.navigation.DetailDestination
@@ -51,12 +54,15 @@ import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImage
 import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.flow_row.flow_as_grid.TwoColumnGrid
 import com.rabbitv.valheimviki.presentation.components.grid.grid_item.CustomItemCard
+import com.rabbitv.valheimviki.presentation.components.grid.nested.NestedGrid
+import com.rabbitv.valheimviki.presentation.components.grid.nested.NestedItems
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
 import com.rabbitv.valheimviki.presentation.components.section_header.SectionHeader
 import com.rabbitv.valheimviki.presentation.components.section_header.SectionHeaderData
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
+import com.rabbitv.valheimviki.presentation.components.ui_section.UiSection
 import com.rabbitv.valheimviki.presentation.detail.tool.model.ToolDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.tool.model.ToolDetailUiEvent
 import com.rabbitv.valheimviki.presentation.detail.tool.viewmodel.ToolDetailViewModel
@@ -147,8 +153,12 @@ fun ToolDetailContent(
 						boxPadding = BODY_CONTENT_PADDING.dp,
 						isExpanded = isExpandable
 					)
-					if (uiState.relatedMaterials.isNotEmpty() && uiState.tool.upgradeInfoList.isNullOrEmpty()) {
-						SlavicDivider()
+
+
+					UiSection(
+						state = uiState.relatedMaterials,
+						divider = { SlavicDivider() }
+					) { data ->
 						Box(
 							modifier = Modifier
 								.fillMaxWidth()
@@ -165,21 +175,29 @@ fun ToolDetailContent(
 						}
 
 						Spacer(modifier = Modifier.padding(6.dp))
-						TwoColumnGrid {
-							for (item in uiState.relatedMaterials) {
-								CustomItemCard(
-									itemData = item.material,
-									onItemClick = handleClick,
-									fillWidth = CUSTOM_ITEM_CARD_FILL_WIDTH,
-									imageUrl = item.material.imageUrl,
-									name = item.material.name,
-									quantity = item.quantityList.firstOrNull()
-								)
-							}
+
+						NestedGrid(
+							nestedItems = NestedItems(
+								items = data
+							)
+						) { item ->
+							CustomItemCard(
+								itemData = item.material,
+								onItemClick = handleClick,
+								fillWidth = CUSTOM_ITEM_CARD_FILL_WIDTH,
+								imageUrl = item.material.imageUrl,
+								name = item.material.name,
+								quantity = item.quantityList.firstOrNull()
+							)
 						}
 					}
-					if (!tool.upgradeInfoList.isNullOrEmpty()) {
-						SlavicDivider()
+
+
+					UiSection(
+						state = uiState.relatedMaterials,
+						{ SlavicDivider() }
+					) { data ->
+
 						Text(
 							"Upgrade Information",
 							modifier = Modifier.padding(
@@ -190,91 +208,88 @@ fun ToolDetailContent(
 							color = PrimaryWhite,
 							style = MaterialTheme.typography.headlineMedium
 						)
+						if (!tool.upgradeInfoList.isNullOrEmpty()) {
+							tool.upgradeInfoList.forEachIndexed { levelIndex, upgradeInfoForLevel ->
+								val upgradeStats =
+									mapUpgradeToolsInfoToGridList(upgradeInfoForLevel)
+								LevelInfoCard(
+									modifier = Modifier.padding(
+										horizontal = BODY_CONTENT_PADDING.dp,
+										vertical = 8.dp
+									),
+									onItemClick = handleClick,
+									level = levelIndex,
+									upgradeStats = upgradeStats,
+									materialsForUpgrade = data,
+								)
+							}
+						}
 
-						tool.upgradeInfoList.forEachIndexed { levelIndex, upgradeInfoForLevel ->
-							val upgradeStats = mapUpgradeToolsInfoToGridList(upgradeInfoForLevel)
-							LevelInfoCard(
-								modifier = Modifier.padding(
-									horizontal = BODY_CONTENT_PADDING.dp,
-									vertical = 8.dp
+
+						if (uiState.relatedCraftingStation is UIState.Success) {
+							uiState.relatedCraftingStation.data?.let { craftingStation ->
+								SlavicDivider()
+								CardImageWithTopLabel(
+									onClickedItem = handleClick,
+									itemData = craftingStation,
+									subTitle = "Requires crafting station",
+									contentScale = ContentScale.Fit,
+									painter = craftingStationPainter
+								)
+							}
+
+						}
+						if (!uiState.tool.howToUse.isNullOrEmpty() && uiState.tool.howToUse != "null") {
+							TridentsDividedRow()
+							Text(
+								modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+								text = AnnotatedString.fromHtml(
+									uiState.tool.howToUse,
 								),
-								onItemClick = { clickedItemId, subCategory ->
-									val destination =
-										NavigationHelper.routeToMaterial(subCategory, clickedItemId)
-									onItemClick(destination)
-								},
-								level = levelIndex,
-								upgradeStats = upgradeStats,
-								materialsForUpgrade = uiState.relatedMaterials,
+								style = MaterialTheme.typography.bodyLarge
+							)
+						}
+						if (!uiState.tool.generalInfo.isNullOrEmpty() && uiState.tool.generalInfo != "null") {
+							TridentsDividedRow()
+							Text(
+								modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+								text = AnnotatedString.fromHtml(
+									uiState.tool.generalInfo,
+								),
+								style = MaterialTheme.typography.bodyLarge
 							)
 						}
 
-					}
-
-					if (uiState.relatedCraftingStation != null) {
-						if (uiState.relatedMaterials.isNotEmpty() || !tool.upgradeInfoList.isNullOrEmpty()) {
-							SlavicDivider()
+						UiSection(
+							state = uiState.relatedOreDeposits,
+							divider = { SlavicDivider() }
+						) { data ->
+							HorizontalPagerSection(
+								list = data,
+								data = oreDepositData,
+								onItemClick = handleClick,
+							)
 						}
-						CardImageWithTopLabel(
-							onClickedItem = {
-								val destination = BuildingDetailDestination.CraftingObjectDetail(
-									craftingObjectId = uiState.relatedCraftingStation.id
-								)
-								onItemClick(destination)
-							},
-							itemData = uiState.relatedCraftingStation,
-							subTitle = "Requires crafting station",
-							contentScale = ContentScale.Fit,
-							painter = craftingStationPainter
-						)
-					}
-					if (!uiState.tool.howToUse.isNullOrEmpty() && uiState.tool.howToUse != "null") {
-						TridentsDividedRow()
-						Text(
-							modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-							text = AnnotatedString.fromHtml(
-								uiState.tool.howToUse,
-							),
-							style = MaterialTheme.typography.bodyLarge
-						)
-					}
-					if (!uiState.tool.generalInfo.isNullOrEmpty() && uiState.tool.generalInfo != "null") {
-						TridentsDividedRow()
-						Text(
-							modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-							text = AnnotatedString.fromHtml(
-								uiState.tool.generalInfo,
-							),
-							style = MaterialTheme.typography.bodyLarge
-						)
-					}
-					if (uiState.relatedOreDeposits.isNotEmpty()) {
-						SlavicDivider()
-						HorizontalPagerSection(
-							list = uiState.relatedOreDeposits,
-							data = oreDepositData,
-							onItemClick = handleClick,
-						)
-					}
-					if (uiState.relatedNpc != null) {
-						SlavicDivider()
-						CardImageWithTopLabel(
-							onClickedItem = {
-								uiState.relatedNpc.subCategory?.let {
-									val destination = NavigationHelper.routeToCreature(
-										uiState.relatedNpc.subCategory,
-										uiState.relatedNpc.id
+						UiSection(
+							state = uiState.relatedNpc,
+							divider = { SlavicDivider() }
+						) { data ->
+							LazyRow {
+								items(data, key = { item -> item.id })
+								{ item ->
+									CardImageWithTopLabel(
+										onClickedItem = handleClick,
+										itemData = item,
+										cradHeight = 200.dp,
+										subTitle = "Npc that sell this item",
+										contentScale = ContentScale.Crop,
+										painter = craftingStationPainter
 									)
-									onItemClick(destination)
 								}
-							},
-							itemData = uiState.relatedNpc,
-							subTitle = "Npc that sell this item",
-							contentScale = ContentScale.Crop,
-							painter = craftingStationPainter
-						)
-					}
 
+							}
+						}
+					}
 				}
 			}
 			AnimatedBackButton(
@@ -349,11 +364,9 @@ fun PreviewToolDetailContentCooked() {
 			onItemClick = {},
 			onToggleFavorite = { },
 			uiState = ToolDetailUiState(
-				isLoading = false,
-				error = null,
 				tool = exampleTool,
-				relatedCraftingStation = craftingStation,
-				relatedMaterials = fakeMaterialsList
+				relatedCraftingStation = UIState.Success( craftingStation),
+				relatedMaterials = UIState.Success( fakeMaterialsList),
 			),
 
 			)
