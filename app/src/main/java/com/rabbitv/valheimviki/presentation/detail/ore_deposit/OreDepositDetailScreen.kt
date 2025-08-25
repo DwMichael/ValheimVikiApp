@@ -1,23 +1,17 @@
 package com.rabbitv.valheimviki.presentation.detail.ore_deposit
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.animation.core.EaseOutCubic
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
@@ -45,25 +39,22 @@ import com.composables.icons.lucide.Combine
 import com.composables.icons.lucide.Gem
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Pickaxe
-import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
-import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.LocalSharedTransitionScope
 import com.rabbitv.valheimviki.navigation.NavigationHelper
-import com.rabbitv.valheimviki.navigation.WorldDetailDestination
-import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
 import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
+import com.rabbitv.valheimviki.presentation.components.horizontal_pager.DroppedItemsSection
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDetailImageAnimated
-import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
+import com.rabbitv.valheimviki.presentation.components.ui_section.UiSection
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
-import com.rabbitv.valheimviki.presentation.components.horizontal_pager.DroppedItemsSection
-import com.rabbitv.valheimviki.presentation.detail.material.boss_drop.model.BossDropUiEvent
 import com.rabbitv.valheimviki.presentation.detail.ore_deposit.model.OreDepositUiEvent
 import com.rabbitv.valheimviki.presentation.detail.ore_deposit.model.OreDepositUiState
 import com.rabbitv.valheimviki.presentation.detail.ore_deposit.viewmodel.OreDepositViewModel
@@ -111,7 +102,7 @@ fun OreDepositDetailContent(
 	val handleClick = remember(onItemClick) {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
 	}
-	val pickaxesData = remember{
+	val pickaxesData = remember {
 		HorizontalPagerData(
 			title = "Pickaxes",
 			subTitle = "List of pickaxes that can mine this ore out",
@@ -128,76 +119,41 @@ fun OreDepositDetailContent(
 			iconRotationDegrees = 0f,
 			itemContentScale = ContentScale.Crop
 		)
-	} //TODO REFACKTORYZACJA TEGO SCREENU
+	}
 	Scaffold { padding ->
-		AnimatedContent(
-			targetState = uiState.isLoading,
-			modifier = Modifier.fillMaxSize(),
-			transitionSpec = {
-				if (!targetState && initialState) {
-					fadeIn(
-						animationSpec = tween(
-							durationMillis = 650,
-							delayMillis = 0
-						)
-					) + slideInVertically(
-						initialOffsetY = { height -> height / 25 },
-						animationSpec = tween(
-							durationMillis = 650,
-							delayMillis = 0,
-							easing = EaseOutCubic
-						)
-					) togetherWith
-							fadeOut(
-								animationSpec = tween(
-									durationMillis = 200
-								)
-							)
-				} else {
-					fadeIn(animationSpec = tween(durationMillis = 300)) togetherWith
-							fadeOut(animationSpec = tween(durationMillis = 300))
-				}
-			},
-			label = "LoadingStateTransition"
-		) { isLoading ->
-			if (isLoading) {
-				Box(
+		if (uiState.oreDeposit != null) {
+			BgImage()
+			Box(
+				modifier = Modifier
+					.fillMaxSize()
+					.padding(padding)
+			) {
+				Column(
 					modifier = Modifier
+						.testTag("OreDepositDetailScreen")
 						.fillMaxSize()
-						.padding(padding),
-					contentAlignment = Alignment.Center
+						.verticalScroll(scrollState, enabled = !isRunning),
+					verticalArrangement = Arrangement.Top,
+					horizontalAlignment = Alignment.Start,
 				) {
-					Box(modifier = Modifier.size(45.dp))
-				}
-			} else if (uiState.oreDeposit != null) {
-				BgImage()
-				Box(
-					modifier = Modifier
-						.fillMaxSize()
-						.padding(padding)
-				) {
-					Column(
-						modifier = Modifier
-							.testTag("OreDepositDetailScreen")
-							.fillMaxSize()
-							.verticalScroll(scrollState, enabled = !isRunning),
-						verticalArrangement = Arrangement.Top,
-						horizontalAlignment = Alignment.Start,
-					) {
-						MainDetailImageAnimated(
-							sharedTransitionScope = sharedTransitionScope,
-							animatedVisibilityScope = animatedVisibilityScope,
-							id = uiState.oreDeposit.id,
-							imageUrl = uiState.oreDeposit.imageUrl,
-							title = uiState.oreDeposit.name
-						)
+					MainDetailImageAnimated(
+						sharedTransitionScope = sharedTransitionScope,
+						animatedVisibilityScope = animatedVisibilityScope,
+						id = uiState.oreDeposit.id,
+						imageUrl = uiState.oreDeposit.imageUrl,
+						title = uiState.oreDeposit.name
+					)
 
 					DetailExpandableText(
 						text = uiState.oreDeposit.description.toString(),
 						boxPadding = BODY_CONTENT_PADDING.dp
 					)
-					if (uiState.relatedBiomes.isNotEmpty()) {
-						SlavicDivider()
+					UiSection(
+						state = uiState.relatedBiomes,
+						divider = { SlavicDivider() }
+					) { data ->
+
+
 						Text(
 							modifier = Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp),
 							text = "PRIMARY SPAWNS",
@@ -206,95 +162,81 @@ fun OreDepositDetailContent(
 							maxLines = 1,
 							overflow = TextOverflow.Visible
 						)
-						uiState.relatedBiomes.forEach { biome ->
+						data.forEach { biome ->
 							CardWithOverlayLabel(
-								onClickedItem = {
-									val destination =
-										WorldDetailDestination.BiomeDetail(
-											biomeId = biome.id,
-											imageUrl = biome.imageUrl,
-											title = biome.name,
+								onClickedItem = { handleClick(biome) },
+								painter = rememberAsyncImagePainter(biome.imageUrl),
+								content = {
+									Box(
+										modifier = Modifier
+											.fillMaxSize()
+											.wrapContentHeight(Alignment.CenterVertically)
+											.wrapContentWidth(Alignment.CenterHorizontally)
+									) {
+										Text(
+											biome.name.uppercase(),
+											style = MaterialTheme.typography.bodyLarge,
+											modifier = Modifier,
+											color = Color.White,
+											textAlign = TextAlign.Center
 										)
-									onItemClick(destination)
-
-									},
-									painter = rememberAsyncImagePainter(biome.imageUrl),
-									content = {
-										Box(
-											modifier = Modifier
-												.fillMaxSize()
-												.wrapContentHeight(Alignment.CenterVertically)
-												.wrapContentWidth(Alignment.CenterHorizontally)
-										) {
-											Text(
-												biome.name.uppercase(),
-												style = MaterialTheme.typography.bodyLarge,
-												modifier = Modifier,
-												color = Color.White,
-												textAlign = TextAlign.Center
-											)
-										}
 									}
-								)
-							}
-
-						}
-
-						if (uiState.relatedTools.isNotEmpty()) {
-							TridentsDividedRow()
-							HorizontalPagerSection(
-								list = uiState.relatedTools,
-								data = pickaxesData,
-								onItemClick = handleClick,
+								}
 							)
 						}
-						if (uiState.craftingStation.isNotEmpty()) {
-							TridentsDividedRow()
-							HorizontalPagerSection(
-								list = uiState.craftingStation,
-								data = craftingObjectData,
-								onItemClick = handleClick,
-							)
-						}
-						if (uiState.relatedMaterials.isNotEmpty()) {
-							TridentsDividedRow()
-							DroppedItemsSection(
-								onItemClick =handleClick,
-								list = uiState.relatedMaterials,
-								icon = { Lucide.Gem },
-								starLevel = 0,
-								title = "Materials",
-								subTitle = "Unique drops are obtained by mining this ore",
-							)
-						}
-						Box(modifier = Modifier.size(45.dp))
 					}
-					if (!isRunning) {
-						AnimatedBackButton(
-							modifier = Modifier
-								.align(Alignment.TopStart)
-								.padding(16.dp),
-							scrollState = scrollState,
-							onBack = onBack,
-						)
-						FavoriteButton(
-							modifier = Modifier
-								.align(Alignment.TopEnd)
-								.padding(16.dp),
-							isFavorite = uiState.isFavorite,
-							onToggleFavorite = {
-								onToggleFavorite()
-							}
-						)
 
+					UiSection(
+						state = uiState.relatedTools
+					) { data ->
+						HorizontalPagerSection(
+							list = data,
+							data = pickaxesData,
+							onItemClick = handleClick,
+						)
 					}
+					UiSection(
+						state = uiState.craftingStation
+					) { data ->
+						HorizontalPagerSection(
+							list = data,
+							data = craftingObjectData,
+							onItemClick = handleClick,
+						)
+					}
+					UiSection(
+						state = uiState.relatedMaterials
+					) { data ->
+						DroppedItemsSection(
+							onItemClick = handleClick,
+							list = data,
+							icon = { Lucide.Gem },
+							starLevel = 0,
+							title = "Materials",
+							subTitle = "Unique drops are obtained by mining this ore",
+						)
+					}
+					Spacer(modifier = Modifier.height(90.dp))
 				}
-			} else {
-				Box(
-					Modifier
-						.fillMaxSize()
-						.padding(padding)
-				)
+				if (!isRunning) {
+					AnimatedBackButton(
+						modifier = Modifier
+							.align(Alignment.TopStart)
+							.padding(16.dp),
+						scrollState = scrollState,
+						onBack = onBack,
+					)
+					FavoriteButton(
+						modifier = Modifier
+							.align(Alignment.TopEnd)
+							.padding(16.dp),
+						isFavorite = uiState.isFavorite,
+						onToggleFavorite = {
+							onToggleFavorite()
+						}
+					)
+
+				}
 			}
 		}
 	}
@@ -337,12 +279,11 @@ fun PreviewOreDepositDetailContent() {
 				)
 
 				val mockUiState = OreDepositUiState(
-					isLoading = false,
 					oreDeposit = mockOreDeposit,
-					relatedBiomes = emptyList(),
-					relatedTools = emptyList(),
-					craftingStation = emptyList(),
-					relatedMaterials = emptyList()
+					relatedBiomes = UIState.Success(emptyList()),
+					relatedTools = UIState.Success(emptyList()),
+					craftingStation = UIState.Success(emptyList()),
+					relatedMaterials = UIState.Success(emptyList()),
 				)
 
 				OreDepositDetailContent(
