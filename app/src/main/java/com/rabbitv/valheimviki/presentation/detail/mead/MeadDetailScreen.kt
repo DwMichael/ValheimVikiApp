@@ -1,12 +1,11 @@
 package com.rabbitv.valheimviki.presentation.detail.mead
 
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -38,31 +37,31 @@ import com.composables.icons.lucide.FlaskRound
 import com.composables.icons.lucide.Layers2
 import com.composables.icons.lucide.Lucide
 import com.rabbitv.valheimviki.R
-import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
-import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.food.Food
 import com.rabbitv.valheimviki.domain.model.mead.Mead
 import com.rabbitv.valheimviki.domain.model.mead.MeadSubCategory
-import com.rabbitv.valheimviki.navigation.BuildingDetailDestination
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
-import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
+import com.rabbitv.valheimviki.presentation.components.LoadingIndicator
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCard
 import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
-import com.rabbitv.valheimviki.presentation.components.flow_row.flow_as_grid.TwoColumnGrid
+import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.grid.grid_item.CustomItemCard
+import com.rabbitv.valheimviki.presentation.components.grid.nested.NestedGrid
+import com.rabbitv.valheimviki.presentation.components.grid.nested.NestedItems
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
 import com.rabbitv.valheimviki.presentation.components.section_header.SectionHeader
 import com.rabbitv.valheimviki.presentation.components.section_header.SectionHeaderData
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
+import com.rabbitv.valheimviki.presentation.components.ui_section.UiSection
 import com.rabbitv.valheimviki.presentation.detail.food.model.RecipeFoodData
 import com.rabbitv.valheimviki.presentation.detail.food.model.RecipeMaterialData
-import com.rabbitv.valheimviki.presentation.detail.material.boss_drop.model.BossDropUiEvent
 import com.rabbitv.valheimviki.presentation.detail.mead.model.MeadDetailUiEvent
 import com.rabbitv.valheimviki.presentation.detail.mead.model.MeadDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.mead.model.RecipeMeadData
@@ -130,7 +129,7 @@ fun MeadDetailContent(
 		mead != null && (shouldShowValue(mead.duration) || shouldShowValue(mead.cooldown) || shouldShowValue(
 			mead.recipeOutput
 		))
-	val showCraftingStationSection = uiState.craftingCookingStation != null
+
 
 
 	BgImage()
@@ -173,27 +172,30 @@ fun MeadDetailContent(
 							)
 						}
 					}
-					if (uiState.foodForRecipe.isNotEmpty() || uiState.materialsForRecipe.isNotEmpty() || uiState.meadForRecipe.isNotEmpty()) {
-						TridentsDividedRow()
-						Box(
-							modifier = Modifier
-								.fillMaxWidth()
-								.wrapContentHeight()
-								.padding(horizontal = BODY_CONTENT_PADDING.dp)
-						) {
-							SectionHeader(
 
-								data = SectionHeaderData(
-									title = "Recipe",
-									subTitle = "Ingredients required to craft this item",
-									icon = if (category == MeadSubCategory.MEAD_BASE) Lucide.CookingPot else Lucide.FlaskRound,
+					UiSection(
+						state = uiState.recipeItems
+					) { data ->
+						if (data.isNotEmpty()) {
+							Box(
+								modifier = Modifier
+									.fillMaxWidth()
+									.wrapContentHeight()
+									.padding(horizontal = BODY_CONTENT_PADDING.dp)
+							) {
+								SectionHeader(
+									data = SectionHeaderData(
+										title = "Recipe",
+										subTitle = "Ingredients required to craft this item",
+										icon = if (category == MeadSubCategory.MEAD_BASE) Lucide.CookingPot else Lucide.FlaskRound,
+									)
 								)
-							)
-						}
+							}
 
-						Spacer(modifier = Modifier.padding(6.dp))
-						TwoColumnGrid {
-							for (item in uiState.materialsForRecipe) {
+							Spacer(modifier = Modifier.padding(6.dp))
+							NestedGrid(
+								nestedItems = NestedItems(items = data),
+							) { item ->
 								CustomItemCard(
 									itemData = item.itemDrop,
 									onItemClick = handleClick,
@@ -203,26 +205,7 @@ fun MeadDetailContent(
 									quantity = item.quantityList.firstOrNull()
 								)
 							}
-							for (item in uiState.foodForRecipe) {
-								CustomItemCard(
-									itemData = item.itemDrop,
-									onItemClick = handleClick,
-									fillWidth = CUSTOM_ITEM_CARD_FILL_WIDTH,
-									imageUrl = item.itemDrop.imageUrl,
-									name = item.itemDrop.name,
-									quantity = item.quantityList.firstOrNull()
-								)
-							}
-							for (item in uiState.meadForRecipe) {
-								CustomItemCard(
-									itemData = item.itemDrop,
-									onItemClick = handleClick,
-									fillWidth = CUSTOM_ITEM_CARD_FILL_WIDTH,
-									imageUrl = item.itemDrop.imageUrl,
-									name = item.itemDrop.name,
-									quantity = item.quantityList.firstOrNull()
-								)
-							}
+
 						}
 					}
 					if (showStatsSection) {
@@ -289,23 +272,25 @@ fun MeadDetailContent(
 							}
 						}
 					}
-
-					if (showCraftingStationSection) {
-						if (showStatsSection || (uiState.foodForRecipe.isNotEmpty() || uiState.materialsForRecipe.isNotEmpty() || uiState.meadForRecipe.isNotEmpty())) {
+					when (val state = uiState.craftingCookingStation) {
+						is UIState.Error -> Unit
+						is UIState.Loading -> {
 							SlavicDivider()
+							LoadingIndicator(paddingValues = PaddingValues(16.dp))
 						}
-						CardImageWithTopLabel(
-							onClickedItem = {
-								val destination = BuildingDetailDestination.CraftingObjectDetail(
-									craftingObjectId = uiState.craftingCookingStation.id
+
+						is UIState.Success -> {
+							SlavicDivider()
+							state.data?.let { craftingObject ->
+								CardImageWithTopLabel(
+									onClickedItem = handleClick,
+									itemData = craftingObject,
+									subTitle = if (category == MeadSubCategory.MEAD_BASE) "Requires cooking station" else "Requires fermenting station",
+									contentScale = ContentScale.Fit,
+									painter = craftingStationPainter
 								)
-								onItemClick(destination)
-							},
-							itemData = uiState.craftingCookingStation,
-							subTitle = if (category == MeadSubCategory.MEAD_BASE) "Requires cooking station" else "Requires fermenting station",
-							contentScale = ContentScale.Fit,
-							painter = craftingStationPainter
-						)
+							}
+						}
 					}
 				}
 			}
@@ -431,12 +416,7 @@ fun PreviewMeadDetailContentCooked() {
 		MeadDetailContent(
 			uiState = MeadDetailUiState(
 				mead = exampleMead,
-				craftingCookingStation = craftingStation,
-				foodForRecipe = fakeFoodList,
-				meadForRecipe = fakeRecipeMead,
-				materialsForRecipe = fakeMaterialsList,
-				isLoading = false,
-				error = null
+				craftingCookingStation = UIState.Success(craftingStation),
 			),
 			onBack = {},
 			onItemClick = {},

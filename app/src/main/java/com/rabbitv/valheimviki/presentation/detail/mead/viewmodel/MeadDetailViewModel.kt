@@ -1,87 +1,158 @@
 package com.rabbitv.valheimviki.presentation.detail.mead.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
+import com.rabbitv.valheimviki.di.qualifiers.DefaultDispatcher
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
-import com.rabbitv.valheimviki.domain.model.favorite.Favorite
+import com.rabbitv.valheimviki.domain.model.food.Food
+import com.rabbitv.valheimviki.domain.model.material.MaterialDrop
 import com.rabbitv.valheimviki.domain.model.mead.Mead
+import com.rabbitv.valheimviki.domain.model.relation.RelatedData
 import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.CraftingObjectUseCases
 import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
 import com.rabbitv.valheimviki.domain.use_cases.food.FoodUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.mead.MeadUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
+import com.rabbitv.valheimviki.navigation.BuildingDetailDestination
+import com.rabbitv.valheimviki.navigation.ConsumableDetailDestination
 import com.rabbitv.valheimviki.presentation.detail.food.model.RecipeFoodData
 import com.rabbitv.valheimviki.presentation.detail.food.model.RecipeMaterialData
-import com.rabbitv.valheimviki.presentation.detail.material.wood.model.WoodUiEvent
 import com.rabbitv.valheimviki.presentation.detail.mead.model.MeadDetailUiEvent
 import com.rabbitv.valheimviki.presentation.detail.mead.model.MeadDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.mead.model.RecipeMeadData
-import com.rabbitv.valheimviki.utils.Constants.MEAD_KEY
 import com.rabbitv.valheimviki.utils.extensions.combine
+import com.rabbitv.valheimviki.utils.relatedDataFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.collections.map
 
-@Suppress("UNCHECKED_CAST")
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class MeadDetailViewModel @Inject constructor(
+	savedStateHandle: SavedStateHandle,
 	private val meadUseCases: MeadUseCases,
 	private val foodUseCases: FoodUseCases,
 	private val craftingObjectUseCases: CraftingObjectUseCases,
 	private val materialUseCases: MaterialUseCases,
 	private val relationUseCases: RelationUseCases,
 	private val favoriteUseCases: FavoriteUseCases,
-	private val savedStateHandle: SavedStateHandle
+	@param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
-	private val _meadId: String = checkNotNull(savedStateHandle[MEAD_KEY])
-	private val _mead = MutableStateFlow<Mead?>(null)
-	private val _craftingCookingStation = MutableStateFlow<CraftingObject?>(null)
-	private val _foodForRecipe = MutableStateFlow<List<RecipeFoodData>>(emptyList())
-	private val _meadForRecipe = MutableStateFlow<List<RecipeMeadData>>(emptyList())
-	private val _materialsForRecipe = MutableStateFlow<List<RecipeMaterialData>>(emptyList())
-	private val _isLoading: MutableStateFlow<Boolean> = MutableStateFlow(true)
-	private val _error: MutableStateFlow<String?> = MutableStateFlow(null)
+	
+	private val _meadId: String = savedStateHandle.toRoute<ConsumableDetailDestination.MeadDetail>().meadId
+	private val _isFavorite = MutableStateFlow(false)
 
-	private val _isFavorite = favoriteUseCases.isFavorite(_meadId)
-		.distinctUntilChanged()
-		.stateIn(
+	init {
+		favoriteUseCases.isFavorite(_meadId)
+			.distinctUntilChanged()
+			.onEach { value -> _isFavorite.value = value }
+			.launchIn(viewModelScope)
+	}
+
+	private val _meadFlow: StateFlow<Mead?> =
+		meadUseCases.getMeadByIdUseCase(_meadId)
+			.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
+	private val _relationObjects =
+		relationUseCases.getRelatedIdsUseCase(_meadId).stateIn(
 			scope = viewModelScope,
 			started = SharingStarted.WhileSubscribed(5_000),
-			initialValue = false
+			initialValue = emptyList()
 		)
+	private val idsAndMap: Flow<RelatedData> =
+		_relationObjects
+			.map { list ->
+				val relatedMap = list.associateBy(RelatedItem::id)
+				val ids = relatedMap.keys.sorted()
+				RelatedData(
+					ids = ids,
+					relatedMap = relatedMap
+				)
+			}
+			.filter { it.ids.isNotEmpty() }
+			.distinctUntilChanged()
+			.flowOn(defaultDispatcher)
+	private val _relatedCraftingObject = relatedDataFlow(
+		idsFlow = idsAndMap.mapLatest { (ids, list) -> ids },
+		fetcher = { ids -> craftingObjectUseCases.getCraftingObjectByIds(ids) }
+	).flowOn(defaultDispatcher)
+
+
+	private val _combineRecipeMaterials =
+		idsAndMap.flatMapLatest { (ids, relatedItems) ->
+			combine(
+				foodUseCases.getFoodListByIdsUseCase(ids),
+				meadUseCases.getMeadsByIdsUseCase(ids),
+				materialUseCases.getMaterialsByIds(ids)
+			) { foods, meads, materials ->
+				val foodsData = foods.map { item ->
+					val rel = relatedItems[item.id]
+					RecipeMaterialData(
+						itemDrop = item,
+						quantityList = listOf(rel?.quantity),
+						chanceStarList = emptyList()
+					)
+				}
+
+				val meadsData = meads.map { item ->
+					val rel = relatedItems[item.id]
+					RecipeMaterialData(
+						itemDrop = item,
+						quantityList = listOf(rel?.quantity),
+						chanceStarList = emptyList()
+					)
+				}
+
+				val materialsData = materials.map { item ->
+					val rel = relatedItems[item.id]
+					RecipeMaterialData(
+						itemDrop = item,
+						quantityList = listOf(rel?.quantity),
+						chanceStarList = emptyList()
+					)
+				}
+				val byId = (foodsData + meadsData + materialsData).associateBy { it.itemDrop.id }
+				ids.mapNotNull { id -> byId[id] }
+			}
+		}
+			.distinctUntilChanged()
+			.flowOn(defaultDispatcher)
+
 	val uiState: StateFlow<MeadDetailUiState> = combine(
-		_mead,
-		_craftingCookingStation,
-		_foodForRecipe,
-		_meadForRecipe,
-		_materialsForRecipe,
-		_isFavorite,
-		_isLoading,
-		_error
-	) { mead, craftingCookingStation,foodForRecipe,meadForRecipe, materialsForRecipe,isFavorite ,isLoading, error ->
+		_meadFlow,
+		_relatedCraftingObject,
+		_combineRecipeMaterials,
+		_isFavorite
+	) { mead, craftingObject, recipeItems, isFavorite ->
 		MeadDetailUiState(
 			mead = mead,
-			craftingCookingStation = craftingCookingStation,
-			foodForRecipe = foodForRecipe,
-			meadForRecipe = meadForRecipe,
-			materialsForRecipe = materialsForRecipe,
+			craftingCookingStation = craftingObject,
+			recipeItems = UIState.Success(recipeItems),
 			isFavorite = isFavorite,
-			isLoading = isLoading,
-			error = error
 		)
 	}.stateIn(
 		scope = viewModelScope,
@@ -89,130 +160,13 @@ class MeadDetailViewModel @Inject constructor(
 		initialValue = MeadDetailUiState()
 	)
 
-
-	init {
-		loadFoodData()
-	}
-
-
-	internal fun loadFoodData() {
-		viewModelScope.launch{
-			try {
-				_isLoading.value = true
-
-
-				launch { _mead.value = meadUseCases.getMeadByIdUseCase(_meadId).first() }
-
-				val relatedObjects: List<RelatedItem> =
-					relationUseCases.getRelatedIdsForUseCase(_meadId).first()
-
-				val relatedIds = relatedObjects.map { it.id }
-
-
-				val craftingDeferred = async {
-					_craftingCookingStation.value =
-						craftingObjectUseCases.getCraftingObjectByIds(relatedIds).first()
-
-				}
-				val foodDeferred = async {
-					val foods = foodUseCases.getFoodListByIdsUseCase(relatedIds).first()
-
-					val tempList = mutableListOf<RecipeFoodData>()
-					val relatedItemsMap = relatedObjects.associateBy { it.id }
-					foods.forEach { food ->
-						val relatedItem = relatedItemsMap[food.id]
-						val quantityList = listOf(
-							relatedItem?.quantity,
-						)
-						tempList.add(
-							RecipeFoodData(
-								itemDrop = food,
-								quantityList = quantityList,
-								chanceStarList = emptyList(),
-							)
-						)
-					}
-					_foodForRecipe.value = tempList
-				}
-
-				val meadDeferred = async {
-					val meads = meadUseCases.getMeadsByIdsUseCase(relatedIds).first()
-
-					val tempList = mutableListOf<RecipeMeadData>()
-					val relatedItemsMap = relatedObjects.associateBy { it.id }
-					meads.forEach { mead ->
-						val relatedItem = relatedItemsMap[mead.id]
-						val quantityList = listOf(
-							relatedItem?.quantity,
-						)
-						tempList.add(
-							RecipeMeadData(
-								itemDrop = mead,
-								quantityList = quantityList,
-							)
-						)
-					}
-					_meadForRecipe.value = tempList
-				}
-
-				val materialsDeferred = async {
-					val materials = materialUseCases.getMaterialsByIds(relatedIds).first()
-
-					val tempList = mutableListOf<RecipeMaterialData>()
-					val relatedItemsMap = relatedObjects.associateBy { it.id }
-					materials.forEach { material ->
-						val relatedItem = relatedItemsMap[material.id]
-						val quantityList = listOf(
-							relatedItem?.quantity,
-						)
-						tempList.add(
-							RecipeMaterialData(
-								itemDrop = material,
-								quantityList = quantityList,
-								chanceStarList = emptyList(),
-							)
-						)
-					}
-					_materialsForRecipe.value = tempList
-				}
-				val meadsDeferred = async {
-					val meads = meadUseCases.getMeadsByIdsUseCase(relatedIds).first()
-
-					val tempList = mutableListOf<RecipeMeadData>()
-					val relatedItemsMap = relatedObjects.associateBy { it.id }
-					meads.forEach { mead ->
-						val relatedItem = relatedItemsMap[mead.id]
-						val quantityList = listOf(
-							relatedItem?.quantity,
-						)
-						tempList.add(
-							RecipeMeadData(
-								itemDrop = mead,
-								quantityList = quantityList,
-							)
-						)
-					}
-					_meadForRecipe.value = tempList
-				}
-				awaitAll(craftingDeferred, foodDeferred,meadDeferred,meadsDeferred, materialsDeferred)
-
-			} catch (e: Exception) {
-				Log.e("General fetch error MeadDetailViewModel", e.message.toString())
-				_isLoading.value = false
-				_error.value = e.message
-			} finally {
-				_isLoading.value = false
-			}
-		}
-	}
-
 	fun uiEvent(event: MeadDetailUiEvent) {
 		when (event) {
 			MeadDetailUiEvent.ToggleFavorite -> {
 				viewModelScope.launch {
-					_mead.value?.let { bM ->
+					_meadFlow.value?.let { mead ->
 						favoriteUseCases.toggleFavoriteUseCase(
-							bM.toFavorite(),
+							mead.toFavorite(),
 							shouldBeFavorite = !_isFavorite.value
 						)
 					}
