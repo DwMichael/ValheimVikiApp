@@ -73,6 +73,7 @@ import com.rabbitv.valheimviki.presentation.building_material.BuildingMaterialLi
 import com.rabbitv.valheimviki.presentation.building_material.viewmodel.BuildingMaterialListViewModel
 import com.rabbitv.valheimviki.presentation.components.DrawerItem
 import com.rabbitv.valheimviki.presentation.components.DrawerItemCollection
+import com.rabbitv.valheimviki.presentation.components.FloatingHomeButton
 import com.rabbitv.valheimviki.presentation.components.NavigationDrawer
 import com.rabbitv.valheimviki.presentation.components.topbar.MainAppBar
 import com.rabbitv.valheimviki.presentation.crafting.CraftingListScreen
@@ -209,22 +210,27 @@ fun MainContainer(
 				SharedTransitionLayout {
 					CompositionLocalProvider(LocalSharedTransitionScope provides this) {
 						LaunchedEffect(this.isTransitionActive) {
-							isTransitionActive.value = !this@SharedTransitionLayout.isTransitionActive
+							isTransitionActive.value =
+								!this@SharedTransitionLayout.isTransitionActive
 						}
-						
+
 						ValheimNavGraph(
 							valheimVikiNavController = valheimVikiNavController,
 							innerPadding = PaddingValues(0.dp)
 						)
 					}
 				}
+
+				FloatingHomeButton(
+					navController = valheimVikiNavController,
+					paddingValues = PaddingValues(bottom = 30.dp)
+				)
 			}
 		}
 	}
 }
 
 
-@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun ValheimNavGraph(
 	valheimVikiNavController: NavHostController,
