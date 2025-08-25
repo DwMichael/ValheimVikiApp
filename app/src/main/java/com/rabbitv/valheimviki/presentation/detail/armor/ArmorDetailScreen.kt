@@ -168,14 +168,7 @@ fun ArmorDetailContent(
 											horizontal = BODY_CONTENT_PADDING.dp,
 											vertical = 8.dp
 										),
-										onItemClick = { clickedItemId, subCategory ->
-											val destination =
-												NavigationHelper.routeToMaterial(
-													subCategory,
-													clickedItemId
-												)
-											onItemClick(destination)
-										},
+										onItemClick = handleClick,
 										level = levelIndex,
 										upgradeStats = upgradeStats,
 										materialsForUpgrade = materials.data,
@@ -199,14 +192,7 @@ fun ArmorDetailContent(
 									level = 0,
 									foodForUpgrade = emptyList(),
 									materialsForUpgrade = materials.data,
-									onItemClick = { clickedItemId, subCategory ->
-										val destination =
-											NavigationHelper.routeToMaterial(
-												subCategory,
-												clickedItemId
-											)
-										onItemClick(destination)
-									},
+									onItemClick = handleClick,
 								)
 							}
 						}
@@ -250,7 +236,7 @@ fun ArmorDetailContent(
 						}
 					}
 
-
+				Spacer(modifier = Modifier.height(40.dp))
 
 				}
 				AnimatedBackButton(
