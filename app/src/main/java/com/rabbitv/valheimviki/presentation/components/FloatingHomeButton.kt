@@ -14,9 +14,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -37,15 +39,19 @@ fun FloatingHomeButton(
 	paddingValues: PaddingValues = PaddingValues(16.dp)
 ) {
 	val current by navController.currentBackStackEntryAsState()
-	val shouldShow by remember(current) {
-		derivedStateOf {
-			val currDest = current?.destination
-			val prevDest = navController.previousBackStackEntry?.destination
-			val currIsDetail = currDest?.let { !it.shouldShowTopBar() } ?: false
-			val prevIsDetail = prevDest?.let { !it.shouldShowTopBar() } ?: false
-			currIsDetail && prevIsDetail
+	var lastDrawerDestinationId by rememberSaveable { mutableStateOf<Int?>(null) }
+
+	LaunchedEffect(current) {
+		val dest = current?.destination
+		if (dest?.shouldShowTopBar() == true) {
+			lastDrawerDestinationId = dest.id
 		}
 	}
+
+	val prevDest = navController.previousBackStackEntry?.destination
+	val shouldShow = (current?.destination?.shouldShowTopBar() == false) &&
+			(prevDest?.shouldShowTopBar() == false)
+
 	AnimatedVisibility(
 		visible = shouldShow,
 		enter = slideInVertically(initialOffsetY = { it }, animationSpec = tween(300)) + fadeIn(
@@ -62,14 +68,22 @@ fun FloatingHomeButton(
 		) {
 			FloatingActionButton(
 				onClick = {
-					val startDestinationRoute = navController.graph.findStartDestination().route
-					startDestinationRoute?.let { route ->
-						navController.navigate(route) {
-							popUpTo(navController.graph.findStartDestination().id) {
-								saveState = true
+					val poppedToDrawer = lastDrawerDestinationId?.let {
+						navController.popBackStack(it, inclusive = false)
+					} ?: false
+
+					if (!poppedToDrawer) {
+						val startDest = navController.graph.findStartDestination()
+						val poppedToStart =
+							navController.popBackStack(startDest.id, inclusive = false)
+						if (!poppedToStart) {
+							startDest.route?.let { startRoute ->
+								navController.navigate(startRoute) {
+									popUpTo(startDest.id) { saveState = true }
+									launchSingleTop = true
+									restoreState = true
+								}
 							}
-							launchSingleTop = true
-							restoreState = true
 						}
 					}
 				},
