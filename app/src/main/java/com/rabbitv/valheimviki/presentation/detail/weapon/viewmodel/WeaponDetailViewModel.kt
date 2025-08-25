@@ -1,12 +1,15 @@
 package com.rabbitv.valheimviki.presentation.detail.weapon.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
+import com.rabbitv.valheimviki.di.qualifiers.DefaultDispatcher
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
-import com.rabbitv.valheimviki.domain.model.favorite.Favorite
+import com.rabbitv.valheimviki.domain.model.material.MaterialDrop
+import com.rabbitv.valheimviki.domain.model.relation.RelatedData
+import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.domain.model.upgrader.FoodAsMaterialUpgrade
 import com.rabbitv.valheimviki.domain.model.upgrader.MaterialUpgrade
 import com.rabbitv.valheimviki.domain.model.weapon.Weapon
@@ -16,27 +19,31 @@ import com.rabbitv.valheimviki.domain.use_cases.food.FoodUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.domain.use_cases.weapon.WeaponUseCases
-import com.rabbitv.valheimviki.presentation.detail.tree.model.TreeUiEvent
 import com.rabbitv.valheimviki.presentation.detail.weapon.model.WeaponDetailUiEvent
 import com.rabbitv.valheimviki.presentation.detail.weapon.model.WeaponUiState
-import com.rabbitv.valheimviki.presentation.weapons.model.WeaponUiEvent
 import com.rabbitv.valheimviki.utils.Constants.WEAPON_KEY
-import com.rabbitv.valheimviki.utils.extensions.combine
+import com.rabbitv.valheimviki.utils.relatedDataFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import jakarta.inject.Inject
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-@Suppress("UNCHECKED_CAST")
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class WeaponDetailViewModel @Inject constructor(
 	savedStateHandle: SavedStateHandle,
@@ -46,44 +53,103 @@ class WeaponDetailViewModel @Inject constructor(
 	private val foodUseCases: FoodUseCases,
 	private val craftingObjectUseCases: CraftingObjectUseCases,
 	private val favoriteUseCases: FavoriteUseCases,
+	@param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
+	
 	private val _weaponId: String = checkNotNull(savedStateHandle[WEAPON_KEY])
-	private val _weapon: MutableStateFlow<Weapon?> = MutableStateFlow(null)
+	private val _isFavorite = MutableStateFlow(false)
 
+	init {
+		favoriteUseCases.isFavorite(_weaponId)
+			.distinctUntilChanged()
+			.onEach { value -> _isFavorite.value = value }
+			.launchIn(viewModelScope)
+	}
 
-	private val _relatedMaterials: MutableStateFlow<List<MaterialUpgrade>> =
-		MutableStateFlow(emptyList())
-	private val _relatedFoodAsMaterials: MutableStateFlow<List<FoodAsMaterialUpgrade>> =
-		MutableStateFlow(emptyList())
-	private val _relatedCraftingObjects: MutableStateFlow<CraftingObject?> = MutableStateFlow(null)
+	private val _weaponFlow: StateFlow<Weapon?> = weaponUseCases.getWeaponByIdUseCase(_weaponId)
+		.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
-	private val _isLoading: MutableStateFlow<Boolean> = MutableStateFlow(true)
-	private val _error: MutableStateFlow<String?> = MutableStateFlow(null)
-	private val _isFavorite = favoriteUseCases.isFavorite(_weaponId)
-		.distinctUntilChanged()
-		.stateIn(
+	private val _relationsObjects =
+		relationUseCase.getRelatedIdsUseCase(_weaponId).stateIn(
 			scope = viewModelScope,
 			started = SharingStarted.WhileSubscribed(5_000),
-			initialValue = false
+			initialValue = emptyList()
 		)
-	//TODO VALUSE
+	private val idsAndMap: Flow<RelatedData> =
+		_relationsObjects
+			.map { list ->
+				val relatedMap = list.associateBy(RelatedItem::id)
+				val ids = relatedMap.keys.sorted()
+				RelatedData(
+					ids = ids,
+					relatedMap = relatedMap
+				)
+			}
+			.filter { it.ids.isNotEmpty() }
+			.distinctUntilChanged()
+			.flowOn(defaultDispatcher)
+
+	private val _relatedMaterials =
+		idsAndMap.flatMapLatest { (ids, relatedItems) ->
+			materialUseCases.getMaterialsByIds(ids)
+				.map { list ->
+					list.map { material  ->
+						val relatedItem = relatedItems[material.id]
+						MaterialUpgrade(
+							material = material,
+							quantityList = listOf(
+								relatedItem?.quantity,
+								relatedItem?.quantity2star,
+								relatedItem?.quantity3star,
+								relatedItem?.quantity4star
+							)
+						)
+					}
+				}
+		}.distinctUntilChanged()
+			.map { UIState.Success(it) }
+			.flowOn(defaultDispatcher)
+
+	private val _relatedFoodAsMaterials =
+		idsAndMap.flatMapLatest { (ids, relatedItems) ->
+			foodUseCases.getFoodListByIdsUseCase(ids)
+				.map { list ->
+					list.map { food  ->
+						val relatedItem = relatedItems[food.id]
+						FoodAsMaterialUpgrade(
+							materialFood = food,
+							quantityList = listOf(
+								relatedItem?.quantity,
+								relatedItem?.quantity2star,
+								relatedItem?.quantity3star,
+								relatedItem?.quantity4star
+							)
+						)
+					}
+				}
+		}.distinctUntilChanged()
+			.map { UIState.Success(it) }
+			.flowOn(defaultDispatcher)
+
+
+	private val _relatedCraftingObjects = relatedDataFlow(
+		idsFlow = _relationsObjects.mapLatest { list -> list.map { item -> item.id } },
+		fetcher = { ids -> craftingObjectUseCases.getCraftingObjectByIds(ids) }
+	).flowOn(defaultDispatcher)
+
 	val uiState: StateFlow<WeaponUiState> = combine(
-		_weapon,
+		_weaponFlow,
 		_relatedMaterials,
 		_relatedFoodAsMaterials,
 		_relatedCraftingObjects,
-		_isFavorite,
-		_isLoading,
-		_error
-	) { weapon, materials, foodAsMaterials, craftingObjects, isFavorite, isLoading, error ->
+		_isFavorite
+	) { weapon, materials, foodAsMaterials, craftingObjects, isFavorite ->
 		WeaponUiState(
 			weapon = weapon,
 			materials = materials,
 			foodAsMaterials = foodAsMaterials,
 			craftingObjects = craftingObjects,
 			isFavorite = isFavorite,
-			isLoading = isLoading,
-			error = error
 		)
 	}.stateIn(
 		scope = viewModelScope,
@@ -91,98 +157,13 @@ class WeaponDetailViewModel @Inject constructor(
 		initialValue = WeaponUiState()
 	)
 
-	init {
-		loadWeaponData()
-	}
-
-
-	internal fun loadWeaponData() {
-
-		viewModelScope.launch {
-			try {
-				_isLoading.value = true
-				val weaponDeferred =
-					async { weaponUseCases.getWeaponByIdUseCase(_weaponId).first() }
-				val relatedObjectsDeferred =
-					async { relationUseCase.getRelatedIdsUseCase(_weaponId).first() }
-
-				val weapon = weaponDeferred.await()
-				val relatedObjects = relatedObjectsDeferred.await()
-				_weapon.value = weapon
-				val relatedIds = relatedObjects.map { it.id }
-				val materialsDeferred = async {
-					try {
-						val materials = materialUseCases.getMaterialsByIds(relatedIds).first()
-						val tempList = mutableListOf<MaterialUpgrade>()
-
-						val relatedItemsMap = relatedObjects.associateBy { it.id }
-						for (material in materials) {
-							val relatedItem = relatedItemsMap[material.id]
-							tempList.add(
-								MaterialUpgrade(
-									material = material,
-									quantityList =  listOf(
-										relatedItem?.quantity,
-										relatedItem?.quantity2star,
-										relatedItem?.quantity3star,
-										relatedItem?.quantity4star
-									),
-								)
-							)
-						}
-						_relatedMaterials.value = tempList
-					} catch (e: Exception) {
-						Log.e("WeaponDetail ViewModel", "$e")
-						_relatedMaterials.value = emptyList()
-					}
-				}
-				val foodDeferred = async {
-
-					val food = foodUseCases.getFoodListByIdsUseCase(relatedIds).first()
-					val tempList = mutableListOf<FoodAsMaterialUpgrade>()
-
-					val relatedItemsMap = relatedObjects.associateBy { it.id }
-					for (material in food) {
-						val relatedItem = relatedItemsMap[material.id]
-						val quantityList = listOf<Int?>(
-							relatedItem?.quantity,
-							relatedItem?.quantity2star,
-							relatedItem?.quantity3star,
-							relatedItem?.quantity4star
-						)
-						tempList.add(
-							FoodAsMaterialUpgrade(
-								materialFood = material,
-								quantityList = quantityList,
-							)
-						)
-					}
-					_relatedFoodAsMaterials.value = tempList
-
-				}
-				val craftingObjects = async {
-					_relatedCraftingObjects.value =
-						craftingObjectUseCases.getCraftingObjectByIds(relatedIds).first()
-
-				}
-				awaitAll(materialsDeferred, craftingObjects, foodDeferred)
-			} catch (e: Exception) {
-				Log.e("General fetch error WeaponDetailViewModel", e.message.toString())
-				_isLoading.value = false
-				_error.value = e.message
-			} finally {
-				_isLoading.value = false
-			}
-		}
-	}
-
 	fun uiEvent(event: WeaponDetailUiEvent) {
 		when (event) {
 			WeaponDetailUiEvent.ToggleFavorite -> {
 				viewModelScope.launch {
-					_weapon.value?.let { bM ->
+					_weaponFlow.value?.let { weapon ->
 						favoriteUseCases.toggleFavoriteUseCase(
-							bM.toFavorite(),
+							weapon.toFavorite(),
 							shouldBeFavorite = !_isFavorite.value
 						)
 					}
@@ -190,5 +171,4 @@ class WeaponDetailViewModel @Inject constructor(
 			}
 		}
 	}
-
 }
