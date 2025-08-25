@@ -62,6 +62,7 @@ fun CardImageWithTopLabel(
 	onClickedItem: (itemData: ItemData) -> Unit ={},
 	itemData: ItemData,
 	horizontalDividerWidth: Dp = 150.dp,
+	cradHeight: Dp = 300.dp,
 	subTitle: String? = null,
 	textStyle: TextStyle = MaterialTheme.typography.titleLarge,
 	contentScale: ContentScale = ContentScale.Crop,
@@ -74,7 +75,7 @@ fun CardImageWithTopLabel(
 	Card(
 		modifier = modifier
 			.padding(BODY_CONTENT_PADDING.dp)
-			.height(300.dp)
+			.height(cradHeight)
 			.clip(RoundedCornerShape(DETAIL_ITEM_SHAPE_PADDING))
 			.border(1.dp, YellowDTBorder, RoundedCornerShape(DETAIL_ITEM_SHAPE_PADDING))
 			.shadow(

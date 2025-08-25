@@ -241,7 +241,7 @@ fun BiomeDetailContent(
 
 
 
-					Spacer(Modifier.height(45.dp))
+					Spacer(Modifier.height(90.dp))
 				}
 
 

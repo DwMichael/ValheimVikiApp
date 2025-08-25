@@ -1,8 +1,6 @@
 package com.rabbitv.valheimviki.presentation.detail.building_material
 
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -41,7 +39,6 @@ import com.composables.icons.lucide.Lucide
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
-import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.LoadingIndicator
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
@@ -49,6 +46,7 @@ import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCard
 import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.flow_row.flow_as_grid.TwoColumnGrid
 import com.rabbitv.valheimviki.presentation.components.grid.grid_item.CustomItemCard
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
@@ -58,7 +56,7 @@ import com.rabbitv.valheimviki.presentation.detail.building_material.viewmodel.B
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 
-@RequiresApi(Build.VERSION_CODES.S)
+
 @Composable
 fun BuildingMaterialDetailScreen(
 	onBack: () -> Unit,
@@ -78,7 +76,6 @@ fun BuildingMaterialDetailScreen(
 }
 
 
-@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun BuildingMaterialDetailContent(
 	onBack: () -> Unit,

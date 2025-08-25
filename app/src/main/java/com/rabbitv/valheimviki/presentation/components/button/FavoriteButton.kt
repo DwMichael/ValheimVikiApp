@@ -40,7 +40,7 @@ fun FavoriteButton(
 			modifier = Modifier.fillMaxSize(),
 			imageVector = if (isFavorite) Lucide.BookmarkCheck else Lucide.Bookmark,
 			contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
-			tint = if (isFavorite) MoreIntensiveOrange else Color.Gray
+			tint = if (isFavorite) MoreIntensiveOrange else Color.White
 		)
 	}
 }
