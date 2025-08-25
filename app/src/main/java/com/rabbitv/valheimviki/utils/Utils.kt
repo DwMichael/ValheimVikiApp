@@ -24,11 +24,16 @@ import com.composables.icons.lucide.Trees
 import com.composables.icons.lucide.Zap
 import com.rabbitv.valheimviki.domain.model.armor.UpgradeArmorInfo
 import com.rabbitv.valheimviki.domain.model.category.AppCategory
+import com.rabbitv.valheimviki.domain.model.food.Food
 import com.rabbitv.valheimviki.domain.model.food.FoodSubCategory
 import com.rabbitv.valheimviki.domain.model.item_tool.tool_upgrade_info.ToolsUpgradeInfo
+import com.rabbitv.valheimviki.domain.model.material.Material
+import com.rabbitv.valheimviki.domain.model.mead.Mead
 import com.rabbitv.valheimviki.domain.model.mead.MeadSubCategory
+import com.rabbitv.valheimviki.domain.model.presentation.DroppableType
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.domain.model.weapon.UpgradeInfo
+import com.rabbitv.valheimviki.domain.repository.ItemData
 import com.rabbitv.valheimviki.presentation.components.card.GridLevelInfo
 import com.rabbitv.valheimviki.presentation.detail.armor.model.StatArmorVisuals
 import com.rabbitv.valheimviki.presentation.detail.tool.model.StatToolsVisuals
@@ -130,7 +135,12 @@ fun String?.toFoodSubCategory(): FoodSubCategory {
 	}
 }
 
-
+fun ItemData.inferDropType(): DroppableType = when (this) {
+	is Food -> DroppableType.FOOD
+	is Mead -> DroppableType.MEAD
+	is Material -> DroppableType.MATERIAL
+	else        -> DroppableType.MATERIAL
+}
 fun mapUpgradeInfoToGridList(upgradeInfo: UpgradeInfo): List<GridLevelInfo> {
 	val gridList = mutableListOf<GridLevelInfo>()
 	var currentId = 1
