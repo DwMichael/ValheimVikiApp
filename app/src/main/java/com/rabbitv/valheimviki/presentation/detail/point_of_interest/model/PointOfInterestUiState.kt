@@ -7,18 +7,17 @@ import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.material.MaterialDrop
 import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.domain.model.weapon.Weapon
 
 data class PointOfInterestUiState(
 	val pointOfInterest: PointOfInterest? = null,
-	val relatedBiomes: List<Biome> = emptyList(),
-	val relatedCreatures: List<Creature> = emptyList(),
-	val relatedWeapons: List<Weapon> = emptyList(),
-	val relatedFoods: List<Food> = emptyList(),
-	val relatedOreDeposits: List<OreDeposit> = emptyList(),
-	val relatedOfferings: List<Material> = emptyList(),
-	val relatedMaterialDrops: List<MaterialDrop> = emptyList(),
+	val relatedBiomes: UIState<List<Biome>> = UIState.Loading,
+	val relatedCreatures: UIState<List<Creature>> = UIState.Loading,
+	val relatedWeapons: UIState<List<Weapon>> = UIState.Loading,
+	val relatedFoods: UIState<List<Food>> = UIState.Loading,
+	val relatedOreDeposits: UIState<List<OreDeposit>> = UIState.Loading,
+	val relatedOfferings: UIState<List<Material>> = UIState.Loading,
+	val relatedMaterialDrops: UIState<List<MaterialDrop>> = UIState.Loading,
 	val isFavorite: Boolean = false,
-	val isLoading: Boolean = false,
-	val error: String? = null,
 )

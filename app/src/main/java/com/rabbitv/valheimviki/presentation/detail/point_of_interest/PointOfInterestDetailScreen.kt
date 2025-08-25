@@ -3,7 +3,9 @@ package com.rabbitv.valheimviki.presentation.detail.point_of_interest
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -36,6 +38,7 @@ import com.composables.icons.lucide.Swords
 import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.favorite.Favorite
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.navigation.WorldDetailDestination
@@ -50,6 +53,7 @@ import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDet
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.DroppedItemsSection
+import com.rabbitv.valheimviki.presentation.components.ui_section.UiSection
 import com.rabbitv.valheimviki.presentation.detail.material.boss_drop.model.BossDropUiEvent
 import com.rabbitv.valheimviki.presentation.detail.point_of_interest.model.PointOfInterestUiEvent
 import com.rabbitv.valheimviki.presentation.detail.point_of_interest.model.PointOfInterestUiState
@@ -137,8 +141,10 @@ fun PointOfInterestDetailContent(
 						text = pOfIn.description,
 						boxPadding = BODY_CONTENT_PADDING.dp
 					)
-					if (uiState.relatedBiomes.isNotEmpty()) {
-						TridentsDividedRow()
+					UiSection(
+						uiState.relatedBiomes
+					)
+					{data ->
 						Text(
 							modifier = Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp),
 							text = "PRIMARY SPAWNS",
@@ -147,7 +153,7 @@ fun PointOfInterestDetailContent(
 							maxLines = 1,
 							overflow = TextOverflow.Visible
 						)
-						uiState.relatedBiomes.forEach { biome ->
+						data.forEach { biome ->
 							CardWithOverlayLabel(
 								onClickedItem = {
 									val destination =
@@ -180,45 +186,41 @@ fun PointOfInterestDetailContent(
 						}
 					}
 
-					if (uiState.relatedOfferings.isNotEmpty()) {
-						TridentsDividedRow()
+					UiSection(uiState.relatedOfferings) { data ->
 						HorizontalPagerSection(
-							list = uiState.relatedOfferings,
+							list = data,
 							data = altarOfferings,
 							onItemClick = handleClick,
 						)
 					}
 
-					if (uiState.relatedMaterialDrops.isNotEmpty()) {
-						TridentsDividedRow()
+					UiSection(uiState.relatedMaterialDrops) { data ->
 						DroppedItemsSection(
 							onItemClick = handleClick,
-							list = uiState.relatedMaterialDrops,
+							list = data,
 							icon = { Lucide.Gem },
 							starLevel = 0,
 							title = "Materials",
 							subTitle = "Unique drops are obtained in this place"
 						)
 					}
-					if (uiState.relatedWeapons.isNotEmpty()) {
-						TridentsDividedRow()
+					UiSection(uiState.relatedWeapons) { data ->
 						HorizontalPagerSection(
-							list = uiState.relatedWeapons,
+							list = data,
 							data = weaponsData,
 							onItemClick = handleClick,
 						)
 					}
-					if (uiState.relatedCreatures.isNotEmpty()) {
-						TridentsDividedRow()
+					UiSection(uiState.relatedCreatures) { data ->
 						HorizontalPagerSection(
-							list = uiState.relatedCreatures,
+							list = data,
 							data = creatureData,
 							onItemClick = handleClick
 						)
 					}
 
 				}
-				Box(modifier = Modifier.size(45.dp))
+				Spacer(modifier = Modifier.height(90.dp))
 			}
 			AnimatedBackButton(
 				modifier = Modifier
@@ -257,11 +259,9 @@ fun PreviewPointOfInterestDetailScreen() {
 
 	val uiState = PointOfInterestUiState(
 		pointOfInterest = FakeData.pointOfInterest[0],
-		relatedBiomes = listOf(fakeBiome),
-		relatedCreatures = FakeData.generateFakeCreatures(),
-		relatedOfferings = FakeData.generateFakeMaterials(),
-		isLoading = false,
-		error = null
+		relatedBiomes = UIState.Success(  listOf(fakeBiome)),
+		relatedCreatures = UIState.Success( FakeData.generateFakeCreatures()),
+		relatedOfferings = UIState.Success( FakeData.generateFakeMaterials()),
 	)
 
 	ValheimVikiAppTheme {
