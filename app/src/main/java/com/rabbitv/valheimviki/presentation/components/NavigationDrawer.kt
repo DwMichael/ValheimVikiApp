@@ -2,9 +2,12 @@ package com.rabbitv.valheimviki.presentation.components
 
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -140,21 +143,34 @@ fun NavigationDrawer(
 		}
 	}
 
-	ModalNavigationDrawer(
-		modifier = modifier
-			.fillMaxSize()
-			.testTag("ModalNavigationDrawer"),
-		drawerState = drawerState,
-		gesturesEnabled = isDetailScreen() && !isTransitionActive(),
-		drawerContent = {
-			DrawerContent(
-				items = items.drawerItems,
-				selectedItem = { selectedId.intValue },
-				onItemClick = onItemClick,
+	Box(modifier = modifier.fillMaxSize()) {
+		ModalNavigationDrawer(
+			modifier = Modifier
+				.fillMaxSize()
+				.testTag("ModalNavigationDrawer"),
+			drawerState = drawerState,
+			gesturesEnabled = isDetailScreen() && !isTransitionActive(),
+			drawerContent = {
+				DrawerContent(
+					items = items.drawerItems,
+					selectedItem = { selectedId.intValue },
+					onItemClick = onItemClick,
+				)
+			},
+		) {
+			content()
+		}
+		if (drawerState.isOpen) {
+			Box(
+				modifier = Modifier
+					.fillMaxHeight()
+					.fillMaxWidth(0.2f)
+					.align(Alignment.CenterEnd)
+					.clickable {
+						scope.launch { drawerState.close() }
+					}
 			)
-		},
-	) {
-		content()
+		}
 	}
 }
 
@@ -166,7 +182,7 @@ private fun DrawerContent(
 
 	) {
 	ModalDrawerSheet(
-		modifier = Modifier.fillMaxWidth(0.92f),
+		modifier = Modifier.fillMaxWidth(0.8f),
 		drawerContainerColor = ForestGreen40Dark,
 	) {
 		LazyColumn(
