@@ -66,6 +66,7 @@ import com.composables.icons.lucide.Swords
 import com.composables.icons.lucide.Trees
 import com.composables.icons.lucide.Utensils
 import com.rabbitv.valheimviki.R
+import com.rabbitv.valheimviki.domain.use_cases.data_refetch.DataRefetchConfig.SEARCHABLE_CATEGORIES
 import com.rabbitv.valheimviki.presentation.armor.ArmorListScreen
 import com.rabbitv.valheimviki.presentation.biome.BiomeGridScreen
 import com.rabbitv.valheimviki.presentation.building_material.BuildingMaterialCategoryScreen
@@ -1050,13 +1051,7 @@ fun rememberDrawerItems(): DrawerItemCollection {
 
 fun NavDestination.shouldShowTopBar(): Boolean {
 	val route = this.route ?: return false
-	val mainScreens = listOf(
-		"BiomeGrid", "BossGrid", "MiniBossGrid", "MobList",
-		"WeaponList", "ArmorList", "FoodList", "MeadList",
-		"CraftingObjectsList", "ToolList", "MaterialCategory",
-		"BuildingMaterialCategory", "OreDepositGrid", "TreeGrid", "PointOfInterestList"
-	)
-	return mainScreens.any { screenName ->
+	return SEARCHABLE_CATEGORIES.any { screenName ->
 		route.contains(screenName, ignoreCase = true)
 	}
 }
