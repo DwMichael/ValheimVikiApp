@@ -55,6 +55,7 @@ import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.upgrader.FoodAsMaterialUpgrade
 import com.rabbitv.valheimviki.domain.model.upgrader.MaterialUpgrade
 import com.rabbitv.valheimviki.domain.model.weapon.UpgradeInfo
+import com.rabbitv.valheimviki.domain.repository.ItemData
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ForestGreen20Dark
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
@@ -77,7 +78,7 @@ data class GridLevelInfo(
 @Composable
 fun LevelInfoCard(
 	modifier: Modifier = Modifier,
-	onItemClick: (itemId: String, category: String) -> Unit,
+	onItemClick: (itemData: ItemData) -> Unit,
 	level: Int = 0,
 	upgradeStats: List<GridLevelInfo> = emptyList(),
 	materialsForUpgrade: List<MaterialUpgrade> = emptyList(),
@@ -195,7 +196,7 @@ fun LevelInfoCard(
 
 @Composable
 fun RequiredMaterialColumn(
-	onItemClick: (itemId: String, category: String) -> Unit,
+	onItemClick: (itemData: ItemData) -> Unit,
 	level: Int = 0,
 	foodForUpgrade: List<FoodAsMaterialUpgrade> = emptyList(),
 	materialsForUpgrade: List<MaterialUpgrade> = emptyList(),
@@ -213,30 +214,30 @@ fun RequiredMaterialColumn(
 			.padding(start = 8.dp),
 		verticalArrangement = Arrangement.spacedBy(8.dp)
 	) {
-		materialsForUpgrade.forEach { material ->
-			material.quantityList.getOrNull(level)?.let { quantity ->
+		materialsForUpgrade.forEach { item ->
+			item.quantityList.getOrNull(level)?.let { quantity ->
 				if (quantity > 0) {
 					MaterialForUpgrade(
 						onItemClick = {
-							onItemClick(material.material.id, material.material.subCategory)
+							onItemClick(item.material)
 						},
-						name = material.material.name,
-						imageUrl = material.material.imageUrl,
+						name = item.material.name,
+						imageUrl = item.material.imageUrl,
 						quantity = quantity
 					)
 				}
 			}
 		}
 
-		foodForUpgrade.forEach { material ->
-			material.quantityList.getOrNull(level)?.let { quantity ->
+		foodForUpgrade.forEach { item ->
+			item.quantityList.getOrNull(level)?.let { quantity ->
 				if (quantity > 0) {
 					MaterialForUpgrade(
 						onItemClick = {
-							onItemClick(material.materialFood.id, material.materialFood.subCategory)
+							onItemClick(item.materialFood)
 						},
-						name = material.materialFood.name,
-						imageUrl = material.materialFood.imageUrl,
+						name = item.materialFood.name,
+						imageUrl = item.materialFood.imageUrl,
 						quantity = quantity
 					)
 				}
@@ -382,7 +383,7 @@ private fun PreviewTopExpandableItem() {
 private fun PreviewLevelInfoCard() {
 	ValheimVikiAppTheme {
 		LevelInfoCard(
-			onItemClick = { _, _ -> {} },
+			onItemClick = {  },
 			upgradeStats = level1Stats,
 			materialsForUpgrade = level1RequiredMaterials
 		)
@@ -424,7 +425,7 @@ private fun PreviewLevelInfoCard_AllStats() {
 				.padding(16.dp)
 		) {
 			LevelInfoCard(
-				onItemClick = { _, _ -> {} },
+				onItemClick = { },
 				level = 0,
 				upgradeStats = statsForPreview,
 				materialsForUpgrade = level1RequiredMaterials,
