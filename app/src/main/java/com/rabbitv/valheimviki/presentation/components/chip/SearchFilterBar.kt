@@ -33,98 +33,98 @@ import com.rabbitv.valheimviki.ui.theme.PrimaryGrey
 
 @Composable
 fun <T> SearchFilterBar(
-    chips: List<ChipData<T>>,
-    selectedOption: T?,
-    onSelectedChange: (index: Int, option: T?) -> Unit,
-    modifier: Modifier = Modifier
+	chips: List<ChipData<T>>,
+	selectedOption: T?,
+	onSelectedChange: (index: Int, option: T?) -> Unit,
+	modifier: Modifier = Modifier
 ) {
-    var expanded by rememberSaveable { mutableStateOf(false) }
+	var expanded by rememberSaveable { mutableStateOf(false) }
 
-    val selectedIndex = selectedOption?.let { opt ->
-        chips.indexOfFirst { it.option == opt }
-    }
+	val selectedIndex = selectedOption?.let { opt ->
+		chips.indexOfFirst { it.option == opt }
+	}
 
-    Surface(
-        tonalElevation = 1.dp,
-        color = Color.Transparent,
-        shape = MaterialTheme.shapes.medium,
-        modifier = modifier
+	Surface(
+		tonalElevation = 1.dp,
+		color = Color.Transparent,
+		shape = MaterialTheme.shapes.medium,
+		modifier = modifier
             .fillMaxWidth()
             .animateContentSize()
-    ) {
-        if (!expanded) {
-            LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                if (chips.size > 3) {
-                    item {
-                        StartRow(expanded) { expanded = true }
-                    }
-                }
-                itemsIndexed(chips) { index, chip ->
-                    CustomElevatedFilterChip(
-                        index = index,
-                        selectedChipIndex = selectedIndex,
-                        onSelectedChange = onSelectedChange,
-                        label = chip.label,
-                        icon = chip.icon,
-                        option = chip.option
-                    )
-                }
-            }
-        } else {
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.Center
-            ) {
-                if (chips.size > 3) {
-                    StartRow(expanded) { expanded = false }
-                }
+	) {
+		if (!expanded) {
+			LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+				if (chips.size > 3) {
+					item {
+						StartRow(expanded) { expanded = true }
+					}
+				}
+				itemsIndexed(chips) { index, chip ->
+					CustomElevatedFilterChip(
+						index = index,
+						selectedChipIndex = selectedIndex,
+						onSelectedChange = onSelectedChange,
+						label = chip.label,
+						icon = chip.icon,
+						option = chip.option
+					)
+				}
+			}
+		} else {
+			FlowRow(
+				horizontalArrangement = Arrangement.spacedBy(8.dp),
+				verticalArrangement = Arrangement.Center
+			) {
+				if (chips.size > 3) {
+					StartRow(expanded) { expanded = false }
+				}
 
-                chips.forEachIndexed { index, chip ->
-                    CustomElevatedFilterChip(
-                        index = index,
-                        selectedChipIndex = selectedIndex,
-                        onSelectedChange = onSelectedChange,
-                        label = chip.label,
-                        icon = chip.icon,
-                        option = chip.option
-                    )
-                }
-            }
-        }
+				chips.forEachIndexed { index, chip ->
+					CustomElevatedFilterChip(
+						index = index,
+						selectedChipIndex = selectedIndex,
+						onSelectedChange = onSelectedChange,
+						label = chip.label,
+						icon = chip.icon,
+						option = chip.option
+					)
+				}
+			}
+		}
 
-    }
+	}
 }
 
 @Composable
 private fun StartRow(
-    expanded: Boolean,
-    onToggle: () -> Unit
+	expanded: Boolean,
+	onToggle: () -> Unit
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        FilterChip(
-            border = null,
-            selected = expanded,
-            onClick = onToggle,
-            label = { Text("Show all") },
-            leadingIcon = {
-                Icon(
-                    imageVector = Lucide.SlidersHorizontal,
-                    contentDescription = null,
-                    modifier = Modifier.size(FilterChipDefaults.IconSize)
-                )
-            },
-            colors = AppStyleDefaults.yellowDTSelectableChipColors()
-        )
+	Row(
+		verticalAlignment = Alignment.CenterVertically,
+		horizontalArrangement = Arrangement.spacedBy(8.dp)
+	) {
+		FilterChip(
+			border = null,
+			selected = expanded,
+			onClick = onToggle,
+			label = { Text("Expand filters") },
+			leadingIcon = {
+				Icon(
+					imageVector = Lucide.SlidersHorizontal,
+					contentDescription = null,
+					modifier = Modifier.size(FilterChipDefaults.IconSize)
+				)
+			},
+			colors = AppStyleDefaults.yellowDTSelectableChipColors()
+		)
 
-        VerticalDivider(
-            modifier = Modifier
+		VerticalDivider(
+			modifier = Modifier
                 .height(FilterChipDefaults.Height)
                 .padding(horizontal = 2.dp),
-            thickness = 1.dp,
-            color = PrimaryGrey
-        )
-    }
+			thickness = 1.dp,
+			color = PrimaryGrey
+		)
+	}
 }
