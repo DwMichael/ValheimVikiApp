@@ -21,6 +21,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -55,6 +56,7 @@ enum class ListItemTypes {
 @Composable
 fun ListContent(
 	items: List<ItemData>,
+	startTextFrom: String? = null,
 	clickToNavigate: (itemData: ItemData) -> Unit,
 	lazyListState: LazyListState,
 	imageScale: ContentScale = ContentScale.Crop,
@@ -80,6 +82,7 @@ fun ListContent(
 			when (typeOfItemList(item.category.toAppCategory())) {
 				ListItemTypes.SMALL -> ListItem(
 					item = item,
+					startTextFrom = startTextFrom,
 					modifier = Modifier.scale(0.9f),
 					clickToNavigate = { clickToNavigate(item) },
 					imageScale = ContentScale.Fit
@@ -87,12 +90,14 @@ fun ListContent(
 
 				ListItemTypes.MEDIUM -> ListItem(
 					item = item,
+					startTextFrom = startTextFrom,
 					clickToNavigate = { clickToNavigate(item) },
 					imageScale = ContentScale.Fit
 				)
 
 				ListItemTypes.DEFAULT -> ListItem(
 					item = item,
+					startTextFrom = startTextFrom,
 					clickToNavigate = { clickToNavigate(item) },
 					imageScale = imageScale
 				)
@@ -110,11 +115,16 @@ fun ListContent(
 
 @Composable
 fun ListItem(
-	item: ItemData,
 	modifier: Modifier = Modifier,
+	item: ItemData,
+	startTextFrom: String? =null,
 	clickToNavigate: () -> Unit,
 	imageScale: ContentScale
 ) {
+	val desiredText = remember { mutableStateOf(item.name) }
+	if(!startTextFrom.isNullOrBlank()) {
+		desiredText.value = item.name.substringAfter(startTextFrom)
+	}
 	Row(
 		modifier = Modifier
 			.fillMaxWidth()
@@ -134,7 +144,7 @@ fun ListItem(
 			contentScale = imageScale,
 		)
 		Text(
-			text = item.name,
+			text = desiredText.value.trim(),
 			color = PrimaryWhite,
 			modifier = modifier
 				.weight(1f)

@@ -100,6 +100,7 @@ fun MeadListScreen(
 						is UIState.Error -> EmptyScreen(errorMessage = state.message)
 						is UIState.Success -> ListContent(
 							items = state.data,
+							startTextFrom = "Mead base:",
 							clickToNavigate = handleFavoriteItemClick,
 							lazyListState = lazyListState,
 							horizontalPadding = 0.dp,
