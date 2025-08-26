@@ -4,9 +4,7 @@
 
 package com.rabbitv.valheimviki.navigation
 
-import android.os.Build
 import androidx.activity.compose.BackHandler
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
@@ -127,7 +125,6 @@ import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import kotlinx.coroutines.launch
 
 
-@RequiresApi(Build.VERSION_CODES.S)
 @Preview
 @Composable
 fun ValheimVikiApp() {
@@ -137,7 +134,6 @@ fun ValheimVikiApp() {
 }
 
 
-@RequiresApi(Build.VERSION_CODES.S)
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun MainContainer(
