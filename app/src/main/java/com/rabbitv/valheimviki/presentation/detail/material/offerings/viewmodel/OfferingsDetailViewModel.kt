@@ -3,29 +3,24 @@ package com.rabbitv.valheimviki.presentation.detail.material.offerings.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rabbitv.valheimviki.data.mappers.creatures.toAggressiveCreature
+import androidx.navigation.toRoute
 import com.rabbitv.valheimviki.data.mappers.creatures.toAggressiveCreatures
 import com.rabbitv.valheimviki.data.mappers.creatures.toPassiveCreatures
 import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.di.qualifiers.DefaultDispatcher
-import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 import com.rabbitv.valheimviki.domain.model.creature.CreatureSubCategory
-import com.rabbitv.valheimviki.domain.model.creature.aggresive.AggressiveCreature
-import com.rabbitv.valheimviki.domain.model.creature.passive.PassiveCreature
 import com.rabbitv.valheimviki.domain.model.material.Material
-import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterestSubCategory
 import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
-import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.CraftingObjectUseCases
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
 import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.PointOfInterestUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
+import com.rabbitv.valheimviki.navigation.MaterialDetailDestination
 import com.rabbitv.valheimviki.presentation.detail.material.offerings.model.OfferingUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.offerings.model.OfferingUiState
-import com.rabbitv.valheimviki.utils.Constants.OFFERINGS_MATERIAL_KEY
 import com.rabbitv.valheimviki.utils.extensions.combine
 import com.rabbitv.valheimviki.utils.relatedDataFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -35,7 +30,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -56,8 +50,9 @@ class OfferingsDetailViewModel @Inject constructor(
 	private val favoriteUseCases: FavoriteUseCases,
 	@param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
-	
-	private val _materialId: String = checkNotNull(savedStateHandle[OFFERINGS_MATERIAL_KEY])
+
+	private val _materialId: String =
+		savedStateHandle.toRoute<MaterialDetailDestination.OfferingsDetail>().offeringsMaterialId
 	private val _isFavorite = MutableStateFlow(false)
 
 	init {
@@ -79,24 +74,30 @@ class OfferingsDetailViewModel @Inject constructor(
 	private val _relatedPassiveCreatures = relatedDataFlow(
 		idsFlow = _relationsObjects.map { list -> list.map { item -> item.id } },
 		fetcher = { ids ->
-			creatureUseCases.getCreaturesByRelationAndSubCategory(ids, CreatureSubCategory.PASSIVE_CREATURE)
+			creatureUseCases.getCreaturesByRelationAndSubCategory(
+				ids,
+				CreatureSubCategory.PASSIVE_CREATURE
+			)
 				.map { creatures -> creatures.toPassiveCreatures() }
 		}
 	).flowOn(defaultDispatcher)
 
 	private val _relatedAggressiveCreatures = relatedDataFlow(
 		idsFlow = _relationsObjects.map { list -> list.map { item -> item.id } },
-		fetcher = { ids -> 
-			creatureUseCases.getCreaturesByRelationAndSubCategory(ids, CreatureSubCategory.AGGRESSIVE_CREATURE)
+		fetcher = { ids ->
+			creatureUseCases.getCreaturesByRelationAndSubCategory(
+				ids,
+				CreatureSubCategory.AGGRESSIVE_CREATURE
+			)
 				.map { creatures -> creatures.toAggressiveCreatures() }
 		}
 	).flowOn(defaultDispatcher)
 
 	private val _relatedPointsOfInterest = relatedDataFlow(
 		idsFlow = _relationsObjects.map { list -> list.map { item -> item.id } },
-		fetcher = { ids -> 
+		fetcher = { ids ->
 			pointOfInterestUseCases.getPointsOfInterestByIdsUseCase(ids)
-				.map { points -> 
+				.map { points ->
 					points.filter { it.subCategory != PointOfInterestSubCategory.FORSAKEN_ALTAR.toString() }
 				}
 		}
@@ -104,9 +105,9 @@ class OfferingsDetailViewModel @Inject constructor(
 
 	private val _relatedAltars = relatedDataFlow(
 		idsFlow = _relationsObjects.map { list -> list.map { item -> item.id } },
-		fetcher = { ids -> 
+		fetcher = { ids ->
 			pointOfInterestUseCases.getPointsOfInterestByIdsUseCase(ids)
-				.map { points -> 
+				.map { points ->
 					points.filter { it.subCategory == PointOfInterestSubCategory.FORSAKEN_ALTAR.toString() }
 				}
 		}

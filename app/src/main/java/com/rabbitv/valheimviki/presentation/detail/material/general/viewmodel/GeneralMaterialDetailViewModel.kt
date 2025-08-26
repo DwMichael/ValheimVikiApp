@@ -3,17 +3,12 @@ package com.rabbitv.valheimviki.presentation.detail.material.general.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.di.qualifiers.DefaultDispatcher
-import com.rabbitv.valheimviki.domain.model.biome.Biome
-import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 import com.rabbitv.valheimviki.domain.model.material.Material
-import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
-import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
-import com.rabbitv.valheimviki.domain.model.relation.RelationType
 import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
-import com.rabbitv.valheimviki.domain.model.tree.Tree
-import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
+import com.rabbitv.valheimviki.domain.model.relation.RelationType
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.CraftingObjectUseCases
 import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
@@ -22,9 +17,9 @@ import com.rabbitv.valheimviki.domain.use_cases.ore_deposit.OreDepositUseCases
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.PointOfInterestUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.domain.use_cases.tree.TreeUseCases
+import com.rabbitv.valheimviki.navigation.MaterialDetailDestination
 import com.rabbitv.valheimviki.presentation.detail.material.general.model.GeneralMaterialUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.general.model.GeneralMaterialUiState
-import com.rabbitv.valheimviki.utils.Constants.GENERAL_MATERIAL_KEY
 import com.rabbitv.valheimviki.utils.extensions.combine
 import com.rabbitv.valheimviki.utils.relatedDataFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -34,7 +29,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -58,7 +52,8 @@ class GeneralMaterialDetailViewModel @Inject constructor(
 	@param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
-	private val _materialId: String = checkNotNull(savedStateHandle[GENERAL_MATERIAL_KEY])
+	private val _materialId: String =
+		savedStateHandle.toRoute<MaterialDetailDestination.GeneralMaterialDetail>().generalMaterialId
 	private val _isFavorite = MutableStateFlow(false)
 
 	init {
@@ -99,7 +94,7 @@ class GeneralMaterialDetailViewModel @Inject constructor(
 
 	private val _requiredCraftingStation = relatedDataFlow(
 		idsFlow = _relationsObjects
-			.map { list -> 
+			.map { list ->
 				list.filter { it.relationType == RelationType.PRODUCES.toString() }
 					.map { item -> item.id }
 			},
@@ -119,8 +114,8 @@ class GeneralMaterialDetailViewModel @Inject constructor(
 			material = material,
 			biomes = biomes,
 			craftingStations = requiredCraftingStation,
-			pointOfInterests =pointOfInterests,
-			oreDeposits =oreDeposits,
+			pointOfInterests = pointOfInterests,
+			oreDeposits = oreDeposits,
 			trees = trees,
 			isFavorite = isFavorite
 		)

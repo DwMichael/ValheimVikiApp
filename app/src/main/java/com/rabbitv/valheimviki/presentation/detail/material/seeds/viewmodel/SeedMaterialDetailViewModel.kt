@@ -3,18 +3,14 @@ package com.rabbitv.valheimviki.presentation.detail.material.seeds.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
+import com.rabbitv.valheimviki.data.mappers.creatures.toNPC
 import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.di.qualifiers.DefaultDispatcher
-import com.rabbitv.valheimviki.domain.model.biome.Biome
-import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.model.creature.CreatureSubCategory
-import com.rabbitv.valheimviki.domain.model.item_tool.ItemTool
 import com.rabbitv.valheimviki.domain.model.material.Material
-import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterestSubCategory
 import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
-import com.rabbitv.valheimviki.domain.model.tree.Tree
-import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
 import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
@@ -23,11 +19,9 @@ import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.PointOfInteres
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.domain.use_cases.tool.ToolUseCases
 import com.rabbitv.valheimviki.domain.use_cases.tree.TreeUseCases
-import com.rabbitv.valheimviki.data.mappers.creatures.toNPC
+import com.rabbitv.valheimviki.navigation.MaterialDetailDestination
 import com.rabbitv.valheimviki.presentation.detail.material.seeds.model.SeedUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.seeds.model.SeedUiState
-import com.rabbitv.valheimviki.presentation.detail.point_of_interest.model.PointOfInterestUiEvent
-import com.rabbitv.valheimviki.utils.Constants.SEED_MATERIAL_KEY
 import com.rabbitv.valheimviki.utils.extensions.combine
 import com.rabbitv.valheimviki.utils.relatedDataFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -37,7 +31,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -60,8 +53,9 @@ class SeedMaterialDetailViewModel @Inject constructor(
 	private val favoriteUseCases: FavoriteUseCases,
 	@param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
-	
-	private val _materialId: String = checkNotNull(savedStateHandle[SEED_MATERIAL_KEY])
+
+	private val _materialId: String =
+		savedStateHandle.toRoute<MaterialDetailDestination.SeedDetail>().seedMaterialId
 	private val _isFavorite = MutableStateFlow(false)
 
 	init {
@@ -87,9 +81,9 @@ class SeedMaterialDetailViewModel @Inject constructor(
 
 	private val _relatedPointsOfInterest = relatedDataFlow(
 		idsFlow = _relationsObjects.map { list -> list.map { item -> item.id } },
-		fetcher = { ids -> 
+		fetcher = { ids ->
 			pointOfInterestUseCases.getPointsOfInterestByIdsUseCase(ids)
-				.map { points -> 
+				.map { points ->
 					points.filter { it.subCategory == PointOfInterestSubCategory.STRUCTURE.toString() }
 				}
 		}
@@ -97,7 +91,7 @@ class SeedMaterialDetailViewModel @Inject constructor(
 
 	private val _relatedNpc = relatedDataFlow(
 		idsFlow = _relationsObjects.map { list -> list.map { item -> item.id } },
-		fetcher = { ids -> 
+		fetcher = { ids ->
 			creatureUseCases.getCreatureByRelationAndSubCategory(ids, CreatureSubCategory.NPC)
 				.map { creature -> creature?.toNPC() }
 		}

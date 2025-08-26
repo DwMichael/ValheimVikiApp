@@ -5,24 +5,23 @@ package com.rabbitv.valheimviki.presentation.detail.tree.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.di.qualifiers.DefaultDispatcher
-import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.material.MaterialDrop
 import com.rabbitv.valheimviki.domain.model.relation.RelatedData
 import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
 import com.rabbitv.valheimviki.domain.model.tree.Tree
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
-import com.rabbitv.valheimviki.domain.model.weapon.Weapon
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.domain.use_cases.tree.TreeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.weapon.WeaponUseCases
+import com.rabbitv.valheimviki.navigation.WorldDetailDestination
 import com.rabbitv.valheimviki.presentation.detail.tree.model.TreeDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.tree.model.TreeUiEvent
-import com.rabbitv.valheimviki.utils.Constants.TREE_KEY
 import com.rabbitv.valheimviki.utils.relatedDataFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -56,8 +55,9 @@ class TreeDetailScreenViewModel @Inject constructor(
 	private val weaponUseCase: WeaponUseCases,
 	@param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
-	
-	private val _treeId: String = checkNotNull(savedStateHandle[TREE_KEY])
+
+	private val _treeId: String =
+		savedStateHandle.toRoute<WorldDetailDestination.TreeDetail>().treeId
 	private val _isFavorite = MutableStateFlow(false)
 
 	init {
@@ -101,7 +101,7 @@ class TreeDetailScreenViewModel @Inject constructor(
 		idsAndMap.flatMapLatest { (ids, relatedItems) ->
 			materialUseCases.getMaterialsByIds(ids)
 				.map { list ->
-					list.map { material  ->
+					list.map { material ->
 						val relatedItem = relatedItems[material.id]
 						MaterialDrop(
 							itemDrop = material,
@@ -113,7 +113,6 @@ class TreeDetailScreenViewModel @Inject constructor(
 		}.distinctUntilChanged()
 			.map { UIState.Success(it) }
 			.flowOn(defaultDispatcher)
-
 
 
 	private val _relatedAxes = relatedDataFlow(

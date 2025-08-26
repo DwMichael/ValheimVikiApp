@@ -3,20 +3,19 @@ package com.rabbitv.valheimviki.presentation.detail.material.gemstones.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.di.qualifiers.DefaultDispatcher
 import com.rabbitv.valheimviki.domain.model.material.Material
-import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterestSubCategory
 import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
-import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.PointOfInterestUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
+import com.rabbitv.valheimviki.navigation.MaterialDetailDestination
 import com.rabbitv.valheimviki.presentation.detail.material.gemstones.model.GemstoneDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.material.gemstones.model.GemstoneUiEvent
-import com.rabbitv.valheimviki.utils.Constants.POINT_OF_INTEREST_MATERIAL_KEY
 import com.rabbitv.valheimviki.utils.relatedDataFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -26,7 +25,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -45,8 +43,9 @@ class GemstoneDetailViewModel @Inject constructor(
 	private val favoriteUseCases: FavoriteUseCases,
 	@param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
-	
-	private val _materialId: String = checkNotNull(savedStateHandle[POINT_OF_INTEREST_MATERIAL_KEY])
+
+	private val _materialId: String =
+		savedStateHandle.toRoute<MaterialDetailDestination.GemstoneDetail>().gemstoneId
 	private val _isFavorite = MutableStateFlow(false)
 
 	init {
@@ -67,9 +66,9 @@ class GemstoneDetailViewModel @Inject constructor(
 
 	private val _relatedPointsOfInterest = relatedDataFlow(
 		idsFlow = _relationsObjects.map { list -> list.map { item -> item.id } },
-		fetcher = { ids -> 
+		fetcher = { ids ->
 			pointOfInterestUseCases.getPointsOfInterestByIdsUseCase(ids)
-				.map { points -> 
+				.map { points ->
 					points.filter { it.subCategory == PointOfInterestSubCategory.STRUCTURE.toString() }
 				}
 		}

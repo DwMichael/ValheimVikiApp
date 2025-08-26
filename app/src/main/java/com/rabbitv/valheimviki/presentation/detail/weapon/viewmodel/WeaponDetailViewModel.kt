@@ -3,10 +3,9 @@ package com.rabbitv.valheimviki.presentation.detail.weapon.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.di.qualifiers.DefaultDispatcher
-import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
-import com.rabbitv.valheimviki.domain.model.material.MaterialDrop
 import com.rabbitv.valheimviki.domain.model.relation.RelatedData
 import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
@@ -19,9 +18,9 @@ import com.rabbitv.valheimviki.domain.use_cases.food.FoodUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.domain.use_cases.weapon.WeaponUseCases
+import com.rabbitv.valheimviki.navigation.EquipmentDetailDestination
 import com.rabbitv.valheimviki.presentation.detail.weapon.model.WeaponDetailUiEvent
 import com.rabbitv.valheimviki.presentation.detail.weapon.model.WeaponUiState
-import com.rabbitv.valheimviki.utils.Constants.WEAPON_KEY
 import com.rabbitv.valheimviki.utils.relatedDataFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -55,8 +54,9 @@ class WeaponDetailViewModel @Inject constructor(
 	private val favoriteUseCases: FavoriteUseCases,
 	@param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
-	
-	private val _weaponId: String = checkNotNull(savedStateHandle[WEAPON_KEY])
+
+	private val _weaponId: String =
+		savedStateHandle.toRoute<EquipmentDetailDestination.WeaponDetail>().weaponId
 	private val _isFavorite = MutableStateFlow(false)
 
 	init {
@@ -93,7 +93,7 @@ class WeaponDetailViewModel @Inject constructor(
 		idsAndMap.flatMapLatest { (ids, relatedItems) ->
 			materialUseCases.getMaterialsByIds(ids)
 				.map { list ->
-					list.map { material  ->
+					list.map { material ->
 						val relatedItem = relatedItems[material.id]
 						MaterialUpgrade(
 							material = material,
@@ -114,7 +114,7 @@ class WeaponDetailViewModel @Inject constructor(
 		idsAndMap.flatMapLatest { (ids, relatedItems) ->
 			foodUseCases.getFoodListByIdsUseCase(ids)
 				.map { list ->
-					list.map { food  ->
+					list.map { food ->
 						val relatedItem = relatedItems[food.id]
 						FoodAsMaterialUpgrade(
 							materialFood = food,

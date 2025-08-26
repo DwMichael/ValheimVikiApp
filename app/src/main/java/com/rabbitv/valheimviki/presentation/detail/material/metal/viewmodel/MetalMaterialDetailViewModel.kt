@@ -3,16 +3,12 @@ package com.rabbitv.valheimviki.presentation.detail.material.metal.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.di.qualifiers.DefaultDispatcher
-import com.rabbitv.valheimviki.domain.model.biome.Biome
-import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
-import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.model.material.Material
-import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
-import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
-import com.rabbitv.valheimviki.domain.model.relation.RelationType
 import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
+import com.rabbitv.valheimviki.domain.model.relation.RelationType
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.domain.use_cases.biome.BiomeUseCases
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.CraftingObjectUseCases
@@ -22,10 +18,10 @@ import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.ore_deposit.OreDepositUseCases
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.PointOfInterestUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
+import com.rabbitv.valheimviki.navigation.MaterialDetailDestination
 import com.rabbitv.valheimviki.presentation.detail.material.metal.model.MetalMaterialUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.metal.model.MetalMaterialUiState
 import com.rabbitv.valheimviki.presentation.detail.material.model.MaterialToCraft
-import com.rabbitv.valheimviki.utils.Constants.METAL_MATERIAL_KEY
 import com.rabbitv.valheimviki.utils.extensions.combine
 import com.rabbitv.valheimviki.utils.relatedDataFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -60,7 +56,8 @@ class MetalMaterialDetailViewModel @Inject constructor(
 	@param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
-	private val _materialId: String = checkNotNull(savedStateHandle[METAL_MATERIAL_KEY])
+	private val _materialId: String =
+		savedStateHandle.toRoute<MaterialDetailDestination.MetalMaterialDetail>().metalMaterialId
 	private val _isFavorite = MutableStateFlow(false)
 
 	init {
@@ -101,7 +98,7 @@ class MetalMaterialDetailViewModel @Inject constructor(
 
 	private val _requiredCraftingStation = relatedDataFlow(
 		idsFlow = _relationsObjects
-			.map { list -> 
+			.map { list ->
 				list.filter { it.relationType == RelationType.PRODUCES.toString() }
 					.map { item -> item.id }
 			},
@@ -115,7 +112,7 @@ class MetalMaterialDetailViewModel @Inject constructor(
 				val relationToBuildIds = relatedObjects
 					.filter { it.relationType == RelationType.TO_BUILD.toString() }
 					.map { it.id }
-				
+
 				if (relationToBuildIds.isEmpty()) {
 					kotlinx.coroutines.flow.flowOf(emptyList<MaterialToCraft>())
 				} else {

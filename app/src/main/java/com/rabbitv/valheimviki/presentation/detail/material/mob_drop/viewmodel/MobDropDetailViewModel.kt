@@ -3,26 +3,22 @@ package com.rabbitv.valheimviki.presentation.detail.material.mob_drop.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.rabbitv.valheimviki.data.mappers.creatures.toAggressiveCreatures
 import com.rabbitv.valheimviki.data.mappers.creatures.toPassiveCreatures
 import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.di.qualifiers.DefaultDispatcher
 import com.rabbitv.valheimviki.domain.model.creature.CreatureSubCategory
-import com.rabbitv.valheimviki.domain.model.creature.aggresive.AggressiveCreature
-import com.rabbitv.valheimviki.domain.model.creature.passive.PassiveCreature
 import com.rabbitv.valheimviki.domain.model.material.Material
-import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
 import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
-import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.domain.use_cases.creature.CreatureUseCases
 import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.PointOfInterestUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
+import com.rabbitv.valheimviki.navigation.MaterialDetailDestination
 import com.rabbitv.valheimviki.presentation.detail.material.mob_drop.model.MobDropUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.mob_drop.model.MobDropUiState
-import com.rabbitv.valheimviki.utils.Constants.MOB_DROP_KEY
-
 import com.rabbitv.valheimviki.utils.relatedDataFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -51,8 +47,9 @@ class MobDropDetailViewModel @Inject constructor(
 	private val favoriteUseCases: FavoriteUseCases,
 	@param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
-	
-	private val _materialId: String = checkNotNull(savedStateHandle[MOB_DROP_KEY])
+
+	private val _materialId: String =
+		savedStateHandle.toRoute<MaterialDetailDestination.MobDropDetail>().mobDropId
 	private val _isFavorite = MutableStateFlow(false)
 
 	init {
@@ -74,7 +71,10 @@ class MobDropDetailViewModel @Inject constructor(
 	private val _relatedPassiveCreatures = relatedDataFlow(
 		idsFlow = _relationsObjects.map { list -> list.map { item -> item.id } },
 		fetcher = { ids ->
-			creatureUseCases.getCreaturesByRelationAndSubCategory(ids, CreatureSubCategory.PASSIVE_CREATURE)
+			creatureUseCases.getCreaturesByRelationAndSubCategory(
+				ids,
+				CreatureSubCategory.PASSIVE_CREATURE
+			)
 				.map { creatures -> creatures.toPassiveCreatures() }
 
 		}
@@ -83,7 +83,10 @@ class MobDropDetailViewModel @Inject constructor(
 	private val _relatedAggressiveCreatures = relatedDataFlow(
 		idsFlow = _relationsObjects.map { list -> list.map { item -> item.id } },
 		fetcher = { ids ->
-			creatureUseCases.getCreaturesByRelationAndSubCategory(ids, CreatureSubCategory.AGGRESSIVE_CREATURE)
+			creatureUseCases.getCreaturesByRelationAndSubCategory(
+				ids,
+				CreatureSubCategory.AGGRESSIVE_CREATURE
+			)
 				.map { creatures -> creatures.toAggressiveCreatures() }
 		}
 	).flowOn(defaultDispatcher)

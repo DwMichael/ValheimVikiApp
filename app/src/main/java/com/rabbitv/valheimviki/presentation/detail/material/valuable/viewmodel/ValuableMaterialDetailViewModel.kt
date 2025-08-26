@@ -3,6 +3,7 @@ package com.rabbitv.valheimviki.presentation.detail.material.valuable.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.rabbitv.valheimviki.data.mappers.creatures.toNPC
 import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.di.qualifiers.DefaultDispatcher
@@ -15,9 +16,9 @@ import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.PointOfInterestUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
-import com.rabbitv.valheimviki.presentation.detail.material.valuable.model.ValuableMaterialUiState
+import com.rabbitv.valheimviki.navigation.MaterialDetailDestination
 import com.rabbitv.valheimviki.presentation.detail.material.valuable.model.ValuableMaterialUiEvent
-import com.rabbitv.valheimviki.utils.Constants.VALUABLE_MATERIAL_KEY
+import com.rabbitv.valheimviki.presentation.detail.material.valuable.model.ValuableMaterialUiState
 import com.rabbitv.valheimviki.utils.relatedDataFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -46,8 +47,9 @@ class ValuableMaterialDetailViewModel @Inject constructor(
 	private val favoriteUseCases: FavoriteUseCases,
 	@param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
-	
-	private val _materialId: String = checkNotNull(savedStateHandle[VALUABLE_MATERIAL_KEY])
+
+	private val _materialId: String =
+		savedStateHandle.toRoute<MaterialDetailDestination.ValuableDetail>().valuableMaterialId
 	private val _isFavorite = MutableStateFlow(false)
 
 	init {
@@ -68,9 +70,9 @@ class ValuableMaterialDetailViewModel @Inject constructor(
 
 	private val _relatedPointsOfInterest = relatedDataFlow(
 		idsFlow = _relationsObjects.map { list -> list.map { item -> item.id } },
-		fetcher = { ids -> 
+		fetcher = { ids ->
 			pointOfInterestUseCases.getPointsOfInterestByIdsUseCase(ids)
-				.map { points -> 
+				.map { points ->
 					points.filter { it.subCategory == PointOfInterestSubCategory.STRUCTURE.toString() }
 				}
 		}
@@ -78,8 +80,9 @@ class ValuableMaterialDetailViewModel @Inject constructor(
 
 	private val _relatedNpc = relatedDataFlow(
 		idsFlow = _relationsObjects.map { list -> list.map { item -> item.id } },
-		fetcher = { ids -> 
-			creatureUseCases.getCreaturesByRelationAndSubCategory(ids, CreatureSubCategory.NPC).map { it.toNPC() }
+		fetcher = { ids ->
+			creatureUseCases.getCreaturesByRelationAndSubCategory(ids, CreatureSubCategory.NPC)
+				.map { it.toNPC() }
 
 		}
 	).flowOn(defaultDispatcher)

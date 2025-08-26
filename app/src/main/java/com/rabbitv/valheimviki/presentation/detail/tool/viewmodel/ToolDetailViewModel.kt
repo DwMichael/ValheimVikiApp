@@ -3,13 +3,10 @@ package com.rabbitv.valheimviki.presentation.detail.tool.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.di.qualifiers.DefaultDispatcher
-import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
-import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.model.item_tool.ItemTool
-import com.rabbitv.valheimviki.domain.model.material.MaterialDrop
-import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
 import com.rabbitv.valheimviki.domain.model.relation.RelatedData
 import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
@@ -21,9 +18,9 @@ import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.ore_deposit.OreDepositUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.domain.use_cases.tool.ToolUseCases
-import com.rabbitv.valheimviki.presentation.detail.tool.model.ToolDetailUiState
+import com.rabbitv.valheimviki.navigation.EquipmentDetailDestination
 import com.rabbitv.valheimviki.presentation.detail.tool.model.ToolDetailUiEvent
-import com.rabbitv.valheimviki.utils.Constants.TOOL_KEY
+import com.rabbitv.valheimviki.presentation.detail.tool.model.ToolDetailUiState
 import com.rabbitv.valheimviki.utils.extensions.combine
 import com.rabbitv.valheimviki.utils.relatedDataFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -44,7 +41,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.collections.map
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -59,8 +55,9 @@ class ToolDetailViewModel @Inject constructor(
 	private val favoriteUseCases: FavoriteUseCases,
 	@param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
-	
-	private val _toolId: String = checkNotNull(savedStateHandle[TOOL_KEY])
+
+	private val _toolId: String =
+		savedStateHandle.toRoute<EquipmentDetailDestination.ToolDetail>().toolId
 	private val _isFavorite = MutableStateFlow(false)
 
 	init {
@@ -103,7 +100,7 @@ class ToolDetailViewModel @Inject constructor(
 		idsAndMap.flatMapLatest { (ids, relatedItems) ->
 			materialUseCases.getMaterialsByIds(ids)
 				.map { list ->
-					list.map { material  ->
+					list.map { material ->
 						val relatedItem = relatedItems[material.id]
 						MaterialUpgrade(
 							material = material,

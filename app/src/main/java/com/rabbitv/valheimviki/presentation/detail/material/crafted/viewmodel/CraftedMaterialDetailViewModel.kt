@@ -3,21 +3,21 @@ package com.rabbitv.valheimviki.presentation.detail.material.crafted.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.di.qualifiers.DefaultDispatcher
-import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 import com.rabbitv.valheimviki.domain.model.material.Material
-import com.rabbitv.valheimviki.domain.model.relation.RelationType
 import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
+import com.rabbitv.valheimviki.domain.model.relation.RelationType
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.CraftingObjectUseCases
 import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
+import com.rabbitv.valheimviki.navigation.MaterialDetailDestination
 import com.rabbitv.valheimviki.presentation.detail.crafting.model.CraftingDetailUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.crafted.model.CraftedMaterialUiState
 import com.rabbitv.valheimviki.presentation.detail.material.model.MaterialToCraft
-import com.rabbitv.valheimviki.utils.Constants.CRAFTED_MATERIAL_KEY
 import com.rabbitv.valheimviki.utils.relatedDataFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -48,7 +48,8 @@ class CraftedMaterialDetailViewModel @Inject constructor(
 	@param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
-	private val _materialId: String = checkNotNull(savedStateHandle[CRAFTED_MATERIAL_KEY])
+	private val _materialId: String =
+		savedStateHandle.toRoute<MaterialDetailDestination.CraftedMaterialDetail>().craftedMaterialId
 	private val _isFavorite = MutableStateFlow(false)
 
 	init {
@@ -69,7 +70,7 @@ class CraftedMaterialDetailViewModel @Inject constructor(
 
 	private val _requiredCraftingStation = relatedDataFlow(
 		idsFlow = _relationsObjects
-			.map { list -> 
+			.map { list ->
 				list.filter { it.relationType == RelationType.PRODUCES.toString() }
 					.map { item -> item.id }
 			},
@@ -83,7 +84,7 @@ class CraftedMaterialDetailViewModel @Inject constructor(
 				val relationToBuildIds = relatedObjects
 					.filter { it.relationType == RelationType.TO_BUILD.toString() }
 					.map { it.id }
-				
+
 				if (relationToBuildIds.isEmpty()) {
 					kotlinx.coroutines.flow.flowOf(emptyList<MaterialToCraft>())
 				} else {
