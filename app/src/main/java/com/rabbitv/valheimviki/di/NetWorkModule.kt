@@ -1,6 +1,7 @@
 package com.rabbitv.valheimviki.di
 
 import android.content.Context
+import com.rabbitv.valheimviki.BuildConfig
 import com.rabbitv.valheimviki.data.remote.api.ApiArmorService
 import com.rabbitv.valheimviki.data.remote.api.ApiBiomeService
 import com.rabbitv.valheimviki.data.remote.api.ApiBuildingMaterialService
@@ -17,7 +18,6 @@ import com.rabbitv.valheimviki.data.remote.api.ApiTreeService
 import com.rabbitv.valheimviki.data.remote.api.ApiWeaponService
 import com.rabbitv.valheimviki.domain.repository.NetworkConnectivity
 import com.rabbitv.valheimviki.domain.use_cases.connection.NetworkConnectivityObserver
-import com.rabbitv.valheimviki.utils.ApiKey
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -41,6 +41,7 @@ object NetWorkModule {
 			.connectTimeout(4, TimeUnit.SECONDS)
 			.readTimeout(5, TimeUnit.SECONDS)
 			.callTimeout(10, TimeUnit.SECONDS)
+			.connectionPool(okhttp3.ConnectionPool(5, 5, TimeUnit.MINUTES))
 //			.addInterceptor(AuthInterceptorUseCase())
 			.build()
 	}
@@ -49,7 +50,7 @@ object NetWorkModule {
 	@Provides
 	fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
 		return Retrofit.Builder()
-			.baseUrl(ApiKey.BASE_URL)
+			.baseUrl(BuildConfig.baseUrlSafe)
 			.client(okHttpClient)
 			.addConverterFactory(GsonConverterFactory.create())
 			.build()
