@@ -16,10 +16,8 @@ import com.rabbitv.valheimviki.data.remote.api.ApiToolService
 import com.rabbitv.valheimviki.data.remote.api.ApiTreeService
 import com.rabbitv.valheimviki.data.remote.api.ApiWeaponService
 import com.rabbitv.valheimviki.domain.repository.NetworkConnectivity
-import com.rabbitv.valheimviki.domain.use_cases.auth_interceptor.AuthInterceptorUseCase
 import com.rabbitv.valheimviki.domain.use_cases.connection.NetworkConnectivityObserver
 import com.rabbitv.valheimviki.utils.ApiKey
-
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -43,7 +41,7 @@ object NetWorkModule {
 			.connectTimeout(4, TimeUnit.SECONDS)
 			.readTimeout(5, TimeUnit.SECONDS)
 			.callTimeout(10, TimeUnit.SECONDS)
-			.addInterceptor(AuthInterceptorUseCase())
+//			.addInterceptor(AuthInterceptorUseCase())
 			.build()
 	}
 
