@@ -90,6 +90,8 @@ dependencies {
 	debugImplementation(libs.androidx.ui.tooling)
 	debugImplementation(libs.androidx.ui.test.manifest)
 
+	//Google API integrity Key
+	implementation(libs.integrity)
 
 	implementation(libs.androidx.paging.runtime)
 	testImplementation(libs.paging.common)
