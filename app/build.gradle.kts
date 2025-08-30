@@ -1,4 +1,6 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.io.FileInputStream
+import java.util.Properties
 
 plugins {
 	alias(libs.plugins.android.application)
@@ -13,12 +15,18 @@ android {
 	namespace = "com.rabbitv.valheimviki"
 	compileSdk = 36
 
+	val file = rootProject.file("local.properties")
+	val properties = Properties()
+	properties.load(FileInputStream(file))
+
 	defaultConfig {
 		applicationId = "com.rabbitv.valheimviki"
 		minSdk = 26
 		targetSdk = 36
 		versionCode = 1
 		versionName = "1.0"
+
+		buildConfigField("String", "baseUrlSafe", properties.getProperty("baseUrl"))
 
 		testInstrumentationRunner = "com.rabbitv.valheimviki.CustomTestRunner"
 	}
@@ -47,6 +55,7 @@ android {
 	}
 	buildFeatures {
 		compose = true
+		buildConfig = true
 	}
 	testOptions {
 		unitTests {
@@ -81,6 +90,8 @@ dependencies {
 	debugImplementation(libs.androidx.ui.tooling)
 	debugImplementation(libs.androidx.ui.test.manifest)
 
+	//Google API integrity Key
+	implementation(libs.integrity)
 
 	implementation(libs.androidx.paging.runtime)
 	testImplementation(libs.paging.common)

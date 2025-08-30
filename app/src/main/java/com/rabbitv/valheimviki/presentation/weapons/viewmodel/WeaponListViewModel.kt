@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -47,14 +48,13 @@ class WeaponListViewModel @Inject constructor(
 
 			if (type == null) {
 				return@combine all.filter { it.subCategory == category.toString() }
-					.sortedBy { it.order }
 			}
 
 			all
 				.filter { it.subCategory == category.toString() }
 				.filter { it.subType == type.toString() }
-				.sortedBy { it.order }
-		}.flowOn(defaultDispatcher)
+		}.map { it -> it.sortedBy { it.order } }
+			.flowOn(defaultDispatcher)
 			.onCompletion { error -> println("Error -> ${error?.message}") }
 			.catch { println("Caught -> ${it.message}") }
 

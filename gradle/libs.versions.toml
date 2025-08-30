@@ -13,6 +13,7 @@ hiltCompiler = "2.57.1"
 hiltCompilerVersion = "2.57.1"
 hiltNavigationCompose = "1.2.0"
 iconsLucide = "1.1.0"
+integrity = "1.4.0"
 junitJunit = "4.13.2"
 kotlin = "2.2.10"
 coreKtx = "1.17.0"
@@ -91,6 +92,7 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-compose-material = { group = "androidx.wear.compose", name = "compose-material", version.ref = "composeMaterial" }
+integrity = { module = "com.google.android.play:integrity", version.ref = "integrity" }
 junit = { module = "junit:junit", version.ref = "junitJunit" }
 junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junitJupiter" }
 kotlin-test-junit5 = { module = "org.jetbrains.kotlin:kotlin-test-junit5", version.ref = "kotlinTestJunit5" }
