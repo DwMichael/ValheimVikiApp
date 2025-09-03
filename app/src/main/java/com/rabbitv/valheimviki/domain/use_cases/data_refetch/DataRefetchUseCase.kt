@@ -1,3 +1,5 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package com.rabbitv.valheimviki.domain.use_cases.data_refetch
 
 import com.rabbitv.valheimviki.data.mappers.search.toSearchList
