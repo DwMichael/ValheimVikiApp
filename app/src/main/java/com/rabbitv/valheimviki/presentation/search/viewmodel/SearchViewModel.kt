@@ -22,6 +22,7 @@ import javax.inject.Inject
 class SearchViewModel @Inject constructor(
 	private val searchUseCases: SearchUseCases
 ) : ViewModel() {
+	
 	companion object {
 		const val PAGE_SIZE = 30
 	}

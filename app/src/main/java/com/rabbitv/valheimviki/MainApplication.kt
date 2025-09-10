@@ -15,23 +15,23 @@ import jakarta.inject.Inject
 @HiltAndroidApp
 class MainApplication : Application(), Configuration.Provider {
 
-    @Inject
-    lateinit var  workerFactory: FetchWorkerFactory
+	@Inject
+	lateinit var workerFactory: FetchWorkerFactory
 
-    override val workManagerConfiguration: Configuration
-        get() =  Configuration.Builder()
-            .setMinimumLoggingLevel(Log.DEBUG)
-            .setWorkerFactory(workerFactory)
-            .build()
+	override val workManagerConfiguration: Configuration
+		get() = Configuration.Builder()
+			.setMinimumLoggingLevel(Log.DEBUG)
+			.setWorkerFactory(workerFactory)
+			.build()
 }
 
 
 class FetchWorkerFactory @Inject constructor(
-   private val refetchUseCase: DataRefetchUseCase,
-): WorkerFactory(){
-    override fun createWorker(
-        appContext: Context,
-        workerClassName: String,
-        workerParameters: WorkerParameters
-    ): ListenableWorker? = FetchWorker(refetchUseCase,appContext,workerParameters)
+	private val refetchUseCase: DataRefetchUseCase,
+) : WorkerFactory() {
+	override fun createWorker(
+		appContext: Context,
+		workerClassName: String,
+		workerParameters: WorkerParameters
+	): ListenableWorker? = FetchWorker(refetchUseCase, appContext, workerParameters)
 }
