@@ -23,8 +23,8 @@ android {
 		applicationId = "com.rabbitv.valheimviki"
 		minSdk = 26
 		targetSdk = 36
-		versionCode = 1
-		versionName = "1.0"
+		versionCode = 2
+		versionName = "1.1"
 
 		buildConfigField("String", "baseUrlSafe", properties.getProperty("baseUrl"))
 
@@ -48,6 +48,10 @@ android {
 				getDefaultProguardFile("proguard-android-optimize.txt"),
 				"proguard-rules.pro"
 			)
+
+			ndk {
+				debugSymbolLevel = "SYMBOL_TABLE"
+			}
 		}
 	}
 	compileOptions {

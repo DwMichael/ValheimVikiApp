@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">ValheimVikiApp</string>
+    <string name="app_name" translatable="false">Valheim Viki</string>
     <string name="item_grid_image" translatable="false">Item Grid Image</string>
     <string name="creatures_section" translatable="false">Creatures section</string>
     <string name="biomes_section" translatable="false">Biomes section</string>
