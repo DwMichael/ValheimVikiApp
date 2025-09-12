@@ -194,7 +194,7 @@ fun MainContainer(
 							valheimVikiNavController.navigate(TopLevelDestination.Favorite)
 						},
 						onFeedbackClick = {
-							val feedbackFormUrl = "https://docs.google.com/forms/d/e/1FAIpQLSfyU_Wz4eZ87A2DRuLjP608A4bP0sh8CF9x7zfTvQ39ZEc7yw/viewform?usp=dialog"
+							val feedbackFormUrl = "https://forms.gle/vAYCSzkxcjzU6xkr9"
 							val intent = Intent(Intent.ACTION_VIEW, feedbackFormUrl.toUri())
 							context.startActivity(intent)
 						}
