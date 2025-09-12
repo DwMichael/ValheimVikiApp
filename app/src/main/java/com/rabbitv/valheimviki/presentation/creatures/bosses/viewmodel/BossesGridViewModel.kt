@@ -32,7 +32,7 @@ class BossesGridViewModel @Inject constructor(
 		)
 	) { creatures, isConnected ->
 		when {
-			creatures.isNotEmpty() -> UIState.Success(creatures)
+			creatures.isNotEmpty() -> UIState.Success(creatures.sortedBy { it.order })
 			isConnected -> UIState.Loading
 			else -> UIState.Error(error_no_connection_with_empty_list_message.toString())
 		}

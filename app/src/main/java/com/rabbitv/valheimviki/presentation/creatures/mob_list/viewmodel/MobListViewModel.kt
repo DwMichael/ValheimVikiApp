@@ -58,7 +58,7 @@ class MobListViewModel @Inject constructor(
 		when {
 			creatures.isNotEmpty() -> MobListUiState(
 				selectedSubCategory = _selectedSubCategory.value,
-				listState = UIState.Success(creatures)
+				listState = UIState.Success(creatures.sortedBy { it.order })
 			)
 
 			isConnected -> MobListUiState(
