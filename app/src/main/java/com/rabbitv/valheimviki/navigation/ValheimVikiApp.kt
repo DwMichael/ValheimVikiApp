@@ -126,6 +126,7 @@ import com.rabbitv.valheimviki.presentation.tree.TreeScreen
 import com.rabbitv.valheimviki.presentation.weapons.WeaponListScreen
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import kotlinx.coroutines.launch
+import androidx.core.net.toUri
 
 
 @Preview
@@ -194,7 +195,7 @@ fun MainContainer(
 						},
 						onFeedbackClick = {
 							val feedbackFormUrl = "https://docs.google.com/forms/d/e/1FAIpQLSfyU_Wz4eZ87A2DRuLjP608A4bP0sh8CF9x7zfTvQ39ZEc7yw/viewform?usp=dialog"
-							val intent = Intent(Intent.ACTION_VIEW, Uri.parse(feedbackFormUrl))
+							val intent = Intent(Intent.ACTION_VIEW, feedbackFormUrl.toUri())
 							context.startActivity(intent)
 						}
 					)
