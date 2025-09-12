@@ -4,6 +4,8 @@
 
 package com.rabbitv.valheimviki.navigation
 
+import android.content.Intent
+import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -36,6 +38,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -142,6 +145,7 @@ fun MainContainer(
 ) {
 	val drawerState = rememberDrawerState(DrawerValue.Closed)
 	val scope = rememberCoroutineScope()
+	val context = LocalContext.current
 
 	val drawerCollection: DrawerItemCollection = rememberDrawerItems()
 
@@ -187,6 +191,11 @@ fun MainContainer(
 						},
 						onBookMarkClick = {
 							valheimVikiNavController.navigate(TopLevelDestination.Favorite)
+						},
+						onFeedbackClick = {
+							val feedbackFormUrl = "https://docs.google.com/forms/d/e/1FAIpQLSfyU_Wz4eZ87A2DRuLjP608A4bP0sh8CF9x7zfTvQ39ZEc7yw/viewform?usp=dialog"
+							val intent = Intent(Intent.ACTION_VIEW, Uri.parse(feedbackFormUrl))
+							context.startActivity(intent)
 						}
 					)
 				}
