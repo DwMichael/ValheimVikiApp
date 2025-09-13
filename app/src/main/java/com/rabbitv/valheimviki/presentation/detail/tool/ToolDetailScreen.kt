@@ -42,17 +42,15 @@ import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 import com.rabbitv.valheimviki.domain.model.item_tool.ItemTool
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.domain.model.upgrader.MaterialUpgrade
-import com.rabbitv.valheimviki.navigation.BuildingDetailDestination
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
-import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
 import com.rabbitv.valheimviki.presentation.components.card.LevelInfoCard
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
-import com.rabbitv.valheimviki.presentation.components.flow_row.flow_as_grid.TwoColumnGrid
+import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.grid.grid_item.CustomItemCard
 import com.rabbitv.valheimviki.presentation.components.grid.nested.NestedGrid
 import com.rabbitv.valheimviki.presentation.components.grid.nested.NestedItems
@@ -63,8 +61,8 @@ import com.rabbitv.valheimviki.presentation.components.section_header.SectionHea
 import com.rabbitv.valheimviki.presentation.components.section_header.SectionHeaderData
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.components.ui_section.UiSection
-import com.rabbitv.valheimviki.presentation.detail.tool.model.ToolDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.tool.model.ToolDetailUiEvent
+import com.rabbitv.valheimviki.presentation.detail.tool.model.ToolDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.tool.viewmodel.ToolDetailViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.CUSTOM_ITEM_CARD_FILL_WIDTH
@@ -91,7 +89,6 @@ fun ToolDetailScreen(
 	)
 
 }
-
 
 
 @Composable
@@ -365,8 +362,8 @@ fun PreviewToolDetailContentCooked() {
 			onToggleFavorite = { },
 			uiState = ToolDetailUiState(
 				tool = exampleTool,
-				relatedCraftingStation = UIState.Success( craftingStation),
-				relatedMaterials = UIState.Success( fakeMaterialsList),
+				relatedCraftingStation = UIState.Success(craftingStation),
+				relatedMaterials = UIState.Success(fakeMaterialsList),
 			),
 
 			)

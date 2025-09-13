@@ -1,8 +1,6 @@
 package com.rabbitv.valheimviki.presentation.detail.material.gemstones
 
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,25 +26,22 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.PawPrint
-import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.creature.Creature
-import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
-import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
-import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
+import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
-import com.rabbitv.valheimviki.presentation.detail.material.boss_drop.model.BossDropUiEvent
+import com.rabbitv.valheimviki.presentation.components.ui_section.UiSection
 import com.rabbitv.valheimviki.presentation.detail.material.gemstones.model.GemstoneDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.material.gemstones.model.GemstoneUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.gemstones.viewmodel.GemstoneDetailViewModel
-import com.rabbitv.valheimviki.presentation.components.ui_section.UiSection
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
@@ -71,7 +66,6 @@ fun GemstoneDetailScreen(
 	)
 
 }
-
 
 
 @Composable
@@ -136,10 +130,10 @@ fun GemstoneDetailContent(
 							isExpanded = isExpandable
 						)
 					}
-					
+
 					UiSection(
 						state = uiState.pointsOfInterest,
-						divider = {	SlavicDivider()}
+						divider = { SlavicDivider() }
 					) { pointsOfInterest ->
 						HorizontalPagerSection(
 							list = pointsOfInterest,
@@ -173,7 +167,6 @@ fun GemstoneDetailContent(
 }
 
 
-
 @Preview("ToolDetailContentPreview", showBackground = true)
 @Composable
 fun PreviewToolDetailContentCooked() {
@@ -198,9 +191,9 @@ fun PreviewToolDetailContentCooked() {
 		GemstoneDetailContent(
 			uiState = GemstoneDetailUiState(
 				material = FakeData.generateFakeMaterials()[0],
-				pointsOfInterest = UIState.Success( FakeData.pointOfInterest),
+				pointsOfInterest = UIState.Success(FakeData.pointOfInterest),
 
-			),
+				),
 			onBack = {},
 			onItemClick = {},
 			onToggleFavorite = {}

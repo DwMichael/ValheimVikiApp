@@ -1,12 +1,10 @@
 package com.rabbitv.valheimviki.presentation.detail.material.seeds
 
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -39,33 +37,31 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.rememberAsyncImagePainter
-import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Gauge
+import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.PawPrint
 import com.composables.icons.lucide.Trees
 import com.composables.icons.lucide.Wrench
-import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
-import com.rabbitv.valheimviki.domain.model.favorite.Favorite
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.navigation.WorldDetailDestination
-import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCard
 import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
+import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
+import com.rabbitv.valheimviki.presentation.components.ui_section.UiSection
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
 import com.rabbitv.valheimviki.presentation.detail.material.seeds.model.SeedUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.seeds.model.SeedUiState
 import com.rabbitv.valheimviki.presentation.detail.material.seeds.viewmodel.SeedMaterialDetailViewModel
-import com.rabbitv.valheimviki.presentation.components.ui_section.UiSection
-import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
-import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
@@ -89,7 +85,6 @@ fun SeedMaterialDetailScreen(
 	)
 
 }
-
 
 
 @Composable
@@ -172,12 +167,12 @@ fun SeedMaterialDetailContent(
 						)
 
 					}
-					
+
 					UiSection(
 						state = uiState.biomes,
-						divider = {	SlavicDivider()}
+						divider = { SlavicDivider() }
 					) { biomes ->
-					
+
 						Text(
 							modifier = Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp),
 							text = "PRIMARY SPAWNS",
@@ -217,7 +212,7 @@ fun SeedMaterialDetailContent(
 							)
 						}
 					}
-					
+
 					if (uiState.material.growthTime != null) {
 						TridentsDividedRow()
 						DarkGlassStatCard(
@@ -264,7 +259,7 @@ fun SeedMaterialDetailContent(
 							)
 						}
 					}
-					
+
 					UiSection(
 						state = uiState.trees
 					) { trees ->
@@ -287,7 +282,7 @@ fun SeedMaterialDetailContent(
 
 						)
 					}
-					
+
 					UiSection(
 						state = uiState.tools
 					) { tools ->
@@ -298,7 +293,7 @@ fun SeedMaterialDetailContent(
 							onItemClick = handleItemClick,
 						)
 					}
-					
+
 					when (val npcState = uiState.npc) {
 						is UIState.Success -> {
 							npcState.data?.let { npc ->
@@ -317,6 +312,7 @@ fun SeedMaterialDetailContent(
 								)
 							}
 						}
+
 						else -> {}
 					}
 				}
@@ -342,7 +338,6 @@ fun SeedMaterialDetailContent(
 		}
 	}
 }
-
 
 
 @Preview("ToolDetailContentPreview", showBackground = true)

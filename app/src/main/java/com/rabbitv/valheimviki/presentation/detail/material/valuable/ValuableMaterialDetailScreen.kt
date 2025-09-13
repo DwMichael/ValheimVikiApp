@@ -1,8 +1,6 @@
 package com.rabbitv.valheimviki.presentation.detail.material.valuable
 
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,26 +27,23 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.PawPrint
 import com.composables.icons.lucide.User
-import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
-import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
-import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
 import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
+import com.rabbitv.valheimviki.presentation.components.ui_section.UiSection
 import com.rabbitv.valheimviki.presentation.detail.material.valuable.model.ValuableMaterialUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.valuable.model.ValuableMaterialUiState
 import com.rabbitv.valheimviki.presentation.detail.material.valuable.viewmodel.ValuableMaterialDetailViewModel
-import com.rabbitv.valheimviki.presentation.components.ui_section.UiSection
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
-import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 
 
 @Composable
@@ -69,7 +64,6 @@ fun ValuableMaterialDetailScreen(
 	)
 
 }
-
 
 
 @Composable
@@ -151,7 +145,7 @@ fun ValuableMaterialDetailContent(
 						)
 
 					}
-					
+
 					UiSection(
 						state = uiState.pointsOfInterest
 					) { pointsOfInterest ->
@@ -161,7 +155,7 @@ fun ValuableMaterialDetailContent(
 							onItemClick = handleItemClick
 						)
 					}
-					
+
 					UiSection(
 						state = uiState.creatures
 					) { creatures ->
@@ -172,7 +166,7 @@ fun ValuableMaterialDetailContent(
 							onItemClick = handleItemClick,
 						)
 					}
-					
+
 					UiSection(
 						state = uiState.npc
 					) { npc ->
@@ -207,7 +201,6 @@ fun ValuableMaterialDetailContent(
 }
 
 
-
 @Preview("ValuableMaterialDetailContentPreview", showBackground = true)
 @Composable
 fun PreviewToolDetailContentCooked() {
@@ -218,7 +211,7 @@ fun PreviewToolDetailContentCooked() {
 			uiState = ValuableMaterialUiState(),
 			onBack = {},
 			onItemClick = {},
-			onToggleFavorite = {  }
+			onToggleFavorite = { }
 		)
 	}
 

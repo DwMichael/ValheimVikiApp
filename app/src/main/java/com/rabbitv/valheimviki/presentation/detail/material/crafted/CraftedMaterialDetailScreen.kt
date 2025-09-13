@@ -35,12 +35,12 @@ import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.navigation.BuildingDetailDestination
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
-import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.grid.grid_item.CustomItemCard
 import com.rabbitv.valheimviki.presentation.components.grid.nested.NestedGrid
 import com.rabbitv.valheimviki.presentation.components.grid.nested.NestedItems
@@ -76,7 +76,6 @@ fun CraftedMaterialDetailScreen(
 	)
 
 }
-
 
 
 @Composable
@@ -132,10 +131,10 @@ fun CraftedMaterialDetailContent(
 						)
 
 					}
-					
+
 					UiSection(
 						state = uiState.requiredCraftingStations,
-						divider = {	SlavicDivider()}
+						divider = { SlavicDivider() }
 					) { craftingStations ->
 						craftingStations.forEach { craftingStation ->
 							CardImageWithTopLabel(
@@ -153,7 +152,7 @@ fun CraftedMaterialDetailContent(
 							Spacer(modifier = Modifier.padding(BODY_CONTENT_PADDING.dp))
 						}
 					}
-					
+
 					UiSection(
 						state = uiState.relatedMaterial
 					) { relatedMaterials ->
@@ -227,7 +226,7 @@ fun PreviewToolDetailContentCooked() {
 			),
 			onBack = {},
 			onItemClick = {},
-			onToggleFavorite = {  }
+			onToggleFavorite = { }
 		)
 	}
 

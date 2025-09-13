@@ -44,7 +44,6 @@ import com.rabbitv.valheimviki.presentation.crafting.model.CraftingListUiState
 import com.rabbitv.valheimviki.presentation.crafting.viewmodel.CraftingListViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
-import com.rabbitv.valheimviki.utils.toAppCategory
 
 
 data class CraftingChip(

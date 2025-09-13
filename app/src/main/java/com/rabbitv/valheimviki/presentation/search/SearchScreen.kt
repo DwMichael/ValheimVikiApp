@@ -139,7 +139,6 @@ fun SearchScreenContent(
 }
 
 
-
 @Preview(
 	name = "SearchScreen – paging preview",
 	showBackground = true,
@@ -151,11 +150,11 @@ private fun PreviewSearchScreen() {
 		val mockItems = remember {
 			(1..10).map { i ->
 				Search(
-					id          = i.toString(),
-					name        = "Item $i",
+					id = i.toString(),
+					name = "Item $i",
 					description = null,
-					imageUrl    = "",
-					category    = "FOOD",
+					imageUrl = "",
+					category = "FOOD",
 					subCategory = null,
 				)
 			}
@@ -168,11 +167,11 @@ private fun PreviewSearchScreen() {
 
 
 		SearchScreenContent(
-			onBack        = {},
-			onItemClick    = {},
-			query          = "",
-			pagingItems    = lazyPagingItems,
-			onUpdateQuery  = {},
+			onBack = {},
+			onItemClick = {},
+			query = "",
+			pagingItems = lazyPagingItems,
+			onUpdateQuery = {},
 		)
 	}
 }

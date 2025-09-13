@@ -7,7 +7,7 @@ plugins {
 	alias(libs.plugins.kotlin.android)
 	alias(libs.plugins.kotlin.compose)
 	id("com.google.devtools.ksp")
-	kotlin("plugin.serialization") version "2.2.10"
+	kotlin("plugin.serialization") version "2.2.20"
 	id("com.google.dagger.hilt.android")
 }
 
@@ -92,7 +92,6 @@ dependencies {
 	implementation(libs.androidx.material3)
 	implementation(libs.androidx.compose.material)
 	implementation(libs.androidx.navigation.testing)
-	implementation(libs.app.update.ktx)
 	testImplementation(libs.junit.jupiter)
 	androidTestImplementation(libs.androidx.junit)
 	androidTestImplementation(libs.androidx.espresso.core)
@@ -101,11 +100,12 @@ dependencies {
 	debugImplementation(libs.androidx.ui.tooling)
 	debugImplementation(libs.androidx.ui.test.manifest)
 
+	//Update imposts
+	implementation(libs.app.update)
+	implementation(libs.app.update.ktx)
+
 	//Google API integrity Key
 	implementation(libs.integrity)
-	
-	// Google Play In-App Updates
-	implementation(libs.play.core)
 
 	implementation(libs.androidx.paging.runtime)
 	testImplementation(libs.paging.common)

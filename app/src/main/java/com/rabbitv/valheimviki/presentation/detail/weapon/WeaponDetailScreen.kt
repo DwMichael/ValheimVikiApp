@@ -33,16 +33,15 @@ import com.rabbitv.valheimviki.navigation.BuildingDetailDestination
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.LoadingIndicator
-import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
 import com.rabbitv.valheimviki.presentation.components.card.LevelInfoCard
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
-import com.rabbitv.valheimviki.presentation.components.ui_section.UiSection
 import com.rabbitv.valheimviki.presentation.detail.weapon.model.WeaponDetailUiEvent
 import com.rabbitv.valheimviki.presentation.detail.weapon.model.WeaponUiState
 import com.rabbitv.valheimviki.presentation.detail.weapon.viewmodel.WeaponDetailViewModel
@@ -123,46 +122,48 @@ fun WeaponDetailContent(
 						)
 					}
 
-						Text(
-							"Upgrade Information",
-							modifier = Modifier.padding(
-								start = BODY_CONTENT_PADDING.dp,
-								end = BODY_CONTENT_PADDING.dp,
-								bottom = BODY_CONTENT_PADDING.dp
-							),
-							color = PrimaryWhite,
-							style = MaterialTheme.typography.headlineMedium
-						)
+					Text(
+						"Upgrade Information",
+						modifier = Modifier.padding(
+							start = BODY_CONTENT_PADDING.dp,
+							end = BODY_CONTENT_PADDING.dp,
+							bottom = BODY_CONTENT_PADDING.dp
+						),
+						color = PrimaryWhite,
+						style = MaterialTheme.typography.headlineMedium
+					)
 
-						when (val materials = uiState.materials) {
-							is UIState.Error -> {}
-							is UIState.Loading -> {
-								LoadingIndicator(
-									paddingValues = PaddingValues(16.dp)
-								)
-							}
-							is UIState.Success -> {
-								weapon.upgradeInfoList?.forEachIndexed { levelIndex, upgradeInfoForLevel ->
-									val upgradeStats = mapUpgradeInfoToGridList(upgradeInfoForLevel)
-									LevelInfoCard(
-										modifier = Modifier.padding(
-											horizontal = BODY_CONTENT_PADDING.dp,
-											vertical = 8.dp
-										),
-										onItemClick = handleClick,
-										level = levelIndex,
-										upgradeStats = upgradeStats,
-										materialsForUpgrade = materials.data,
-										foodForUpgrade = when (val foodState = uiState.foodAsMaterials) {
-											is UIState.Success -> foodState.data
-											else -> emptyList()
-										},
-									)
-								}
-							}
+					when (val materials = uiState.materials) {
+						is UIState.Error -> {}
+						is UIState.Loading -> {
+							LoadingIndicator(
+								paddingValues = PaddingValues(16.dp)
+							)
 						}
 
-					when(val state = uiState.craftingObjects) {
+						is UIState.Success -> {
+							weapon.upgradeInfoList?.forEachIndexed { levelIndex, upgradeInfoForLevel ->
+								val upgradeStats = mapUpgradeInfoToGridList(upgradeInfoForLevel)
+								LevelInfoCard(
+									modifier = Modifier.padding(
+										horizontal = BODY_CONTENT_PADDING.dp,
+										vertical = 8.dp
+									),
+									onItemClick = handleClick,
+									level = levelIndex,
+									upgradeStats = upgradeStats,
+									materialsForUpgrade = materials.data,
+									foodForUpgrade = when (val foodState =
+										uiState.foodAsMaterials) {
+										is UIState.Success -> foodState.data
+										else -> emptyList()
+									},
+								)
+							}
+						}
+					}
+
+					when (val state = uiState.craftingObjects) {
 						is UIState.Error -> {}
 						UIState.Loading -> {
 							TridentsDividedRow()
@@ -222,18 +223,20 @@ private fun PreviewWeaponDetailScreen() {
 			onItemClick = {},
 			uiState = WeaponUiState(
 				weapon = fakeWeaponList[0],
-				materials =  UIState.Success(emptyList()),
-				foodAsMaterials =  UIState.Success(emptyList()),
-				craftingObjects = UIState.Success(CraftingObject(
-					id = "1",
-					imageUrl = "",
-					category = "",
-					subCategory = "TODO()",
-					name = "Workbench",
-					description = "",
-					order = 1
+				materials = UIState.Success(emptyList()),
+				foodAsMaterials = UIState.Success(emptyList()),
+				craftingObjects = UIState.Success(
+					CraftingObject(
+						id = "1",
+						imageUrl = "",
+						category = "",
+						subCategory = "TODO()",
+						name = "Workbench",
+						description = "",
+						order = 1
+					)
 				)
-			)),
+			),
 			onToggleFavorite = {}
 		)
 	}

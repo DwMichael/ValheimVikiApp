@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rabbitv.valheimviki.di.qualifiers.DefaultDispatcher
 import com.rabbitv.valheimviki.domain.use_cases.datastore.DataStoreUseCases
+import com.rabbitv.valheimviki.domain.use_cases.update_manager.UpdateManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,16 +16,18 @@ import javax.inject.Inject
 @HiltViewModel
 class SplashViewModel @Inject constructor(
 	private val useCases: DataStoreUseCases,
+	val updateManager: UpdateManager,
 	@param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 	private val _onBoardingCompleted = MutableStateFlow(false)
 	val onBoardingCompleted: StateFlow<Boolean> = _onBoardingCompleted
 
+
 	init {
 		viewModelScope.launch(defaultDispatcher) {
 			_onBoardingCompleted.value =
 				useCases.readOnBoardingUseCase().stateIn(viewModelScope).value
-
 		}
+
 	}
 }

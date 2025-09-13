@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
@@ -51,13 +50,9 @@ import com.composables.icons.lucide.TreePine
 import com.composables.icons.lucide.Trophy
 import com.composables.icons.lucide.Unlink
 import com.rabbitv.valheimviki.R
-import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
-import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.LocalSharedTransitionScope
 import com.rabbitv.valheimviki.navigation.NavigationHelper
-import com.rabbitv.valheimviki.navigation.WorldDetailDestination
-import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
@@ -65,13 +60,10 @@ import com.rabbitv.valheimviki.presentation.components.card.card_image.ImageWith
 import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCard
 import com.rabbitv.valheimviki.presentation.components.dividers.GreenTorchesDivider
 import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
-import com.rabbitv.valheimviki.presentation.components.grid.grid_item.CustomItemCard
-import com.rabbitv.valheimviki.presentation.components.grid.nested.NestedGrid
-import com.rabbitv.valheimviki.presentation.components.grid.nested.NestedItems
+import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDetailImageAnimated
-
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.components.ui_section.UiSection
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithImageAndTitle
@@ -94,7 +86,7 @@ fun MainBossDetailScreen(
 	animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
 	val mainBossUiState by viewModel.uiState.collectAsStateWithLifecycle()
-	val onToggleFavorite = { viewModel.uiEvent(MainBossUiEvent.ToggleFavorite ) }
+	val onToggleFavorite = { viewModel.uiEvent(MainBossUiEvent.ToggleFavorite) }
 	val sharedTransitionScope = LocalSharedTransitionScope.current
 		?: throw IllegalStateException("No Scope found")
 
@@ -257,7 +249,7 @@ fun MainBossContent(
 									modifier = Modifier.weight(1f)
 								) {
 									CardWithTrophy(
-										onCardClicked = {handleClick(trophy)},
+										onCardClicked = { handleClick(trophy) },
 										forsakenPower = mainBossUiState.mainBoss.forsakenPower,
 										trophyUrl = trophy.imageUrl
 									)
@@ -272,7 +264,7 @@ fun MainBossContent(
 								) {
 									mainBossUiState.sacrificialStones?.let { sacrificialStones ->
 										CardWithImageAndTitle(
-											onCardClick = {handleClick(sacrificialStones)},
+											onCardClick = { handleClick(sacrificialStones) },
 											title = "WHERE TO HANG THE BOSS TROPHY",
 											imageUrl = sacrificialStones.imageUrl,
 											itemName = sacrificialStones.name,

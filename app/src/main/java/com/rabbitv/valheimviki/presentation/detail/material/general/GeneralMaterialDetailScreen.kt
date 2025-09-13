@@ -26,7 +26,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -35,29 +34,25 @@ import coil3.compose.rememberAsyncImagePainter
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.MapPinned
 import com.composables.icons.lucide.Pickaxe
-import com.composables.icons.lucide.TreePine
 import com.composables.icons.lucide.Trees
-import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
-import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.navigation.BuildingDetailDestination
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.navigation.WorldDetailDestination
-import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
-import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
+import com.rabbitv.valheimviki.presentation.components.ui_section.UiSection
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
 import com.rabbitv.valheimviki.presentation.detail.material.general.model.GeneralMaterialUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.general.model.GeneralMaterialUiState
 import com.rabbitv.valheimviki.presentation.detail.material.general.viewmodel.GeneralMaterialDetailViewModel
-import com.rabbitv.valheimviki.presentation.components.ui_section.UiSection
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
@@ -82,7 +77,6 @@ fun GeneralMaterialDetailScreen(
 	)
 
 }
-
 
 
 @Composable
@@ -160,7 +154,7 @@ fun GeneralMaterialDetailContent(
 						)
 
 					}
-					
+
 					UiSection(
 						state = uiState.biomes
 					) { biomes ->
@@ -197,7 +191,7 @@ fun GeneralMaterialDetailContent(
 							)
 						}
 					}
-					
+
 					UiSection(
 						state = uiState.pointOfInterests
 					) { pointOfInterests ->
@@ -207,7 +201,7 @@ fun GeneralMaterialDetailContent(
 							onItemClick = handleItemClick
 						)
 					}
-					
+
 					UiSection(
 						state = uiState.oreDeposits
 					) { oreDeposits ->
@@ -217,7 +211,7 @@ fun GeneralMaterialDetailContent(
 							onItemClick = handleItemClick,
 						)
 					}
-					
+
 					UiSection(
 						state = uiState.trees
 					) { trees ->
@@ -227,7 +221,7 @@ fun GeneralMaterialDetailContent(
 							onItemClick = handleItemClick
 						)
 					}
-					
+
 					UiSection(
 						state = uiState.craftingStations
 					) { craftingStations ->

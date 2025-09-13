@@ -39,6 +39,7 @@ fun BiomeGridScreen(
 	viewModel: BiomeGridViewModel = hiltViewModel(),
 	animatedVisibilityScope: AnimatedVisibilityScope
 ) {
+
 	val uiState: UIState<List<Biome>> by viewModel.uiState.collectAsStateWithLifecycle()
 	val lazyGridState = rememberLazyGridState()
 	val handleItemClick = remember {

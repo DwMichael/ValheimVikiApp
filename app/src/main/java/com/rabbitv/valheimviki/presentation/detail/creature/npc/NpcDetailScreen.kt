@@ -58,21 +58,18 @@ import coil3.request.crossfade
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.TreePine
 import com.rabbitv.valheimviki.R
-import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.npc.NPC
-import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
-import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.domain.repository.ItemData
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.navigation.WorldDetailDestination
-import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
 import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDetailImage
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.components.ui_section.UiSection
@@ -86,7 +83,6 @@ import com.rabbitv.valheimviki.ui.theme.DarkGrey
 import com.rabbitv.valheimviki.ui.theme.DarkWood
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
-
 import com.rabbitv.valheimviki.utils.valid
 
 @Composable
@@ -175,7 +171,7 @@ fun NpcDetailContent(
 						boxPadding = BODY_CONTENT_PADDING.dp
 					)
 					TridentsDividedRow(text = "NPC DETAIL")
-					uiState.biome?.let {  biome ->
+					uiState.biome?.let { biome ->
 						CardWithOverlayLabel(
 							painter = rememberAsyncImagePainter(biome.imageUrl),
 							content = {
@@ -269,8 +265,8 @@ fun NpcDetailContent(
 						}
 					}
 					UiSection(
-						state =uiState.shopItems ,
-						divider = {	TridentsDividedRow(text = "TRADING")}
+						state = uiState.shopItems,
+						divider = { TridentsDividedRow(text = "TRADING") }
 					) { data ->
 						Row(
 							modifier = Modifier
@@ -302,8 +298,8 @@ fun NpcDetailContent(
 					}
 
 					UiSection(
-						state =uiState.shopSellItems ,
-						divider = {	TridentsDividedRow(text = "TRADING")}
+						state = uiState.shopSellItems,
+						divider = { TridentsDividedRow(text = "TRADING") }
 					) { data ->
 						Row(
 							modifier = Modifier.padding(

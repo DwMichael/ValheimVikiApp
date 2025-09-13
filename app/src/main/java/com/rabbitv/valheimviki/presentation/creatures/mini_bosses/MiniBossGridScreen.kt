@@ -55,9 +55,9 @@ fun MiniBossesGridScreen(
 		Surface(
 			color = Color.Transparent,
 			modifier = Modifier
-                .testTag("MiniBossSurface")
-                .fillMaxSize()
-                .padding(paddingValues)
+				.testTag("MiniBossSurface")
+				.fillMaxSize()
+				.padding(paddingValues)
 		) {
 			when (val state = uiState) {
 				is UIState.Loading -> ShimmerGridEffect()
@@ -89,8 +89,8 @@ fun PreviewMiniBossListScreen() {
 		content = { padding ->
 			Box(
 				modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
+					.fillMaxSize()
+					.padding(padding)
 			) {
 
 			}
