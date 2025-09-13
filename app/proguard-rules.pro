@@ -139,6 +139,19 @@
 # ============= Play Integrity =============
 -keep class com.google.android.play.integrity.** { *; }
 
+# ============= Play Core (In-App Updates) =============
+-keep class com.google.android.play.core.** { *; }
+-keep interface com.google.android.play.core.** { *; }
+-keepclassmembers class com.google.android.play.core.** {
+    <methods>;
+    <fields>;
+}
+
+# Keep AppUpdateManager and related classes
+-keep class com.google.android.play.core.appupdate.** { *; }
+-keep class com.google.android.play.core.install.** { *; }
+-keep class com.google.android.play.core.tasks.** { *; }
+
 # ============= Application Specific Rules =============
 # Keep BuildConfig - CRITICAL for network configuration (baseUrl)
 -keep class com.rabbitv.valheimviki.BuildConfig { *; }

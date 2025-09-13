@@ -23,8 +23,8 @@ android {
 		applicationId = "com.rabbitv.valheimviki"
 		minSdk = 26
 		targetSdk = 36
-		versionCode = 2
-		versionName = "1.1"
+		versionCode = 4
+		versionName = "1.3"
 
 		buildConfigField("String", "baseUrlSafe", properties.getProperty("baseUrl"))
 
@@ -92,6 +92,7 @@ dependencies {
 	implementation(libs.androidx.material3)
 	implementation(libs.androidx.compose.material)
 	implementation(libs.androidx.navigation.testing)
+	implementation(libs.app.update.ktx)
 	testImplementation(libs.junit.jupiter)
 	androidTestImplementation(libs.androidx.junit)
 	androidTestImplementation(libs.androidx.espresso.core)
@@ -102,6 +103,9 @@ dependencies {
 
 	//Google API integrity Key
 	implementation(libs.integrity)
+	
+	// Google Play In-App Updates
+	implementation(libs.play.core)
 
 	implementation(libs.androidx.paging.runtime)
 	testImplementation(libs.paging.common)

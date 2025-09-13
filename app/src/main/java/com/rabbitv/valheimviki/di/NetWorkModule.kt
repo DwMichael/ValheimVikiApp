@@ -42,19 +42,6 @@ object NetWorkModule {
 			.readTimeout(5, TimeUnit.SECONDS)
 			.callTimeout(10, TimeUnit.SECONDS)
 			.connectionPool(okhttp3.ConnectionPool(5, 5, TimeUnit.MINUTES))
-			// Debug: Add logging interceptor to see network requests
-			.addInterceptor { chain ->
-				val request = chain.request()
-				android.util.Log.d("NetworkModule", "🌐 Making request to: ${request.url}")
-				try {
-					val response = chain.proceed(request)
-					android.util.Log.d("NetworkModule", "✅ Response code: ${response.code} for ${request.url}")
-					response
-				} catch (e: Exception) {
-					android.util.Log.e("NetworkModule", "❌ Network error: ${e.message} for ${request.url}")
-					throw e
-				}
-			}
 //			.addInterceptor(AuthInterceptorUseCase())
 			.build()
 	}
@@ -62,10 +49,6 @@ object NetWorkModule {
 	@Singleton
 	@Provides
 	fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
-		// Debug: Print the baseUrl to see if it's being read correctly
-		println("🔍 DEBUG: baseUrl = '${BuildConfig.baseUrlSafe}'")
-		android.util.Log.d("NetworkModule", "baseUrl = '${BuildConfig.baseUrlSafe}'")
-		
 		return Retrofit.Builder()
 			.baseUrl(BuildConfig.baseUrlSafe)
 			.client(okHttpClient)
