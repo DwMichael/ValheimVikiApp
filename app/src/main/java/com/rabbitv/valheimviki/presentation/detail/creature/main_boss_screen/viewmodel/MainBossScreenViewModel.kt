@@ -174,9 +174,8 @@ class MainBossScreenViewModel @Inject constructor(
 		_sacrificialStones,
 		_materialBossData,
 		_relatedSummoningItems,
-		_isFavorite,
-
-		) { mainBoss, biome, forsakenAltar, sacrificialStones, materialBossData, summoningItems, favorite ->
+		_isFavorite
+	) { mainBoss, biome, forsakenAltar, sacrificialStones, materialBossData, summoningItems, favorite ->
 		MainBossDetailUiState(
 			mainBoss = mainBoss,
 			relatedBiome = biome,

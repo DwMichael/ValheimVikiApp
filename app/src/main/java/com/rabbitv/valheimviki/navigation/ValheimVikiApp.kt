@@ -5,7 +5,6 @@
 package com.rabbitv.valheimviki.navigation
 
 import android.content.Intent
-import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -43,6 +42,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
@@ -126,7 +126,6 @@ import com.rabbitv.valheimviki.presentation.tree.TreeScreen
 import com.rabbitv.valheimviki.presentation.weapons.WeaponListScreen
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import kotlinx.coroutines.launch
-import androidx.core.net.toUri
 
 
 @Preview
@@ -230,7 +229,7 @@ fun MainContainer(
 
 				FloatingHomeButton(
 					navController = valheimVikiNavController,
-					paddingValues = PaddingValues(bottom = 30.dp)
+					paddingValues = PaddingValues(bottom = 60.dp)
 				)
 			}
 		}
