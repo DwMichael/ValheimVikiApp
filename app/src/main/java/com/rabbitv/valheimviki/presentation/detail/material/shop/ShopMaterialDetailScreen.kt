@@ -1,8 +1,6 @@
 package com.rabbitv.valheimviki.presentation.detail.material.shop
 
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,23 +24,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
-import com.rabbitv.valheimviki.domain.model.favorite.Favorite
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
-import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
-import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
+import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.material.shop.model.ShopUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.shop.model.ShopUiState
 import com.rabbitv.valheimviki.presentation.detail.material.shop.viewmodel.ShopMaterialDetailViewModel
-import com.rabbitv.valheimviki.presentation.components.ui_section.UiSection
-import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
@@ -65,7 +60,6 @@ fun ShopMaterialDetailScreen(
 	)
 
 }
-
 
 
 @Composable
@@ -118,7 +112,7 @@ fun ShopMaterialDetailContent(
 							isExpanded = isExpandable
 						)
 					}
-					if(material.effect.isNullOrBlank() && material.effect != "null"){
+					if (material.effect.isNullOrBlank() && material.effect != "null") {
 						TridentsDividedRow("Effect")
 						Text(
 							material.effect.toString(),
@@ -127,7 +121,7 @@ fun ShopMaterialDetailContent(
 							textAlign = TextAlign.Center
 						)
 					}
-					
+
 					when (val npcState = uiState.npc) {
 						is UIState.Success -> {
 							npcState.data?.let { npc ->
@@ -146,6 +140,7 @@ fun ShopMaterialDetailContent(
 								)
 							}
 						}
+
 						else -> {}
 					}
 				}
@@ -173,7 +168,6 @@ fun ShopMaterialDetailContent(
 }
 
 
-
 @Preview("ToolDetailContentPreview", showBackground = true)
 @Composable
 fun PreviewToolDetailContentCooked() {
@@ -185,7 +179,7 @@ fun PreviewToolDetailContentCooked() {
 			onBack = {},
 			onItemClick = {},
 			onToggleFavorite = {}
-			)
+		)
 	}
 
 }

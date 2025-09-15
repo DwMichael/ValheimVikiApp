@@ -274,7 +274,6 @@ fun PassiveCreatureDetailContent(
 }
 
 
-
 @Preview(name = "CreaturePage")
 @Composable
 fun PreviewCreaturePage() {

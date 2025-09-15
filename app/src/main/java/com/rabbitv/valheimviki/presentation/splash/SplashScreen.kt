@@ -25,6 +25,7 @@ fun SplashScreen(
 	val degrees = remember { Animatable(0f) }
 	val hasOnboarded by splashViewModel.onBoardingCompleted.collectAsState(initial = false)
 	LaunchedEffect(hasOnboarded) {
+
 		degrees.animateTo(
 			targetValue = 10f,
 			animationSpec = tween(
@@ -37,6 +38,7 @@ fun SplashScreen(
 			popUpTo(0) { inclusive = true }
 		}
 	}
+
 	BgImage()
 }
 

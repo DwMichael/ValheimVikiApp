@@ -40,7 +40,6 @@ import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
-import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.LoadingIndicator
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
@@ -49,6 +48,7 @@ import com.rabbitv.valheimviki.presentation.components.card.LevelInfoCard
 import com.rabbitv.valheimviki.presentation.components.card.RequiredMaterialColumn
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.armor.model.ArmorDetailUiEvent
@@ -236,7 +236,7 @@ fun ArmorDetailContent(
 						}
 					}
 
-				Spacer(modifier = Modifier.height(40.dp))
+					Spacer(modifier = Modifier.height(40.dp))
 
 				}
 				AnimatedBackButton(
@@ -329,7 +329,7 @@ private fun PreviewArmorDetailScreen() {
 			onToggleFavorite = { _, _ -> {} },
 			uiState = ArmorDetailUiState(
 				armor = testArmor,
-				materials =UIState.Loading,
+				materials = UIState.Loading,
 				craftingObject = UIState.Loading
 			)
 

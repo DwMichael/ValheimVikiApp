@@ -1,8 +1,6 @@
 package com.rabbitv.valheimviki.presentation.detail.material.mini_boss_drop
 
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,22 +25,19 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rabbitv.valheimviki.data.mappers.creatures.toMiniBoss
-import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
-import com.rabbitv.valheimviki.domain.model.favorite.Favorite
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
-import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
 import com.rabbitv.valheimviki.presentation.components.card.card_image.ImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
 import com.rabbitv.valheimviki.presentation.detail.material.mini_boss_drop.model.MiniBossDropUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.mini_boss_drop.model.MiniBossDropUiState
 import com.rabbitv.valheimviki.presentation.detail.material.mini_boss_drop.viewmodel.MiniBossDropDetailViewModel
-import com.rabbitv.valheimviki.presentation.components.ui_section.UiSection
-import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
@@ -69,7 +64,6 @@ fun MiniBossDropDetailScreen(
 	)
 
 }
-
 
 
 @Composable
@@ -143,6 +137,7 @@ fun MiniBossDropDetailContent(
 								SlavicDivider()
 							}
 						}
+
 						else -> {}
 					}
 
@@ -163,6 +158,7 @@ fun MiniBossDropDetailContent(
 								)
 							}
 						}
+
 						else -> {}
 					}
 				}
@@ -190,7 +186,6 @@ fun MiniBossDropDetailContent(
 }
 
 
-
 @Preview("ToolDetailContentPreview", showBackground = true)
 @Composable
 fun PreviewToolDetailContentCooked() {
@@ -200,7 +195,7 @@ fun PreviewToolDetailContentCooked() {
 		MiniBossDropDetailContent(
 			uiState = MiniBossDropUiState(
 				material = FakeData.generateFakeMaterials()[0],
-				miniBoss =  UIState.Success( FakeData.generateFakeCreatures()[0].toMiniBoss()),
+				miniBoss = UIState.Success(FakeData.generateFakeCreatures()[0].toMiniBoss()),
 			),
 			onBack = {},
 			onItemClick = {},

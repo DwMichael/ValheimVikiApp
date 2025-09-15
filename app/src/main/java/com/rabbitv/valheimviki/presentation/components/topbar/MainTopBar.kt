@@ -66,7 +66,7 @@ fun MainAppBar(
 			Text(
 				"ValheimViki",
 				color = MaterialTheme.colorScheme.onPrimaryContainer,
-				style = MaterialTheme.typography.headlineLarge,
+				style = MaterialTheme.typography.headlineMedium,
 			)
 		},
 		actions = {

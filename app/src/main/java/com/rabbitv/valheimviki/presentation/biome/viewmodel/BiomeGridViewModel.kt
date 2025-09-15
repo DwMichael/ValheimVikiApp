@@ -22,6 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class BiomeGridViewModel @Inject constructor(
 	val biomeUseCases: BiomeUseCases,
+//	val updateManager: UpdateManager,
 	val connectivityObserver: NetworkConnectivity,
 ) : ViewModel() {
 

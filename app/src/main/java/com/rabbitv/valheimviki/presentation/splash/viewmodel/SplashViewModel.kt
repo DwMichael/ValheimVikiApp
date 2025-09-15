@@ -15,16 +15,18 @@ import javax.inject.Inject
 @HiltViewModel
 class SplashViewModel @Inject constructor(
 	private val useCases: DataStoreUseCases,
+//	val updateManager: UpdateManager,
 	@param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 	private val _onBoardingCompleted = MutableStateFlow(false)
 	val onBoardingCompleted: StateFlow<Boolean> = _onBoardingCompleted
 
+
 	init {
 		viewModelScope.launch(defaultDispatcher) {
 			_onBoardingCompleted.value =
 				useCases.readOnBoardingUseCase().stateIn(viewModelScope).value
-
 		}
+
 	}
 }

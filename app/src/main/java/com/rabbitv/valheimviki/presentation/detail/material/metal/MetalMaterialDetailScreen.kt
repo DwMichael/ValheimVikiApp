@@ -27,22 +27,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil3.compose.rememberAsyncImagePainter
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.PawPrint
 import com.composables.icons.lucide.ScrollText
 import com.composables.icons.lucide.Trees
-import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
-import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.navigation.BuildingDetailDestination
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
-import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.grid.grid_item.CustomItemCard
 import com.rabbitv.valheimviki.presentation.components.grid.nested.NestedGrid
 import com.rabbitv.valheimviki.presentation.components.grid.nested.NestedItems
@@ -80,7 +77,6 @@ fun MetalMaterialDetailScreen(
 	)
 
 }
-
 
 
 @Composable
@@ -171,7 +167,7 @@ fun MetalMaterialDetailContent(
 
 					UiSection(
 						state = uiState.biomes,
-						divider = {	SlavicDivider()}
+						divider = { SlavicDivider() }
 					) { biomes ->
 						HorizontalPagerSection(
 							list = biomes,
@@ -209,7 +205,7 @@ fun MetalMaterialDetailContent(
 							onItemClick = handleClick,
 						)
 					}
-					
+
 					UiSection(
 						state = uiState.requiredMaterials
 					) { requiredMaterials ->
@@ -226,7 +222,7 @@ fun MetalMaterialDetailContent(
 									icon = Lucide.ScrollText,
 								),
 
-							)
+								)
 						}
 
 						Spacer(modifier = Modifier.padding(6.dp))
@@ -244,7 +240,7 @@ fun MetalMaterialDetailContent(
 							)
 						}
 					}
-					
+
 					UiSection(
 						state = uiState.craftingStations
 					) { craftingStations ->
@@ -290,7 +286,6 @@ fun MetalMaterialDetailContent(
 }
 
 
-
 @Preview("ToolDetailContentPreview", showBackground = true)
 @Composable
 fun PreviewToolDetailContentCooked() {
@@ -301,7 +296,7 @@ fun PreviewToolDetailContentCooked() {
 			uiState = MetalMaterialUiState(
 				material = FakeData.generateFakeMaterials()[0],
 
-			),
+				),
 			onBack = {},
 			onItemClick = {},
 			onToggleFavorite = { }

@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
@@ -35,26 +34,22 @@ import com.composables.icons.lucide.HandCoins
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Skull
 import com.composables.icons.lucide.Swords
-import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.biome.Biome
-import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.navigation.WorldDetailDestination
-import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
 import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
+import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
+import com.rabbitv.valheimviki.presentation.components.horizontal_pager.DroppedItemsSection
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDetailImage
-import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
-import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
-import com.rabbitv.valheimviki.presentation.components.horizontal_pager.DroppedItemsSection
 import com.rabbitv.valheimviki.presentation.components.ui_section.UiSection
-import com.rabbitv.valheimviki.presentation.detail.material.boss_drop.model.BossDropUiEvent
+import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
 import com.rabbitv.valheimviki.presentation.detail.point_of_interest.model.PointOfInterestUiEvent
 import com.rabbitv.valheimviki.presentation.detail.point_of_interest.model.PointOfInterestUiState
 import com.rabbitv.valheimviki.presentation.detail.point_of_interest.viewmodel.PointOfInterestViewModel
@@ -144,7 +139,7 @@ fun PointOfInterestDetailContent(
 					UiSection(
 						uiState.relatedBiomes
 					)
-					{data ->
+					{ data ->
 						Text(
 							modifier = Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp),
 							text = "PRIMARY SPAWNS",
@@ -259,9 +254,9 @@ fun PreviewPointOfInterestDetailScreen() {
 
 	val uiState = PointOfInterestUiState(
 		pointOfInterest = FakeData.pointOfInterest[0],
-		relatedBiomes = UIState.Success(  listOf(fakeBiome)),
-		relatedCreatures = UIState.Success( FakeData.generateFakeCreatures()),
-		relatedOfferings = UIState.Success( FakeData.generateFakeMaterials()),
+		relatedBiomes = UIState.Success(listOf(fakeBiome)),
+		relatedCreatures = UIState.Success(FakeData.generateFakeCreatures()),
+		relatedOfferings = UIState.Success(FakeData.generateFakeMaterials()),
 	)
 
 	ValheimVikiAppTheme {
