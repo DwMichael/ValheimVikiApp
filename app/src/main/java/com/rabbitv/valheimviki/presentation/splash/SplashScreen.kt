@@ -1,6 +1,5 @@
 package com.rabbitv.valheimviki.presentation.splash
 
-import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
@@ -21,20 +20,12 @@ import com.rabbitv.valheimviki.presentation.splash.viewmodel.SplashViewModel
 @Composable
 fun SplashScreen(
 	navController: NavHostController,
-	splashViewModel: SplashViewModel = hiltViewModel(),
+	splashViewModel: SplashViewModel = hiltViewModel()
 ) {
 	val degrees = remember { Animatable(0f) }
 	val hasOnboarded by splashViewModel.onBoardingCompleted.collectAsState(initial = false)
-
-	val activity = LocalActivity.current // Użyj bezpiecznego CompositionLocal
-
-	// Ten blok wykona się raz, gdy ekran się pojawi
-	LaunchedEffect(key1 = true) {
-		if (activity != null) {
-			splashViewModel.updateManager.checkForUpdate(activity)
-		}
-	}
 	LaunchedEffect(hasOnboarded) {
+
 		degrees.animateTo(
 			targetValue = 10f,
 			animationSpec = tween(
