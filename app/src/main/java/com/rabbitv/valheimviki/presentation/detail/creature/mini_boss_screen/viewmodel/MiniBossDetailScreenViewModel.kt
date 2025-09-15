@@ -44,15 +44,17 @@ class MiniBossDetailScreenViewModel @Inject constructor(
 	private val favoriteUseCases: FavoriteUseCases,
 	@param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
-	private val _miniBossId: String = savedStateHandle.toRoute<CreatureDetailDestination.MiniBossDetail>().miniBossId
+	private val _miniBossId: String =
+		savedStateHandle.toRoute<CreatureDetailDestination.MiniBossDetail>().miniBossId
 
-	private val _miniBoss: StateFlow<MiniBoss?> = creatureUseCases.getCreatureById(_miniBossId).map { creature ->
-		creature?.toMiniBoss()
-	}.stateIn(
-		viewModelScope,
-		started = SharingStarted.Lazily,
-		initialValue = null
-	)
+	private val _miniBoss: StateFlow<MiniBoss?> =
+		creatureUseCases.getCreatureById(_miniBossId).map { creature ->
+			creature?.toMiniBoss()
+		}.stateIn(
+			viewModelScope,
+			started = SharingStarted.Lazily,
+			initialValue = null
+		)
 
 	private val _isFavorite = favoriteUseCases.isFavorite(_miniBossId)
 		.distinctUntilChanged()
@@ -71,8 +73,7 @@ class MiniBossDetailScreenViewModel @Inject constructor(
 
 	private val idsAndMap: Flow<List<String>> =
 		_relationObjects
-			.map { list -> list.map { it.id }
-			}
+			.map { list -> list.map { it.id } }
 			.distinctUntilChanged()
 			.flowOn(defaultDispatcher)
 

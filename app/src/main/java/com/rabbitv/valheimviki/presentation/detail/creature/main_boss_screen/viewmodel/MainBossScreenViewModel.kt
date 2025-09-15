@@ -1,5 +1,6 @@
 package com.rabbitv.valheimviki.presentation.detail.creature.main_boss_screen.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -55,15 +56,18 @@ class MainBossScreenViewModel @Inject constructor(
 	@param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 	private data class MaterialBossData(
-		val dropItems: List<Material> =emptyList(),
+		val dropItems: List<Material> = emptyList(),
 		val trophy: Material? = null
 	)
-	private val _mainBossId: String =savedStateHandle.toRoute<CreatureDetailDestination.MainBossDetail>().mainBossId
+
+	private val _mainBossId: String =
+		savedStateHandle.toRoute<CreatureDetailDestination.MainBossDetail>().mainBossId
 
 
-	private val _mainBoss: StateFlow<MainBoss?> = creatureUseCases.getCreatureById(_mainBossId).map { creature ->
-	creature?.toMainBoss()
-	}.stateIn(
+	private val _mainBoss: StateFlow<MainBoss?> =
+		creatureUseCases.getCreatureById(_mainBossId).map { creature ->
+			creature?.toMainBoss()
+		}.stateIn(
 			viewModelScope,
 			started = SharingStarted.WhileSubscribed(5000),
 			initialValue = null
@@ -120,7 +124,7 @@ class MainBossScreenViewModel @Inject constructor(
 		pointOfInterestUseCases
 			.getPointsOfInterestBySubCategoryUseCase(PointOfInterestSubCategory.STRUCTURE),
 	) { relatedData, stones ->
-		stones.find {  it.imageUrl == "https://static.wikia.nocookie.net/valheim/images/2/29/Sarcrifial_Stones.jpg/revision/latest?cb=20230416093844"}
+		stones.find { it.imageUrl == "https://static.wikia.nocookie.net/valheim/images/2/29/Sarcrifial_Stones.jpg/revision/latest?cb=20230416093844" }
 	}.stateIn(
 		viewModelScope,
 		started = SharingStarted.WhileSubscribed(5000),
@@ -128,7 +132,7 @@ class MainBossScreenViewModel @Inject constructor(
 	)
 
 
-	private val _relatedSummoningItems = idsAndMap.flatMapLatest{ relatedData ->
+	private val _relatedSummoningItems = idsAndMap.flatMapLatest { relatedData ->
 		merge(
 			materialUseCases.getMaterialsBySubCategoryAndIds(
 				subCategory = MaterialSubCategory.FORSAKEN_ALTAR_OFFERING.toString(),
@@ -139,25 +143,29 @@ class MainBossScreenViewModel @Inject constructor(
 				ids = relatedData.ids
 			),
 		).map { materials -> materials.distinctBy { it.id } }
-	}.map { UIState.Success(it) } .stateIn(
+	}.map { UIState.Success(it) }.stateIn(
 		viewModelScope,
 		started = SharingStarted.WhileSubscribed(5000),
 		initialValue = UIState.Loading
 	)
-	private val _materialBossData :StateFlow<MaterialBossData> = idsAndMap.flatMapLatest{ relatedData ->
-		materialUseCases.getMaterialsBySubCategoryAndIds(MaterialSubCategory.BOSS_DROP.toString(), relatedData.ids )
-	}.map { materials ->
-		MaterialBossData(
-			dropItems = materials,
-			trophy = materials.find {
-				it.subType == MaterialSubType.TROPHY.toString()
-			}
+	private val _materialBossData: StateFlow<MaterialBossData> =
+		idsAndMap.flatMapLatest { relatedData ->
+			materialUseCases.getMaterialsBySubCategoryAndIds(
+				MaterialSubCategory.BOSS_DROP.toString(),
+				relatedData.ids
+			)
+		}.map { materials ->
+			MaterialBossData(
+				dropItems = materials,
+				trophy = materials.find {
+					it.subType == MaterialSubType.TROPHY.toString()
+				}
+			)
+		}.stateIn(
+			viewModelScope,
+			started = SharingStarted.WhileSubscribed(5000),
+			initialValue = MaterialBossData()
 		)
-	}.stateIn(
-		viewModelScope,
-		started = SharingStarted.WhileSubscribed(5000),
-		initialValue = MaterialBossData()
-	)
 
 	val uiState = combine(
 		_mainBoss,
@@ -166,16 +174,16 @@ class MainBossScreenViewModel @Inject constructor(
 		_sacrificialStones,
 		_materialBossData,
 		_relatedSummoningItems,
-		favoriteUseCases.isFavorite(_mainBossId),
+		_isFavorite,
 
-	) { mainBoss,biome, forsakenAltar, sacrificialStones,materialBossData, summoningItems, favorite->
+		) { mainBoss, biome, forsakenAltar, sacrificialStones, materialBossData, summoningItems, favorite ->
 		MainBossDetailUiState(
 			mainBoss = mainBoss,
-			relatedBiome =  biome,
+			relatedBiome = biome,
 			relatedForsakenAltar = forsakenAltar,
 			sacrificialStones = sacrificialStones,
-			dropItems = UIState.Success( materialBossData.dropItems),
-			relatedSummoningItems =summoningItems,
+			dropItems = UIState.Success(materialBossData.dropItems),
+			relatedSummoningItems = summoningItems,
 			trophy = materialBossData.trophy,
 			isFavorite = favorite
 		)
@@ -190,6 +198,8 @@ class MainBossScreenViewModel @Inject constructor(
 			MainBossUiEvent.ToggleFavorite -> {
 				viewModelScope.launch {
 					_mainBoss.value?.let { bM ->
+						Log.e("MainBossScreenViewModel", "ToggleFavorite $bM")
+						Log.e(" ISFAVORITE ? ", " ${_isFavorite.value}")
 						favoriteUseCases.toggleFavoriteUseCase(
 							bM.toFavorite(),
 							shouldBeFavorite = !_isFavorite.value

@@ -86,7 +86,9 @@ fun MainBossDetailScreen(
 	animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
 	val mainBossUiState by viewModel.uiState.collectAsStateWithLifecycle()
-	val onToggleFavorite = { viewModel.uiEvent(MainBossUiEvent.ToggleFavorite) }
+	val onToggleFavorite = {
+		viewModel.uiEvent(MainBossUiEvent.ToggleFavorite)
+	}
 	val sharedTransitionScope = LocalSharedTransitionScope.current
 		?: throw IllegalStateException("No Scope found")
 
