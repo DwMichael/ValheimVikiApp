@@ -1,5 +1,6 @@
 package com.rabbitv.valheimviki.presentation.detail.point_of_interest.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -152,6 +153,7 @@ class PointOfInterestViewModel @Inject constructor(
 		_isFavorite
 	) { pointOfInterest, relatedBiomes, relatedCreatures, relatedWeapons, relatedFoods, relatedOreDeposits,
 	    relatedOfferings, relatedMaterialDrops, isFavorite ->
+		Log.e("ID OD POI ", pointOfInterest?.id ?: "SS")
 		PointOfInterestUiState(
 			pointOfInterest = pointOfInterest,
 			relatedBiomes = relatedBiomes,

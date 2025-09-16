@@ -121,10 +121,10 @@ fun ListItem(
 	clickToNavigate: () -> Unit,
 	imageScale: ContentScale
 ) {
-	val desiredText = remember { mutableStateOf(item.name) }
-	if(!startTextFrom.isNullOrBlank()) {
-		desiredText.value = item.name.substringAfter(startTextFrom)
-	}
+//	val desiredText = remember { mutableStateOf(item.name) }
+//	if(!startTextFrom.isNullOrBlank()) {
+//		desiredText.value = item.name.substringAfter(startTextFrom)
+//	}
 	Row(
 		modifier = Modifier
 			.fillMaxWidth()
@@ -144,7 +144,7 @@ fun ListItem(
 			contentScale = imageScale,
 		)
 		Text(
-			text = desiredText.value.trim(),
+			text = item.name.trim(),
 			color = PrimaryWhite,
 			modifier = modifier
 				.weight(1f)
