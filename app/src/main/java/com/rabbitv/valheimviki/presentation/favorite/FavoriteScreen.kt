@@ -240,7 +240,7 @@ private fun determineFavoriteGridType(appCategory: AppCategory): FavoriteGridIte
 		AppCategory.FOOD -> FavoriteGridItemTypes.SMALL
 		AppCategory.ARMOR -> FavoriteGridItemTypes.SMALL
 		AppCategory.WEAPON -> FavoriteGridItemTypes.SMALL
-		AppCategory.BUILDING_MATERIAL -> FavoriteGridItemTypes.MEDIUM
+		AppCategory.BUILDING_MATERIAL -> FavoriteGridItemTypes.SMALL
 		AppCategory.MATERIAL -> FavoriteGridItemTypes.SMALL
 		AppCategory.CRAFTING -> FavoriteGridItemTypes.MEDIUM
 		AppCategory.TOOL -> FavoriteGridItemTypes.SMALL
@@ -248,6 +248,7 @@ private fun determineFavoriteGridType(appCategory: AppCategory): FavoriteGridIte
 		AppCategory.POINTOFINTEREST -> FavoriteGridItemTypes.DEFAULT
 		AppCategory.TREE -> FavoriteGridItemTypes.DEFAULT
 		AppCategory.OREDEPOSITE -> FavoriteGridItemTypes.DEFAULT
+		AppCategory.TRINKETS -> FavoriteGridItemTypes.SMALL
 	}
 }
 
