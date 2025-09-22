@@ -12,5 +12,5 @@ enum class MaterialSubCategory {
 	METAL,
 	SHOP,
 	VALUABLE,
-	WOOD
+	WOOD,
 }

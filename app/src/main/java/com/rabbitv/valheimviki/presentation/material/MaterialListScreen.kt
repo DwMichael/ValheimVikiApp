@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -51,6 +52,7 @@ import com.rabbitv.valheimviki.presentation.material.viewmodel.MaterialListViewM
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import kotlinx.coroutines.launch
 
+@Stable
 class MaterialChip(
 	override val option: MaterialSubType,
 	override val icon: ImageVector,
