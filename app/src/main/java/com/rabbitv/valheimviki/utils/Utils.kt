@@ -96,6 +96,16 @@ fun <Id, Raw, Ui> Flow<List<Id>>.toUiState(
 			.catch { e -> emit(UIState.Error(e.message ?: errorMsg)) }
 	}
 
+fun shouldShowValue(value: Any?): Boolean {
+	return when (value) {
+		null -> false
+		is String -> value.isNotBlank()
+		is Int -> value != 0
+		is Double -> value != 0.0
+		is Float -> value != 0f
+		else -> true
+	}
+}
 
 fun String?.valid() =
 	takeIf { !isNullOrBlank() && !equals("null", ignoreCase = true) }
@@ -107,6 +117,7 @@ fun String?.toAppCategory(): AppCategory {
 		"FOOD" -> AppCategory.FOOD
 		"ARMOR" -> AppCategory.ARMOR
 		"WEAPON" -> AppCategory.WEAPON
+		"TRINKETS" -> AppCategory.TRINKETS
 		"BUILDING_MATERIAL" -> AppCategory.BUILDING_MATERIAL
 		"MATERIAL" -> AppCategory.MATERIAL
 		"CRAFTING" -> AppCategory.CRAFTING
@@ -139,8 +150,9 @@ fun ItemData.inferDropType(): DroppableType = when (this) {
 	is Food -> DroppableType.FOOD
 	is Mead -> DroppableType.MEAD
 	is Material -> DroppableType.MATERIAL
-	else        -> DroppableType.MATERIAL
+	else -> DroppableType.MATERIAL
 }
+
 fun mapUpgradeInfoToGridList(upgradeInfo: UpgradeInfo): List<GridLevelInfo> {
 	val gridList = mutableListOf<GridLevelInfo>()
 	var currentId = 1
