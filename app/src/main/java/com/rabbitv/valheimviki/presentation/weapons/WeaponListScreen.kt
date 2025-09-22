@@ -28,6 +28,8 @@ import com.composables.icons.lucide.Bomb
 import com.composables.icons.lucide.Grab
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Shield
+import com.composables.icons.lucide.Sparkles
+import com.composables.icons.lucide.Swords
 import com.composables.icons.lucide.Wand
 import com.composables.icons.lucide.WandSparkles
 import com.rabbitv.valheimviki.R
@@ -198,6 +200,7 @@ private fun getChipsForCategory(category: WeaponSubCategory): List<WeaponChip> {
 				ImageVector.vectorResource(id = R.drawable.sword),
 				"Swords"
 			),
+			WeaponChip(WeaponSubType.WOODEN_WEAPON, Lucide.Swords, "Wooden weapons"),
 			WeaponChip(
 				WeaponSubType.SPEAR,
 				ImageVector.vectorResource(id = R.drawable.spear),
@@ -251,7 +254,8 @@ private fun getChipsForCategory(category: WeaponSubCategory): List<WeaponChip> {
 				ImageVector.vectorResource(id = R.drawable.missile),
 				"Missiles"
 			),
-			WeaponChip(WeaponSubType.BOMB, Lucide.Bomb, "Bombs")
+			WeaponChip(WeaponSubType.BOMB, Lucide.Bomb, "Bombs"),
+			WeaponChip(WeaponSubType.BLOB_BOMB, Lucide.Sparkles, "Blob Bombs"),
 		)
 	}
 }

@@ -16,7 +16,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,6 +26,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.composables.icons.lucide.House
+import com.composables.icons.lucide.Lucide
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.navigation.BuildingDetailDestination
@@ -40,6 +41,8 @@ import com.rabbitv.valheimviki.presentation.components.card.LevelInfoCard
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
+import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData
+import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.weapon.model.WeaponDetailUiEvent
@@ -77,7 +80,6 @@ fun WeaponDetailContent(
 	onToggleFavorite: () -> Unit,
 	uiState: WeaponUiState
 ) {
-	val isExpandable = remember { mutableStateOf(false) }
 	val scrollState = rememberScrollState()
 	val handleClick = remember {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
@@ -117,33 +119,43 @@ fun WeaponDetailContent(
 						DetailExpandableText(
 							text = it,
 							collapsedMaxLine = 3,
-							isExpanded = isExpandable,
 							boxPadding = BODY_CONTENT_PADDING.dp
 						)
 					}
 
-					Text(
-						"Upgrade Information",
-						modifier = Modifier.padding(
-							start = BODY_CONTENT_PADDING.dp,
-							end = BODY_CONTENT_PADDING.dp,
-							bottom = BODY_CONTENT_PADDING.dp
-						),
-						color = PrimaryWhite,
-						style = MaterialTheme.typography.headlineMedium
-					)
+
 
 					when (val materials = uiState.materials) {
 						is UIState.Error -> {}
 						is UIState.Loading -> {
+							TridentsDividedRow()
 							LoadingIndicator(
 								paddingValues = PaddingValues(16.dp)
 							)
 						}
 
 						is UIState.Success -> {
-							weapon.upgradeInfoList?.forEachIndexed { levelIndex, upgradeInfoForLevel ->
-								val upgradeStats = mapUpgradeInfoToGridList(upgradeInfoForLevel)
+							val levelsCount =
+								(weapon.upgradeInfoList?.size ?: 0).takeIf { it > 0 } ?: 1
+							if (weapon.upgradeInfoList?.isNotEmpty() == true) {
+								TridentsDividedRow()
+								Text(
+									"Upgrade Information",
+									modifier = Modifier.padding(
+										start = BODY_CONTENT_PADDING.dp,
+										end = BODY_CONTENT_PADDING.dp,
+										bottom = BODY_CONTENT_PADDING.dp
+									),
+									color = PrimaryWhite,
+									style = MaterialTheme.typography.headlineMedium
+								)
+							}
+
+
+							for (levelIndex in 0 until levelsCount) {
+								val upgradeStats = weapon.upgradeInfoList?.getOrNull(levelIndex)
+									?.let { mapUpgradeInfoToGridList(it) } ?: emptyList()
+
 								LevelInfoCard(
 									modifier = Modifier.padding(
 										horizontal = BODY_CONTENT_PADDING.dp,
@@ -162,7 +174,32 @@ fun WeaponDetailContent(
 							}
 						}
 					}
+					when (val state = uiState.relatedPointOfInterest) {
+						is UIState.Loading -> {
+							TridentsDividedRow()
+							LoadingIndicator(PaddingValues(16.dp))
+						}
 
+						is UIState.Success -> {
+							state.data.takeIf { (it).isNotEmpty() }?.let { list ->
+								TridentsDividedRow()
+								HorizontalPagerSection(
+									list = list,
+									data = HorizontalPagerData(
+										title = "Points Of Interest",
+										subTitle = "Point Of Interest Where You Can Find This Object",
+										icon = Lucide.House,
+										iconRotationDegrees = 0f,
+										itemContentScale = ContentScale.Crop
+									),
+									onItemClick = handleClick
+								)
+							}
+						}
+
+						is UIState.Error -> {}
+
+					}
 					when (val state = uiState.craftingObjects) {
 						is UIState.Error -> {}
 						UIState.Loading -> {
@@ -174,19 +211,12 @@ fun WeaponDetailContent(
 							TridentsDividedRow()
 							state.data?.let { craftingStation ->
 								CardImageWithTopLabel(
-									onClickedItem = {
-										val destination =
-											BuildingDetailDestination.CraftingObjectDetail(
-												craftingObjectId = craftingStation.id
-											)
-										onItemClick(destination)
-									},
+									onClickedItem = handleClick,
 									itemData = craftingStation,
 									subTitle = "Crafting Station Needed to Make This Item",
 									contentScale = ContentScale.FillBounds,
 								)
 							}
-
 						}
 					}
 					Spacer(modifier = Modifier.height(45.dp))

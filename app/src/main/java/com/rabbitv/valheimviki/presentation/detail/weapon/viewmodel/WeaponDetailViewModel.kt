@@ -1,11 +1,13 @@
 package com.rabbitv.valheimviki.presentation.detail.weapon.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.di.qualifiers.DefaultDispatcher
+import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
 import com.rabbitv.valheimviki.domain.model.relation.RelatedData
 import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
@@ -16,12 +18,15 @@ import com.rabbitv.valheimviki.domain.use_cases.crafting_object.CraftingObjectUs
 import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
 import com.rabbitv.valheimviki.domain.use_cases.food.FoodUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
+import com.rabbitv.valheimviki.domain.use_cases.point_of_interest.PointOfInterestUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.domain.use_cases.weapon.WeaponUseCases
 import com.rabbitv.valheimviki.navigation.EquipmentDetailDestination
 import com.rabbitv.valheimviki.presentation.detail.weapon.model.WeaponDetailUiEvent
 import com.rabbitv.valheimviki.presentation.detail.weapon.model.WeaponUiState
+import com.rabbitv.valheimviki.utils.extensions.combine
 import com.rabbitv.valheimviki.utils.relatedDataFlow
+import com.rabbitv.valheimviki.utils.relatedListFlowGated
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -29,10 +34,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -50,6 +55,7 @@ class WeaponDetailViewModel @Inject constructor(
 	private val relationUseCase: RelationUseCases,
 	private val materialUseCases: MaterialUseCases,
 	private val foodUseCases: FoodUseCases,
+	private val pointOfInterestUseCases: PointOfInterestUseCases,
 	private val craftingObjectUseCases: CraftingObjectUseCases,
 	private val favoriteUseCases: FavoriteUseCases,
 	@param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
@@ -131,7 +137,12 @@ class WeaponDetailViewModel @Inject constructor(
 			.map { UIState.Success(it) }
 			.flowOn(defaultDispatcher)
 
-
+	private val _poiState: Flow<UIState<List<PointOfInterest>>> = relatedListFlowGated(
+		idsFlow =  _relationsObjects.mapLatest { list -> list.map { item -> item.id } },
+		contentStart = flowOf(true),
+		fetcher = { ids -> pointOfInterestUseCases.getPointsOfInterestByIdsUseCase(ids) },
+		sortBy = { it.order }
+	).flowOn(defaultDispatcher)
 	private val _relatedCraftingObjects = relatedDataFlow(
 		idsFlow = _relationsObjects.mapLatest { list -> list.map { item -> item.id } },
 		fetcher = { ids -> craftingObjectUseCases.getCraftingObjectByIds(ids) }
@@ -141,13 +152,17 @@ class WeaponDetailViewModel @Inject constructor(
 		_weaponFlow,
 		_relatedMaterials,
 		_relatedFoodAsMaterials,
+		_poiState,
 		_relatedCraftingObjects,
 		_isFavorite
-	) { weapon, materials, foodAsMaterials, craftingObjects, isFavorite ->
+	) { weapon, materials, foodAsMaterials,poiState, craftingObjects, isFavorite ->
+		Log.e("materials", "${materials}")
+
 		WeaponUiState(
 			weapon = weapon,
 			materials = materials,
 			foodAsMaterials = foodAsMaterials,
+			relatedPointOfInterest =poiState,
 			craftingObjects = craftingObjects,
 			isFavorite = isFavorite,
 		)
