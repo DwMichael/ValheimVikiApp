@@ -49,7 +49,7 @@ import com.rabbitv.valheimviki.navigation.WorldDetailDestination
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
-import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCard
+import com.rabbitv.valheimviki.presentation.components.card.animated_stat_card.AnimatedStatCard
 import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData
@@ -103,9 +103,7 @@ fun MiniBossContent(
 ) {
 	val isRunning by remember { derivedStateOf { animatedVisibilityScope.transition.isRunning } }
 	val scrollState = rememberScrollState()
-	val isStatInfoExpanded = remember {
-		List(5) { mutableStateOf(false) }
-	}
+    
 	val handleClick = remember(onItemClick) {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
 	}
@@ -196,89 +194,61 @@ fun MiniBossContent(
 						}
 						TridentsDividedRow(text = "BOSS STATS")
 
-						if (miniBossUiSate.miniBoss.baseHP.toString().isNotBlank()) {
-							DarkGlassStatCard(
-								modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-								icon = Lucide.Heart,
-								label = "Health",
-								value = miniBossUiSate.miniBoss.baseHP.toString(),
-								expand = {
-									isStatInfoExpanded[0].value = !isStatInfoExpanded[0].value
-								},
-								isExpanded = isStatInfoExpanded[0].value
-							)
-							AnimatedVisibility(isStatInfoExpanded[0].value) {
-								Text(
-									text = "The amount of health points this boss have",
-									modifier = Modifier.padding(
-										start = BODY_CONTENT_PADDING.dp * 2,
-										end = BODY_CONTENT_PADDING.dp
-									),
-									style = MaterialTheme.typography.bodyLarge
-								)
-							}
-						}
+                        if (miniBossUiSate.miniBoss.baseHP.toString().isNotBlank()) {
+                            AnimatedStatCard(
+                                modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+                                id = "mini_boss_health_stat",
+                                icon = Lucide.Heart,
+                                label = "Health",
+                                value = miniBossUiSate.miniBoss.baseHP.toString(),
+                                details = "The amount of health points this boss have",
+                            )
+                        }
 
-						if (miniBossUiSate.miniBoss.baseDamage.isNotBlank()) {
-							DarkGlassStatCard(
-								modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-								Lucide.Swords,
-								stringResource(R.string.base_damage),
-								"",
-								expand = {
-									isStatInfoExpanded[1].value = !isStatInfoExpanded[1].value
-								},
-								isExpanded = isStatInfoExpanded[1].value
-							)
-							AnimatedVisibility(isStatInfoExpanded[1].value) {
-								StatColumn(miniBossUiSate.miniBoss.baseDamage)
-							}
-						}
-						if (!miniBossUiSate.miniBoss.weakness.isNullOrBlank()) {
-							DarkGlassStatCard(
-								modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-								Lucide.Unlink,
-								stringResource(R.string.weakness),
-								"",
-								expand = {
-									isStatInfoExpanded[2].value = !isStatInfoExpanded[2].value
-								},
-								isExpanded = isStatInfoExpanded[2].value
-							)
-							AnimatedVisibility(isStatInfoExpanded[2].value) {
-								StatColumn(miniBossUiSate.miniBoss.weakness)
-							}
-						}
-						if (!miniBossUiSate.miniBoss.resistance.isNullOrBlank()) {
-							DarkGlassStatCard(
-								modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-								Lucide.Grab,
-								stringResource(R.string.resistance),
-								"",
-								expand = {
-									isStatInfoExpanded[3].value = !isStatInfoExpanded[3].value
-								},
-								isExpanded = isStatInfoExpanded[3].value
-							)
-							AnimatedVisibility(isStatInfoExpanded[3].value) {
-								StatColumn(miniBossUiSate.miniBoss.resistance)
-							}
-						}
-						if (!miniBossUiSate.miniBoss.collapseImmune.isNullOrBlank()) {
-							DarkGlassStatCard(
-								modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-								icon = Lucide.Shield,
-								label = stringResource(R.string.immune),
-								value = "",
-								expand = {
-									isStatInfoExpanded[4].value = !isStatInfoExpanded[4].value
-								},
-								isExpanded = isStatInfoExpanded[4].value
-							)
-							AnimatedVisibility(isStatInfoExpanded[4].value) {
-								StatColumn(miniBossUiSate.miniBoss.collapseImmune)
-							}
-						}
+                        if (miniBossUiSate.miniBoss.baseDamage.isNotBlank()) {
+                            AnimatedStatCard(
+                                modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+                                id = "mini_boss_base_damage_stat",
+                                icon = Lucide.Swords,
+                                label = stringResource(R.string.base_damage),
+                                value = "",
+                                details = miniBossUiSate.miniBoss.baseDamage,
+                                isStatColumn = true,
+                            )
+                        }
+                        if (!miniBossUiSate.miniBoss.weakness.isNullOrBlank()) {
+                            AnimatedStatCard(
+                                modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+                                id = "mini_boss_weakness_stat",
+                                icon = Lucide.Unlink,
+                                label = stringResource(R.string.weakness),
+                                value = "",
+                                details = miniBossUiSate.miniBoss.weakness,
+                                isStatColumn = true,
+                            )
+                        }
+                        if (!miniBossUiSate.miniBoss.resistance.isNullOrBlank()) {
+                            AnimatedStatCard(
+                                modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+                                id = "mini_boss_resistance_stat",
+                                icon = Lucide.Grab,
+                                label = stringResource(R.string.resistance),
+                                value = "",
+                                details = miniBossUiSate.miniBoss.resistance,
+                                isStatColumn = true,
+                            )
+                        }
+                        if (!miniBossUiSate.miniBoss.collapseImmune.isNullOrBlank()) {
+                            AnimatedStatCard(
+                                modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+                                id = "mini_boss_immune_stat",
+                                icon = Lucide.Shield,
+                                label = stringResource(R.string.immune),
+                                value = "",
+                                details = miniBossUiSate.miniBoss.collapseImmune,
+                                isStatColumn = true,
+                            )
+                        }
 
 						SlavicDivider()
 						Box(modifier = Modifier.size(70.dp))
