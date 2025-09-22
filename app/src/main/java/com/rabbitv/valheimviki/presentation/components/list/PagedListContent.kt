@@ -96,5 +96,6 @@ private fun determineListItemType(appCategory: AppCategory): ListItemTypes = whe
 	AppCategory.POINTOFINTEREST -> ListItemTypes.DEFAULT
 	AppCategory.TREE -> ListItemTypes.DEFAULT
 	AppCategory.OREDEPOSITE -> ListItemTypes.DEFAULT
+	AppCategory.TRINKETS -> ListItemTypes.DEFAULT
 }
 

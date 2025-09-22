@@ -31,13 +31,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -82,12 +82,8 @@ class ToolDetailViewModel @Inject constructor(
 			.map { list ->
 				val relatedMap = list.associateBy(RelatedItem::id)
 				val ids = relatedMap.keys.sorted()
-				RelatedData(
-					ids = ids,
-					relatedMap = relatedMap
-				)
+				RelatedData(ids = ids, relatedMap = relatedMap)
 			}
-			.filter { it.ids.isNotEmpty() }
 			.distinctUntilChanged()
 			.flowOn(defaultDispatcher)
 	private val _relatedCraftingObject = relatedDataFlow(
@@ -115,7 +111,12 @@ class ToolDetailViewModel @Inject constructor(
 				}
 		}.distinctUntilChanged()
 			.map { UIState.Success(it) }
-			.flowOn(defaultDispatcher)
+			.onStart { emit(UIState.Success(emptyList())) }
+			.stateIn(
+				viewModelScope,
+				SharingStarted.WhileSubscribed(5_000),
+				UIState.Success(emptyList())
+			)
 
 	private val _relatedOreDeposits = relatedDataFlow(
 		idsFlow = _relationsObjects.mapLatest { list -> list.map { item -> item.id } },

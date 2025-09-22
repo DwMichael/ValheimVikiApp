@@ -1,6 +1,5 @@
 package com.rabbitv.valheimviki.presentation.detail.point_of_interest.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -29,12 +28,10 @@ import com.rabbitv.valheimviki.utils.relatedDataFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
@@ -81,7 +78,7 @@ class PointOfInterestViewModel @Inject constructor(
 			started = SharingStarted.WhileSubscribed(5_000),
 			initialValue = emptyList()
 		)
-	private val idsAndMap: Flow<RelatedData> =
+	private val idsAndMap: StateFlow<RelatedData> =
 		_relationsObjects
 			.map { list ->
 				val relatedMap = list.associateBy(RelatedItem::id)
@@ -90,10 +87,13 @@ class PointOfInterestViewModel @Inject constructor(
 					ids = ids,
 					relatedMap = relatedMap
 				)
-			}
-			.filter { it.ids.isNotEmpty() }
-			.distinctUntilChanged()
-			.flowOn(defaultDispatcher)
+			}.flowOn(defaultDispatcher)
+			.stateIn(
+				viewModelScope, SharingStarted.WhileSubscribed(5_000), RelatedData(
+					ids = emptyList(),
+					relatedMap = emptyMap()
+				)
+			)
 	private val _relatedBiomes = relatedDataFlow(
 		idsFlow = _relationsObjects.mapLatest { list -> list.map { item -> item.id } },
 		fetcher = { ids -> _biomeUseCases.getBiomesByIdsUseCase(ids) }
@@ -153,7 +153,7 @@ class PointOfInterestViewModel @Inject constructor(
 		_isFavorite
 	) { pointOfInterest, relatedBiomes, relatedCreatures, relatedWeapons, relatedFoods, relatedOreDeposits,
 	    relatedOfferings, relatedMaterialDrops, isFavorite ->
-		Log.e("ID OD POI ", pointOfInterest?.id ?: "SS")
+
 		PointOfInterestUiState(
 			pointOfInterest = pointOfInterest,
 			relatedBiomes = relatedBiomes,

@@ -15,6 +15,7 @@ import com.rabbitv.valheimviki.data.repository.relation.RelationRepositoryImpl
 import com.rabbitv.valheimviki.data.repository.search.SearchRepositoryImpl
 import com.rabbitv.valheimviki.data.repository.tool.ToolRepositoryImpl
 import com.rabbitv.valheimviki.data.repository.tree.TreeRepositoryImpl
+import com.rabbitv.valheimviki.data.repository.trinket.TrinketRepositoryImpl
 import com.rabbitv.valheimviki.data.repository.weapon.WeaponRepositoryImplementation
 import com.rabbitv.valheimviki.domain.repository.ArmorRepository
 import com.rabbitv.valheimviki.domain.repository.BiomeRepository
@@ -31,6 +32,7 @@ import com.rabbitv.valheimviki.domain.repository.RelationRepository
 import com.rabbitv.valheimviki.domain.repository.SearchRepository
 import com.rabbitv.valheimviki.domain.repository.ToolRepository
 import com.rabbitv.valheimviki.domain.repository.TreeRepository
+import com.rabbitv.valheimviki.domain.repository.TrinketRepository
 import com.rabbitv.valheimviki.domain.repository.WeaponRepository
 import dagger.Binds
 import dagger.Module
@@ -140,6 +142,13 @@ abstract class RepositoryModule {
 	abstract fun bindCraftingObjectRepository(
 		craftingObjectRepositoryImpl: CraftingObjectRepositoryImpl
 	): CraftingObjectRepository
+
+
+	@Binds
+	@Singleton
+	abstract fun bindTrinketRepository(
+		craftingObjectRepositoryImpl: TrinketRepositoryImpl
+	): TrinketRepository
 
 
 }
