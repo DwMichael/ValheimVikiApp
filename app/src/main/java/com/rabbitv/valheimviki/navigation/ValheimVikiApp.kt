@@ -60,6 +60,7 @@ import com.composables.icons.lucide.House
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.MapPinned
 import com.composables.icons.lucide.MountainSnow
+import com.composables.icons.lucide.Omega
 import com.composables.icons.lucide.Pickaxe
 import com.composables.icons.lucide.Rabbit
 import com.composables.icons.lucide.Shield
@@ -109,6 +110,7 @@ import com.rabbitv.valheimviki.presentation.detail.ore_deposit.OreDepositDetailS
 import com.rabbitv.valheimviki.presentation.detail.point_of_interest.PointOfInterestDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.tool.ToolDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.tree.TreeDetailScreen
+import com.rabbitv.valheimviki.presentation.detail.trinket.TrinketDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.weapon.WeaponDetailScreen
 import com.rabbitv.valheimviki.presentation.favorite.FavoriteScreen
 import com.rabbitv.valheimviki.presentation.food.FoodListScreen
@@ -123,6 +125,7 @@ import com.rabbitv.valheimviki.presentation.search.SearchScreen
 import com.rabbitv.valheimviki.presentation.splash.SplashScreen
 import com.rabbitv.valheimviki.presentation.tool.ToolListScreen
 import com.rabbitv.valheimviki.presentation.tree.TreeScreen
+import com.rabbitv.valheimviki.presentation.trinkets.TrinketListScreen
 import com.rabbitv.valheimviki.presentation.weapons.WeaponListScreen
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import kotlinx.coroutines.launch
@@ -379,6 +382,17 @@ fun ValheimNavGraph(
 				paddingValues = innerPadding,
 			)
 		}
+
+		composable<ListDestination.ItemDestinations.TrinketList> {
+			TrinketListScreen(
+				modifier = Modifier.padding(10.dp),
+				onItemClick = { destination ->
+					valheimVikiNavController.navigate(destination)
+				},
+				paddingValues = innerPadding,
+			)
+		}
+
 		composable<ListDestination.FoodDestinations.FoodList> {
 			FoodListScreen(
 				modifier = Modifier.padding(10.dp),
@@ -673,6 +687,16 @@ fun ValheimNavGraph(
 				},
 			)
 		}
+		composable<EquipmentDetailDestination.TrinketDetail> {
+			TrinketDetailScreen(
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+				onItemClick = { destination ->
+					valheimVikiNavController.navigate(destination)
+				},
+			)
+		}
 
 		composable<EquipmentDetailDestination.ToolDetail> {
 			ToolDetailScreen(
@@ -879,6 +903,9 @@ fun rememberDrawerItems(): DrawerItemCollection {
 	val armorsLabel = stringResource(R.string.armors)
 	val armorsDesc = stringResource(R.string.armor_section)
 
+	val trinketsLabel = stringResource(R.string.trinkets)
+	val trinketsDesc = stringResource(R.string.trinket_section)
+
 	val foodLabel = stringResource(R.string.food)
 	val foodDesc = stringResource(R.string.food_section)
 
@@ -914,6 +941,7 @@ fun rememberDrawerItems(): DrawerItemCollection {
 	val rabbitIcon = Lucide.Rabbit
 	val swordsIcon = Lucide.Swords
 	val shieldIcon = Lucide.Shield
+	val trinketIcon = Lucide.Omega
 	val utensilsIcon = Lucide.Utensils
 	val flaskIcon = Lucide.FlaskRound
 	val anvilIcon = Lucide.Anvil
@@ -930,7 +958,6 @@ fun rememberDrawerItems(): DrawerItemCollection {
 			listOf(
 				// Biomes
 				DrawerItem(
-					drawerId = 0,
 					icon = mountainSnowIcon,
 					label = biomesLabel,
 					contentDescription = biomesDesc,
@@ -938,7 +965,6 @@ fun rememberDrawerItems(): DrawerItemCollection {
 				),
 				// Bosses
 				DrawerItem(
-					drawerId = 1,
 					iconPainter = skullPainter,
 					label = bossesLabel,
 					contentDescription = bossesDesc,
@@ -946,7 +972,6 @@ fun rememberDrawerItems(): DrawerItemCollection {
 				),
 				// Mini-bosses
 				DrawerItem(
-					drawerId = 2,
 					iconPainter = ogrePainter,
 					label = minibossesLabel,
 					contentDescription = minibossesDesc,
@@ -954,7 +979,6 @@ fun rememberDrawerItems(): DrawerItemCollection {
 				),
 				// Creatures
 				DrawerItem(
-					drawerId = 3,
 					icon = rabbitIcon,
 					label = creaturesLabel,
 					contentDescription = creaturesDesc,
@@ -962,7 +986,6 @@ fun rememberDrawerItems(): DrawerItemCollection {
 				),
 				// Weapons
 				DrawerItem(
-					drawerId = 4,
 					icon = swordsIcon,
 					label = weaponsLabel,
 					contentDescription = weaponsDesc,
@@ -970,15 +993,21 @@ fun rememberDrawerItems(): DrawerItemCollection {
 				),
 				// Armors
 				DrawerItem(
-					drawerId = 5,
 					icon = shieldIcon,
 					label = armorsLabel,
 					contentDescription = armorsDesc,
 					navigationDestination = ListDestination.ItemDestinations.ArmorList
 				),
+				// Trinkets
+				DrawerItem(
+					icon = trinketIcon,
+					label = trinketsLabel,
+					contentDescription = trinketsDesc,
+					navigationDestination = ListDestination.ItemDestinations.TrinketList
+				),
+
 				// Food
 				DrawerItem(
-					drawerId = 6,
 					icon = utensilsIcon,
 					label = foodLabel,
 					contentDescription = foodDesc,
@@ -986,7 +1015,6 @@ fun rememberDrawerItems(): DrawerItemCollection {
 				),
 				// Meads
 				DrawerItem(
-					drawerId = 7,
 					icon = flaskIcon,
 					label = meadsLabel,
 					contentDescription = meadsDesc,
@@ -994,7 +1022,6 @@ fun rememberDrawerItems(): DrawerItemCollection {
 				),
 				// CraftingObjects
 				DrawerItem(
-					drawerId = 8,
 					icon = anvilIcon,
 					label = craftingObjectsLabel,
 					contentDescription = craftingObjectsDesc,
@@ -1002,7 +1029,6 @@ fun rememberDrawerItems(): DrawerItemCollection {
 				),
 				// Tools
 				DrawerItem(
-					drawerId = 9,
 					icon = gavelIcon,
 					label = toolsLabel,
 					contentDescription = toolsDesc,
@@ -1010,7 +1036,6 @@ fun rememberDrawerItems(): DrawerItemCollection {
 				),
 				// Materials
 				DrawerItem(
-					drawerId = 10,
 					icon = cuboidIcon,
 					label = materialsLabel,
 					contentDescription = materialsDesc,
@@ -1018,7 +1043,6 @@ fun rememberDrawerItems(): DrawerItemCollection {
 				),
 				// Building Materials
 				DrawerItem(
-					drawerId = 11,
 					icon = houseIcon,
 					label = buildingMatsLabel,
 					contentDescription = buildingMatsDesc,
@@ -1026,7 +1050,6 @@ fun rememberDrawerItems(): DrawerItemCollection {
 				),
 				// Ore Deposits
 				DrawerItem(
-					drawerId = 12,
 					icon = pickaxeIcon,
 					label = oreLabel,
 					contentDescription = oreDesc,
@@ -1034,7 +1057,6 @@ fun rememberDrawerItems(): DrawerItemCollection {
 				),
 				// Trees
 				DrawerItem(
-					drawerId = 13,
 					icon = treesIcon,
 					label = treesLabel,
 					contentDescription = treesDesc,
@@ -1042,13 +1064,14 @@ fun rememberDrawerItems(): DrawerItemCollection {
 				),
 				// Points of Interest
 				DrawerItem(
-					drawerId = 14,
 					icon = mapPinnedIcon,
 					label = poiLabel,
 					contentDescription = poiDesc,
 					navigationDestination = ListDestination.WorldDestinations.PointOfInterestList
 				)
-			)
+			).mapIndexed { index, item ->
+				item.copy(drawerId = index)
+			}
 		)
 	}
 }
