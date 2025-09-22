@@ -51,7 +51,7 @@ fun Creature.toAggressiveCreature(): AggressiveCreature {
 		name = this.name,
 		description = this.description.toString(),
 		order = this.order,
-		levels = this.levelCreatureData.toList(),
+		levels = levelCreatureData?.toList().orEmpty(),
 		weakness = this.weakness.toString(),
 		resistance = this.resistance.toString(),
 		baseDamage = this.baseDamage.toString(),

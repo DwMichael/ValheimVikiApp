@@ -19,6 +19,7 @@ import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
 import com.rabbitv.valheimviki.domain.model.relation.Relation
 import com.rabbitv.valheimviki.domain.model.search.Search
 import com.rabbitv.valheimviki.domain.model.tree.Tree
+import com.rabbitv.valheimviki.domain.model.trinket.Trinket
 import com.rabbitv.valheimviki.domain.model.weapon.Weapon
 import com.rabbitv.valheimviki.domain.repository.ArmorRepository
 import com.rabbitv.valheimviki.domain.repository.BiomeRepository
@@ -34,6 +35,7 @@ import com.rabbitv.valheimviki.domain.repository.RelationRepository
 import com.rabbitv.valheimviki.domain.repository.SearchRepository
 import com.rabbitv.valheimviki.domain.repository.ToolRepository
 import com.rabbitv.valheimviki.domain.repository.TreeRepository
+import com.rabbitv.valheimviki.domain.repository.TrinketRepository
 import com.rabbitv.valheimviki.domain.repository.WeaponRepository
 import com.rabbitv.valheimviki.domain.use_cases.datastore.DataStoreUseCases
 import kotlinx.coroutines.async
@@ -59,6 +61,7 @@ class DataRefetchUseCase @Inject constructor(
 	private val armorRepository: ArmorRepository,
 	private val meadRepository: MeadRepository,
 	private val toolRepository: ToolRepository,
+	private val trinketRepository: TrinketRepository,
 	private val buildingMaterialRepository: BuildingMaterialRepository,
 	private val craftingObjectRepository: CraftingObjectRepository,
 	private val searchRepository: SearchRepository,
@@ -258,6 +261,13 @@ class DataRefetchUseCase @Inject constructor(
 			expectedMinSize = 14
 		),
 		DataCategory(
+			name = "Trinkets",
+			fetchFunction = { lang -> trinketRepository.fetchTrinkets(lang) },
+			storeFunction = { data -> trinketRepository.insertTrinkets(data as List<Trinket>) },
+			toSearchList = { data -> (data as List<Trinket>).toSearchList() },
+			expectedMinSize = 13
+		),
+		DataCategory(
 			name = "Building Materials",
 			fetchFunction = { lang -> buildingMaterialRepository.fetchBuildingMaterial(lang) },
 			storeFunction = { data -> buildingMaterialRepository.insertBuildingMaterial(data as List<BuildingMaterial>) },
@@ -276,7 +286,7 @@ class DataRefetchUseCase @Inject constructor(
 			fetchFunction = { _ -> relationsRepository.fetchRelations() },
 			storeFunction = { data -> relationsRepository.insertRelations(data as List<Relation>) },
 			toSearchList = { _ -> emptyList() }, // Relations don't need search indexing
-			expectedMinSize = 2724
+			expectedMinSize = 2886
 		)
 	)
 
@@ -306,6 +316,7 @@ class DataRefetchUseCase @Inject constructor(
 			async { armorRepository.getLocalArmors().first() },
 			async { meadRepository.getLocalMeads().first() },
 			async { toolRepository.getLocalTools().first() },
+			async { trinketRepository.getLocalTrinkets().first() },
 			async { buildingMaterialRepository.getLocalBuildingMaterials().first() },
 			async { craftingObjectRepository.getLocalCraftingObjects().first() },
 			async { relationsRepository.getLocalRelations().first() }
@@ -324,9 +335,10 @@ class DataRefetchUseCase @Inject constructor(
 		val armors = results[8] as List<Armor>
 		val meads = results[9] as List<Mead>
 		val itemTools = results[10] as List<ItemTool>
-		val buildingMaterials = results[11] as List<BuildingMaterial>
-		val craftingObjects = results[12] as List<CraftingObject>
-		val relations = results[13] as List<Relation>
+		val trinkets = results[11] as List<Trinket>
+		val buildingMaterials = results[12] as List<BuildingMaterial>
+		val craftingObjects = results[13] as List<CraftingObject>
+		val relations = results[14] as List<Relation>
 
 		return@coroutineScope (
 				biomes.size >= expectedSizes["biomes"]!! &&
@@ -340,6 +352,7 @@ class DataRefetchUseCase @Inject constructor(
 						armors.size >= expectedSizes["armors"]!! &&
 						meads.size >= expectedSizes["meads"]!! &&
 						itemTools.size >= expectedSizes["tools"]!! &&
+						trinkets.size >= expectedSizes["trinkets"]!! &&
 						buildingMaterials.size >= expectedSizes["buildingMaterials"]!! &&
 						craftingObjects.size >= expectedSizes["craftingObjects"]!! &&
 						relations.size >= expectedSizes["relations"]!!

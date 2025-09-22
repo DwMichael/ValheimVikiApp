@@ -25,6 +25,13 @@ object Converters {
 		return json.encodeToString(list)
 	}
 
+	@TypeConverter
+	@JvmStatic
+	fun fromStringList(list: List<String>?): String {
+		return json.encodeToString(list)
+	}
+
+
 	//Armor
 	@TypeConverter
 	@JvmStatic
@@ -44,6 +51,13 @@ object Converters {
 	@TypeConverter
 	@JvmStatic
 	fun toLevelCreatureDataList(data: String): List<LevelCreatureData> {
+		return if (data.isEmpty()) emptyList()
+		else json.decodeFromString(data)
+	}
+
+	@TypeConverter
+	@JvmStatic
+	fun toStringList(data: String): List<String> {
 		return if (data.isEmpty()) emptyList()
 		else json.decodeFromString(data)
 	}

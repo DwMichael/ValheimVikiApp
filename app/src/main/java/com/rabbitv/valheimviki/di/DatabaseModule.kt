@@ -76,4 +76,8 @@ object DatabaseModule {
 
 	@Provides
 	fun provideCraftingObjectDao(appDatabase: ValheimVikiDatabase) = appDatabase.craftingObjectDao()
+
+
+	@Provides
+	fun provideTrinketDao(appDatabase: ValheimVikiDatabase) = appDatabase.trinketDao()
 }

@@ -22,6 +22,7 @@ object DataRefetchConfig {
 		"armors" to 51,
 		"meads" to 41,
 		"tools" to 14,
+		"trinkets" to 14,
 		"buildingMaterials" to 258,
 		"craftingObjects" to 46,
 		"relations" to 2724
@@ -32,7 +33,7 @@ object DataRefetchConfig {
 	 */
 	val SEARCHABLE_CATEGORIES = setOf(
 		"BiomeGrid", "BossGrid", "MiniBossGrid", "MobList",
-		"WeaponList", "ArmorList", "FoodList", "MeadList",
+		"WeaponList", "ArmorList", "TrinketList", "FoodList", "MeadList",
 		"CraftingObjectsList", "ToolList", "MaterialCategory",
 		"BuildingMaterialCategory", "OreDepositGrid", "TreeGrid", "PointOfInterestList"
 	)
