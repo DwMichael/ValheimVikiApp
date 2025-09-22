@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
@@ -25,7 +26,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,42 +40,47 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.rememberAsyncImagePainter
-import com.composables.icons.lucide.Flame
 import com.composables.icons.lucide.Grab
 import com.composables.icons.lucide.Heart
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Shield
 import com.composables.icons.lucide.Swords
 import com.composables.icons.lucide.TreePine
+import com.composables.icons.lucide.TrendingUp
 import com.composables.icons.lucide.Trophy
 import com.composables.icons.lucide.Unlink
 import com.rabbitv.valheimviki.R
+import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.LocalSharedTransitionScope
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
+import com.rabbitv.valheimviki.presentation.components.card.animated_stat_card.AnimatedStatCard
 import com.rabbitv.valheimviki.presentation.components.card.card_image.ImageWithTopLabel
-import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCard
 import com.rabbitv.valheimviki.presentation.components.dividers.GreenTorchesDivider
 import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
+import com.rabbitv.valheimviki.presentation.components.grid.grid_item.CustomItemCard
+import com.rabbitv.valheimviki.presentation.components.grid.nested.NestedGrid
+import com.rabbitv.valheimviki.presentation.components.grid.nested.NestedItems
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerSection
 import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDetailImageAnimated
+import com.rabbitv.valheimviki.presentation.components.section_header.SectionHeader
+import com.rabbitv.valheimviki.presentation.components.section_header.SectionHeaderData
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.components.ui_section.UiSection
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithImageAndTitle
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithTrophy
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.OverlayLabel
-import com.rabbitv.valheimviki.presentation.detail.creature.components.column.StatColumn
-import com.rabbitv.valheimviki.presentation.detail.creature.components.rows.CustomRowLayout
 import com.rabbitv.valheimviki.presentation.detail.creature.main_boss_screen.model.MainBossDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.creature.main_boss_screen.model.MainBossUiEvent
 import com.rabbitv.valheimviki.presentation.detail.creature.main_boss_screen.viewmodel.MainBossScreenViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
+import com.rabbitv.valheimviki.ui.theme.CUSTOM_ITEM_CARD_FILL_WIDTH
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -127,11 +132,6 @@ fun MainBossContent(
 		itemContentScale = ContentScale.Crop
 	)
 	val painter = painterResource(R.drawable.summoning_bg)
-	val isStatInfoExpanded = remember {
-		List(5) {
-			mutableStateOf(false)
-		}
-	}
 
 
 
@@ -208,33 +208,32 @@ fun MainBossContent(
 						UiSection(
 							state = mainBossUiState.relatedSummoningItems
 						) { data ->
-							CardWithOverlayLabel(
-								height = 180.dp,
-								alpha = 0.1f,
-								painter = painter,
-								content = {
-									Column {
-										Box(
-											modifier = Modifier.fillMaxWidth()
-										) {
-											OverlayLabel(
-
-												icon = Lucide.Flame,
-												label = "SUMMONING ITEMS",
-											)
-										}
-										CustomRowLayout(
-											onItemClick = handleClick,
-											relatedSummoningItems = data,
-											modifier = Modifier.weight(1f)
-										)
-
-									}
-								}
+							SectionHeader(
+								modifier = Modifier
+									.fillMaxWidth()
+									.wrapContentHeight()
+									.padding(horizontal = BODY_CONTENT_PADDING.dp),
+								data = SectionHeaderData(
+									"SUMMONING ITEMS",
+									"Items needed to summon boss",
+									Lucide.TrendingUp
+								),
 							)
+							NestedGrid(
+								nestedItems = NestedItems(items = data),
+							) { product ->
+								CustomItemCard(
+									itemData = product.itemDrop,
+									onItemClick = handleClick,
+									fillWidth = CUSTOM_ITEM_CARD_FILL_WIDTH,
+									imageUrl = product.itemDrop.imageUrl,
+									name = product.itemDrop.name,
+									quantity = product.quantityList.firstOrNull()
+								)
+							}
 						}
 						UiSection(
-							state = mainBossUiState.relatedSummoningItems
+							state = mainBossUiState.dropItems
 						) { data ->
 							HorizontalPagerSection(
 								onItemClick = handleClick,
@@ -279,87 +278,59 @@ fun MainBossContent(
 						TridentsDividedRow(text = "BOSS STATS")
 
 						if (mainBossUiState.mainBoss.baseHP.toString().isNotBlank()) {
-							DarkGlassStatCard(
+							AnimatedStatCard(
 								modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+								id = "heart_stat",
 								icon = Lucide.Heart,
 								label = stringResource(R.string.health),
 								value = mainBossUiState.mainBoss.baseHP.toString(),
-								expand = {
-									isStatInfoExpanded[0].value = !isStatInfoExpanded[0].value
-								},
-								isExpanded = isStatInfoExpanded[0].value
+								details = stringResource(R.string.what_is_health),
 							)
-							AnimatedVisibility(isStatInfoExpanded[0].value) {
-								Text(
-									text = stringResource(R.string.what_is_health),
-									modifier = Modifier.padding(
-										start = BODY_CONTENT_PADDING.dp * 2,
-										end = BODY_CONTENT_PADDING.dp
-									),
-									style = MaterialTheme.typography.bodyLarge
-								)
-							}
 						}
 
 						if (mainBossUiState.mainBoss.baseDamage.isNotBlank()) {
-							DarkGlassStatCard(
+							AnimatedStatCard(
 								modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-								Lucide.Swords,
-								stringResource(R.string.base_damage),
-								"",
-								expand = {
-									isStatInfoExpanded[1].value = !isStatInfoExpanded[1].value
-								},
-								isExpanded = isStatInfoExpanded[1].value
+								id = "base_damage_stat",
+								icon = Lucide.Swords,
+								label = stringResource(R.string.base_damage),
+								value = "",
+								details = mainBossUiState.mainBoss.baseDamage,
+								isStatColumn = true,
 							)
-							AnimatedVisibility(isStatInfoExpanded[1].value) {
-								StatColumn(mainBossUiState.mainBoss.baseDamage)
-							}
 						}
 						if (mainBossUiState.mainBoss.weakness.isNotBlank()) {
-							DarkGlassStatCard(
+							AnimatedStatCard(
 								modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-								Lucide.Unlink,
-								stringResource(R.string.weakness),
-								"",
-								expand = {
-									isStatInfoExpanded[2].value = !isStatInfoExpanded[2].value
-								},
-								isExpanded = isStatInfoExpanded[2].value
+								id = "swords_stat",
+								icon = Lucide.Unlink,
+								label = stringResource(R.string.weakness),
+								value = "",
+								details = mainBossUiState.mainBoss.weakness,
+								isStatColumn = true,
 							)
-							AnimatedVisibility(isStatInfoExpanded[2].value) {
-								StatColumn(mainBossUiState.mainBoss.weakness)
-							}
 						}
 						if (mainBossUiState.mainBoss.resistance.isNotBlank()) {
-							DarkGlassStatCard(
+							AnimatedStatCard(
 								modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-								Lucide.Grab,
-								stringResource(R.string.resistance),
-								"",
-								expand = {
-									isStatInfoExpanded[3].value = !isStatInfoExpanded[3].value
-								},
-								isExpanded = isStatInfoExpanded[3].value
+								id = "resistance_stat",
+								icon = Lucide.Grab,
+								label = stringResource(R.string.resistance),
+								value = "",
+								details = mainBossUiState.mainBoss.resistance,
+								isStatColumn = true,
 							)
-							AnimatedVisibility(isStatInfoExpanded[3].value) {
-								StatColumn(mainBossUiState.mainBoss.resistance)
-							}
 						}
 						if (mainBossUiState.mainBoss.collapseImmune.isNotBlank()) {
-							DarkGlassStatCard(
+							AnimatedStatCard(
 								modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+								id = "collapse_immune_stat",
 								icon = Lucide.Shield,
 								label = stringResource(R.string.immune),
 								value = "",
-								expand = {
-									isStatInfoExpanded[4].value = !isStatInfoExpanded[4].value
-								},
-								isExpanded = isStatInfoExpanded[4].value
+								details = mainBossUiState.mainBoss.collapseImmune,
+								isStatColumn = true,
 							)
-							AnimatedVisibility(isStatInfoExpanded[4].value) {
-								StatColumn(mainBossUiState.mainBoss.collapseImmune)
-							}
 						}
 
 						SlavicDivider()
@@ -403,7 +374,23 @@ private fun PreviewCreatureDetail() {
 				onItemClick = {},
 				animatedVisibilityScope = this,
 				sharedTransitionScope = this@SharedTransitionLayout,
-				mainBossUiState = MainBossDetailUiState(),
+				mainBossUiState = MainBossDetailUiState(
+					mainBoss = MainBoss(
+						id = "elder",
+						category = "creature",
+						subCategory = "main_boss",
+						imageUrl = "https://via.placeholder.com/512",
+						name = "The Elder",
+						description = "Ancient guardian of the Black Forest.",
+						order = 2,
+						baseHP = 2500,
+						weakness = "Fire",
+						resistance = "Pierce",
+						baseDamage = "Melee smash; Root summon",
+						collapseImmune = "Stagger",
+						forsakenPower = "Eikthyr's Speed"
+					)
+				),
 				onToggleFavorite = { },
 			)
 		}

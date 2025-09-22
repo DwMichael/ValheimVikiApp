@@ -10,6 +10,7 @@ import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.di.qualifiers.DefaultDispatcher
 import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
 import com.rabbitv.valheimviki.domain.model.material.Material
+import com.rabbitv.valheimviki.domain.model.material.MaterialDrop
 import com.rabbitv.valheimviki.domain.model.material.MaterialSubCategory
 import com.rabbitv.valheimviki.domain.model.material.MaterialSubType
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterestSubCategory
@@ -38,7 +39,6 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -131,23 +131,48 @@ class MainBossScreenViewModel @Inject constructor(
 		initialValue = null
 	)
 
+	private val _relatedSummoningItems =
+		idsAndMap.flatMapLatest { (ids, currentItemsMap) ->
+			combine(
+				materialUseCases.getMaterialsBySubCategoryAndIds(
+					subCategory = MaterialSubCategory.FORSAKEN_ALTAR_OFFERING.toString(),
+					ids = ids
+				),
+				materialUseCases.getMaterialsBySubCategoryAndIds(
+					subCategory = MaterialSubCategory.CREATURE_DROP.toString(),
+					ids = ids
+				),
+			) { offerings, creatureDrops ->
+				val combined = (offerings + creatureDrops)
+					.distinctBy { it.id }
+				Log.e("DSADSDD", "Combined summoning items: $combined")
+				combined
+			}.map { materials ->
+				materials.map { material ->
+					val relatedItem = currentItemsMap[material.id]
+					MaterialDrop(
+						itemDrop = material,
+						quantityList = listOf(
+							relatedItem?.quantity,
+							relatedItem?.quantity2star,
+							relatedItem?.quantity3star
+						),
+						chanceStarList = listOf(
+							relatedItem?.chance1star,
+							relatedItem?.chance2star,
+							relatedItem?.chance3star
+						),
+					)
+				}
+			}
+		}.distinctUntilChanged()
+			.map { UIState.Success(it) }
+			.stateIn(
+				viewModelScope,
+				SharingStarted.WhileSubscribed(5_000),
+				UIState.Loading
+			)
 
-	private val _relatedSummoningItems = idsAndMap.flatMapLatest { relatedData ->
-		merge(
-			materialUseCases.getMaterialsBySubCategoryAndIds(
-				subCategory = MaterialSubCategory.FORSAKEN_ALTAR_OFFERING.toString(),
-				ids = relatedData.ids
-			),
-			materialUseCases.getMaterialsBySubCategoryAndIds(
-				subCategory = MaterialSubCategory.CREATURE_DROP.toString(),
-				ids = relatedData.ids
-			),
-		).map { materials -> materials.distinctBy { it.id } }
-	}.map { UIState.Success(it) }.stateIn(
-		viewModelScope,
-		started = SharingStarted.WhileSubscribed(5000),
-		initialValue = UIState.Loading
-	)
 	private val _materialBossData: StateFlow<MaterialBossData> =
 		idsAndMap.flatMapLatest { relatedData ->
 			materialUseCases.getMaterialsBySubCategoryAndIds(
