@@ -2,7 +2,6 @@ package com.rabbitv.valheimviki.presentation.detail.food
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,13 +17,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -49,9 +48,8 @@ import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
+import com.rabbitv.valheimviki.presentation.components.card.animated_stat_card.AnimatedStatCard
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
-import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCard
-import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCardPainter
 import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.grid.grid_item.CustomItemCard
@@ -72,6 +70,7 @@ import com.rabbitv.valheimviki.ui.theme.CUSTOM_ITEM_CARD_FILL_WIDTH
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
+import com.rabbitv.valheimviki.utils.shouldShowValue
 
 @Composable
 fun FoodDetailScreen(
@@ -104,13 +103,9 @@ fun FoodDetailContent(
 ) {
 	val healingPainter = painterResource(R.drawable.heart_plus)
 	val staminaPainter = painterResource(R.drawable.runing)
-
-	val isStatInfoExpanded = remember {
-		List(8) { mutableStateOf(false) }
-	}
 	val scrollState = rememberScrollState()
 
-	val isExpandable = remember { mutableStateOf(false) }
+
 	val handleClick = remember(onItemClick) {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
 	}
@@ -120,16 +115,7 @@ fun FoodDetailContent(
 				(uiState.foodForRecipe as? UIState.Success)?.data?.isNotEmpty() == true
 	}
 
-	fun shouldShowValue(value: Any?): Boolean {
-		return when (value) {
-			null -> false
-			is String -> value.isNotBlank()
-			is Int -> value != 0
-			is Double -> value != 0.0
-			is Float -> value != 0f
-			else -> true
-		}
-	}
+
 	BgImage()
 	Scaffold(
 		modifier = Modifier.fillMaxSize(),
@@ -165,7 +151,6 @@ fun FoodDetailContent(
 					DetailExpandableText(
 						modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
 						text = food.description,
-						isExpanded = isExpandable
 					)
 					Column(
 						modifier = Modifier
@@ -175,148 +160,76 @@ fun FoodDetailContent(
 					) {
 						if (shouldShowValue(food.health)) {
 							SlavicDivider()
-							DarkGlassStatCard(
+							AnimatedStatCard(
+								id = "heart_stat",
 								icon = Lucide.Heart,
-								label = "Health",
-								value = food.health.toString(),
-								expand = {
-									isStatInfoExpanded[0].value = !isStatInfoExpanded[0].value
-								},
-								isExpanded = isStatInfoExpanded[0].value
+								label = stringResource(R.string.health),
+								value = "${food.health.toString()} min",
+								details = "The amount of health points this food adds to your health bar. Health regenerates at 1% per second when above 25% HP. Maximum health is crucial for effective shield use as it directly affects your stagger resistance capacity.",
 							)
-							AnimatedVisibility(isStatInfoExpanded[0].value) {
-								Text(
-									text = "The amount of health points this food adds to your health bar. Health regenerates at 1% per second when above 25% HP. Maximum health is crucial for effective shield use as it directly affects your stagger resistance capacity.",
-									modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-									style = MaterialTheme.typography.bodyLarge
-								)
-							}
 						}
 						if (shouldShowValue(food.healing)) {
-							DarkGlassStatCardPainter(
-								healingPainter,
-								"Healing",
-								food.healing.toString(),
-								expand = {
-									isStatInfoExpanded[1].value = !isStatInfoExpanded[1].value
-								},
-								isExpanded = isStatInfoExpanded[1].value
+							AnimatedStatCard(
+								id = "healing_stat",
+								painter = healingPainter,
+								label = stringResource(R.string.healing),
+								value = "${food.healing.toString()}/s",
+								details = "The rate of health regeneration in HP per second while this food effect is active. This healing occurs continuously throughout the food's duration.",
 							)
-							AnimatedVisibility(isStatInfoExpanded[1].value) {
-								Text(
-									text = "The rate of health regeneration in HP per second while this food effect is active. This healing occurs continuously throughout the food's duration.",
-									modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-									style = MaterialTheme.typography.bodyLarge
-								)
-							}
 						}
 						if (shouldShowValue(food.stamina)) {
-							DarkGlassStatCardPainter(
-								staminaPainter,
-								"Stamina",
-								food.stamina.toString(),
-								expand = {
-									isStatInfoExpanded[2].value = !isStatInfoExpanded[2].value
-								},
-								isExpanded = isStatInfoExpanded[2].value
+							AnimatedStatCard(
+								id = "stamina_stat",
+								painter = staminaPainter,
+								label = stringResource(R.string.stamina),
+								value = food.stamina.toString(),
+								details = "The amount of stamina points this food adds to your stamina bar. Stamina is used for running, jumping, attacking, and blocking. Higher stamina allows for longer combat engagements and exploration.",
 							)
-							AnimatedVisibility(isStatInfoExpanded[2].value) {
-								Text(
-									text = "The amount of stamina points this food adds to your stamina bar. Stamina is used for running, jumping, attacking, and blocking. Higher stamina allows for longer combat engagements and exploration.",
-									modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-									style = MaterialTheme.typography.bodyLarge
-								)
-							}
 						}
 						if (shouldShowValue(food.duration)) {
-							DarkGlassStatCard(
+							AnimatedStatCard(
+								id = "duration_stat",
 								icon = Lucide.Clock2,
-								label = "Duration",
+								label = stringResource(R.string.duration),
 								value = "${food.duration.toString()} min",
-								expand = {
-									isStatInfoExpanded[3].value = !isStatInfoExpanded[3].value
-								},
-								isExpanded = isStatInfoExpanded[3].value
+								details = "How long this food's effects remain active after consumption. The timer begins immediately upon eating and cannot be paused or extended.",
 							)
-							AnimatedVisibility(isStatInfoExpanded[3].value) {
-								Text(
-									text = "How long this food's effects remain active after consumption. The timer begins immediately upon eating and cannot be paused or extended.",
-									modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-									style = MaterialTheme.typography.bodyLarge
-								)
-							}
 						}
 						if (shouldShowValue(food.eitr)) {
-							DarkGlassStatCard(
+							AnimatedStatCard(
+								id = "eitr_stat",
 								icon = Lucide.Wand,
-								label = "Eitr",
+								label = stringResource(R.string.eitr),
 								value = food.eitr.toString(),
-								expand = {
-									isStatInfoExpanded[4].value = !isStatInfoExpanded[4].value
-								},
-								isExpanded = isStatInfoExpanded[4].value
+								details = "The amount of eitr (magic energy) this food provides. Eitr is required for casting magic spells and using staffs. Only certain foods provide this mystical resource.",
 							)
-							AnimatedVisibility(isStatInfoExpanded[4].value) {
-								Text(
-									text = "The amount of eitr (magic energy) this food provides. Eitr is required for casting magic spells and using staffs. Only certain foods provide this mystical resource.",
-									modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-									style = MaterialTheme.typography.bodyLarge
-								)
-							}
 						}
 						if (shouldShowValue(food.weight)) {
-							DarkGlassStatCard(
+							AnimatedStatCard(
+								id = "weight_stat",
 								icon = Lucide.Weight,
-								label = "Weight",
+								label = stringResource(R.string.weight),
 								value = food.weight.toString(),
-								expand = {
-									isStatInfoExpanded[5].value = !isStatInfoExpanded[5].value
-								},
-								isExpanded = isStatInfoExpanded[5].value
+								details = "The weight of one unit of this food in your inventory. Total weight affects movement speed when overencumbered.",
 							)
-							AnimatedVisibility(isStatInfoExpanded[5].value) {
-								Text(
-									text = "The weight of one unit of this food in your inventory. Total weight affects movement speed when overencumbered.",
-									modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-									style = MaterialTheme.typography.bodyLarge
-								)
-							}
 						}
 						if (shouldShowValue(food.forkType)) {
-							DarkGlassStatCard(
+							AnimatedStatCard(
+								id = "info_stat",
 								icon = Lucide.Info,
-								label = "Fork Type",
+								label = stringResource(R.string.fork_type),
 								value = food.forkType.toString(),
-								expand = {
-									isStatInfoExpanded[6].value = !isStatInfoExpanded[6].value
-								},
-								isExpanded = isStatInfoExpanded[6].value
+								details = "The fork icon color indicates this food's primary benefit: Red fork for health-focused foods, yellow fork for stamina-focused foods, blue fork for eitr-focused foods, and white fork for balanced foods that provide equal benefits to multiple stats.",
 							)
-							AnimatedVisibility(isStatInfoExpanded[6].value) {
-								Text(
-									text = "The fork icon color indicates this food's primary benefit: Red fork for health-focused foods, yellow fork for stamina-focused foods, blue fork for eitr-focused foods, and white fork for balanced foods that provide equal benefits to multiple stats.",
-									modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-									style = MaterialTheme.typography.bodyLarge
-								)
-							}
 						}
 						if (shouldShowValue(food.stackSize)) {
-							DarkGlassStatCard(
+							AnimatedStatCard(
+								id = "stackSize_stat",
 								icon = Lucide.Layers2,
-								label = "Stack Size",
+								label = stringResource(R.string.stack_size),
 								value = food.stackSize.toString(),
-								expand = {
-									isStatInfoExpanded[7].value = !isStatInfoExpanded[7].value
-								},
-								isExpanded = isStatInfoExpanded[7].value
+								details = "The maximum number of this food item that can be stored in a single inventory slot. Higher stack sizes save valuable inventory space during long expeditions.",
 							)
-							AnimatedVisibility(isStatInfoExpanded[7].value) {
-								Text(
-									text = "The maximum number of this food item that can be stored in a single inventory slot. Higher stack sizes save valuable inventory space during long expeditions.",
-									modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-									style = MaterialTheme.typography.bodyLarge
-								)
-							}
 						}
 
 					}
