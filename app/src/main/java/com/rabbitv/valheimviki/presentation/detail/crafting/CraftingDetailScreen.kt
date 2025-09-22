@@ -193,7 +193,8 @@ fun CraftingDetailContent(
 							data = SECTION_HEADERS[3]
 						)
 						NestedGrid(
-							nestedItems = NestedItems(items = data),
+						nestedItems = NestedItems(items = data),
+						horizontalPadding = BODY_CONTENT_PADDING.dp,
 						) { product ->
 							CustomItemCard(
 								itemData = product.itemDrop,
@@ -214,7 +215,8 @@ fun CraftingDetailContent(
 							data = upgHeader
 						)
 						NestedGrid(
-							nestedItems = NestedItems(items = data),
+						nestedItems = NestedItems(items = data),
+						horizontalPadding = BODY_CONTENT_PADDING.dp,
 						) { upg ->
 							CustomItemCard(
 								itemData = upg.itemDrop,

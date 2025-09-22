@@ -52,13 +52,8 @@ internal fun <T : Droppable> HorizontalPagerWithHeader(
 	val pagerState = pagerState ?: rememberPagerState(pageCount = { list.size })
 	Column(
 		modifier = modifier
-			.fillMaxWidth()
-			.padding(
-				start = BODY_CONTENT_PADDING.dp,
-				end = BODY_CONTENT_PADDING.dp,
-				bottom = BODY_CONTENT_PADDING.dp,
-			),
-		horizontalAlignment = Alignment.Start
+			.fillMaxWidth(),
+		horizontalAlignment = Alignment.CenterHorizontally
 	) {
 		SectionHeader(data = headerData.toSectionHeaderData())
 		Spacer(modifier = Modifier.padding(6.dp))

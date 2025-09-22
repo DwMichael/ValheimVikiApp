@@ -138,7 +138,7 @@ fun BiomeDetailContent(
 			),
 			uiState.relatedOreDeposits to HorizontalPagerData(
 				title = "Ore Deposits",
-				subTitle = "Ore Deposits you may encounter in this biome",
+				subTitle = "Ore deposits you may encounter in this biome",
 				icon = Lucide.Pickaxe,
 				iconRotationDegrees = 0f,
 				itemContentScale = ContentScale.Crop
@@ -152,7 +152,7 @@ fun BiomeDetailContent(
 			),
 			uiState.relatedPointOfInterest to HorizontalPagerData(
 				title = "Points Of Interest",
-				subTitle = "Points Of Interest you may encounter",
+				subTitle = "Points of interest you may encounter",
 				icon = Lucide.House,
 				iconRotationDegrees = 0f,
 				itemContentScale = ContentScale.Crop

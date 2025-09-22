@@ -31,7 +31,7 @@ fun SectionHeader(
 	val upper = remember(data.title) { data.title?.uppercase() }
 	Column(
 		modifier = modifier,
-		horizontalAlignment = Alignment.Start
+		horizontalAlignment = Alignment.CenterHorizontally
 	) {
 		upper?.let {
 			Row {

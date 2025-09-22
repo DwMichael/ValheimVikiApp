@@ -103,9 +103,7 @@ fun HorizontalPagerSection(
 		horizontalAlignment = Alignment.Start
 	)
 	{
-		HorizontalHeader(
-			data = data
-		)
+		HorizontalHeader(data = data)
 		Spacer(modifier = Modifier.padding(6.dp))
 		HorizontalPager(
 			state = state,
@@ -140,8 +138,8 @@ fun HorizontalHeader(
 	data: HorizontalPagerData,
 ) {
 	Column(
-		modifier = Modifier.wrapContentHeight(),
-		horizontalAlignment = Alignment.Start
+		modifier = Modifier.fillMaxWidth().wrapContentHeight(),
+		horizontalAlignment = Alignment.CenterHorizontally
 	) {
 		Row(
 			horizontalArrangement = Arrangement.Start,

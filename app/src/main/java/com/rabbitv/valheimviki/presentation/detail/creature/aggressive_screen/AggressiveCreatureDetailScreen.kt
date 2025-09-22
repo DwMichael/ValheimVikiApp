@@ -165,10 +165,10 @@ fun AggressiveCreatureDetailContent(
 						TridentsDividedRow(text = "DETAILS")
 						uiState.biome?.let { biome ->
 							Text(
-								modifier = Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp),
+								modifier = Modifier.align(Alignment.CenterHorizontally),
 								text = "PRIMARY SPAWN",
-								textAlign = TextAlign.Left,
-								style = MaterialTheme.typography.titleSmall,
+								textAlign = TextAlign.Center,
+								style = MaterialTheme.typography.titleLarge,
 								maxLines = 1,
 								overflow = TextOverflow.Visible
 							)
@@ -207,6 +207,7 @@ fun AggressiveCreatureDetailContent(
 							state = uiState.materialDrops,
 						) { state ->
 							DroppedItemsSection(
+								modifier = Modifier.padding(start = BODY_CONTENT_PADDING.dp),
 								onItemClick = handleClick,
 								list = state,
 								starLevel = pageIndex,

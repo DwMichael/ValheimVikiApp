@@ -147,12 +147,11 @@ fun TreeDetailContent(
 						state = uiState.relatedBiomes,
 						divider = { SlavicDivider() }
 					) { data ->
-
 						Text(
-							modifier = Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp),
-							text = "PRIMARY SPAWNS",
-							textAlign = TextAlign.Left,
-							style = MaterialTheme.typography.titleSmall,
+							modifier = Modifier.align(Alignment.CenterHorizontally),
+							text = "PRIMARY SPAWN",
+							textAlign = TextAlign.Center,
+							style = MaterialTheme.typography.titleLarge,
 							maxLines = 1,
 							overflow = TextOverflow.Visible
 						)
@@ -190,6 +189,7 @@ fun TreeDetailContent(
 					}
 					UiSection(uiState.relatedMaterials) { data ->
 						DroppedItemsSection(
+							modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
 							onItemClick = handleClick,
 							list = data,
 							icon = { Lucide.Gem },

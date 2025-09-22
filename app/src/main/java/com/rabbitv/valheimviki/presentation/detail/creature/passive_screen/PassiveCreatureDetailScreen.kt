@@ -152,14 +152,13 @@ fun PassiveCreatureDetailContent(
                             collapsedMaxLine = 3,
                             boxPadding = BODY_CONTENT_PADDING.dp
                         )
-
 						TridentsDividedRow(text = "DETAILS")
 						uiState.biome?.let { biome ->
 							Text(
-								modifier = Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp),
+								modifier = Modifier.align(Alignment.CenterHorizontally),
 								text = "PRIMARY SPAWN",
-								textAlign = TextAlign.Left,
-								style = MaterialTheme.typography.titleSmall,
+								textAlign = TextAlign.Center,
+								style = MaterialTheme.typography.titleLarge,
 								maxLines = 1,
 								overflow = TextOverflow.Visible
 							)

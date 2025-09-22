@@ -131,7 +131,7 @@ fun MainBossContent(
 		iconRotationDegrees = 0f,
 		itemContentScale = ContentScale.Crop
 	)
-	val painter = painterResource(R.drawable.summoning_bg)
+
 
 
 
@@ -150,7 +150,7 @@ fun MainBossContent(
 							.fillMaxSize()
 							.verticalScroll(scrollState, enabled = !isRunning),
 						verticalArrangement = Arrangement.Top,
-						horizontalAlignment = Alignment.Start,
+						horizontalAlignment = Alignment.CenterHorizontally,
 					) {
 						MainDetailImageAnimated(
 							sharedTransitionScope = sharedTransitionScope,
