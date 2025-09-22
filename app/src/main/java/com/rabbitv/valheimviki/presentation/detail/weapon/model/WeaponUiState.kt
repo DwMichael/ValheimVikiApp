@@ -1,6 +1,7 @@
 package com.rabbitv.valheimviki.presentation.detail.weapon.model
 
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
+import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.domain.model.upgrader.FoodAsMaterialUpgrade
 import com.rabbitv.valheimviki.domain.model.upgrader.MaterialUpgrade
@@ -10,6 +11,7 @@ data class WeaponUiState(
 	val weapon: Weapon? = null,
 	val materials: UIState< List<MaterialUpgrade>> = UIState.Loading,
 	val foodAsMaterials:UIState< List<FoodAsMaterialUpgrade>> = UIState.Loading,
+	val relatedPointOfInterest: UIState<List<PointOfInterest>> = UIState.Loading,
 	val craftingObjects:UIState< CraftingObject?> = UIState.Loading,
 	val isFavorite: Boolean = false,
 
