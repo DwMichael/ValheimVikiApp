@@ -173,6 +173,7 @@ private fun determineFavoriteListType(appCategory: AppCategory): ListItemTypes {
 		AppCategory.POINTOFINTEREST -> ListItemTypes.DEFAULT
 		AppCategory.TREE -> ListItemTypes.DEFAULT
 		AppCategory.OREDEPOSITE -> ListItemTypes.DEFAULT
+		AppCategory.TRINKETS -> ListItemTypes.SMALL
 	}
 }
 

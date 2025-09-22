@@ -277,13 +277,23 @@ fun MaterialForUpgrade(
 			Text(
 				text = name,
 				style = MaterialTheme.typography.bodyLarge,
+				color = Color.White,
 				fontWeight = FontWeight.Bold
 			)
-			Text(
-				text = "Required: $quantity",
-				style = MaterialTheme.typography.bodyMedium,
-				color = Color.Gray
-			)
+			Row {
+				Text(
+					text = "Required:",
+					style = MaterialTheme.typography.bodyMedium,
+					color = Color.Gray
+				)
+				Text(
+					text = " $quantity",
+					style = MaterialTheme.typography.bodyMedium,
+					color = Color.White,
+					fontWeight = FontWeight.Bold
+				)
+			}
+
 		}
 	}
 }
