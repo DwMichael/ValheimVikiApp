@@ -15,6 +15,7 @@ import com.rabbitv.valheimviki.data.remote.api.ApiPointOfInterestService
 import com.rabbitv.valheimviki.data.remote.api.ApiRelationsService
 import com.rabbitv.valheimviki.data.remote.api.ApiToolService
 import com.rabbitv.valheimviki.data.remote.api.ApiTreeService
+import com.rabbitv.valheimviki.data.remote.api.ApiTrinketService
 import com.rabbitv.valheimviki.data.remote.api.ApiWeaponService
 import com.rabbitv.valheimviki.domain.repository.NetworkConnectivity
 import com.rabbitv.valheimviki.domain.use_cases.connection.NetworkConnectivityObserver
@@ -38,9 +39,9 @@ object NetWorkModule {
 	@Singleton
 	fun provideHttpClient(): OkHttpClient {
 		return OkHttpClient.Builder()
-			.connectTimeout(4, TimeUnit.SECONDS)
-			.readTimeout(5, TimeUnit.SECONDS)
-			.callTimeout(10, TimeUnit.SECONDS)
+			.connectTimeout(6, TimeUnit.SECONDS)
+			.readTimeout(8, TimeUnit.SECONDS)
+			.callTimeout(20, TimeUnit.SECONDS)
 			.connectionPool(okhttp3.ConnectionPool(5, 5, TimeUnit.MINUTES))
 			// Debug: Add logging interceptor to see network requests
 			.addInterceptor { chain ->
@@ -48,10 +49,16 @@ object NetWorkModule {
 				android.util.Log.d("NetworkModule", "🌐 Making request to: ${request.url}")
 				try {
 					val response = chain.proceed(request)
-					android.util.Log.d("NetworkModule", "✅ Response code: ${response.code} for ${request.url}")
+					android.util.Log.d(
+						"NetworkModule",
+						"✅ Response code: ${response.code} for ${request.url}"
+					)
 					response
 				} catch (e: Exception) {
-					android.util.Log.e("NetworkModule", "❌ Network error: ${e.message} for ${request.url}")
+					android.util.Log.e(
+						"NetworkModule",
+						"❌ Network error: ${e.message} for ${request.url}"
+					)
 					throw e
 				}
 			}
@@ -65,7 +72,7 @@ object NetWorkModule {
 		// Debug: Print the baseUrl to see if it's being read correctly
 		println("🔍 DEBUG: baseUrl = '${BuildConfig.baseUrlSafe}'")
 		android.util.Log.d("NetworkModule", "baseUrl = '${BuildConfig.baseUrlSafe}'")
-		
+
 		return Retrofit.Builder()
 			.baseUrl(BuildConfig.baseUrlSafe)
 			.client(okHttpClient)
@@ -156,6 +163,12 @@ object NetWorkModule {
 	@Provides
 	fun provideCraftingObjectService(retrofit: Retrofit): ApiCraftingService {
 		return retrofit.create(ApiCraftingService::class.java)
+	}
+
+	@Singleton
+	@Provides
+	fun provideTrinketService(retrofit: Retrofit): ApiTrinketService {
+		return retrofit.create(ApiTrinketService::class.java)
 	}
 
 	@Provides
