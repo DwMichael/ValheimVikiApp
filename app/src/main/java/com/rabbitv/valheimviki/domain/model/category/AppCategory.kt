@@ -6,6 +6,7 @@ enum class AppCategory {
 	FOOD,
 	ARMOR,
 	WEAPON,
+	TRINKETS,
 	BUILDING_MATERIAL,
 	MATERIAL,
 	CRAFTING,
