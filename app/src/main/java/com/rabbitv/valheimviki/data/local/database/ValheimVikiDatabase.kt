@@ -22,6 +22,7 @@ import com.rabbitv.valheimviki.data.local.dao.RelationDao
 import com.rabbitv.valheimviki.data.local.dao.SearchDao
 import com.rabbitv.valheimviki.data.local.dao.ToolDao
 import com.rabbitv.valheimviki.data.local.dao.TreeDao
+import com.rabbitv.valheimviki.data.local.dao.TrinketDao
 import com.rabbitv.valheimviki.data.local.dao.WeaponDao
 import com.rabbitv.valheimviki.domain.model.armor.Armor
 import com.rabbitv.valheimviki.domain.model.biome.Biome
@@ -39,6 +40,7 @@ import com.rabbitv.valheimviki.domain.model.relation.Relation
 import com.rabbitv.valheimviki.domain.model.search.Search
 import com.rabbitv.valheimviki.domain.model.search.SearchFTS
 import com.rabbitv.valheimviki.domain.model.tree.Tree
+import com.rabbitv.valheimviki.domain.model.trinket.Trinket
 import com.rabbitv.valheimviki.domain.model.weapon.Weapon
 
 @Database(
@@ -48,11 +50,11 @@ import com.rabbitv.valheimviki.domain.model.weapon.Weapon
 		Relation::class, OreDeposit::class,
 		Material::class, PointOfInterest::class,
 		Tree::class, Food::class, Weapon::class,
-		Armor::class, Mead::class, ItemTool::class,
+		Armor::class, Trinket::class, Mead::class, ItemTool::class,
 		BuildingMaterial::class, CraftingObject::class,
 		Search::class,
 		SearchFTS::class],
-	version = 1,
+	version = 2,
 	exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -86,4 +88,6 @@ abstract class ValheimVikiDatabase : RoomDatabase() {
 	abstract fun toolDao(): ToolDao
 	abstract fun buildingMaterialDao(): BuildingMaterialDao
 	abstract fun craftingObjectDao(): CraftingObjectDao
+
+	abstract fun trinketDao(): TrinketDao
 }
