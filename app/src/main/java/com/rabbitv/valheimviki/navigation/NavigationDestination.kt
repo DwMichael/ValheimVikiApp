@@ -84,6 +84,9 @@ sealed interface ListDestination : NavigationDestination {
 
 		@Serializable
 		data object ToolList : ItemDestinations
+
+		@Serializable
+		data object TrinketList : ItemDestinations
 	}
 
 	@Serializable
@@ -183,6 +186,11 @@ sealed interface EquipmentDetailDestination : DetailDestination {
 	@Serializable
 	data class ArmorDetail(
 		val armorId: String
+	) : EquipmentDetailDestination
+
+	@Serializable
+	data class TrinketDetail(
+		val trinketId: String
 	) : EquipmentDetailDestination
 
 	@Serializable
@@ -363,8 +371,8 @@ object NavigationHelper {
 
 			AppCategory.ARMOR -> EquipmentDetailDestination.ArmorDetail(armorId = itemData.id)
 			AppCategory.WEAPON -> EquipmentDetailDestination.WeaponDetail(weaponId = itemData.id)
-
-			AppCategory.BUILDING_MATERIAL -> BuildingDetailDestination.BuildingMaterialDetail(
+			AppCategory.TRINKETS -> EquipmentDetailDestination.TrinketDetail(trinketId = itemData.id)
+				AppCategory.BUILDING_MATERIAL -> BuildingDetailDestination.BuildingMaterialDetail(
 				buildingMaterialId = itemData.id
 			)
 
@@ -390,6 +398,7 @@ object NavigationHelper {
 			AppCategory.POINTOFINTEREST -> WorldDetailDestination.PointOfInterestDetail(itemData.id)
 			AppCategory.TREE -> WorldDetailDestination.TreeDetail(itemData.id)
 			AppCategory.OREDEPOSITE -> WorldDetailDestination.OreDepositDetail(itemData.id)
+
 		}
 	}
 

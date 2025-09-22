@@ -58,6 +58,7 @@ import com.composables.icons.lucide.House
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.MapPinned
 import com.composables.icons.lucide.MountainSnow
+import com.composables.icons.lucide.Omega
 import com.composables.icons.lucide.Pickaxe
 import com.composables.icons.lucide.Rabbit
 import com.composables.icons.lucide.Shield
@@ -78,7 +79,7 @@ import kotlinx.coroutines.launch
 
 @Immutable
 data class DrawerItem(
-	val drawerId: Int,
+	val drawerId: Int = -1,
 	val iconPainter: Painter? = null,
 	val icon: ImageVector? = null,
 	val label: String,
@@ -304,59 +305,56 @@ private fun NavigationDrawerImage() {
 @Preview(name = "NavigationDrawer", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun PreviewNavigationDrawer() {
-
 	val items = listOf(
 		DrawerItem(
-			drawerId = 0,
 			icon = Lucide.MountainSnow,
 			label = "Biomes",
 			contentDescription = "List of Biomes",
-			navigationDestination = GridDestination.WorldDestinations.BiomeGrid
+			navigationDestination = GridDestination.WorldDestinations.BiomeGrid,
 		),
 		DrawerItem(
-			drawerId = 1,
 			iconPainter = painterResource(R.drawable.boss_1),
 			label = "Bosses",
 			contentDescription = "Bosses section",
 			navigationDestination = GridDestination.CreatureDestinations.BossGrid
 		),
 		DrawerItem(
-			drawerId = 2,
 			iconPainter = painterResource(R.drawable.miniboss),
 			label = "MiniBosses",
 			contentDescription = "MiniBosses section",
 			navigationDestination = GridDestination.CreatureDestinations.MiniBossGrid
 		),
 		DrawerItem(
-			drawerId = 3,
 			icon = Lucide.Rabbit,
 			label = "Creatures",
 			contentDescription = "Creatures section",
 			navigationDestination = ListDestination.CreatureDestinations.MobList
 		),
 		DrawerItem(
-			drawerId = 4,
 			icon = Lucide.Swords,
 			label = "Weapons",
 			contentDescription = "Weapons section",
 			navigationDestination = ListDestination.ItemDestinations.WeaponList
 		),
 		DrawerItem(
-			drawerId = 5,
 			icon = Lucide.Shield,
 			label = "Armor",
 			contentDescription = "Armor section",
 			navigationDestination = ListDestination.ItemDestinations.ArmorList
 		),
 		DrawerItem(
-			drawerId = 6,
+			icon = Lucide.Omega,
+			label = "Trinket",
+			contentDescription = "Trinket section",
+			navigationDestination = ListDestination.ItemDestinations.TrinketList
+		),
+		DrawerItem(
 			icon = Lucide.Utensils,
 			label = "Food",
 			contentDescription = "Food section",
 			navigationDestination = ListDestination.FoodDestinations.FoodList
 		),
 		DrawerItem(
-			drawerId = 7,
 			icon = Lucide.FlaskRound,
 			label = "Mead",
 			contentDescription = "Mead section",
@@ -364,55 +362,51 @@ private fun PreviewNavigationDrawer() {
 		),
 
 		DrawerItem(
-			drawerId = 8,
+
 			icon = Lucide.Anvil,
 			label = "Crafting Stations",
 			contentDescription = "Crafting Station section",
 			navigationDestination = ListDestination.CraftingDestinations.CraftingObjectsList
 		),
 		DrawerItem(
-			drawerId = 9,
 			icon = Lucide.Gavel,
 			label = "Tools",
 			contentDescription = "Tools section",
 			navigationDestination = ListDestination.ItemDestinations.ToolList
 		),
 		DrawerItem(
-			drawerId = 10,
 			icon = Lucide.Cuboid,
 			label = "Materials",
 			contentDescription = "Materials section",
 			navigationDestination = ListDestination.CraftingDestinations.MaterialCategory
 		),
 		DrawerItem(
-			drawerId = 11,
 			icon = Lucide.House,
 			label = "Building Materials",
 			contentDescription = "Building Materials section",
 			navigationDestination = ListDestination.CraftingDestinations.BuildingMaterialCategory
 		),
 		DrawerItem(
-			drawerId = 12,
 			icon = Lucide.Pickaxe,
 			label = "Ore Deposits",
 			contentDescription = "Ore Deposits section",
 			navigationDestination = GridDestination.WorldDestinations.OreDepositGrid
 		),
 		DrawerItem(
-			drawerId = 13,
 			icon = Lucide.Trees,
 			label = "Trees",
 			contentDescription = "Trees section",
 			navigationDestination = GridDestination.WorldDestinations.TreeGrid
 		),
 		DrawerItem(
-			drawerId = 14,
 			icon = Lucide.MapPinned,
 			label = "Points Of Interest",
 			contentDescription = "Points Of Interest section",
 			navigationDestination = ListDestination.WorldDestinations.PointOfInterestList
 		)
-	)
+	).mapIndexed { index, item ->
+		item.copy(drawerId = index)
+	}
 
 	val nav = rememberNavController()
 	ValheimVikiAppTheme {
