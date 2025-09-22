@@ -29,10 +29,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -78,12 +78,8 @@ class AggressiveCreatureDetailScreenViewModel @Inject constructor(
 			.map { list ->
 				val relatedMap = list.associateBy(RelatedItem::id)
 				val ids = relatedMap.keys.sorted()
-				RelatedData(
-					ids = ids,
-					relatedMap = relatedMap
-				)
+				RelatedData(ids = ids, relatedMap = relatedMap)
 			}
-			.filter { it.ids.isNotEmpty() }
 			.distinctUntilChanged()
 			.flowOn(defaultDispatcher)
 	private val _biome = idsAndMap.combine(
@@ -118,7 +114,12 @@ class AggressiveCreatureDetailScreenViewModel @Inject constructor(
 				}
 		}.distinctUntilChanged()
 			.map { UIState.Success(it) }
-			.flowOn(defaultDispatcher)
+			.onStart { emit(UIState.Success(emptyList())) }
+			.stateIn(
+				viewModelScope,
+				SharingStarted.WhileSubscribed(5_000),
+				UIState.Success(emptyList())
+			)
 	private val _foodDropItem =
 		idsAndMap.flatMapLatest { (ids, currentItemsMap) ->
 			foodUseCase.getFoodListByIdsUseCase(ids)
@@ -143,7 +144,12 @@ class AggressiveCreatureDetailScreenViewModel @Inject constructor(
 				}
 		}.distinctUntilChanged()
 			.map { UIState.Success(it) }
-			.flowOn(defaultDispatcher)
+			.onStart { emit(UIState.Success(emptyList())) }
+			.stateIn(
+				viewModelScope,
+				SharingStarted.WhileSubscribed(5_000),
+				UIState.Success(emptyList())
+			)
 
 	val uiState = combine(
 		_creature,

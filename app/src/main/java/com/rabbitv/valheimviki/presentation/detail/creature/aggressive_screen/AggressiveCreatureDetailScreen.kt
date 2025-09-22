@@ -58,7 +58,7 @@ import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.navigation.WorldDetailDestination
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
-import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCard
+import com.rabbitv.valheimviki.presentation.components.card.animated_stat_card.AnimatedStatCard
 import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.DroppedItemsSection
@@ -109,11 +109,11 @@ fun AggressiveCreatureDetailContent(
 	val pagerState =
 		rememberPagerState(pageCount = { uiState.aggressiveCreature?.levels?.size ?: 0 })
 	val sharedScrollState = rememberScrollState()
-	val isExpandable = remember { mutableStateOf(false) }
 	val coroutineScope = rememberCoroutineScope()
 	val handleClick = remember(onItemClick) {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
 	}
+
 	Scaffold { padding ->
 		uiState.aggressiveCreature?.let { aggressiveCreature ->
 			HorizontalPager(
@@ -159,7 +159,6 @@ fun AggressiveCreatureDetailContent(
 						DetailExpandableText(
 							text = aggressiveCreature.description,
 							collapsedMaxLine = 3,
-							isExpanded = isExpandable,
 							boxPadding = BODY_CONTENT_PADDING.dp
 						)
 
@@ -265,139 +264,65 @@ private fun CreatureStatsSection(
 	creature: AggressiveCreature,
 	currentLevel: LevelCreatureData
 ) {
-
-	val expandedStates = remember {
-		mutableStateOf(BooleanArray(5) { false })
-	}
-
-
-	StatCard(
-		icon = Lucide.Heart,
-		label = stringResource(R.string.health),
-		value = currentLevel.baseHp.toString(),
-		expandedIndex = 0,
-		expandedStates = expandedStates.value,
-		onExpandToggle = { index ->
-			expandedStates.value = expandedStates.value.copyOf().apply {
-				this[index] = !this[index]
-			}
-		}
-	) {
-		Text(
-			text = "The amount of health points this mob have",
-			modifier = Modifier.padding(
-				start = BODY_CONTENT_PADDING.dp * 2,
-				end = BODY_CONTENT_PADDING.dp
-			),
-			style = MaterialTheme.typography.bodyLarge
-		)
-	}
+    AnimatedStatCard(
+        id = "aggr_health_stat",
+        icon = Lucide.Heart,
+        label = stringResource(R.string.health),
+        value = currentLevel.baseHp.toString(),
+        details = "The amount of health points this mob have",
+    )
 
 	// Base Damage
-	if (creature.baseDamage.isNotBlank() && creature.baseDamage != "null") {
-		StatCard(
-			icon = Lucide.Swords,
-			label = stringResource(R.string.base_damage),
-			value = "",
-			expandedIndex = 1,
-			expandedStates = expandedStates.value,
-			onExpandToggle = { index ->
-				expandedStates.value = expandedStates.value.copyOf().apply {
-					this[index] = !this[index]
-				}
-			}
-		) {
-			StatColumn(creature.baseDamage)
-		}
-	}
+    if (creature.baseDamage.isNotBlank() && creature.baseDamage != "null") {
+        AnimatedStatCard(
+            id = "aggr_base_damage_stat",
+            icon = Lucide.Swords,
+            label = stringResource(R.string.base_damage),
+            value = "",
+            details = creature.baseDamage,
+            isStatColumn = true,
+        )
+    }
 
 	// Weakness
-	if (!creature.weakness.isNullOrBlank() && creature.weakness != "null") {
-		StatCard(
-			icon = Lucide.Unlink,
-			label = stringResource(R.string.weakness),
-			value = "",
-			expandedIndex = 2,
-			expandedStates = expandedStates.value,
-			onExpandToggle = { index ->
-				expandedStates.value = expandedStates.value.copyOf().apply {
-					this[index] = !this[index]
-				}
-			}
-		) {
-			StatColumn(creature.weakness)
-		}
-	}
+    if (!creature.weakness.isNullOrBlank() && creature.weakness != "null") {
+        AnimatedStatCard(
+            id = "aggr_weakness_stat",
+            icon = Lucide.Unlink,
+            label = stringResource(R.string.weakness),
+            value = "",
+            details = creature.weakness,
+            isStatColumn = true,
+        )
+    }
 
 	// Resistance
-	if (!creature.resistance.isNullOrBlank() && creature.resistance != "null") {
+    if (!creature.resistance.isNullOrBlank() && creature.resistance != "null") {
+        AnimatedStatCard(
+            id = "aggr_resistance_stat",
+            icon = Lucide.Grab,
+            label = stringResource(R.string.resistance),
+            value = "",
+            details = creature.resistance,
+            isStatColumn = true,
+        )
 
-		StatCard(
-			icon = Lucide.Grab,
-			label = stringResource(R.string.resistance),
-			value = "",
-			expandedIndex = 3,
-			expandedStates = expandedStates.value,
-			onExpandToggle = { index ->
-				expandedStates.value = expandedStates.value.copyOf().apply {
-					this[index] = !this[index]
-				}
-			}
-		) {
-			StatColumn(creature.resistance)
-		}
-
-	}
+    }
 
 	// Abilities
-	if (!creature.abilities.isNullOrBlank() && creature.abilities != "null") {
-		StatCard(
-			icon = Lucide.Atom,
-			label = stringResource(R.string.abilities),
-			value = "",
-			expandedIndex = 4,
-			expandedStates = expandedStates.value,
-			onExpandToggle = { index ->
-				expandedStates.value = expandedStates.value.copyOf().apply {
-					this[index] = !this[index]
-				}
-			}
-		) {
-			Text(
-				modifier = Modifier.padding(
-					start = BODY_CONTENT_PADDING.dp * 2,
-					end = BODY_CONTENT_PADDING.dp
-				),
-				text = creature.abilities,
-				style = MaterialTheme.typography.bodyLarge
-			)
-		}
+    if (!creature.abilities.isNullOrBlank() && creature.abilities != "null") {
+        AnimatedStatCard(
+            id = "aggr_abilities_stat",
+            icon = Lucide.Atom,
+            label = stringResource(R.string.abilities),
+            value = "",
+            details = creature.abilities,
+        )
 
-	}
+    }
 }
 
-@Composable
-private fun StatCard(
-	icon: ImageVector,
-	label: String,
-	value: String,
-	expandedIndex: Int,
-	expandedStates: BooleanArray,
-	onExpandToggle: (Int) -> Unit,
-	expandedContent: @Composable () -> Unit
-) {
-	DarkGlassStatCard(
-		modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-		icon = icon,
-		label = label,
-		value = value,
-		expand = { onExpandToggle(expandedIndex) },
-		isExpanded = expandedStates[expandedIndex]
-	)
-	AnimatedVisibility(expandedStates[expandedIndex]) {
-		expandedContent()
-	}
-}
+ 
 
 
 @Preview(name = "CreaturePage")
