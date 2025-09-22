@@ -76,8 +76,7 @@ fun GemstoneDetailContent(
 	uiState: GemstoneDetailUiState,
 ) {
 
-	val scrollState = rememberScrollState()
-	val isExpandable = remember { mutableStateOf(false) }
+    val scrollState = rememberScrollState()
 	val handleItemClick = remember {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
 	}
@@ -123,12 +122,11 @@ fun GemstoneDetailContent(
 					)
 					SlavicDivider()
 
-					material.description?.let {
-						DetailExpandableText(
-							text = material.description,
-							boxPadding = BODY_CONTENT_PADDING.dp,
-							isExpanded = isExpandable
-						)
+                    material.description?.let {
+                        DetailExpandableText(
+                            text = material.description,
+                            boxPadding = BODY_CONTENT_PADDING.dp,
+                        )
 					}
 
 					UiSection(

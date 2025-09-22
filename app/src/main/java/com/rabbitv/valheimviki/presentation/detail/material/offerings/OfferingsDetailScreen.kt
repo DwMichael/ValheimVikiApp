@@ -84,8 +84,7 @@ fun OfferingsDetailContent(
 	uiState: OfferingUiState,
 ) {
 
-	val scrollState = rememberScrollState()
-	val isExpandable = remember { mutableStateOf(false) }
+    val scrollState = rememberScrollState()
 	val handleItemClick = remember {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
 	}
@@ -155,14 +154,13 @@ fun OfferingsDetailContent(
 					)
 					SlavicDivider()
 
-					material.description?.let {
-						DetailExpandableText(
-							text = material.description,
-							boxPadding = BODY_CONTENT_PADDING.dp,
-							isExpanded = isExpandable
-						)
+                    material.description?.let {
+                        DetailExpandableText(
+                            text = material.description,
+                            boxPadding = BODY_CONTENT_PADDING.dp,
+                        )
 
-					}
+                    }
 
 					UiSection(
 						state = uiState.aggressive

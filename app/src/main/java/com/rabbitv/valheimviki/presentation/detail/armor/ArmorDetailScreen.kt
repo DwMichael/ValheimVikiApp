@@ -20,13 +20,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -92,8 +93,6 @@ fun ArmorDetailContent(
 	onToggleFavorite: (favorite: Favorite, currentIsFavorite: Boolean) -> Unit,
 	uiState: ArmorDetailUiState
 ) {
-
-	val isExpandable = remember { mutableStateOf(false) }
 	val scrollState = rememberScrollState()
 	val handleClick = remember(onItemClick) {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
@@ -134,7 +133,6 @@ fun ArmorDetailContent(
 						DetailExpandableText(
 							text = it,
 							collapsedMaxLine = 3,
-							isExpanded = isExpandable,
 							boxPadding = BODY_CONTENT_PADDING.dp
 						)
 					}
@@ -172,6 +170,11 @@ fun ArmorDetailContent(
 										level = levelIndex,
 										upgradeStats = upgradeStats,
 										materialsForUpgrade = materials.data,
+										foodForUpgrade = when (val foodState =
+											uiState.foodAsMaterials) {
+											is UIState.Success -> foodState.data
+											else -> emptyList()
+										},
 									)
 								}
 							}
@@ -283,14 +286,18 @@ fun InfoSection(
 			.padding(horizontal = 16.dp, vertical = 12.dp)
 	) {
 		Text(
-			text = title,
+			text = AnnotatedString.fromHtml(
+				title,
+			),
 			color = PrimaryWhite,
 			style = MaterialTheme.typography.titleMedium,
 			fontWeight = FontWeight.Bold
 		)
 		Spacer(modifier = Modifier.height(8.dp))
 		Text(
-			text = content,
+			text = AnnotatedString.fromHtml(
+				content,
+			),
 			color = YellowDTNotSelected,
 			style = MaterialTheme.typography.bodyLarge,
 			lineHeight = 22.sp

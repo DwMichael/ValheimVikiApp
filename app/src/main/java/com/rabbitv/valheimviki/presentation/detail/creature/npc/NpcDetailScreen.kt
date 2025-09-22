@@ -112,9 +112,6 @@ fun NpcDetailContent(
 	onToggleFavorite: () -> Unit,
 	uiState: NpcDetailUiState,
 ) {
-	val isExpandable = remember { mutableStateOf(false) }
-	val isExpandableLocation = remember { mutableStateOf(false) }
-	val isExpandableBiography = remember { mutableStateOf(false) }
 	val scrollState = rememberScrollState()
 	val headersShopTable = listOf(
 		"Name", "Icon", "Cost",
@@ -167,7 +164,6 @@ fun NpcDetailContent(
 					DetailExpandableText(
 						text = it.description,
 						collapsedMaxLine = 3,
-						isExpanded = isExpandable,
 						boxPadding = BODY_CONTENT_PADDING.dp
 					)
 					TridentsDividedRow(text = "NPC DETAIL")
@@ -223,7 +219,6 @@ fun NpcDetailContent(
 						DetailExpandableText(
 							text = it.location,
 							collapsedMaxLine = 3,
-							isExpanded = isExpandableLocation,
 							boxPadding = BODY_CONTENT_PADDING.dp
 						)
 					}
@@ -242,7 +237,6 @@ fun NpcDetailContent(
 						DetailExpandableText(
 							text = it.biography,
 							collapsedMaxLine = 3,
-							isExpanded = isExpandableBiography,
 							boxPadding = BODY_CONTENT_PADDING.dp
 						)
 					}

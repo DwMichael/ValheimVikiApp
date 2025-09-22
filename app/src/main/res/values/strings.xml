@@ -53,4 +53,18 @@
     <string name="crafting_stations">Crafting Stations</string>
     <string name="health">Health</string>
     <string name="what_is_health">The amount of health points this boss has</string>
+    <string name="trinkets">Trinkets</string>
+    <string name="trinket_section">Trinket Section</string>
+    <string name="duration">Duration</string>
+    <string name="adrenaline">Adrenaline</string>
+    <string name="healing">Healing</string>
+    <string name="stamina">Stamina</string>
+    <string name="eitr">Eitr</string>
+    <string name="weight">Weight</string>
+    <string name="fork_type">Fork Type</string>
+    <string name="stack_size">Stack Size</string>
+    <string name="growth_time">Growth Time</string>
+    <string name="need_cultivator">Need Cultivator?</string>
+    <string name="information_if_seeds_need_cultivator_to_be_planted">Information if seeds need cultivator to be planted</string>
+    <string name="time_needed_for_plant_to_fully_grow">Time needed for plant to fully grow.</string>
 </resources>

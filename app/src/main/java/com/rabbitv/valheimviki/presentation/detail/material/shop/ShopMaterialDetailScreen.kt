@@ -69,8 +69,7 @@ fun ShopMaterialDetailContent(
 	onToggleFavorite: () -> Unit,
 	uiState: ShopUiState,
 ) {
-	val scrollState = rememberScrollState()
-	val isExpandable = remember { mutableStateOf(false) }
+    val scrollState = rememberScrollState()
 
 	BgImage()
 	Scaffold(
@@ -105,13 +104,12 @@ fun ShopMaterialDetailContent(
 					)
 					SlavicDivider()
 
-					material.description?.let {
-						DetailExpandableText(
-							text = material.description,
-							boxPadding = BODY_CONTENT_PADDING.dp,
-							isExpanded = isExpandable
-						)
-					}
+                    material.description?.let {
+                        DetailExpandableText(
+                            text = material.description,
+                            boxPadding = BODY_CONTENT_PADDING.dp,
+                        )
+                    }
 					if (material.effect.isNullOrBlank() && material.effect != "null") {
 						TridentsDividedRow("Effect")
 						Text(

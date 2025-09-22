@@ -132,7 +132,6 @@ fun CraftingDetailContent(
 
 	val uiState = uiState()
 	val scrollState = rememberScrollState()
-	val isExpandable = remember { mutableStateOf(false) }
 	val handleClick = remember(onItemClick) {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
 	}
@@ -180,7 +179,6 @@ fun CraftingDetailContent(
 					Box(modifier = Modifier.padding(BODY_CONTENT_PADDING.dp)) {
 						DetailExpandableText(
 							text = craftingObject.description,
-							isExpanded = isExpandable
 						)
 					}
 

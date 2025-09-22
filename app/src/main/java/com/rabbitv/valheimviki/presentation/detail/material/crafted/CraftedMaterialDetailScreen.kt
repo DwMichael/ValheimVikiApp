@@ -85,8 +85,7 @@ fun CraftedMaterialDetailContent(
 	onToggleFavorite: () -> Unit,
 	uiState: CraftedMaterialUiState,
 ) {
-	val scrollState = rememberScrollState()
-	val isExpandable = remember { mutableStateOf(false) }
+    val scrollState = rememberScrollState()
 	val handleClick = remember {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
 	}
@@ -123,14 +122,13 @@ fun CraftedMaterialDetailContent(
 						textAlign = TextAlign.Center
 					)
 					SlavicDivider()
-					material.description?.let {
-						DetailExpandableText(
-							text = material.description,
-							boxPadding = BODY_CONTENT_PADDING.dp,
-							isExpanded = isExpandable
-						)
+                    material.description?.let {
+                        DetailExpandableText(
+                            text = material.description,
+                            boxPadding = BODY_CONTENT_PADDING.dp,
+                        )
 
-					}
+                    }
 
 					UiSection(
 						state = uiState.requiredCraftingStations,

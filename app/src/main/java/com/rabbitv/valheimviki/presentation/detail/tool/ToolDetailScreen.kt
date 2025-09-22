@@ -108,8 +108,7 @@ fun ToolDetailContent(
 		itemContentScale = ContentScale.Crop
 	)
 	val scrollState = rememberScrollState()
-	val craftingStationPainter = painterResource(R.drawable.food_bg)
-	val isExpandable = remember { mutableStateOf(false) }
+    val craftingStationPainter = painterResource(R.drawable.food_bg)
 	val handleClick = remember(onItemClick) {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
 	}
@@ -145,11 +144,10 @@ fun ToolDetailContent(
 						textAlign = TextAlign.Center
 					)
 					SlavicDivider()
-					DetailExpandableText(
-						text = tool.description,
-						boxPadding = BODY_CONTENT_PADDING.dp,
-						isExpanded = isExpandable
-					)
+                    DetailExpandableText(
+                        text = tool.description,
+                        boxPadding = BODY_CONTENT_PADDING.dp,
+                    )
 
 
 					UiSection(

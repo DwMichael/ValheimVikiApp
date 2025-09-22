@@ -1,17 +1,11 @@
 package com.rabbitv.valheimviki.presentation.detail.material.seeds
 
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -22,14 +16,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.fromHtml
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -42,6 +34,7 @@ import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.PawPrint
 import com.composables.icons.lucide.Trees
 import com.composables.icons.lucide.Wrench
+import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
@@ -49,8 +42,8 @@ import com.rabbitv.valheimviki.navigation.WorldDetailDestination
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
+import com.rabbitv.valheimviki.presentation.components.card.animated_stat_card.AnimatedStatCard
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
-import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCard
 import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.horizontal_pager.HorizontalPagerData
@@ -95,12 +88,10 @@ fun SeedMaterialDetailContent(
 	uiState: SeedUiState,
 ) {
 	val scrollState = rememberScrollState()
-	val isExpandable = remember { mutableStateOf(false) }
 	val handleItemClick = remember {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
 	}
-	val isStatInfoExpanded1 = remember { mutableStateOf(false) }
-	val isStatInfoExpanded2 = remember { mutableStateOf(false) }
+
 
 	val treesData = HorizontalPagerData(
 		title = "Trees",
@@ -163,7 +154,6 @@ fun SeedMaterialDetailContent(
 						DetailExpandableText(
 							text = material.description,
 							boxPadding = BODY_CONTENT_PADDING.dp,
-							isExpanded = isExpandable
 						)
 
 					}
@@ -215,49 +205,23 @@ fun SeedMaterialDetailContent(
 
 					if (uiState.material.growthTime != null) {
 						TridentsDividedRow()
-						DarkGlassStatCard(
+						AnimatedStatCard(
+							id = "growth_time_stat",
 							icon = Lucide.Gauge,
-							label = "Growth Time",
+							label = stringResource(R.string.growth_time),
 							value = uiState.material.growthTime,
-							expand = { isStatInfoExpanded1.value = !isStatInfoExpanded1.value },
-							isExpanded = isStatInfoExpanded1.value,
+							details = stringResource(R.string.time_needed_for_plant_to_fully_grow),
 						)
-						AnimatedVisibility(
-							visible = isStatInfoExpanded1.value,
-							enter = expandVertically() + fadeIn(),
-							exit = shrinkVertically() + fadeOut()
-						) {
-							Text(
-								text = AnnotatedString.fromHtml("Time needed for plant to fully grow."),
-								modifier = Modifier
-									.padding(BODY_CONTENT_PADDING.dp)
-									.fillMaxWidth(),
-								style = MaterialTheme.typography.bodyLarge
-							)
-						}
 					}
 					if (uiState.material.needCultivatorGround != null) {
 						Spacer(modifier = Modifier.padding(BODY_CONTENT_PADDING.dp))
-						DarkGlassStatCard(
+						AnimatedStatCard(
+							id = "need_cultivator_stat",
 							icon = Lucide.Gauge,
-							label = "Need Cultivator?",
+							label = stringResource(R.string.need_cultivator),
 							value = uiState.material.needCultivatorGround,
-							expand = { isStatInfoExpanded2.value = !isStatInfoExpanded2.value },
-							isExpanded = isStatInfoExpanded2.value,
+							details = stringResource(R.string.information_if_seeds_need_cultivator_to_be_planted),
 						)
-						AnimatedVisibility(
-							visible = isStatInfoExpanded2.value,
-							enter = expandVertically() + fadeIn(),
-							exit = shrinkVertically() + fadeOut()
-						) {
-							Text(
-								text = AnnotatedString.fromHtml("Information if seeds need cultivator to be planted"),
-								modifier = Modifier
-									.padding(BODY_CONTENT_PADDING.dp)
-									.fillMaxWidth(),
-								style = MaterialTheme.typography.bodyLarge
-							)
-						}
 					}
 
 					UiSection(

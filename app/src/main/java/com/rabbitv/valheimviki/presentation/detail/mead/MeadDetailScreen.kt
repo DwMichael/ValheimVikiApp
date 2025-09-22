@@ -49,7 +49,7 @@ import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
-import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCard
+import com.rabbitv.valheimviki.presentation.components.card.animated_stat_card.AnimatedStatCard
 import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.grid.grid_item.CustomItemCard
@@ -71,6 +71,7 @@ import com.rabbitv.valheimviki.ui.theme.CUSTOM_ITEM_CARD_FILL_WIDTH
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
+import com.rabbitv.valheimviki.utils.shouldShowValue
 
 @Composable
 fun MeadDetailScreen(
@@ -103,26 +104,13 @@ fun MeadDetailContent(
 
 	category: MeadSubCategory
 ) {
-	val isStatInfoExpanded = remember {
-		List(3) { mutableStateOf(false) }
-	}
+    
 	val scrollState = rememberScrollState()
 	val craftingStationPainter = painterResource(R.drawable.food_bg)
 	val handleClick = remember(onItemClick) {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
 	}
 
-	val isExpandable = remember { mutableStateOf(false) }
-	fun shouldShowValue(value: Any?): Boolean {
-		return when (value) {
-			null -> false
-			is String -> value.isNotBlank()
-			is Int -> value != 0
-			is Double -> value != 0.0
-			is Float -> value != 0f
-			else -> true
-		}
-	}
 
 	val mead = uiState.mead
 	val showStatsSection =
@@ -164,14 +152,13 @@ fun MeadDetailContent(
 						textAlign = TextAlign.Center
 					)
 					SlavicDivider()
-					if (mead.description != null) {
-						Box(modifier = Modifier.padding(BODY_CONTENT_PADDING.dp)) {
-							DetailExpandableText(
-								text = mead.description,
-								isExpanded = isExpandable
-							)
-						}
-					}
+                    if (mead.description != null) {
+                        Box(modifier = Modifier.padding(BODY_CONTENT_PADDING.dp)) {
+                            DetailExpandableText(
+                                text = mead.description,
+                            )
+                        }
+                    }
 
 					UiSection(
 						state = uiState.recipeItems
@@ -208,70 +195,43 @@ fun MeadDetailContent(
 
 						}
 					}
-					if (showStatsSection) {
-						TridentsDividedRow("Stats")
-						Column(
-							modifier = Modifier
-								.fillMaxWidth()
-								.padding(horizontal = BODY_CONTENT_PADDING.dp),
-							verticalArrangement = Arrangement.spacedBy(BODY_CONTENT_PADDING.dp)
-						) {
-							if (shouldShowValue(mead.duration)) {
-								DarkGlassStatCard(
-									icon = Lucide.Clock2,
-									label = "Duration",
-									value = "${mead.duration.toString()} min",
-									expand = {
-										isStatInfoExpanded[0].value = !isStatInfoExpanded[0].value
-									},
-									isExpanded = isStatInfoExpanded[0].value
-								)
-								AnimatedVisibility(isStatInfoExpanded[0].value) {
-									Text(
-										text = "How long this potion's effects remain active after consumption. The timer begins immediately upon eating and cannot be paused or extended.",
-										modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-										style = MaterialTheme.typography.bodyLarge
-									)
-								}
-							}
-							if (shouldShowValue(mead.cooldown)) {
-								DarkGlassStatCard(
-									icon = Lucide.ClockArrowDown,
-									label = "Cooldown",
-									value = mead.cooldown.toString(),
-									expand = {
-										isStatInfoExpanded[1].value = !isStatInfoExpanded[1].value
-									},
-									isExpanded = isStatInfoExpanded[1].value
-								)
-								AnimatedVisibility(isStatInfoExpanded[1].value) {
-									Text(
-										text = "The cooldown is the time you must wait before consuming another potion or mead of the same type. It prevents immediate re-use and encourages strategic planning in combat or exploration.",
-										modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-										style = MaterialTheme.typography.bodyLarge
-									)
-								}
-							}
-							if (shouldShowValue(mead.recipeOutput)) {
-								DarkGlassStatCard(
-									icon = Lucide.Layers2,
-									label = "Stack size",
-									value = mead.recipeOutput.toString(),
-									expand = {
-										isStatInfoExpanded[2].value = !isStatInfoExpanded[2].value
-									},
-									isExpanded = isStatInfoExpanded[2].value
-								)
-								AnimatedVisibility(isStatInfoExpanded[2].value) {
-									Text(
-										text = "The amount of meads produced by fermenting the mead base for two in-game days.",
-										modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-										style = MaterialTheme.typography.bodyLarge
-									)
-								}
-							}
-						}
-					}
+                    if (showStatsSection) {
+                        TridentsDividedRow("Stats")
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = BODY_CONTENT_PADDING.dp),
+                            verticalArrangement = Arrangement.spacedBy(BODY_CONTENT_PADDING.dp)
+                        ) {
+                            if (shouldShowValue(mead.duration)) {
+                                AnimatedStatCard(
+                                    id = "duration_stat",
+                                    icon = Lucide.Clock2,
+                                    label = "Duration",
+                                    value = "${mead.duration.toString()} min",
+                                    details = "How long this potion's effects remain active after consumption. The timer begins immediately upon eating and cannot be paused or extended.",
+                                )
+                            }
+                            if (shouldShowValue(mead.cooldown)) {
+                                AnimatedStatCard(
+                                    id = "cooldown_stat",
+                                    icon = Lucide.ClockArrowDown,
+                                    label = "Cooldown",
+                                    value = mead.cooldown.toString(),
+                                    details = "The cooldown is the time you must wait before consuming another potion or mead of the same type. It prevents immediate re-use and encourages strategic planning in combat or exploration.",
+                                )
+                            }
+                            if (shouldShowValue(mead.recipeOutput)) {
+                                AnimatedStatCard(
+                                    id = "stack_size_stat",
+                                    icon = Lucide.Layers2,
+                                    label = "Stack size",
+                                    value = mead.recipeOutput.toString(),
+                                    details = "The amount of meads produced by fermenting the mead base for two in-game days.",
+                                )
+                            }
+                        }
+                    }
 					when (val state = uiState.craftingCookingStation) {
 						is UIState.Error -> Unit
 						is UIState.Loading -> {

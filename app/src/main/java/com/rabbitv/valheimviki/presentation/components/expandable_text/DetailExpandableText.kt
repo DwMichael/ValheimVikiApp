@@ -40,10 +40,9 @@ fun DetailExpandableText(
 	showLessText: String = " show less",
 	showLessStyle: SpanStyle = showMoreStyle,
 	textAlign: TextAlign? = null,
-	boxPadding: Dp = 0.dp,
-	isExpanded: MutableState<Boolean> = remember { mutableStateOf(false) },
+	boxPadding: Dp = 0.dp
 ) {
-
+	val isExpandable = remember { mutableStateOf(false) }
 	var clickable by remember { mutableStateOf(false) }
 	var lastCharIndex by remember { mutableIntStateOf(0) }
 	val htmlFormattedText = remember(text) {
@@ -53,7 +52,7 @@ fun DetailExpandableText(
 		modifier = modifier
 			.padding(boxPadding)
 			.clickable(clickable) {
-				isExpanded.value = !isExpanded.value
+				isExpandable.value = !isExpandable.value
 			}
 			.then(modifier)
 	) {
@@ -63,7 +62,7 @@ fun DetailExpandableText(
 				.animateContentSize(),
 			text = buildAnnotatedString {
 				if (clickable) {
-					if (isExpanded.value) {
+					if (isExpandable.value) {
 						append(htmlFormattedText)
 						withStyle(style = showLessStyle) { append(showLessText) }
 					} else {
@@ -79,9 +78,9 @@ fun DetailExpandableText(
 				}
 			},
 
-			maxLines = if (isExpanded.value) Int.MAX_VALUE else collapsedMaxLine,
+			maxLines = if (isExpandable.value) Int.MAX_VALUE else collapsedMaxLine,
 			onTextLayout = { textLayoutResult ->
-				if (!isExpanded.value && textLayoutResult.hasVisualOverflow) {
+				if (!isExpandable.value && textLayoutResult.hasVisualOverflow) {
 					val maxLineIndex = (collapsedMaxLine - 1)
 						.coerceAtMost(textLayoutResult.lineCount - 1)
 					lastCharIndex = textLayoutResult.getLineEnd(maxLineIndex)

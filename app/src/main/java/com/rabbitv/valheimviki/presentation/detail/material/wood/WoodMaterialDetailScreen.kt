@@ -78,8 +78,7 @@ fun WoodMaterialDetailContent(
 	onToggleFavorite: () -> Unit,
 	uiState: WoodUiState,
 ) {
-	val scrollState = rememberScrollState()
-	val isExpandable = remember { mutableStateOf(false) }
+    val scrollState = rememberScrollState()
 	val handleItemClick = remember {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
 	}
@@ -122,14 +121,13 @@ fun WoodMaterialDetailContent(
 						textAlign = TextAlign.Center
 					)
 					SlavicDivider()
-					material.description?.let {
-						DetailExpandableText(
-							text = material.description,
-							boxPadding = BODY_CONTENT_PADDING.dp,
-							isExpanded = isExpandable
-						)
+                    material.description?.let {
+                        DetailExpandableText(
+                            text = material.description,
+                            boxPadding = BODY_CONTENT_PADDING.dp,
+                        )
 
-					}
+                    }
 
 					UiSection(
 						state = uiState.biomes

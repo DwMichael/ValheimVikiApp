@@ -100,9 +100,7 @@ fun PassiveCreatureDetailContent(
 			pageCount = { uiState.passiveCreature?.levels?.size ?: 0 },
 		)
 
-	val sharedScrollState = rememberScrollState()
-	val isExpandable = remember { mutableStateOf(false) }
-	val isExpandableNote = remember { mutableStateOf(false) }
+    val sharedScrollState = rememberScrollState()
 	val coroutineScope = rememberCoroutineScope()
 	val handleClick = remember(onItemClick) {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
@@ -149,12 +147,11 @@ fun PassiveCreatureDetailContent(
 							thickness = 1.dp,
 							color = PrimaryWhite
 						)
-						DetailExpandableText(
-							text = passiveCreature.description,
-							collapsedMaxLine = 3,
-							isExpanded = isExpandable,
-							boxPadding = BODY_CONTENT_PADDING.dp
-						)
+                        DetailExpandableText(
+                            text = passiveCreature.description,
+                            collapsedMaxLine = 3,
+                            boxPadding = BODY_CONTENT_PADDING.dp
+                        )
 
 						TridentsDividedRow(text = "DETAILS")
 						uiState.biome?.let { biome ->
@@ -243,12 +240,11 @@ fun PassiveCreatureDetailContent(
 								textAlign = TextAlign.Center,
 								style = MaterialTheme.typography.headlineMedium,
 							)
-							DetailExpandableText(
-								text = passiveCreature.notes,
-								collapsedMaxLine = 3,
-								isExpanded = isExpandableNote,
-								boxPadding = BODY_CONTENT_PADDING.dp
-							)
+                            DetailExpandableText(
+                                text = passiveCreature.notes,
+                                collapsedMaxLine = 3,
+                                boxPadding = BODY_CONTENT_PADDING.dp
+                            )
 						}
 						SlavicDivider()
 						Box(modifier = Modifier.size(45.dp))
