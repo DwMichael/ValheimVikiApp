@@ -2,10 +2,6 @@ package com.rabbitv.valheimviki.presentation.detail.building_material
 
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,7 +40,7 @@ import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
-import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCard
+import com.rabbitv.valheimviki.presentation.components.card.animated_stat_card.AnimatedStatCard
 import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.flow_row.flow_as_grid.TwoColumnGrid
@@ -86,36 +82,18 @@ fun BuildingMaterialDetailContent(
 	) {
 
 	val scrollState = rememberScrollState()
-	val isStatInfoExpanded1 = remember { mutableStateOf(false) }
-	val isExpandable = remember { mutableStateOf(false) }
+    
 	val handleClick = remember(onItemClick) {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
 	}
-	val materialsData = when (val materialsState = uiState.materials) {
-		is UIState.Error -> {
-			return
-		}
+	val materialsState = uiState.materials
+	val foodsState = uiState.foods
 
-		is UIState.Loading -> {
-			LoadingIndicator(paddingValues = PaddingValues(16.dp))
-			return
-		}
+	val materialsData = (materialsState as? UIState.Success)?.data ?: emptyList()
+	val foodsData = (foodsState as? UIState.Success)?.data ?: emptyList()
+	val isLoading = materialsState is UIState.Loading || foodsState is UIState.Loading
+	val isError = materialsState is UIState.Error || foodsState is UIState.Error
 
-		is UIState.Success -> materialsState.data
-	}
-
-	val foodsData = when (val foodsState = uiState.foods) {
-		is UIState.Error -> {
-			return
-		}
-
-		is UIState.Loading -> {
-			LoadingIndicator(paddingValues = PaddingValues(16.dp))
-			return
-		}
-
-		is UIState.Success -> foodsState.data
-	}
 	val comfortDescription =
 		"<p><b>Comfort</b> level determines the duration of <a href=\"/wiki/Resting_Effect\" class=\"mw-redirect\" title=\"Resting Effect\">Resting Effect</a>. Base duration is 8 minutes, with each comfort level stacking 1 minute up to 24 minutes with usual items and 26 minutes with rare seasonal items.  \n" +
 				"</p><p>The max comfort reachable normally is 17. If near a <a href=\"/wiki/Maypole\" title=\"Maypole\">Maypole</a> 18 or with the seasonal <a href=\"/wiki/Yule_tree\" title=\"Yule tree\">Yule tree</a> 19.  \n" +
@@ -159,33 +137,19 @@ fun BuildingMaterialDetailContent(
 						DetailExpandableText(
 							text = buildingMaterial.description,
 							boxPadding = BODY_CONTENT_PADDING.dp,
-							isExpanded = isExpandable
 						)
 
 					}
-					if (uiState.buildingMaterial.comfortLevel != null) {
-						SlavicDivider()
-						DarkGlassStatCard(
-							icon = Lucide.Gauge,
-							label = "Comfort Level",
-							value = uiState.buildingMaterial.comfortLevel.toString(),
-							expand = { isStatInfoExpanded1.value = !isStatInfoExpanded1.value },
-							isExpanded = isStatInfoExpanded1.value,
-						)
-						AnimatedVisibility(
-							visible = isStatInfoExpanded1.value,
-							enter = expandVertically() + fadeIn(),
-							exit = shrinkVertically() + fadeOut()
-						) {
-							Text(
-								text = AnnotatedString.fromHtml(comfortDescription),
-								modifier = Modifier
-									.padding(BODY_CONTENT_PADDING.dp)
-									.fillMaxWidth(),
-								style = MaterialTheme.typography.bodyLarge
-							)
-						}
-					}
+                    if (uiState.buildingMaterial.comfortLevel != null) {
+                        SlavicDivider()
+                        AnimatedStatCard(
+                            id = "comfort_level_stat",
+                            icon = Lucide.Gauge,
+                            label = "Comfort Level",
+                            value = uiState.buildingMaterial.comfortLevel.toString(),
+                            details = AnnotatedString.fromHtml(comfortDescription).text,
+                        )
+                    }
 					when (val craftingState = uiState.craftingStation) {
 						is UIState.Error -> {}
 						is UIState.Loading -> {

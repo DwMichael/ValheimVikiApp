@@ -26,11 +26,14 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -49,20 +52,21 @@ class BuildingMaterialDetailViewModel @Inject constructor(
 	@param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
-	
+
 	private val _buildingMaterialId: String =
 		savedStateHandle.toRoute<BuildingDetailDestination.BuildingMaterialDetail>().buildingMaterialId
 	private val _buildingMaterial =
 		buildingMaterialUseCases.getBuildMaterialById(_buildingMaterialId)
 			.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
-	private val _isFavorite = favoriteUseCases.isFavorite(_buildingMaterialId)
-		.distinctUntilChanged()
-		.stateIn(
-			scope = viewModelScope,
-			started = SharingStarted.WhileSubscribed(5_000),
-			initialValue = false
-		)
+	private val _isFavorite = MutableStateFlow(false)
+
+	init {
+		favoriteUseCases.isFavorite(_buildingMaterialId)
+			.distinctUntilChanged()
+			.onEach { value -> _isFavorite.value = value }
+			.launchIn(viewModelScope)
+	}
 
 	private val _relationObjects =
 		relationsUseCases.getRelatedIdsUseCase(_buildingMaterialId).stateIn(
@@ -71,22 +75,14 @@ class BuildingMaterialDetailViewModel @Inject constructor(
 			initialValue = emptyList()
 		)
 
-	private val relatedItemsMap = _relationObjects.filter { it.isNotEmpty() }.map { list ->
-		list.associateBy { it.id }
-	}.flowOn(defaultDispatcher)
-		.stateIn(
-			scope = viewModelScope,
-			started = SharingStarted.WhileSubscribed(5_000),
-			initialValue = emptyMap()
-		)
-	private val _relatedIds = _relationObjects.filter { it.isNotEmpty() }.map { list ->
-		list.map { it.id }
-	}.flowOn(defaultDispatcher)
-		.stateIn(
-			scope = viewModelScope,
-			started = SharingStarted.WhileSubscribed(5_000),
-			initialValue = emptyList()
-		)
+	private val relatedItemsMap = _relationObjects
+		.map { list -> list.associateBy { it.id } }
+		.flowOn(defaultDispatcher)
+		.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyMap())
+	private val _relatedIds = _relationObjects
+		.map { list -> list.map { it.id } }
+		.flowOn(defaultDispatcher)
+		.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 	private val _materials = _relatedIds.flatMapLatest { ids ->
 		combine(
 			materialUseCases.getMaterialsByIds(ids),
@@ -112,8 +108,14 @@ class BuildingMaterialDetailViewModel @Inject constructor(
 				}
 			}
 		}
-	}.map { UIState.Success(it) }
-		.flowOn(defaultDispatcher)
+	}.distinctUntilChanged()
+		.map { UIState.Success(it) }
+		.onStart { emit(UIState.Success(emptyList())) }
+		.stateIn(
+			viewModelScope,
+			SharingStarted.WhileSubscribed(5_000),
+			UIState.Success(emptyList())
+		)
 
 	private val _foods = _relatedIds.flatMapLatest { ids ->
 		combine(
@@ -140,8 +142,14 @@ class BuildingMaterialDetailViewModel @Inject constructor(
 				}
 			}
 		}
-	}.map { UIState.Success(it) }
-		.flowOn(defaultDispatcher)
+	}.distinctUntilChanged()
+		.map { UIState.Success(it) }
+		.onStart { emit(UIState.Success(emptyList())) }
+		.stateIn(
+			viewModelScope,
+			SharingStarted.WhileSubscribed(5_000),
+			UIState.Success(emptyList())
+		)
 
 	private val _requiredCraftingStation = relatedDataFlow(
 		idsFlow = _relatedIds,
@@ -175,9 +183,11 @@ class BuildingMaterialDetailViewModel @Inject constructor(
 			is BuildingMaterialUiEvent.ToggleFavorite ->
 				viewModelScope.launch {
 					_buildingMaterial.value?.let { bM ->
+						val target = !_isFavorite.value
+						_isFavorite.value = target
 						favoriteUseCases.toggleFavoriteUseCase(
 							bM.toFavorite(),
-							shouldBeFavorite = !_isFavorite.value
+							shouldBeFavorite = target
 						)
 					}
 				}

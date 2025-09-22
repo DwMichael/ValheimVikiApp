@@ -7,6 +7,7 @@ import com.composables.icons.lucide.Hammer
 import com.composables.icons.lucide.House
 import com.composables.icons.lucide.Lamp
 import com.composables.icons.lucide.Layers
+import com.composables.icons.lucide.LayoutGrid
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Package
 import com.composables.icons.lucide.Shield
@@ -70,4 +71,5 @@ enum class BuildingMaterialSegmentOption(
 	ROOF(R.drawable.roof, Lucide.House, "ROOFS", BuildingMaterialSubCategory.ROOF),
 	DEFENSE(R.drawable.defense, Lucide.Shield, "DEFENSE", BuildingMaterialSubCategory.DEFENSE),
 	SIEGE(R.drawable.siege, Lucide.Crosshair, "SIEGE", BuildingMaterialSubCategory.SIEGE),
+	MISC(R.drawable.aprilfoolsimage, Lucide.LayoutGrid, "MISC", BuildingMaterialSubCategory.MISC)
 }

@@ -11,5 +11,6 @@ enum class BuildingMaterialSubCategory {
 	SIEGE,//TODO OD TĄ JESZCZE NIE MA RELACJI
 	LIGHT_SOURCE,
 	DECORATIVE,
-	ROOF
+	ROOF,
+	MISC,
 }

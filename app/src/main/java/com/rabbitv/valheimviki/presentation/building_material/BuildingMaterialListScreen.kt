@@ -20,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -59,6 +60,7 @@ import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import kotlinx.coroutines.launch
 
+@Stable
 class BuildingMaterialChip(
 	override val option: BuildingMaterialSubType,
 	override val icon: ImageVector,
@@ -290,6 +292,6 @@ private fun getChipsForCategory(category: BuildingMaterialSubCategory?): List<Bu
 		BuildingMaterialSubCategory.SIEGE -> emptyList()
 		BuildingMaterialSubCategory.DECORATIVE -> emptyList()
 		BuildingMaterialSubCategory.ROOF -> emptyList()
-
+		BuildingMaterialSubCategory.MISC -> emptyList()
 	}
 }
