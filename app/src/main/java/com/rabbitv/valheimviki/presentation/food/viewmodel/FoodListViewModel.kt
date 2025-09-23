@@ -11,6 +11,7 @@ import com.rabbitv.valheimviki.domain.repository.NetworkConnectivity
 import com.rabbitv.valheimviki.domain.use_cases.food.FoodUseCases
 import com.rabbitv.valheimviki.presentation.food.model.FoodListUiEvent
 import com.rabbitv.valheimviki.presentation.food.model.FoodListUiState
+import com.rabbitv.valheimviki.presentation.food.model.FoodSortType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -32,31 +33,52 @@ class FoodListViewModel @Inject constructor(
 ) : ViewModel() {
 	private val _selectedSubCategory =
 		MutableStateFlow(FoodSubCategory.COOKED_FOOD)
+
+	private val _selectedSortType: MutableStateFlow<FoodSortType?> =
+		MutableStateFlow(null)
 	internal val foods: Flow<List<Food>> = _selectedSubCategory.flatMapLatest { subCategory ->
 		foodUseCases.getFoodBySubCategoryUseCase(subCategory).catch { e ->
 			emit(emptyList())
 		}
 	}
 
+	internal val sortFoodList: StateFlow<List<Food>> =
+		foods.combine(_selectedSortType) { food, sortType ->
+			when (sortType) {
+				FoodSortType.STAMINA -> food.sortedByDescending { it.stamina }
+				FoodSortType.HEALTH -> food.sortedByDescending { it.health }
+				FoodSortType.EITR -> food.sortedByDescending { it.eitr }
+				FoodSortType.HEALING -> food.sortedByDescending { it.healing }
+				null -> food
+			}
+		}.stateIn(
+			scope = viewModelScope,
+			started = SharingStarted.WhileSubscribed(5000),
+			initialValue = emptyList()
+		)
+
 	val uiState: StateFlow<FoodListUiState> = combine(
-		foods,
+		sortFoodList,
 		_selectedSubCategory,
+		_selectedSortType,
 		connectivityObserver.isConnected.stateIn(
 			scope = viewModelScope,
 			started = SharingStarted.WhileSubscribed(5000),
 			initialValue = false
 		),
-	) { food, subCategory, isConnected ->
+	) { food, subCategory, sortType, isConnected ->
 		when {
 			food.isNotEmpty() -> {
 				FoodListUiState(
 					selectedCategory = subCategory,
+					sortType = sortType,
 					foodState = UIState.Success(food)
 				)
 			}
 
 			isConnected -> FoodListUiState(
 				selectedCategory = subCategory,
+				sortType = sortType,
 				foodState = UIState.Loading
 			)
 
@@ -78,6 +100,7 @@ class FoodListViewModel @Inject constructor(
 		SharingStarted.Companion.WhileSubscribed(5000),
 		initialValue = FoodListUiState(
 			selectedCategory = FoodSubCategory.COOKED_FOOD,
+			sortType = null,
 			foodState = UIState.Loading
 		)
 	)
@@ -86,6 +109,15 @@ class FoodListViewModel @Inject constructor(
 		when (event) {
 			is FoodListUiEvent.CategorySelected -> {
 				_selectedSubCategory.update { event.category }
+			}
+
+			is FoodListUiEvent.ChipSelected -> {
+				if (_selectedSortType.value == event.chip) {
+					_selectedSortType.update { null }
+				} else {
+					_selectedSortType.update { event.chip }
+				}
+
 			}
 		}
 	}

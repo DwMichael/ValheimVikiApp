@@ -7,4 +7,5 @@ import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 data class FoodListUiState(
 	val foodState: UIState<List<Food>> = UIState.Loading,
 	val selectedCategory: FoodSubCategory = FoodSubCategory.COOKED_FOOD,
+	val sortType: FoodSortType? = null
 )

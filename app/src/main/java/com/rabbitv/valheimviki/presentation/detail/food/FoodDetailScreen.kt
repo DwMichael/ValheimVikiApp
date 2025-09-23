@@ -101,7 +101,7 @@ fun FoodDetailContent(
 	uiState: FoodDetailUiState,
 	category: FoodSubCategory
 ) {
-	val healingPainter = painterResource(R.drawable.heart_plus)
+	val healingPainter = painterResource(R.drawable.heart_plus__2_)
 	val staminaPainter = painterResource(R.drawable.runing)
 	val scrollState = rememberScrollState()
 
