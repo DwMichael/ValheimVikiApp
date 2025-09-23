@@ -139,13 +139,7 @@ fun WeaponListDisplay(
 		SearchFilterBar(
 			chips = getChipsForCategory(weaponListUiState.selectedCategory),
 			selectedOption = weaponListUiState.selectedChip,
-			onSelectedChange = { _, subType ->
-				if (weaponListUiState.selectedChip == subType) {
-					onChipSelected(null)
-				} else {
-					onChipSelected(subType)
-				}
-			},
+			onSelectedChange = { _, subType -> onChipSelected(subType) },
 			modifier = Modifier
 		)
 
