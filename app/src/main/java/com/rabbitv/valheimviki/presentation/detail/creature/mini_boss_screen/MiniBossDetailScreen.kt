@@ -1,6 +1,5 @@
 package com.rabbitv.valheimviki.presentation.detail.creature.mini_boss_screen
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -20,7 +19,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,7 +56,6 @@ import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDet
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.components.ui_section.UiSection
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
-import com.rabbitv.valheimviki.presentation.detail.creature.components.column.StatColumn
 import com.rabbitv.valheimviki.presentation.detail.creature.mini_boss_screen.model.MiniBossDetailUIEvent
 import com.rabbitv.valheimviki.presentation.detail.creature.mini_boss_screen.model.MiniBossDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.creature.mini_boss_screen.viewmodel.MiniBossDetailScreenViewModel
@@ -103,7 +100,7 @@ fun MiniBossContent(
 ) {
 	val isRunning by remember { derivedStateOf { animatedVisibilityScope.transition.isRunning } }
 	val scrollState = rememberScrollState()
-    
+
 	val handleClick = remember(onItemClick) {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
 	}
@@ -149,10 +146,10 @@ fun MiniBossContent(
 						TridentsDividedRow(text = "BOSS DETAIL")
 						miniBossUiSate.primarySpawn?.let { primarySpawn ->
 							Text(
-								modifier = Modifier.padding(horizontal = BODY_CONTENT_PADDING.dp),
+								modifier = Modifier.align(Alignment.CenterHorizontally),
 								text = "PRIMARY SPAWN",
-								textAlign = TextAlign.Left,
-								style = MaterialTheme.typography.titleSmall,
+								textAlign = TextAlign.Center,
+								style = MaterialTheme.typography.titleLarge,
 								maxLines = 1,
 								overflow = TextOverflow.Visible
 							)
@@ -194,61 +191,61 @@ fun MiniBossContent(
 						}
 						TridentsDividedRow(text = "BOSS STATS")
 
-                        if (miniBossUiSate.miniBoss.baseHP.toString().isNotBlank()) {
-                            AnimatedStatCard(
-                                modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-                                id = "mini_boss_health_stat",
-                                icon = Lucide.Heart,
-                                label = "Health",
-                                value = miniBossUiSate.miniBoss.baseHP.toString(),
-                                details = "The amount of health points this boss have",
-                            )
-                        }
+						if (miniBossUiSate.miniBoss.baseHP.toString().isNotBlank()) {
+							AnimatedStatCard(
+								modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+								id = "mini_boss_health_stat",
+								icon = Lucide.Heart,
+								label = "Health",
+								value = miniBossUiSate.miniBoss.baseHP.toString(),
+								details = "The amount of health points this boss have",
+							)
+						}
 
-                        if (miniBossUiSate.miniBoss.baseDamage.isNotBlank()) {
-                            AnimatedStatCard(
-                                modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-                                id = "mini_boss_base_damage_stat",
-                                icon = Lucide.Swords,
-                                label = stringResource(R.string.base_damage),
-                                value = "",
-                                details = miniBossUiSate.miniBoss.baseDamage,
-                                isStatColumn = true,
-                            )
-                        }
-                        if (!miniBossUiSate.miniBoss.weakness.isNullOrBlank()) {
-                            AnimatedStatCard(
-                                modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-                                id = "mini_boss_weakness_stat",
-                                icon = Lucide.Unlink,
-                                label = stringResource(R.string.weakness),
-                                value = "",
-                                details = miniBossUiSate.miniBoss.weakness,
-                                isStatColumn = true,
-                            )
-                        }
-                        if (!miniBossUiSate.miniBoss.resistance.isNullOrBlank()) {
-                            AnimatedStatCard(
-                                modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-                                id = "mini_boss_resistance_stat",
-                                icon = Lucide.Grab,
-                                label = stringResource(R.string.resistance),
-                                value = "",
-                                details = miniBossUiSate.miniBoss.resistance,
-                                isStatColumn = true,
-                            )
-                        }
-                        if (!miniBossUiSate.miniBoss.collapseImmune.isNullOrBlank()) {
-                            AnimatedStatCard(
-                                modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-                                id = "mini_boss_immune_stat",
-                                icon = Lucide.Shield,
-                                label = stringResource(R.string.immune),
-                                value = "",
-                                details = miniBossUiSate.miniBoss.collapseImmune,
-                                isStatColumn = true,
-                            )
-                        }
+						if (miniBossUiSate.miniBoss.baseDamage.isNotBlank()) {
+							AnimatedStatCard(
+								modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+								id = "mini_boss_base_damage_stat",
+								icon = Lucide.Swords,
+								label = stringResource(R.string.base_damage),
+								value = "",
+								details = miniBossUiSate.miniBoss.baseDamage,
+								isStatColumn = true,
+							)
+						}
+						if (!miniBossUiSate.miniBoss.weakness.isNullOrBlank()) {
+							AnimatedStatCard(
+								modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+								id = "mini_boss_weakness_stat",
+								icon = Lucide.Unlink,
+								label = stringResource(R.string.weakness),
+								value = "",
+								details = miniBossUiSate.miniBoss.weakness,
+								isStatColumn = true,
+							)
+						}
+						if (!miniBossUiSate.miniBoss.resistance.isNullOrBlank()) {
+							AnimatedStatCard(
+								modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+								id = "mini_boss_resistance_stat",
+								icon = Lucide.Grab,
+								label = stringResource(R.string.resistance),
+								value = "",
+								details = miniBossUiSate.miniBoss.resistance,
+								isStatColumn = true,
+							)
+						}
+						if (!miniBossUiSate.miniBoss.collapseImmune.isNullOrBlank()) {
+							AnimatedStatCard(
+								modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+								id = "mini_boss_immune_stat",
+								icon = Lucide.Shield,
+								label = stringResource(R.string.immune),
+								value = "",
+								details = miniBossUiSate.miniBoss.collapseImmune,
+								isStatColumn = true,
+							)
+						}
 
 						SlavicDivider()
 						Box(modifier = Modifier.size(70.dp))

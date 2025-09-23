@@ -20,7 +20,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -108,7 +107,7 @@ fun ToolDetailContent(
 		itemContentScale = ContentScale.Crop
 	)
 	val scrollState = rememberScrollState()
-    val craftingStationPainter = painterResource(R.drawable.food_bg)
+	val craftingStationPainter = painterResource(R.drawable.food_bg)
 	val handleClick = remember(onItemClick) {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
 	}
@@ -144,12 +143,10 @@ fun ToolDetailContent(
 						textAlign = TextAlign.Center
 					)
 					SlavicDivider()
-                    DetailExpandableText(
-                        text = tool.description,
-                        boxPadding = BODY_CONTENT_PADDING.dp,
-                    )
-
-
+					DetailExpandableText(
+						text = tool.description,
+						boxPadding = BODY_CONTENT_PADDING.dp,
+					)
 					UiSection(
 						state = uiState.relatedMaterials,
 						divider = { SlavicDivider() }
@@ -158,7 +155,8 @@ fun ToolDetailContent(
 							modifier = Modifier
 								.fillMaxWidth()
 								.wrapContentHeight()
-								.padding(horizontal = BODY_CONTENT_PADDING.dp)
+								.padding(horizontal = BODY_CONTENT_PADDING.dp),
+							contentAlignment = Alignment.Center
 						) {
 							SectionHeader(
 								data = SectionHeaderData(
@@ -170,11 +168,9 @@ fun ToolDetailContent(
 						}
 
 						Spacer(modifier = Modifier.padding(6.dp))
-
 						NestedGrid(
-							nestedItems = NestedItems(
-								items = data
-							)
+							nestedItems = NestedItems(items = data),
+							horizontalPadding = BODY_CONTENT_PADDING.dp,
 						) { item ->
 							CustomItemCard(
 								itemData = item.material,

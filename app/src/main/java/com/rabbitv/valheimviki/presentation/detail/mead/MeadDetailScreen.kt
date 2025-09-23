@@ -159,30 +159,32 @@ fun MeadDetailContent(
                             )
                         }
                     }
-
 					UiSection(
 						state = uiState.recipeItems
 					) { data ->
 						if (data.isNotEmpty()) {
-							Box(
-								modifier = Modifier
-									.fillMaxWidth()
-									.wrapContentHeight()
-									.padding(horizontal = BODY_CONTENT_PADDING.dp)
-							) {
-								SectionHeader(
-									data = SectionHeaderData(
-										title = "Recipe",
-										subTitle = "Ingredients required to craft this item",
-										icon = if (category == MeadSubCategory.MEAD_BASE) Lucide.CookingPot else Lucide.FlaskRound,
-									)
+						Box(
+							modifier = Modifier
+								.fillMaxWidth()
+								.wrapContentHeight()
+								.padding(horizontal = BODY_CONTENT_PADDING.dp),
+							contentAlignment = Alignment.Center
+						) {
+							SectionHeader(
+								modifier = Modifier.fillMaxWidth(),
+								data = SectionHeaderData(
+									title = "Recipe",
+									subTitle = "Ingredients required to craft this item",
+									icon = if (category == MeadSubCategory.MEAD_BASE) Lucide.CookingPot else Lucide.FlaskRound,
 								)
-							}
+							)
+						}
 
 							Spacer(modifier = Modifier.padding(6.dp))
-							NestedGrid(
-								nestedItems = NestedItems(items = data),
-							) { item ->
+						NestedGrid(
+							nestedItems = NestedItems(items = data),
+							horizontalPadding = BODY_CONTENT_PADDING.dp,
+						) { item ->
 								CustomItemCard(
 									itemData = item.itemDrop,
 									onItemClick = handleClick,

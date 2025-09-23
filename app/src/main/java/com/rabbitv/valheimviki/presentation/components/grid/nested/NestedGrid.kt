@@ -25,6 +25,7 @@ fun <T : Droppable> NestedGrid(
 	nestedItems: NestedItems<T>,
 	gridCells: Int = 3,
 	gridMaxHeight: Dp = 1000.dp,
+    horizontalPadding: Dp = MEDIUM_PADDING,
 	gridItem: @Composable (T) -> Unit
 ) {
 	val lazyGridState = rememberLazyGridState()
@@ -35,7 +36,8 @@ fun <T : Droppable> NestedGrid(
 		modifier = Modifier
 			.heightIn(max = gridMaxHeight)
 			.padding(
-				MEDIUM_PADDING
+                horizontal = horizontalPadding,
+                vertical = MEDIUM_PADDING
 			),
 		userScrollEnabled = false,
 		verticalArrangement = Arrangement.spacedBy(12.dp),
