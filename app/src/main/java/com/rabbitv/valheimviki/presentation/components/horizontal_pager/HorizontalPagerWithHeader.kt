@@ -46,10 +46,14 @@ internal fun <T : Droppable> HorizontalPagerWithHeader(
 	list: List<T>,
 	headerData: PagerHeaderData,
 	modifier: Modifier = Modifier,
-	pagerState: PagerState? = null,
-	itemContent: @Composable (item: T, pageIndex: Int) -> Unit
+	itemContent: @Composable (item: T, pageIndex: Int, pagerState: PagerState) -> Unit
 ) {
-	val pagerState = pagerState ?: rememberPagerState(pageCount = { list.size })
+	val useInfiniteScrolling = list.size >= 3
+	val pageCount = if (useInfiniteScrolling) Int.MAX_VALUE else list.size
+	val pagerState = rememberPagerState(
+		initialPage = if (useInfiniteScrolling) Int.MAX_VALUE / 2 else 0,
+		pageCount = { pageCount }
+	)
 	Column(
 		modifier = modifier
 			.fillMaxWidth(),
@@ -61,6 +65,7 @@ internal fun <T : Droppable> HorizontalPagerWithHeader(
 			list = list,
 			itemContent = itemContent,
 			pagerState = pagerState,
+			useInfiniteScrolling = useInfiniteScrolling,
 		)
 	}
 }
@@ -126,14 +131,13 @@ fun HorizontalPagerWithHeaderPreview() {
 		icon = Icons.Default.Build,
 	)
 
-	val pagerState = rememberPagerState(pageCount = { sampleFoodList.size })
+
 
 	HorizontalPagerWithHeader(
 		list = FakeData.fakeCraftingProductsList(),
 		headerData = headerData,
-		pagerState = pagerState,
 		modifier = Modifier.fillMaxWidth()
-	) { item, pageIndex ->
+	) { item, pageIndex , pagerState->
 		Card(
 			modifier = Modifier
 				.fillMaxWidth()

@@ -1,5 +1,6 @@
 package com.rabbitv.valheimviki.presentation.components.horizontal_pager
 
+import androidx.compose.foundation.LocalOverscrollFactory
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -29,7 +30,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -87,10 +90,26 @@ fun HorizontalPagerSection(
 	itemWidth: Dp = 150.dp,
 	imagePadding: Dp = 0.dp
 ) {
-	val state = rememberPagerState(pageCount = { list.size })
+	val useInfiniteScrolling = list.size >= 3
+	val pageCount = if (useInfiniteScrolling) Int.MAX_VALUE else list.size
+	val state = rememberPagerState(
+		initialPage = if (useInfiniteScrolling) Int.MAX_VALUE / 2 else 0,
+		pageCount = { pageCount }
+	)
 	val screenWidth = LocalConfiguration.current.screenWidthDp.dp
 	val horizontalPadding = remember { (screenWidth - pageWidth) / 2 }
 
+	LaunchedEffect(key1 = list.size, block = {
+		if (list.isNotEmpty()) {
+			if (useInfiniteScrolling) {
+				val startPage = Int.MAX_VALUE / 2
+				val alignedPage = startPage - (startPage % list.size)
+				state.scrollToPage(alignedPage)
+			} else {
+				state.scrollToPage(0)
+			}
+		}
+	})
 	Column(
 		modifier = Modifier
 			.fillMaxWidth()
@@ -105,28 +124,36 @@ fun HorizontalPagerSection(
 	{
 		HorizontalHeader(data = data)
 		Spacer(modifier = Modifier.padding(6.dp))
-		HorizontalPager(
-			state = state,
-			modifier = Modifier.fillMaxWidth(),
-			contentPadding = PaddingValues(horizontal = horizontalPadding),
-			pageSize = PageSize.Fixed(pageWidth),
-			flingBehavior = PagerDefaults.flingBehavior(
+		CompositionLocalProvider(LocalOverscrollFactory provides null) {
+			HorizontalPager(
 				state = state,
-				pagerSnapDistance = PagerSnapDistance.atMost(list.size)
-			)
-		) { pageIndex ->
-			key(list[pageIndex].id) {
-				HorizontalPagerItem(
-					pagerState = state,
-					list = list,
-					pageIndex = pageIndex,
-					contentScale = data.itemContentScale,
-					totalSize = list.size,
-					onItemClick = onItemClick,
-					itemHeight = itemHeight,
-					itemWidth = itemWidth,
-					imagePadding = imagePadding
+				modifier = Modifier.fillMaxWidth(),
+				contentPadding = PaddingValues(horizontal = horizontalPadding),
+				pageSize = PageSize.Fixed(pageWidth),
+				flingBehavior = PagerDefaults.flingBehavior(
+					state = state,
+					pagerSnapDistance = PagerSnapDistance.atMost(list.size)
 				)
+			) { pageIndex ->
+				val actualIndex = if (useInfiniteScrolling) {
+					pageIndex % list.size
+				} else {
+					pageIndex
+				}
+				key(list[actualIndex].id) {
+					HorizontalPagerItem(
+						pagerState = state,
+						list = list,
+						pageIndex = actualIndex,
+						virtualPageIndex = pageIndex,
+						contentScale = data.itemContentScale,
+						totalSize = list.size,
+						onItemClick = onItemClick,
+						itemHeight = itemHeight,
+						itemWidth = itemWidth,
+						imagePadding = imagePadding
+					)
+				}
 			}
 		}
 	}
@@ -138,7 +165,9 @@ fun HorizontalHeader(
 	data: HorizontalPagerData,
 ) {
 	Column(
-		modifier = Modifier.fillMaxWidth().wrapContentHeight(),
+		modifier = Modifier
+			.fillMaxWidth()
+			.wrapContentHeight(),
 		horizontalAlignment = Alignment.CenterHorizontally
 	) {
 		Row(
@@ -173,6 +202,7 @@ fun HorizontalPagerItem(
 	pagerState: PagerState,
 	list: List<ItemData>,
 	pageIndex: Int,
+	virtualPageIndex: Int,
 	totalSize: Int,
 	contentScale: ContentScale,
 	onItemClick: (itemId: ItemData) -> Unit,
@@ -188,7 +218,7 @@ fun HorizontalPagerItem(
 			.width(itemWidth)
 			.graphicsLayer {
 				val pageOffset = (
-						(pagerState.currentPage - pageIndex) + pagerState
+						(pagerState.currentPage - virtualPageIndex) + pagerState
 							.currentPageOffsetFraction
 						).absoluteValue
 
@@ -285,6 +315,7 @@ fun PreviewHorizontalPagerItem() {
 		pagerState = pagerState,
 		list = creatureList,
 		pageIndex = 0,
+		virtualPageIndex = 0,
 		totalSize = 10,
 		contentScale = ContentScale.Crop,
 		onItemClick = {},

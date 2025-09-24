@@ -1,6 +1,7 @@
 package com.rabbitv.valheimviki.presentation.components.horizontal_pager
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.LocalOverscrollFactory
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,6 +17,8 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -58,9 +61,6 @@ fun DroppedItemsSection(
 	subTitle: String? = "Materials that drop from creature after defeating",
 ) {
 
-
-	val pagerState = rememberPagerState(pageCount = { list.size })
-
 	val headerData = remember(title, subTitle, icon, starLevel) {
 		PagerHeaderData(
 			title = title,
@@ -70,10 +70,9 @@ fun DroppedItemsSection(
 	}
 	HorizontalPagerWithHeader(
 		list = list,
-		pagerState = pagerState,
 		headerData = headerData,
 		modifier = modifier,
-	) { item, pageIndex ->
+	) { item, pageIndex, pagerState ->
 		key(item.itemDrop.id) {
 			DropItemCard(
 				onItemClick = { item ->
