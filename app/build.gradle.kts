@@ -23,8 +23,8 @@ android {
 		applicationId = "com.rabbitv.valheimviki"
 		minSdk = 26
 		targetSdk = 36
-		versionCode = 11
-		versionName = "1.0.9"
+		versionCode = 14
+		versionName = "1.0.12"
 
 		buildConfigField("String", "baseUrlSafe", properties.getProperty("baseUrl"))
 
