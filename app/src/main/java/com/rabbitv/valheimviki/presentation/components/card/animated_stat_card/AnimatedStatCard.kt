@@ -59,7 +59,9 @@ fun AnimatedStatCard(
 		}
 	}else
 	{
-		StatColumn(details)
+		AnimatedVisibility(expanded) {
+			StatColumn(details)
+		}
 	}
 
 
