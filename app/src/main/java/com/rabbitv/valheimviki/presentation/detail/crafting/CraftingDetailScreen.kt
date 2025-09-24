@@ -333,6 +333,7 @@ private fun DroppedItemSection(
 		state = state,
 	) { data ->
 		DroppedItemsSection(
+			modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
 			onItemClick = handleClick,
 			list = data,
 			icon = { icon },
