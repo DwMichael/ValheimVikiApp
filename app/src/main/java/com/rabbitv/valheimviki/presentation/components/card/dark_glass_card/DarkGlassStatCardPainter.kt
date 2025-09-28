@@ -1,6 +1,5 @@
 package com.rabbitv.valheimviki.presentation.components.card.dark_glass_card
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -11,14 +10,15 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun DarkGlassStatCardPainter(
+	modifier: Modifier = Modifier,
 	painter: Painter,
 	label: String,
 	value: String,
-	modifier: Modifier = Modifier,
 	expand: () -> Unit,
 	isExpanded: Boolean,
 ) {
 	BaseDarkGlassStatCard(
+		modifier = modifier,
 		iconContent = {
 			Icon(
 				painter = painter,
@@ -29,7 +29,6 @@ fun DarkGlassStatCardPainter(
 		},
 		label = label,
 		value = value,
-		modifier = modifier.clickable { expand() },
 		expand = expand,
 		isExpanded = isExpanded
 	)

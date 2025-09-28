@@ -1,6 +1,5 @@
 package com.rabbitv.valheimviki.presentation.detail.creature.aggressive_screen
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,13 +20,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -70,7 +67,6 @@ import com.rabbitv.valheimviki.presentation.detail.creature.aggressive_screen.mo
 import com.rabbitv.valheimviki.presentation.detail.creature.aggressive_screen.model.AggressiveCreatureUiEvent
 import com.rabbitv.valheimviki.presentation.detail.creature.aggressive_screen.viewModel.AggressiveCreatureDetailScreenViewModel
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
-import com.rabbitv.valheimviki.presentation.detail.creature.components.column.StatColumn
 import com.rabbitv.valheimviki.presentation.detail.creature.components.rows.StarLevelRow
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
@@ -207,7 +203,7 @@ fun AggressiveCreatureDetailContent(
 							state = uiState.materialDrops,
 						) { state ->
 							DroppedItemsSection(
-								modifier = Modifier.padding(start = BODY_CONTENT_PADDING.dp),
+								modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
 								onItemClick = handleClick,
 								list = state,
 								starLevel = pageIndex,
@@ -222,6 +218,7 @@ fun AggressiveCreatureDetailContent(
 							state = uiState.foodDrops,
 						) { state ->
 							DroppedItemsSection(
+								modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
 								onItemClick = handleClick,
 								list = state,
 								icon = { Lucide.Beef },
@@ -232,10 +229,67 @@ fun AggressiveCreatureDetailContent(
 						}
 
 						TridentsDividedRow(text = "MOB STATS")
-						CreatureStatsSection(
-							creature = aggressiveCreature,
-							currentLevel = currentLevel
+						AnimatedStatCard(
+							modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+							id = "aggr_health_stat",
+							icon = Lucide.Heart,
+							label = stringResource(R.string.health),
+							value = currentLevel.baseHp.toString(),
+							details = "The amount of health points this mob have",
 						)
+
+						// Base Damage
+						if (aggressiveCreature.baseDamage.isNotBlank() && aggressiveCreature.baseDamage != "null") {
+							AnimatedStatCard(
+								modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+								id = "aggr_base_damage_stat",
+								icon = Lucide.Swords,
+								label = stringResource(R.string.base_damage),
+								value = "",
+								details = aggressiveCreature.baseDamage,
+								isStatColumn = true,
+							)
+						}
+
+						// Weakness
+						if (!aggressiveCreature.weakness.isNullOrBlank() && aggressiveCreature.weakness != "null") {
+							AnimatedStatCard(
+								modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+								id = "aggr_weakness_stat",
+								icon = Lucide.Unlink,
+								label = stringResource(R.string.weakness),
+								value = "",
+								details = aggressiveCreature.weakness,
+								isStatColumn = true,
+							)
+						}
+
+						// Resistance
+						if (!aggressiveCreature.resistance.isNullOrBlank() && aggressiveCreature.resistance != "null") {
+							AnimatedStatCard(
+								modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+								id = "aggr_resistance_stat",
+								icon = Lucide.Grab,
+								label = stringResource(R.string.resistance),
+								value = "",
+								details = aggressiveCreature.resistance,
+								isStatColumn = true,
+							)
+
+						}
+
+						// Abilities
+						if (!aggressiveCreature.abilities.isNullOrBlank() && aggressiveCreature.abilities != "null") {
+							AnimatedStatCard(
+								modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
+								id = "aggr_abilities_stat",
+								icon = Lucide.Atom,
+								label = stringResource(R.string.abilities),
+								value = "",
+								details = aggressiveCreature.abilities,
+							)
+
+						}
 
 						SlavicDivider()
 						Box(modifier = Modifier.size(70.dp))
@@ -259,71 +313,6 @@ fun AggressiveCreatureDetailContent(
 		}
 	}
 }
-
-@Composable
-private fun CreatureStatsSection(
-	creature: AggressiveCreature,
-	currentLevel: LevelCreatureData
-) {
-    AnimatedStatCard(
-        id = "aggr_health_stat",
-        icon = Lucide.Heart,
-        label = stringResource(R.string.health),
-        value = currentLevel.baseHp.toString(),
-        details = "The amount of health points this mob have",
-    )
-
-	// Base Damage
-    if (creature.baseDamage.isNotBlank() && creature.baseDamage != "null") {
-        AnimatedStatCard(
-            id = "aggr_base_damage_stat",
-            icon = Lucide.Swords,
-            label = stringResource(R.string.base_damage),
-            value = "",
-            details = creature.baseDamage,
-            isStatColumn = true,
-        )
-    }
-
-	// Weakness
-    if (!creature.weakness.isNullOrBlank() && creature.weakness != "null") {
-        AnimatedStatCard(
-            id = "aggr_weakness_stat",
-            icon = Lucide.Unlink,
-            label = stringResource(R.string.weakness),
-            value = "",
-            details = creature.weakness,
-            isStatColumn = true,
-        )
-    }
-
-	// Resistance
-    if (!creature.resistance.isNullOrBlank() && creature.resistance != "null") {
-        AnimatedStatCard(
-            id = "aggr_resistance_stat",
-            icon = Lucide.Grab,
-            label = stringResource(R.string.resistance),
-            value = "",
-            details = creature.resistance,
-            isStatColumn = true,
-        )
-
-    }
-
-	// Abilities
-    if (!creature.abilities.isNullOrBlank() && creature.abilities != "null") {
-        AnimatedStatCard(
-            id = "aggr_abilities_stat",
-            icon = Lucide.Atom,
-            label = stringResource(R.string.abilities),
-            value = "",
-            details = creature.abilities,
-        )
-
-    }
-}
-
- 
 
 
 @Preview(name = "CreaturePage")

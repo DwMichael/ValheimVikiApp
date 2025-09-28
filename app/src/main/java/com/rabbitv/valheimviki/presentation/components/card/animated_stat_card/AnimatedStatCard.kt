@@ -42,6 +42,7 @@ fun AnimatedStatCard(
 	}
 	if (painter != null) {
 		DarkGlassStatCardPainter(
+			modifier = modifier,
 			painter,
 			label = label,
 			value = value,
@@ -49,7 +50,7 @@ fun AnimatedStatCard(
 			isExpanded = expanded
 		)
 	}
-	if(!isStatColumn){
+	if (!isStatColumn) {
 		AnimatedVisibility(expanded) {
 			Text(
 				text = details,
@@ -57,8 +58,7 @@ fun AnimatedStatCard(
 				style = MaterialTheme.typography.bodyLarge
 			)
 		}
-	}else
-	{
+	} else {
 		AnimatedVisibility(expanded) {
 			StatColumn(details)
 		}
