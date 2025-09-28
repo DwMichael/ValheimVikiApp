@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -20,7 +21,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,6 +38,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.composables.icons.lucide.Clock2
 import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.ScrollText
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.favorite.Favorite
@@ -53,12 +54,19 @@ import com.rabbitv.valheimviki.presentation.components.card.animated_stat_card.A
 import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
+import com.rabbitv.valheimviki.presentation.components.grid.grid_item.CustomItemCard
+import com.rabbitv.valheimviki.presentation.components.grid.nested.NestedGrid
+import com.rabbitv.valheimviki.presentation.components.grid.nested.NestedItems
 import com.rabbitv.valheimviki.presentation.components.images.FramedImage
+import com.rabbitv.valheimviki.presentation.components.section_header.SectionHeader
+import com.rabbitv.valheimviki.presentation.components.section_header.SectionHeaderData
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
+import com.rabbitv.valheimviki.presentation.components.ui_section.UiSection
 import com.rabbitv.valheimviki.presentation.detail.trinket.model.TrinketDetailUiEvent
 import com.rabbitv.valheimviki.presentation.detail.trinket.model.TrinketDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.trinket.viewmodel.TrinketDetailViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
+import com.rabbitv.valheimviki.ui.theme.CUSTOM_ITEM_CARD_FILL_WIDTH
 import com.rabbitv.valheimviki.ui.theme.ForestGreen20Dark
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
@@ -168,6 +176,34 @@ fun TrinketDetailContent(
 							InfoSection(
 								title = "Additional Effect",
 								content = effectContent
+							)
+						}
+					}
+					UiSection(
+						state = uiState.materials
+					) { data ->
+						SectionHeader(
+							modifier = Modifier
+								.fillMaxWidth()
+								.wrapContentHeight()
+								.padding(horizontal = BODY_CONTENT_PADDING.dp),
+							data = SectionHeaderData(
+								"Requirements",
+								"Materials needed to build this trinket.",
+								Lucide.ScrollText
+							),
+						)
+						NestedGrid(
+							nestedItems = NestedItems(items = data),
+							horizontalPadding = BODY_CONTENT_PADDING.dp,
+						) { product ->
+							CustomItemCard(
+								itemData = product.itemDrop,
+								onItemClick = handleClick,
+								fillWidth = CUSTOM_ITEM_CARD_FILL_WIDTH,
+								imageUrl = product.itemDrop.imageUrl,
+								name = product.itemDrop.name,
+								quantity = product.quantityList.firstOrNull()
 							)
 						}
 					}
