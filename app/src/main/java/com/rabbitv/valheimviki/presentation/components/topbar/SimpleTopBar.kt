@@ -27,7 +27,7 @@ fun SimpleTopBar(
     onClick: () -> Unit
 ) {
         Box(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxWidth()
                 .padding(top = 50.dp, start = 10.dp)
         ) {

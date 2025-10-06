@@ -19,9 +19,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import com.composables.icons.lucide.Bug
-import com.composables.icons.lucide.BugPlay
 import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.Settings
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.ui.theme.ICON_CLICK_DIM
 import com.rabbitv.valheimviki.ui.theme.ICON_SIZE
@@ -35,7 +34,7 @@ fun MainAppBar(
 	onSearchBarClick: () -> Unit = {},
 	onMenuClick: () -> Unit = {},
 	onBookMarkClick: () -> Unit = {},
-	onFeedbackClick: () -> Unit = {},
+	settingsClick: () -> Unit = {},
 	scope: CoroutineScope,
 	drawerState: DrawerState,
 	enabled: () -> Boolean = { true }
@@ -93,13 +92,13 @@ fun MainAppBar(
 				)
 			}
 			IconButton(
-				onClick = { onFeedbackClick() },
+				onClick = { settingsClick() },
 				modifier = Modifier
 					.size(ICON_CLICK_DIM)
 			) {
 				Icon(
-					imageVector = Lucide.Bug,
-					contentDescription = "Feedback / Bug Report",
+					imageVector = Lucide.Settings,
+					contentDescription = "Settings",
 					modifier = Modifier.size(ICON_SIZE)
 				)
 			}
@@ -119,7 +118,7 @@ private fun PreviewHomeTopBar() {
 			onSearchBarClick = {},
 			onMenuClick = {},
 			onBookMarkClick = {},
-			onFeedbackClick = {},
+			settingsClick = {},
 			scope = rememberCoroutineScope(),
 			drawerState = rememberDrawerState(DrawerValue.Closed)
 		)

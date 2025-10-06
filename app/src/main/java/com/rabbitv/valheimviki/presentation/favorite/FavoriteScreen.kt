@@ -143,7 +143,7 @@ fun FavoriteScreenContent(
 			)
 		},
 		modifier = Modifier
-			.testTag("MaterialListScaffold"),
+			.testTag("FavoriteGridScaffold"),
 		floatingActionButton = {
 			CustomFloatingActionButton(
 				showBackButton = backButtonVisibleState,

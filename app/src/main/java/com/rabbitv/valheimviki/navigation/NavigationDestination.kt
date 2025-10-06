@@ -25,6 +25,9 @@ sealed interface TopLevelDestination : NavigationDestination {
 //	data object Home : TopLevelDestination
 
 	@Serializable
+	data object Settings : TopLevelDestination
+
+	@Serializable
 	data object Favorite : TopLevelDestination
 
 	@Serializable
@@ -372,7 +375,7 @@ object NavigationHelper {
 			AppCategory.ARMOR -> EquipmentDetailDestination.ArmorDetail(armorId = itemData.id)
 			AppCategory.WEAPON -> EquipmentDetailDestination.WeaponDetail(weaponId = itemData.id)
 			AppCategory.TRINKETS -> EquipmentDetailDestination.TrinketDetail(trinketId = itemData.id)
-				AppCategory.BUILDING_MATERIAL -> BuildingDetailDestination.BuildingMaterialDetail(
+			AppCategory.BUILDING_MATERIAL -> BuildingDetailDestination.BuildingMaterialDetail(
 				buildingMaterialId = itemData.id
 			)
 

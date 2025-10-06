@@ -122,6 +122,7 @@ import com.rabbitv.valheimviki.presentation.mead.MeadListScreen
 import com.rabbitv.valheimviki.presentation.ore_deposit.OreDepositScreen
 import com.rabbitv.valheimviki.presentation.points_of_interest.PoiListScreen
 import com.rabbitv.valheimviki.presentation.search.SearchScreen
+import com.rabbitv.valheimviki.presentation.settings.SettingsScreen
 import com.rabbitv.valheimviki.presentation.splash.SplashScreen
 import com.rabbitv.valheimviki.presentation.tool.ToolListScreen
 import com.rabbitv.valheimviki.presentation.tree.TreeScreen
@@ -148,7 +149,6 @@ fun MainContainer(
 ) {
 	val drawerState = rememberDrawerState(DrawerValue.Closed)
 	val scope = rememberCoroutineScope()
-	val context = LocalContext.current
 
 	val drawerCollection: DrawerItemCollection = rememberDrawerItems()
 
@@ -195,10 +195,8 @@ fun MainContainer(
 						onBookMarkClick = {
 							valheimVikiNavController.navigate(TopLevelDestination.Favorite)
 						},
-						onFeedbackClick = {
-							val feedbackFormUrl = "https://forms.gle/vAYCSzkxcjzU6xkr9"
-							val intent = Intent(Intent.ACTION_VIEW, feedbackFormUrl.toUri())
-							context.startActivity(intent)
+						settingsClick = {
+							valheimVikiNavController.navigate(TopLevelDestination.Settings)
 						}
 					)
 				}
@@ -285,7 +283,14 @@ fun ValheimNavGraph(
 				},
 			)
 		}
-
+		composable<TopLevelDestination.Settings> {
+			SettingsScreen(
+				onBack = { valheimVikiNavController.popBackStack() },
+				onItemClick = { destination ->
+					valheimVikiNavController.navigate(destination)
+				},
+			)
+		}
 		composable<TopLevelDestination.Search> {
 			SearchScreen(
 				onBack = { valheimVikiNavController.popBackStack() },
