@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.components.card.dark_glass_card
+package com.rabbitv.valheimviki.presentation.components.card.dark_glass_card_stat
 
 import android.graphics.RenderEffect
 import android.graphics.Shader
@@ -34,10 +34,14 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.composables.icons.lucide.Gavel
+import com.composables.icons.lucide.Lucide
 import com.rabbitv.valheimviki.ui.theme.Shapes
+import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
@@ -67,16 +71,16 @@ fun BaseDarkGlassStatCard(
 
 	) {
 		Box(
-				modifier = Modifier
-					.matchParentSize()
-					.graphicsLayer {
-						renderEffect = RenderEffect.createBlurEffect(
-							10f,
-							10f,
-							Shader.TileMode.CLAMP
-						).asComposeRenderEffect()
-					}
-			)
+			modifier = Modifier
+				.matchParentSize()
+				.graphicsLayer {
+					renderEffect = RenderEffect.createBlurEffect(
+						10f,
+						10f,
+						Shader.TileMode.CLAMP
+					).asComposeRenderEffect()
+				}
+		)
 
 		Row(
 			modifier = Modifier
@@ -127,5 +131,28 @@ fun BaseDarkGlassStatCard(
 				)
 			}
 		}
+	}
+}
+
+
+@Preview("BaseDarkGlassPreview")
+@Composable
+fun PreviewBaseDarkGlassStatCard() {
+	ValheimVikiAppTheme {
+		BaseDarkGlassStatCard(
+			modifier = Modifier,
+			iconContent = {
+				Icon(
+					imageVector = Lucide.Gavel,
+					contentDescription = null,
+					tint = Color(0xFFFF6B35),
+					modifier = Modifier.size(24.dp)
+				)
+			},
+			label = "Gavel",
+			value = "",
+			expand = { },
+			isExpanded = false,
+		)
 	}
 }

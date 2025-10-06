@@ -13,8 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCard
-import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card.DarkGlassStatCardPainter
+import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card_stat.DarkGlassStatCard
+import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card_stat.DarkGlassStatCardPainter
 import com.rabbitv.valheimviki.presentation.detail.creature.components.column.StatColumn
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 

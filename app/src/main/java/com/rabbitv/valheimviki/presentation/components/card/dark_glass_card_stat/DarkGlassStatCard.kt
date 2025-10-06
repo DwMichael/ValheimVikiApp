@@ -1,8 +1,7 @@
-package com.rabbitv.valheimviki.presentation.components.card.dark_glass_card
+package com.rabbitv.valheimviki.presentation.components.card.dark_glass_card_stat
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable

@@ -1,4 +1,4 @@
-package com.rabbitv.valheimviki.presentation.components.card.dark_glass_card
+package com.rabbitv.valheimviki.presentation.components.card.dark_glass_card_stat
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
