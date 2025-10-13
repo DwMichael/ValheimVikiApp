@@ -131,14 +131,16 @@ fun DarkGlassCard(
 			)
 			.clickable { onCardClick() }
 	) {
-		Box(
-			modifier = Modifier
-				.matchParentSize()
-				.graphicsLayer {
-					renderEffect = RenderEffect.createBlurEffect(10f, 10f, Shader.TileMode.CLAMP)
-						.asComposeRenderEffect()
-				}
-		)
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+			Box(
+				modifier = Modifier
+					.matchParentSize()
+					.graphicsLayer {
+						renderEffect = RenderEffect.createBlurEffect(10f, 10f, Shader.TileMode.CLAMP)
+							.asComposeRenderEffect()
+					}
+			)
+		}
 
 		Column(
 			modifier = Modifier.padding(top = 20.dp, bottom = 20.dp, start = 10.dp, end = 10.dp),

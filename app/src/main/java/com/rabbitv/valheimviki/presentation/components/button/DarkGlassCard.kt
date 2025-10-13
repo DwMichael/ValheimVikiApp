@@ -72,17 +72,19 @@ fun DarkGlassButton(
 			}
 
 	) {
-		Box(
-			modifier = Modifier
-				.matchParentSize()
-				.graphicsLayer {
-					renderEffect = RenderEffect.createBlurEffect(
-						10f,
-						10f,
-						Shader.TileMode.CLAMP
-					).asComposeRenderEffect()
-				}
-		)
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+			Box(
+				modifier = Modifier
+					.matchParentSize()
+					.graphicsLayer {
+						renderEffect = RenderEffect.createBlurEffect(
+							10f,
+							10f,
+							Shader.TileMode.CLAMP
+						).asComposeRenderEffect()
+					}
+			)
+		}
 
 		Row(
 			modifier = Modifier

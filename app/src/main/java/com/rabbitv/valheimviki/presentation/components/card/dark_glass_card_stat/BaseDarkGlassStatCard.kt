@@ -3,7 +3,6 @@ package com.rabbitv.valheimviki.presentation.components.card.dark_glass_card_sta
 import android.graphics.RenderEffect
 import android.graphics.Shader
 import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -43,7 +42,6 @@ import com.composables.icons.lucide.Lucide
 import com.rabbitv.valheimviki.ui.theme.Shapes
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
-@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun BaseDarkGlassStatCard(
 	modifier: Modifier = Modifier,
@@ -70,17 +68,19 @@ fun BaseDarkGlassStatCard(
 			.clickable { expand() }
 
 	) {
-		Box(
-			modifier = Modifier
-				.matchParentSize()
-				.graphicsLayer {
-					renderEffect = RenderEffect.createBlurEffect(
-						10f,
-						10f,
-						Shader.TileMode.CLAMP
-					).asComposeRenderEffect()
-				}
-		)
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+			Box(
+				modifier = Modifier
+					.matchParentSize()
+					.graphicsLayer {
+						renderEffect = RenderEffect.createBlurEffect(
+							10f,
+							10f,
+							Shader.TileMode.CLAMP
+						).asComposeRenderEffect()
+					}
+			)
+		}
 
 		Row(
 			modifier = Modifier
