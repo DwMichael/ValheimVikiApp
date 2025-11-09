@@ -1,7 +1,7 @@
 # ValheimVikiApp
+<a href="https://buymeacoffee.com/rabbitv" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
 
 ## 🎥 App Demo
-
 <table>
   <tr>
     <td align="center">
@@ -58,6 +58,8 @@ While the app is complete and production-ready, it is **not yet published** on t
 Store.  
 A private backend exists for data retrieval, but it is **not publicly accessible**.
 
+---
+<a href="https://buymeacoffee.com/rabbitv" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
 ---
 
 ## ✨ Features
@@ -173,6 +175,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
 
 This project is **not accepting pull requests** at this time due to the private backend.  
 However, feedback and suggestions are welcome via the Issues tab.
+
+Two briliant man help me with creating data base schema. If not them l would not start this project. Love <3
+Check them out 
+https://www.linkedin.com/in/jakub-jankowski-pp/
+https://github.com/dlisiewicz
 
 ---
 
