@@ -4,8 +4,6 @@ import android.content.res.Configuration
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -22,6 +20,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.Search
 import com.composables.icons.lucide.X
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
@@ -45,7 +44,6 @@ fun SearchTopBar(
 			.padding(horizontal = BODY_CONTENT_PADDING.dp)
 			.padding(top = 8.dp)
 			.clip(Shapes.medium),
-		shape = Shapes.medium,
 		inputField = {
 			SearchBarDefaults.InputField(
 				query = searchQuery,
@@ -62,7 +60,7 @@ fun SearchTopBar(
 				},
 				leadingIcon = {
 					Icon(
-						Icons.Default.Search,
+						Lucide.Search,
 						tint = PrimaryOrange,
 						contentDescription = "Search Icon"
 					)
@@ -74,13 +72,14 @@ fun SearchTopBar(
 						Icon(
 							Lucide.X,
 							tint = PrimaryOrange,
-							contentDescription = "ArrowBack Icon",
+							contentDescription = "Clear Icon",
 						)
 					}
 				},
 				colors = TextFieldDefaults.colors(
-					focusedContainerColor = ForestGreen10Dark,
-					unfocusedContainerColor = ForestGreen10Dark,
+					focusedContainerColor = Color(0xFF34383b),
+					unfocusedContainerColor = Color(0xFF34383b),
+					disabledContainerColor = ForestGreen10Dark,
 					focusedIndicatorColor = Color.Transparent,
 					unfocusedIndicatorColor = Color.Transparent,
 					cursorColor = PrimaryOrange,
@@ -91,10 +90,14 @@ fun SearchTopBar(
 		},
 		expanded = false,
 		onExpandedChange = { },
-		colors = SearchBarDefaults.colors(),
-		tonalElevation = SearchBarDefaults.TonalElevation,
-		shadowElevation = SearchBarDefaults.ShadowElevation,
+		colors = SearchBarDefaults.colors(
+			containerColor = Color(0xFF34383b),
+			dividerColor = Color.Transparent,
+		),
+		tonalElevation = 0.dp,
+		shadowElevation = 0.dp,
 		windowInsets = WindowInsets(0.dp),
+		shape = Shapes.medium,
 		content = {},
 	)
 }

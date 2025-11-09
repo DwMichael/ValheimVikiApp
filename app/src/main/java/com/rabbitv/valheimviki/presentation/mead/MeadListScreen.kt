@@ -22,7 +22,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.composables.icons.lucide.FlaskConical
 import com.composables.icons.lucide.Lucide
@@ -45,7 +45,6 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MeadListScreen(
-	modifier: Modifier,
 	onItemClick: (destination: DetailDestination) -> Unit,
 	paddingValues: PaddingValues,
 	viewModel: MeadListViewModel = hiltViewModel()

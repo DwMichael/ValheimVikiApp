@@ -1,6 +1,5 @@
 package com.rabbitv.valheimviki.presentation.detail.weapon
 
-
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,13 +23,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.composables.icons.lucide.House
 import com.composables.icons.lucide.Lucide
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
-import com.rabbitv.valheimviki.navigation.BuildingDetailDestination
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.presentation.components.LoadingIndicator

@@ -7,8 +7,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
@@ -19,6 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.composables.icons.lucide.ChevronUp
+import com.composables.icons.lucide.Lucide
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
 import com.rabbitv.valheimviki.ui.theme.ICON_SIZE
@@ -46,7 +46,7 @@ fun CustomFloatingActionButton(
 			elevation = FloatingActionButtonDefaults.elevation(),
 		) {
 			Icon(
-				Icons.Filled.KeyboardArrowUp,
+				Lucide.ChevronUp,
 				contentDescription = "Button Up",
 				modifier = Modifier.size(ICON_SIZE)
 			)

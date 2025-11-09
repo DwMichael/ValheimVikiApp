@@ -18,7 +18,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.composables.icons.lucide.Apple
 import com.composables.icons.lucide.Axe
@@ -179,7 +179,7 @@ private fun getChipsForCategory(): List<CraftingChip> {
 fun PreviewSingleChoiceChip() {
 	ValheimVikiAppTheme {
 		SearchFilterBar(
-			onSelectedChange = { i, s -> {} },
+			onSelectedChange = { _,_-> },
 			modifier = Modifier,
 			selectedOption = CraftingSubCategory.CRAFTING_STATION,
 			chips = getChipsForCategory()
@@ -196,7 +196,7 @@ fun PreviewCustomElevatedFilterChipSelected() {
 
 			index = 0,
 			selectedChipIndex = 0,
-			onSelectedChange = { i, s -> {} },
+			onSelectedChange = { _,_-> },
 			label = "Axes",
 			icon = Lucide.Axe,
 			option = ArmorSubCategory.CAPE,
@@ -212,7 +212,7 @@ fun PreviewCustomElevatedFilterChipNotSelected() {
 		CustomElevatedFilterChip(
 			index = 1,
 			selectedChipIndex = 0,
-			onSelectedChange = { i, s -> {} },
+			onSelectedChange = { _,_-> },
 			label = "Axes",
 			icon = Lucide.Axe,
 			option = ArmorSubCategory.CAPE,
@@ -234,7 +234,7 @@ fun PreviewWeaponListStateRenderer() {
 			paddingValues = PaddingValues(),
 			modifier = Modifier,
 			onChipSelected = {},
-			onItemClick = { _ -> {} }
+			onItemClick = { _ ->  }
 		)
 	}
 }

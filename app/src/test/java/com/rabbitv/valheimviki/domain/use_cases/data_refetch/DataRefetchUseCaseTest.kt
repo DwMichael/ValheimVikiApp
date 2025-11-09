@@ -15,6 +15,7 @@ import com.rabbitv.valheimviki.domain.repository.RelationRepository
 import com.rabbitv.valheimviki.domain.repository.SearchRepository
 import com.rabbitv.valheimviki.domain.repository.ToolRepository
 import com.rabbitv.valheimviki.domain.repository.TreeRepository
+import com.rabbitv.valheimviki.domain.repository.TrinketRepository
 import com.rabbitv.valheimviki.domain.repository.WeaponRepository
 import com.rabbitv.valheimviki.domain.use_cases.datastore.DataStoreUseCases
 import kotlinx.coroutines.Dispatchers
@@ -24,6 +25,7 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import okhttp3.ResponseBody
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -75,6 +77,9 @@ class DataRefetchUseCaseTest {
 	private lateinit var toolRepository: ToolRepository
 
 	@Mock
+	private lateinit var trinketRepository: TrinketRepository
+
+	@Mock
 	private lateinit var buildingMaterialRepository: BuildingMaterialRepository
 
 	@Mock
@@ -109,6 +114,7 @@ class DataRefetchUseCaseTest {
 		craftingObjectRepository = mock()
 		searchRepository = mock()
 		dataStoreUseCases = mock()
+		trinketRepository = mock()
 
 		useCase = DataRefetchUseCase(
 			biomeRepository = biomeRepository,
@@ -126,7 +132,8 @@ class DataRefetchUseCaseTest {
 			buildingMaterialRepository = buildingMaterialRepository,
 			craftingObjectRepository = craftingObjectRepository,
 			searchRepository = searchRepository,
-			dataStoreUseCases = dataStoreUseCases
+			dataStoreUseCases = dataStoreUseCases,
+			trinketRepository = trinketRepository,
 		)
 	}
 
@@ -228,14 +235,14 @@ class DataRefetchUseCaseTest {
 		whenever(oreDepositRepository.fetchOreDeposits(language)).thenReturn(
 			Response.error(
 				500,
-				okhttp3.ResponseBody.create(null, "")
+				ResponseBody.create(null, "")
 			)
 		)
 		whenever(materialsRepository.fetchMaterials(language)).thenReturn(Response.success(emptyList()))
 		whenever(pointOfInterestRepository.fetchPointOfInterests(language)).thenReturn(
 			Response.error(
 				500,
-				okhttp3.ResponseBody.create(null, "")
+				ResponseBody.create(null, "")
 			)
 		)
 		whenever(treeRepository.fetchTrees(language)).thenReturn(Response.success(emptyList()))
@@ -262,85 +269,85 @@ class DataRefetchUseCaseTest {
 		whenever(biomeRepository.fetchBiomes(language)).thenReturn(
 			Response.error(
 				500,
-				okhttp3.ResponseBody.create(null, "")
+				ResponseBody.create(null, "")
 			)
 		)
 		whenever(creatureRepository.fetchCreatures(language)).thenReturn(
 			Response.error(
 				500,
-				okhttp3.ResponseBody.create(null, "")
+				ResponseBody.create(null, "")
 			)
 		)
 		whenever(oreDepositRepository.fetchOreDeposits(language)).thenReturn(
 			Response.error(
 				500,
-				okhttp3.ResponseBody.create(null, "")
+				ResponseBody.create(null, "")
 			)
 		)
 		whenever(materialsRepository.fetchMaterials(language)).thenReturn(
 			Response.error(
 				500,
-				okhttp3.ResponseBody.create(null, "")
+				ResponseBody.create(null, "")
 			)
 		)
 		whenever(pointOfInterestRepository.fetchPointOfInterests(language)).thenReturn(
 			Response.error(
 				500,
-				okhttp3.ResponseBody.create(null, "")
+				ResponseBody.create(null, "")
 			)
 		)
 		whenever(treeRepository.fetchTrees(language)).thenReturn(
 			Response.error(
 				500,
-				okhttp3.ResponseBody.create(null, "")
+				ResponseBody.create(null, "")
 			)
 		)
 		whenever(foodRepository.fetchFoodList(language)).thenReturn(
 			Response.error(
 				500,
-				okhttp3.ResponseBody.create(null, "")
+				ResponseBody.create(null, "")
 			)
 		)
 		whenever(weaponRepository.fetchWeapons(language)).thenReturn(
 			Response.error(
 				500,
-				okhttp3.ResponseBody.create(null, "")
+				ResponseBody.create(null, "")
 			)
 		)
 		whenever(armorRepository.fetchArmor(language)).thenReturn(
 			Response.error(
 				500,
-				okhttp3.ResponseBody.create(null, "")
+				ResponseBody.create(null, "")
 			)
 		)
 		whenever(meadRepository.fetchMeads(language)).thenReturn(
 			Response.error(
 				500,
-				okhttp3.ResponseBody.create(null, "")
+				ResponseBody.create(null, "")
 			)
 		)
 		whenever(toolRepository.fetchTools(language)).thenReturn(
 			Response.error(
 				500,
-				okhttp3.ResponseBody.create(null, "")
+				ResponseBody.create(null, "")
 			)
 		)
 		whenever(buildingMaterialRepository.fetchBuildingMaterial(language)).thenReturn(
 			Response.error(
 				500,
-				okhttp3.ResponseBody.create(null, "")
+				ResponseBody.create(null, "")
 			)
 		)
 		whenever(craftingObjectRepository.fetchCraftingObject(language)).thenReturn(
 			Response.error(
 				500,
-				okhttp3.ResponseBody.create(null, "")
+				ResponseBody.create(null, "")
 			)
 		)
 		whenever(relationsRepository.fetchRelations()).thenReturn(
 			Response.error(
 				500,
-				okhttp3.ResponseBody.create(null, "")
+				ResponseBody.create(null, "")
 			)
 		)
 	}

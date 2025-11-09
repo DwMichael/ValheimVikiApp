@@ -26,7 +26,7 @@
     <string name="hildir_text_third">When players find Hildir, it can be a good idea to drop a Portal in the vicinity to make easier returns.</string>
     <string name="hildir_text_fifth">Each of these chests weighs 200, has a stack size of 1, and cannot be teleported. Chests can be returned to Hildir, which unlocks additional trades from her; note that only one of each type of chest can be returned.</string>
     <string name="hildir_text_sixth">Returning a chest to Hildir will enable new Events, which will cause the chest\'s respective boss and their minions to invade your base.</string>
-    <string name="hildir_html_text"><![CDATA[<ul><li>Smouldering Tombs: Each 3000 meters apart, between 3000 - 8000 meters from the world center, at an altitude of at least 1 meter.</li>\n                        <li>Howling Caverns: Each 2000 meters apart, between 1000 - 8000 meters from the world center, at an altitude of at least 200 meters.</li>\n                        <li>Sealed Tower: Each 3000 meters apart, at an altitude of at least 8 meters.</li></ul>]]></string>
+    <string name="hildir_html_text"><![CDATA[<ul><li>Smouldering Tombs: Each 3000 meters apart, between 3000 – 8000 meters from the world center, at an altitude of at least 1 meter.</li>\n                        <li>Howling Caverns: Each 2000 meters apart, between 1000 – 8000 meters from the world center, at an altitude of at least 200 meters.</li>\n                        <li>Sealed Tower: Each 3000 meters apart, at an altitude of at least 8 meters.</li></ul>]]></string>
     <string name="no_internet_connection_ms">Connect to internet to fetch data</string>
     <string name="background">Background</string>
     <string name="weapons">Weapons</string>
@@ -67,4 +67,8 @@
     <string name="need_cultivator">Need Cultivator?</string>
     <string name="information_if_seeds_need_cultivator_to_be_planted">Information if seeds need cultivator to be planted</string>
     <string name="time_needed_for_plant_to_fully_grow">Time needed for plant to fully grow.</string>
+    <string name="valheim_viki_fandom_infromation_settings">This app is Fully Fan-made, it  uses some images and game data from the Valheim Wiki.\n\n Most of the texts and images in this app belong to the Valheim Wiki (Fandom).\n\n For more details and complete game information, please visit the Valheim Wiki</string>
+    <string name="valheim_wiki_fandom">Valheim Wiki | Fandom</string>
+    <string name="dialog_donate_pop_up_label">You are about to open an external website \n(Buy me a coffee) to make an optional donation.\n\nPlease Note: This is an optional donation and is not a purchase. It does not provide any special features, content, or items within this app.\n\nYou can change currency on the bottom\n of the website if you want.\n\nThank you for your support!</string>
+    <string name="button_donate_pop_up_label"><![CDATA[Buy me a coffee to support me! <3]]></string>
 </resources>

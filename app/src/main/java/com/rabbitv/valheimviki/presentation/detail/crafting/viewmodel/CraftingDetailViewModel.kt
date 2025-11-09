@@ -117,7 +117,6 @@ class CraftingDetailViewModel @Inject constructor(
 							droppableType = DroppableType.CRAFTING_OBJECT,
 						)
 					}
-
 				}
 		}.distinctUntilChanged()
 			.map { UIState.Success(it) }

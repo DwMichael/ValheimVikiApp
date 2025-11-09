@@ -1,7 +1,5 @@
 package com.rabbitv.valheimviki.presentation.detail.building_material
 
-
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,7 +16,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,7 +25,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.composables.icons.lucide.Gauge
 import com.composables.icons.lucide.Lucide
@@ -52,7 +49,6 @@ import com.rabbitv.valheimviki.presentation.detail.building_material.viewmodel.B
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 
-
 @Composable
 fun BuildingMaterialDetailScreen(
 	onBack: () -> Unit,
@@ -70,7 +66,6 @@ fun BuildingMaterialDetailScreen(
 	)
 
 }
-
 
 @Composable
 fun BuildingMaterialDetailContent(
@@ -91,8 +86,6 @@ fun BuildingMaterialDetailContent(
 
 	val materialsData = (materialsState as? UIState.Success)?.data ?: emptyList()
 	val foodsData = (foodsState as? UIState.Success)?.data ?: emptyList()
-	val isLoading = materialsState is UIState.Loading || foodsState is UIState.Loading
-	val isError = materialsState is UIState.Error || foodsState is UIState.Error
 
 	val comfortDescription =
 		"<p><b>Comfort</b> level determines the duration of <a href=\"/wiki/Resting_Effect\" class=\"mw-redirect\" title=\"Resting Effect\">Resting Effect</a>. Base duration is 8 minutes, with each comfort level stacking 1 minute up to 24 minutes with usual items and 26 minutes with rare seasonal items.  \n" +

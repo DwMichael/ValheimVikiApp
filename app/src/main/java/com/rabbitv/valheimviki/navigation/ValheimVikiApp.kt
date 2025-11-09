@@ -4,8 +4,9 @@
 
 package com.rabbitv.valheimviki.navigation
 
-import android.content.Intent
+import android.os.Build
 import androidx.activity.compose.BackHandler
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
@@ -37,13 +38,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -132,6 +131,7 @@ import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import kotlinx.coroutines.launch
 
 
+@RequiresApi(Build.VERSION_CODES.S)
 @Preview
 @Composable
 fun ValheimVikiApp() {
@@ -141,6 +141,7 @@ fun ValheimVikiApp() {
 }
 
 
+@RequiresApi(Build.VERSION_CODES.S)
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun MainContainer(
@@ -238,6 +239,7 @@ fun MainContainer(
 }
 
 
+@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun ValheimNavGraph(
 	valheimVikiNavController: NavHostController,
@@ -360,7 +362,6 @@ fun ValheimNavGraph(
 		}
 		composable<ListDestination.CreatureDestinations.MobList> {
 			MobListScreen(
-				modifier = Modifier.padding(10.dp),
 				onItemClick = { destination ->
 					valheimVikiNavController.navigate(destination)
 				},
@@ -400,7 +401,6 @@ fun ValheimNavGraph(
 
 		composable<ListDestination.FoodDestinations.FoodList> {
 			FoodListScreen(
-				modifier = Modifier.padding(10.dp),
 				onItemClick = { destination ->
 					valheimVikiNavController.navigate(destination)
 				},
@@ -410,7 +410,6 @@ fun ValheimNavGraph(
 
 		composable<ListDestination.FoodDestinations.MeadList> {
 			MeadListScreen(
-				modifier = Modifier.padding(10.dp),
 				onItemClick = { destination ->
 					valheimVikiNavController.navigate(destination)
 				},
@@ -550,7 +549,6 @@ fun ValheimNavGraph(
 
 		composable<ListDestination.WorldDestinations.PointOfInterestList> {
 			PoiListScreen(
-				modifier = Modifier.padding(10.dp),
 				onItemClick = { destination ->
 					valheimVikiNavController.navigate(destination)
 				},

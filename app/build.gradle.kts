@@ -7,7 +7,7 @@ plugins {
 	alias(libs.plugins.kotlin.android)
 	alias(libs.plugins.kotlin.compose)
 	id("com.google.devtools.ksp")
-	kotlin("plugin.serialization") version "2.2.20"
+	kotlin("plugin.serialization") version "2.2.21"
 	id("com.google.dagger.hilt.android")
 }
 
@@ -23,8 +23,8 @@ android {
 		applicationId = "com.rabbitv.valheimviki"
 		minSdk = 26
 		targetSdk = 36
-		versionCode = 18
-		versionName = "1.1.1"
+		versionCode = 19
+		versionName = "1.1.2"
 
 		buildConfigField("String", "baseUrlSafe", properties.getProperty("baseUrl"))
 
@@ -128,6 +128,12 @@ dependencies {
 	implementation(libs.androidx.appcompat)
 	implementation(libs.icons.lucide)
 
+	implementation(libs.asset.delivery)
+	implementation(libs.asset.delivery.ktx)
+	implementation(libs.feature.delivery)
+	implementation(libs.feature.delivery.ktx)
+	implementation(libs.review)
+	implementation(libs.review.ktx)
 
 	implementation(libs.androidx.work.runtime.ktx)
 	androidTestImplementation(libs.work.testing)

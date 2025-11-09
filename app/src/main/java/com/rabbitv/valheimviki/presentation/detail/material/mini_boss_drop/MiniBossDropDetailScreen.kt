@@ -13,8 +13,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,7 +20,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rabbitv.valheimviki.data.mappers.creatures.toMiniBoss
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
@@ -43,7 +41,6 @@ import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
 
-
 @Composable
 fun MiniBossDropDetailScreen(
 	onBack: () -> Unit,
@@ -62,9 +59,7 @@ fun MiniBossDropDetailScreen(
 		onToggleFavorite = onToggleFavorite,
 		uiState = uiState,
 	)
-
 }
-
 
 @Composable
 fun MiniBossDropDetailContent(
@@ -74,7 +69,7 @@ fun MiniBossDropDetailContent(
 	uiState: MiniBossDropUiState,
 ) {
 
-    val scrollState = rememberScrollState()
+	val scrollState = rememberScrollState()
 
 	BgImage()
 	Scaffold(
@@ -109,11 +104,11 @@ fun MiniBossDropDetailContent(
 					)
 					SlavicDivider()
 
-                    material.description?.let {
-                        DetailExpandableText(
-                            text = material.description,
-                            boxPadding = BODY_CONTENT_PADDING.dp,
-                        )
+					material.description?.let {
+						DetailExpandableText(
+							text = material.description,
+							boxPadding = BODY_CONTENT_PADDING.dp,
+						)
 						SlavicDivider()
 					}
 
@@ -121,7 +116,7 @@ fun MiniBossDropDetailContent(
 						is UIState.Success -> {
 							miniBossState.data?.let { miniBoss ->
 								ImageWithTopLabel(
-									onItemClick = { clickedItemId ->
+									onItemClick = {
 										val destination = NavigationHelper.routeToCreature(
 											miniBoss.subCategory,
 											miniBoss.id
@@ -143,7 +138,7 @@ fun MiniBossDropDetailContent(
 						is UIState.Success -> {
 							npcState.data?.let { npc ->
 								ImageWithTopLabel(
-									onItemClick = { clickedItemId ->
+									onItemClick = {
 										val destination = NavigationHelper.routeToCreature(
 											npc.subCategory,
 											npc.id
@@ -168,7 +163,7 @@ fun MiniBossDropDetailContent(
 				scrollState = scrollState,
 				onBack = onBack
 			)
-			uiState.material?.let { material ->
+			uiState.material?.let {
 				FavoriteButton(
 					modifier = Modifier
 						.align(Alignment.TopEnd)
@@ -183,12 +178,9 @@ fun MiniBossDropDetailContent(
 	}
 }
 
-
 @Preview("ToolDetailContentPreview", showBackground = true)
 @Composable
 fun PreviewToolDetailContentCooked() {
-
-
 	ValheimVikiAppTheme {
 		MiniBossDropDetailContent(
 			uiState = MiniBossDropUiState(
@@ -200,5 +192,4 @@ fun PreviewToolDetailContentCooked() {
 			onToggleFavorite = { }
 		)
 	}
-
 }

@@ -14,8 +14,6 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -33,10 +31,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.rememberAsyncImagePainter
 import com.composables.icons.lucide.Atom
+import com.composables.icons.lucide.Heart
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Trophy
 import com.rabbitv.valheimviki.R
@@ -100,7 +99,7 @@ fun PassiveCreatureDetailContent(
 			pageCount = { uiState.passiveCreature?.levels?.size ?: 0 },
 		)
 
-    val sharedScrollState = rememberScrollState()
+	val sharedScrollState = rememberScrollState()
 	val coroutineScope = rememberCoroutineScope()
 	val handleClick = remember(onItemClick) {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
@@ -147,11 +146,11 @@ fun PassiveCreatureDetailContent(
 							thickness = 1.dp,
 							color = PrimaryWhite
 						)
-                        DetailExpandableText(
-                            text = passiveCreature.description,
-                            collapsedMaxLine = 3,
-                            boxPadding = BODY_CONTENT_PADDING.dp
-                        )
+						DetailExpandableText(
+							text = passiveCreature.description,
+							collapsedMaxLine = 3,
+							boxPadding = BODY_CONTENT_PADDING.dp
+						)
 						TridentsDividedRow(text = "DETAILS")
 						uiState.biome?.let { biome ->
 							Text(
@@ -211,7 +210,7 @@ fun PassiveCreatureDetailContent(
 						CardStatDetails(
 							title = stringResource(R.string.baseHp),
 							text = uiState.passiveCreature.levels[pageIndex].baseHp.toString(),
-							icon = Icons.Outlined.Favorite,
+							icon = Lucide.Heart,
 							iconColor = Color.Red,
 							styleTextFirst = MaterialTheme.typography.labelSmall,
 							styleTextSecond = MaterialTheme.typography.bodyLarge,
@@ -239,11 +238,11 @@ fun PassiveCreatureDetailContent(
 								textAlign = TextAlign.Center,
 								style = MaterialTheme.typography.headlineMedium,
 							)
-                            DetailExpandableText(
-                                text = passiveCreature.notes,
-                                collapsedMaxLine = 3,
-                                boxPadding = BODY_CONTENT_PADDING.dp
-                            )
+							DetailExpandableText(
+								text = passiveCreature.notes,
+								collapsedMaxLine = 3,
+								boxPadding = BODY_CONTENT_PADDING.dp
+							)
 						}
 						SlavicDivider()
 						Box(modifier = Modifier.size(45.dp))

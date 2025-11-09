@@ -97,7 +97,7 @@ class FoodListViewModel @Inject constructor(
 		)
 	}.stateIn(
 		viewModelScope,
-		SharingStarted.Companion.WhileSubscribed(5000),
+		SharingStarted.WhileSubscribed(5000),
 		initialValue = FoodListUiState(
 			selectedCategory = FoodSubCategory.COOKED_FOOD,
 			sortType = null,

@@ -21,7 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Rat
@@ -44,11 +44,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.launch
 
-
 @OptIn(ExperimentalMaterial3Api::class, FlowPreview::class)
 @Composable
 fun MobListScreen(
-	modifier: Modifier = Modifier,
 	onItemClick: (destination: DetailDestination) -> Unit,
 	paddingValues: PaddingValues,
 	viewModel: MobListViewModel = hiltViewModel()

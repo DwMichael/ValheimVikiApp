@@ -27,7 +27,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.composables.icons.lucide.Gem
 import com.composables.icons.lucide.House
@@ -37,7 +37,6 @@ import com.composables.icons.lucide.Pickaxe
 import com.composables.icons.lucide.Trees
 import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.biome.Biome
-import com.rabbitv.valheimviki.domain.model.creature.main_boss.MainBoss
 import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.navigation.DetailDestination
@@ -58,7 +57,6 @@ import com.rabbitv.valheimviki.presentation.detail.biome.model.BiomeDetailUiStat
 import com.rabbitv.valheimviki.presentation.detail.biome.viewmodel.BiomeDetailScreenViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
-
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -91,9 +89,7 @@ fun BiomeDetailScreen(
 		headerImageUrl = viewModel.initialImageUrl.value,
 		headerTitle = viewModel.initialTitle.value
 	)
-
 }
-
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -283,21 +279,6 @@ fun PreviewBiomeDetailContent() {
 		category = "BIOME",
 		order = 1
 	)
-	val fakeMainBoss = MainBoss(
-		id = "boss1",
-		imageUrl = "https://via.placeholder.com/400x200.png?text=MainBoss+Image",
-		category = "CREATURE",
-		subCategory = "BOSS",
-		name = "Przykładowy MainBoss",
-		description = "Przykładowy opis głównego bossa.",
-		order = 1,
-		baseHP = 1500,
-		weakness = "Ogień",
-		resistance = "Lód",
-		baseDamage = "100",
-		collapseImmune = "False",
-		forsakenPower = "High"
-	)
 
 	val uiState = BiomeDetailUiState(
 		biome = fakeBiome,
@@ -317,8 +298,8 @@ fun PreviewBiomeDetailContent() {
 					sharedTransitionScope = this@SharedTransitionLayout,
 					animatedVisibilityScope = this,
 					uiState = uiState,
-					onItemClick = { _ -> {} },
-					onToggleFavorite = { _, _ -> {} },
+					onItemClick = { _ ->  },
+					onToggleFavorite = { _, _ ->  },
 					vmStart = {},
 					biomeId = "",
 					headerImageUrl = "",

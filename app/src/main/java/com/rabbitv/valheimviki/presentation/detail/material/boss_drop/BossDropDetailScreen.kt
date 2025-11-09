@@ -13,7 +13,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,7 +23,7 @@ import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rabbitv.valheimviki.data.mappers.creatures.toMainBoss
 import com.rabbitv.valheimviki.domain.model.material.MaterialSubType
@@ -46,7 +45,6 @@ import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
-
 
 @Composable
 fun BossDropDetailScreen(
@@ -147,7 +145,7 @@ fun BossDropDetailContent(
 									itemData = boss,
 									subTitle = "Boss from witch this item drop",
 									contentScale = ContentScale.Crop,
-									onItemClick = { clickedItemId ->
+									onItemClick = {
 										val destination = NavigationHelper.routeToCreature(
 											boss.subCategory,
 											boss.id
@@ -169,7 +167,7 @@ fun BossDropDetailContent(
 				scrollState = scrollState,
 				onBack = onBack
 			)
-			uiState.material?.let { material ->
+			uiState.material?.let {
 				FavoriteButton(
 					modifier = Modifier
 						.align(Alignment.TopEnd)
@@ -180,17 +178,13 @@ fun BossDropDetailContent(
 					},
 				)
 			}
-
 		}
 	}
 }
 
-
 @Preview("ToolDetailContentPreview", showBackground = true)
 @Composable
 fun PreviewToolDetailContentCooked() {
-
-
 	ValheimVikiAppTheme {
 		BossDropDetailContent(
 			uiState = BossDropUiState(
@@ -202,5 +196,4 @@ fun PreviewToolDetailContentCooked() {
 			onToggleFavorite = {}
 		)
 	}
-
 }

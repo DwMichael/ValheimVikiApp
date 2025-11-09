@@ -41,7 +41,7 @@ class FavoriteViewModel @Inject constructor(
 		_selectedCategory,
 		connectivityObserver.isConnected.stateIn(
 			scope = viewModelScope,
-			started = SharingStarted.Companion.WhileSubscribed(5000),
+			started = SharingStarted.WhileSubscribed(5000),
 			initialValue = true
 		)
 	) { favorites, selectedCategory, isConnected ->
@@ -82,7 +82,7 @@ class FavoriteViewModel @Inject constructor(
 			)
 		}.stateIn(
 			viewModelScope,
-			SharingStarted.Companion.WhileSubscribed(5000),
+			SharingStarted.WhileSubscribed(5000),
 			initialValue = FavoriteUiState(
 				selectedCategory = null,
 				favoritesState = UIState.Loading
@@ -100,6 +100,5 @@ class FavoriteViewModel @Inject constructor(
 			}
 		}
 	}
-
 }
 

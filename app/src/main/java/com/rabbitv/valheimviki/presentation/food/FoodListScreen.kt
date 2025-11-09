@@ -22,7 +22,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.composables.icons.lucide.Heart
 import com.composables.icons.lucide.Lucide
@@ -57,7 +57,6 @@ data class FoodChip(
 
 @Composable
 fun FoodListScreen(
-	modifier: Modifier,
 	paddingValues: PaddingValues,
 	onItemClick: (destination: DetailDestination) -> Unit,
 	viewModel: FoodListViewModel = hiltViewModel()
@@ -146,13 +145,11 @@ fun FoodListScreen(
 	}
 }
 
-
 @Composable
 private fun getChipsForSortType(category: FoodSubCategory): List<FoodChip> {
 	return when (category) {
 		FoodSubCategory.COOKED_FOOD -> listOf(
 			FoodChip(
-
 				FoodSortType.STAMINA,
 				ImageVector.vectorResource(id = R.drawable.sprint_24px),
 				"Stamina"
@@ -167,6 +164,5 @@ private fun getChipsForSortType(category: FoodSubCategory): List<FoodChip> {
 		)
 
 		FoodSubCategory.UNCOOKED_FOOD -> emptyList()
-
 	}
 }

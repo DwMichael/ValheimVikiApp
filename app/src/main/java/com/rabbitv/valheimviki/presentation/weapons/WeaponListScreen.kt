@@ -21,7 +21,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.composables.icons.lucide.Axe
 import com.composables.icons.lucide.Bomb
@@ -50,7 +50,6 @@ import com.rabbitv.valheimviki.presentation.weapons.model.WeaponUiState
 import com.rabbitv.valheimviki.presentation.weapons.viewmodel.WeaponListViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
-
 
 data class WeaponChip(
 	override val option: WeaponSubType,
@@ -262,7 +261,7 @@ fun PreviewSingleChoiceChipMelee() {
 		SearchFilterBar(
 			chips = getChipsForCategory(WeaponSubCategory.MELEE_WEAPON),
 			selectedOption = WeaponSubType.SWORD,
-			onSelectedChange = { i, s -> {} },
+			onSelectedChange = { _,_ ->  },
 			modifier = Modifier,
 		)
 	}
@@ -277,7 +276,7 @@ fun PreviewSingleChoiceChipRanged() {
 		SearchFilterBar(
 			chips = getChipsForCategory(WeaponSubCategory.RANGED_WEAPON),
 			selectedOption = WeaponSubType.BOW,
-			onSelectedChange = { i, s -> {} },
+			onSelectedChange = { _,_ ->  },
 			modifier = Modifier,
 		)
 	}
@@ -291,7 +290,7 @@ fun PreviewSingleChoiceChipMagic() {
 		SearchFilterBar(
 			chips = getChipsForCategory(WeaponSubCategory.MAGIC_WEAPON),
 			selectedOption = WeaponSubType.ELEMENTAL_MAGIC,
-			onSelectedChange = { i, s -> {} },
+			onSelectedChange = { _,_ ->  },
 			modifier = Modifier,
 		)
 	}
@@ -304,7 +303,7 @@ fun PreviewSingleChoiceChipAmmo() {
 	ValheimVikiAppTheme {
 		SearchFilterBar(
 			selectedOption = WeaponSubType.BOMB,
-			onSelectedChange = { i, s -> {} },
+			onSelectedChange = { _,_ ->  },
 			chips = getChipsForCategory(WeaponSubCategory.AMMO),
 			modifier = Modifier,
 		)
@@ -327,7 +326,7 @@ fun PreviewWeaponListStateRenderer() {
 			modifier = Modifier,
 			onCategorySelected = {},
 			onChipSelected = {},
-			onItemClick = { _ -> {} },
+			onItemClick = { _ ->  },
 		)
 	}
 }
