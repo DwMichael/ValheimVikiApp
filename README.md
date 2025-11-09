@@ -177,8 +177,10 @@ This project is **not accepting pull requests** at this time due to the private 
 However, feedback and suggestions are welcome via the Issues tab.
 
 Two briliant man help me with creating data base schema. If not them l would not start this project. Love <3
-Check them out 
+Check them out :
+
 https://www.linkedin.com/in/jakub-jankowski-pp/
+
 https://github.com/dlisiewicz
 
 ---
