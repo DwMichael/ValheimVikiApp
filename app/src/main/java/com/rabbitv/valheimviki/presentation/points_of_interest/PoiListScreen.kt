@@ -22,7 +22,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.composables.icons.lucide.FlaskConical
 import com.composables.icons.lucide.Lucide
@@ -46,7 +46,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun PoiListScreen(
 	onItemClick: (destination: DetailDestination) -> Unit,
-	modifier: Modifier, paddingValues: PaddingValues,
+	paddingValues: PaddingValues,
 	viewModel: PoiListViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()

@@ -362,7 +362,6 @@ fun ValheimNavGraph(
 		}
 		composable<ListDestination.CreatureDestinations.MobList> {
 			MobListScreen(
-				modifier = Modifier.padding(10.dp),
 				onItemClick = { destination ->
 					valheimVikiNavController.navigate(destination)
 				},
@@ -402,7 +401,6 @@ fun ValheimNavGraph(
 
 		composable<ListDestination.FoodDestinations.FoodList> {
 			FoodListScreen(
-				modifier = Modifier.padding(10.dp),
 				onItemClick = { destination ->
 					valheimVikiNavController.navigate(destination)
 				},
@@ -412,7 +410,6 @@ fun ValheimNavGraph(
 
 		composable<ListDestination.FoodDestinations.MeadList> {
 			MeadListScreen(
-				modifier = Modifier.padding(10.dp),
 				onItemClick = { destination ->
 					valheimVikiNavController.navigate(destination)
 				},
@@ -552,7 +549,6 @@ fun ValheimNavGraph(
 
 		composable<ListDestination.WorldDestinations.PointOfInterestList> {
 			PoiListScreen(
-				modifier = Modifier.padding(10.dp),
 				onItemClick = { destination ->
 					valheimVikiNavController.navigate(destination)
 				},

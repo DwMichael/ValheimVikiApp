@@ -34,7 +34,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.composables.icons.lucide.Clock2
 import com.composables.icons.lucide.Lucide
@@ -82,7 +82,7 @@ fun TrinketDetailScreen(
 	viewModel: TrinketDetailViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-	val onToggleFavorite = { favorite: Favorite, isFavorite: Boolean ->
+	val onToggleFavorite = { favorite: Favorite ->
 		viewModel.uiEvent(
 			TrinketDetailUiEvent.ToggleFavorite(
 				favorite = favorite
@@ -101,7 +101,7 @@ fun TrinketDetailScreen(
 fun TrinketDetailContent(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
-	onToggleFavorite: (favorite: Favorite, currentIsFavorite: Boolean) -> Unit,
+	onToggleFavorite: (favorite: Favorite) -> Unit,
 	uiState: TrinketDetailUiState
 ) {
 
@@ -218,7 +218,7 @@ fun TrinketDetailContent(
 						}
 
 						is UIState.Success -> {
-							uiState.craftingObject.data?.let { craftingStation ->
+							uiState.craftingObject.data?.let {
 								TridentsDividedRow()
 								CardImageWithTopLabel(
 									onClickedItem = handleClick,
@@ -246,7 +246,7 @@ fun TrinketDetailContent(
 						.padding(16.dp),
 					isFavorite = uiState.isFavorite,
 					onToggleFavorite = {
-						onToggleFavorite(uiState.trinket.toFavorite(), uiState.isFavorite)
+						onToggleFavorite(uiState.trinket.toFavorite())
 					},
 				)
 			}
@@ -319,7 +319,7 @@ private fun PreviewTrinketDetailScreen() {
 		TrinketDetailContent(
 			onBack = {},
 			onItemClick = {},
-			onToggleFavorite = { _, _ -> {} },
+			onToggleFavorite = { _ ->  },
 			uiState = TrinketDetailUiState(
 				trinket = testTrinket,
 				materials = UIState.Loading,

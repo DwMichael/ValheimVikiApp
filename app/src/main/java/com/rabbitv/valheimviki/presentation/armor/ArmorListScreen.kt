@@ -21,7 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.composables.icons.lucide.Axe
 import com.composables.icons.lucide.Blend
@@ -175,14 +175,13 @@ private fun getChipsForCategory(): List<ArmorChip> {
 fun PreviewSingleChoiceChip() {
 	ValheimVikiAppTheme {
 		SearchFilterBar(
-			onSelectedChange = { i, s -> {} },
+			onSelectedChange = { _,_ -> },
 			modifier = Modifier,
 			selectedOption = ArmorSubCategory.CAPE,
 			chips = getChipsForCategory()
 		)
 	}
 }
-
 
 @Preview("CustomElevatedFilterChipSelectedPreview")
 @Composable
@@ -192,7 +191,7 @@ fun PreviewCustomElevatedFilterChipSelected() {
 
 			index = 0,
 			selectedChipIndex = 0,
-			onSelectedChange = { i, s -> {} },
+			onSelectedChange = { _,_ -> },
 			label = "Axes",
 			icon = Lucide.Axe,
 			option = ArmorSubCategory.CAPE,
@@ -208,7 +207,7 @@ fun PreviewCustomElevatedFilterChipNotSelected() {
 		CustomElevatedFilterChip(
 			index = 1,
 			selectedChipIndex = 0,
-			onSelectedChange = { i, s -> {} },
+			onSelectedChange = { _,_ -> },
 			label = "Axes",
 			icon = Lucide.Axe,
 			option = ArmorSubCategory.CAPE,
@@ -232,7 +231,7 @@ fun PreviewWeaponListStateRenderer() {
 			paddingValues = PaddingValues(),
 			modifier = Modifier,
 			onChipSelected = {},
-			onItemClick = { _ -> {} }
+			onItemClick = { _ ->  }
 		)
 	}
 }

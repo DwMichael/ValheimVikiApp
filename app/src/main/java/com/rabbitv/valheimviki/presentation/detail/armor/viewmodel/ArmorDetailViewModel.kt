@@ -4,9 +4,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.di.qualifiers.DefaultDispatcher
 import com.rabbitv.valheimviki.domain.model.armor.Armor
-import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.relation.RelatedData
 import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
@@ -30,7 +30,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
@@ -158,13 +157,13 @@ class ArmorDetailViewModel @Inject constructor(
 		when (event) {
 			is ArmorDetailUiEvent.ToggleFavorite ->
 				viewModelScope.launch {
-					val target = !_isFavorite.value
-					_isFavorite.value = target
-					favoriteUseCases.toggleFavoriteUseCase(event.favorite, target)
+					_armorFlow.value?.let { armor ->
+						favoriteUseCases.toggleFavoriteUseCase(
+							armor.toFavorite(),
+							shouldBeFavorite = !_isFavorite.value
+						)
+					}
 				}
-
 		}
 	}
-
-
 }

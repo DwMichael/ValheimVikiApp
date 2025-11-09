@@ -15,7 +15,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,7 +24,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.rememberAsyncImagePainter
 import com.composables.icons.lucide.Lucide
@@ -50,7 +49,6 @@ import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
-
 @Composable
 fun WoodMaterialDetailScreen(
 	onBack: () -> Unit,
@@ -67,9 +65,7 @@ fun WoodMaterialDetailScreen(
 		onToggleFavorite = onToggleFavorite,
 		uiState = uiState,
 	)
-
 }
-
 
 @Composable
 fun WoodMaterialDetailContent(
@@ -78,7 +74,7 @@ fun WoodMaterialDetailContent(
 	onToggleFavorite: () -> Unit,
 	uiState: WoodUiState,
 ) {
-    val scrollState = rememberScrollState()
+	val scrollState = rememberScrollState()
 	val handleItemClick = remember {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
 	}
@@ -121,13 +117,13 @@ fun WoodMaterialDetailContent(
 						textAlign = TextAlign.Center
 					)
 					SlavicDivider()
-                    material.description?.let {
-                        DetailExpandableText(
-                            text = material.description,
-                            boxPadding = BODY_CONTENT_PADDING.dp,
-                        )
+					material.description?.let {
+						DetailExpandableText(
+							text = material.description,
+							boxPadding = BODY_CONTENT_PADDING.dp,
+						)
 
-                    }
+					}
 
 					UiSection(
 						state = uiState.biomes
@@ -191,7 +187,7 @@ fun WoodMaterialDetailContent(
 				scrollState = scrollState,
 				onBack = onBack
 			)
-			uiState.material?.let { material ->
+			uiState.material?.let {
 				FavoriteButton(
 					modifier = Modifier
 						.align(Alignment.TopEnd)
@@ -206,12 +202,9 @@ fun WoodMaterialDetailContent(
 	}
 }
 
-
 @Preview("ToolDetailContentPreview", showBackground = true)
 @Composable
 fun PreviewToolDetailContentCooked() {
-
-
 	ValheimVikiAppTheme {
 		WoodMaterialDetailContent(
 			uiState = WoodUiState(),
@@ -220,5 +213,4 @@ fun PreviewToolDetailContentCooked() {
 			onToggleFavorite = { }
 		)
 	}
-
 }

@@ -31,7 +31,7 @@ import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.composables.icons.lucide.Hammer
 import com.composables.icons.lucide.Lucide
@@ -290,7 +290,7 @@ fun ToolDetailContent(
 				scrollState = scrollState,
 				onBack = onBack
 			)
-			uiState.tool?.let { tool ->
+			uiState.tool?.let {
 				FavoriteButton(
 					modifier = Modifier
 						.align(Alignment.TopEnd)

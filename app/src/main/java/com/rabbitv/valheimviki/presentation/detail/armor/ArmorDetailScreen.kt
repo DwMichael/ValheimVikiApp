@@ -32,12 +32,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.armor.Armor
 import com.rabbitv.valheimviki.domain.model.armor.UpgradeArmorInfo
-import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
@@ -71,12 +69,8 @@ fun ArmorDetailScreen(
 	viewModel: ArmorDetailViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-	val onToggleFavorite = { favorite: Favorite, isFavorite: Boolean ->
-		viewModel.uiEvent(
-			ArmorDetailUiEvent.ToggleFavorite(
-				favorite = favorite
-			)
-		)
+	val onToggleFavorite = {
+		viewModel.uiEvent(ArmorDetailUiEvent.ToggleFavorite)
 	}
 	ArmorDetailContent(
 		onBack = onBack,
@@ -90,7 +84,7 @@ fun ArmorDetailScreen(
 fun ArmorDetailContent(
 	onBack: () -> Unit,
 	onItemClick: (destination: DetailDestination) -> Unit,
-	onToggleFavorite: (favorite: Favorite, currentIsFavorite: Boolean) -> Unit,
+	onToggleFavorite: () -> Unit,
 	uiState: ArmorDetailUiState
 ) {
 	val scrollState = rememberScrollState()
@@ -227,7 +221,7 @@ fun ArmorDetailContent(
 						}
 
 						is UIState.Success -> {
-							uiState.craftingObject.data?.let { craftingStation ->
+							uiState.craftingObject.data?.let {
 								TridentsDividedRow()
 								CardImageWithTopLabel(
 									onClickedItem = handleClick,
@@ -255,7 +249,7 @@ fun ArmorDetailContent(
 						.padding(16.dp),
 					isFavorite = uiState.isFavorite,
 					onToggleFavorite = {
-						onToggleFavorite(uiState.armor.toFavorite(), uiState.isFavorite)
+						onToggleFavorite()
 					},
 				)
 			}
@@ -333,7 +327,7 @@ private fun PreviewArmorDetailScreen() {
 		ArmorDetailContent(
 			onBack = {},
 			onItemClick = {},
-			onToggleFavorite = { _, _ -> {} },
+			onToggleFavorite = { },
 			uiState = ArmorDetailUiState(
 				armor = testArmor,
 				materials = UIState.Loading,

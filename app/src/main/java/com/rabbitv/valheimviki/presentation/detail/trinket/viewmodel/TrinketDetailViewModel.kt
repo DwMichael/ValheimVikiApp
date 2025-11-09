@@ -4,22 +4,19 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.di.qualifiers.DefaultDispatcher
-import com.rabbitv.valheimviki.domain.model.armor.Armor
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
 import com.rabbitv.valheimviki.domain.model.trinket.Trinket
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.domain.model.upgrader.MaterialUpgrade
-import com.rabbitv.valheimviki.domain.use_cases.armor.ArmorUseCases
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.CraftingObjectUseCases
 import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
 import com.rabbitv.valheimviki.domain.use_cases.trinket.TrinketUseCases
 import com.rabbitv.valheimviki.navigation.EquipmentDetailDestination
-import com.rabbitv.valheimviki.presentation.detail.armor.model.ArmorDetailUiEvent
-import com.rabbitv.valheimviki.presentation.detail.armor.model.ArmorDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.trinket.model.TrinketDetailUiEvent
 import com.rabbitv.valheimviki.presentation.detail.trinket.model.TrinketDetailUiState
 import com.rabbitv.valheimviki.utils.relatedDataFlow
@@ -132,11 +129,13 @@ class TrinketDetailViewModel @Inject constructor(
 		when (event) {
 			is TrinketDetailUiEvent.ToggleFavorite ->
 				viewModelScope.launch {
-					val target = !_isFavorite.value
-					_isFavorite.value = target
-					favoriteUseCases.toggleFavoriteUseCase(event.favorite, target)
+					_trinketFlow.value?.let { trinket ->
+						favoriteUseCases.toggleFavoriteUseCase(
+							trinket.toFavorite(),
+							shouldBeFavorite = !_isFavorite.value
+						)
+					}
 				}
-
 		}
 	}
 }
