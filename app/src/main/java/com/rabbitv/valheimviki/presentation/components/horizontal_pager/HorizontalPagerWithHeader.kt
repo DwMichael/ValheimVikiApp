@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Build
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -24,11 +22,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.composables.icons.lucide.Lucide
+import com.composables.icons.lucide.Wrench
 import com.rabbitv.valheimviki.domain.model.food.Food
 import com.rabbitv.valheimviki.domain.repository.Droppable
 import com.rabbitv.valheimviki.presentation.components.section_header.SectionHeader
 import com.rabbitv.valheimviki.presentation.components.section_header.SectionHeaderData
-import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.utils.FakeData
 
 @Immutable
@@ -74,61 +73,11 @@ internal fun <T : Droppable> HorizontalPagerWithHeader(
 @Preview(showBackground = true)
 @Composable
 fun HorizontalPagerWithHeaderPreview() {
-	val sampleFoodList = listOf(
-		Food(
-			id = "cooked_meat",
-			imageUrl = "https://picsum.photos/200/200?random=1",
-			category = "Food",
-			subCategory = "COOKED",
-			name = "Cooked Meat",
-			description = "Perfectly grilled meat that restores health and stamina.",
-			order = 1,
-			health = 40,
-			weight = 1.0,
-			healing = 2,
-			stamina = 20,
-			duration = "15m",
-			forkType = "Normal",
-			stackSize = 20
-		),
-		Food(
-			id = "honey",
-			imageUrl = "https://picsum.photos/200/200?random=2",
-			category = "Food",
-			subCategory = "RAW",
-			name = "Honey",
-			description = "Sweet golden honey that provides quick energy.",
-			order = 2,
-			health = 20,
-			weight = 0.5,
-			healing = 5,
-			stamina = 35,
-			duration = "20m",
-			forkType = "Normal",
-			stackSize = 50
-		),
-		Food(
-			id = "bread",
-			imageUrl = "https://picsum.photos/200/200?random=3",
-			category = "Food",
-			subCategory = "BAKED",
-			name = "Bread",
-			description = "Freshly baked bread that provides lasting stamina.",
-			order = 3,
-			health = 25,
-			weight = 0.8,
-			healing = 1,
-			stamina = 40,
-			duration = "25m",
-			forkType = "Normal",
-			stackSize = 10
-		)
-	)
 
 	val headerData = PagerHeaderData(
 		title = "Craftable Items",
 		subTitle = "Items that can be created at this crafting station",
-		icon = Icons.Default.Build,
+		icon = Lucide.Wrench
 	)
 
 
@@ -137,7 +86,7 @@ fun HorizontalPagerWithHeaderPreview() {
 		list = FakeData.fakeCraftingProductsList(),
 		headerData = headerData,
 		modifier = Modifier.fillMaxWidth()
-	) { item, pageIndex , pagerState->
+	) { item, pageIndex, pagerState ->
 		Card(
 			modifier = Modifier
 				.fillMaxWidth()

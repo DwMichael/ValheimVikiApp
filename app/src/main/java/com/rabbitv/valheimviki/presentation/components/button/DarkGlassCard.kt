@@ -18,8 +18,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -39,6 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.composables.icons.lucide.ChevronRight
 import com.composables.icons.lucide.Gavel
 import com.composables.icons.lucide.Lucide
 import com.rabbitv.valheimviki.ui.theme.Shapes
@@ -52,6 +51,7 @@ fun DarkGlassButton(
 	icon: ImageVector? = null,
 	label: String? = null,
 	value: String? = null,
+	leadIcon: Boolean = true,
 	height: Dp = 60.dp
 ) {
 	Box(
@@ -134,16 +134,21 @@ fun DarkGlassButton(
 					textAlign = TextAlign.End
 				)
 			}
-			IconButton(
-				onClick = { onCardClick() },
-			) {
-				Icon(
-					imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-					contentDescription = null,
-					tint = Color(0xFFFF6B35),
-					modifier = Modifier.size(24.dp)
-				)
+			if(leadIcon){
+				IconButton(
+					onClick = { onCardClick() },
+				) {
+					Icon(
+						imageVector = Lucide.ChevronRight,
+						contentDescription = null,
+						tint = Color(0xFFFF6B35),
+						modifier = Modifier.size(24.dp)
+					)
+				}
+			}else{
+				Spacer(modifier = Modifier.size(24.dp))
 			}
+
 		}
 	}
 }

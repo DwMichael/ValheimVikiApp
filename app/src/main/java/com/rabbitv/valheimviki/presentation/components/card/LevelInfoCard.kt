@@ -19,9 +19,6 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -51,6 +48,9 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import com.composables.icons.lucide.ChevronDown
+import com.composables.icons.lucide.Info
+import com.composables.icons.lucide.Lucide
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.upgrader.FoodAsMaterialUpgrade
 import com.rabbitv.valheimviki.domain.model.upgrader.MaterialUpgrade
@@ -174,7 +174,7 @@ fun LevelInfoCard(
 						verticalAlignment = Alignment.CenterVertically
 					) {
 						Icon(
-							imageVector = Icons.Default.Info,
+							imageVector = Lucide.Info,
 							contentDescription = "Info",
 							tint = Color(0xFFFFB800),
 							modifier = Modifier.size(20.dp)
@@ -366,7 +366,7 @@ fun TopExpandableItem(
 			onClick = onToggleExpansion,
 		) {
 			Icon(
-				imageVector = Icons.Default.KeyboardArrowDown,
+				imageVector = Lucide.ChevronDown,
 				contentDescription = "Expand",
 				modifier = modifier,
 				tint = PrimaryWhite
@@ -393,7 +393,7 @@ private fun PreviewTopExpandableItem() {
 private fun PreviewLevelInfoCard() {
 	ValheimVikiAppTheme {
 		LevelInfoCard(
-			onItemClick = {  },
+			onItemClick = { },
 			upgradeStats = level1Stats,
 			materialsForUpgrade = level1RequiredMaterials
 		)

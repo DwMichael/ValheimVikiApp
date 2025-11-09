@@ -10,8 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -34,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.composables.icons.lucide.Archive
 import com.composables.icons.lucide.Armchair
+import com.composables.icons.lucide.ArrowLeft
 import com.composables.icons.lucide.Box
 import com.composables.icons.lucide.Cog
 import com.composables.icons.lucide.Flag
@@ -119,7 +118,7 @@ fun BuildingMaterialListScreen(
 					),
 				) {
 					Icon(
-						Icons.AutoMirrored.Filled.ArrowBack,
+						Lucide.ArrowLeft,
 						contentDescription = "Back"
 					)
 				}

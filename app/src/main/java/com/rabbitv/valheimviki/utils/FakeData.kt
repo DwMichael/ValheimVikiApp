@@ -1,21 +1,17 @@
 package com.rabbitv.valheimviki.utils
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Star
 import androidx.compose.ui.graphics.Color
 import com.composables.icons.lucide.Flame
 import com.composables.icons.lucide.Hammer
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Shield
+import com.composables.icons.lucide.Star
 import com.rabbitv.valheimviki.domain.model.armor.Armor
 import com.rabbitv.valheimviki.domain.model.armor.UpgradeArmorInfo
-import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
 import com.rabbitv.valheimviki.domain.model.creature.Creature
-import com.rabbitv.valheimviki.domain.model.creature.npc.NPC
 import com.rabbitv.valheimviki.domain.model.food.Food
 import com.rabbitv.valheimviki.domain.model.material.Material
-import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
 import com.rabbitv.valheimviki.domain.model.point_of_interest.PointOfInterest
 import com.rabbitv.valheimviki.domain.model.presentation.DroppableType
 import com.rabbitv.valheimviki.domain.model.upgrader.MaterialUpgrade
@@ -23,8 +19,6 @@ import com.rabbitv.valheimviki.domain.model.weapon.UpgradeInfo
 import com.rabbitv.valheimviki.domain.model.weapon.Weapon
 import com.rabbitv.valheimviki.presentation.components.card.GridLevelInfo
 import com.rabbitv.valheimviki.presentation.detail.crafting.model.CraftingProducts
-import com.rabbitv.valheimviki.presentation.detail.creature.npc.model.NpcDetailUiState
-
 
 object FakeData {
 	fun fakeCraftingProductsList(count: Int = 5): List<CraftingProducts> {
@@ -398,7 +392,7 @@ object FakeData {
 	val level1Stats: List<GridLevelInfo> = listOf(
 		GridLevelInfo(
 			id = 1,
-			icon = Icons.Rounded.Star,
+			icon = Lucide.Star,
 			iconColor = Color(0xFFFFC107),
 			title = "Quality Level",
 			power = 1
@@ -570,65 +564,6 @@ object FakeData {
 		)
 	)
 
-
-//	val fakeNpcDetailUiState = NpcDetailUiState(
-//		npc = NPC(
-//			id = "npc_blacksmith",
-//			name = "Bjorn the Blacksmith",
-//			imageUrl = "https://example.com/images/npcs/blacksmith.png",
-//			description = "A sturdy dwarf who forges powerful weapons for travellers.",
-//			order = 1,
-//			category = "Overworld",
-//			subCategory = "Overworld",
-//			biography = "Overworld",
-//			location = "Overworld",
-//		),
-//
-//		biome = Biome(
-//			id = "biome_plains",
-//			category = "Overworld",
-//			imageUrl = "https://example.com/images/biomes/plains.png",
-//			name = "Sunny Plains",
-//			description = "Rolling green fields with gentle hills and the occasional oak tree.",
-//			order = 0
-//		),
-//
-//		shopItems = listOf(
-//			Material(
-//				id = "mat_iron_ingot",
-//				imageUrl = "https://example.com/images/materials/iron_ingot.png",
-//				category = "Ore",
-//				subCategory = "Metal",
-//				name = "Iron Ingot",
-//				description = "A bar of smelted iron, still warm from the forge.",
-//				usage = "Crafting weapons and heavy armor.",
-//				growthTime = null,
-//				needCultivatorGround = null,
-//				price = 15,
-//				effect = null,
-//				sellPrice = null,
-//				order = 0,
-//				subType = null
-//			),
-//			Material(
-//				id = "mat_steel_sword",
-//				imageUrl = "https://example.com/images/items/steel_sword.png",
-//				category = "Weapon",
-//				subCategory = "Sword",
-//				name = "Steel Longsword",
-//				description = "Reliable blade forged from high-quality steel.",
-//				usage = "Primary weapon-slot item.",
-//				growthTime = null,
-//				needCultivatorGround = null,
-//				price = 120,
-//				effect = "+20 Slash Damage",
-//				sellPrice = null,
-//				order = 1,
-//				subType = "Melee"
-//			)
-//		),
-//	)
-
 	fun generateFakeMaterials(): List<Material> {
 		return listOf(
 			Material(
@@ -698,44 +633,6 @@ object FakeData {
 			)
 		)
 	}
-
-	fun generateFakeOreDeposits(): List<OreDeposit> {
-		return listOf(
-			OreDeposit(
-				id = "gold_deposit_1",
-				category = "Precious Metals",
-				name = "Golden Vein Mine",
-				description = "A rich deposit of gold ore.",
-				order = 1,
-				imageUrl = "https://example.com/gold.jpg"
-			),
-			OreDeposit(
-				id = "iron_deposit_2",
-				category = "Base Metals",
-				name = "Iron Peak Quarry",
-				description = "A large source of high-grade iron ore.",
-				order = 2,
-				imageUrl = "https://example.com/iron.jpg"
-			),
-			OreDeposit(
-				id = "copper_deposit_3",
-				category = "Base Metals",
-				name = "Copper Canyon Lode",
-				description = "An extensive deposit containing significant copper reserves.",
-				order = 3,
-				imageUrl = "https://example.com/copper.jpg"
-			),
-			OreDeposit(
-				id = "diamond_deposit_4",
-				category = "Gemstones",
-				name = "Crystal Caves Mine",
-				description = "Known for its high-quality diamond crystals.",
-				order = 4,
-				imageUrl = "https://example.com/diamond.jpg"
-			)
-		)
-	}
-
 
 	fun generateFakeCreatures(): List<Creature> {
 		return listOf(

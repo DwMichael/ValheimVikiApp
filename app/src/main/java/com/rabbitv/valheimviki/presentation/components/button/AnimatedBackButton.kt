@@ -6,8 +6,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
@@ -19,6 +17,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.composables.icons.lucide.ArrowLeft
+import com.composables.icons.lucide.Lucide
 import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
 
 @Composable
@@ -57,7 +57,7 @@ fun AnimatedBackButton(
 			modifier = Modifier.size(56.dp)
 		) {
 			Icon(
-				Icons.AutoMirrored.Rounded.ArrowBack,
+				Lucide.ArrowLeft,
 				contentDescription = "Back",
 				tint = Color.White
 			)

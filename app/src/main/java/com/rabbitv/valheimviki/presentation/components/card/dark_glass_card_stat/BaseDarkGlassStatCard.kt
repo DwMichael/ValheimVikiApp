@@ -16,9 +16,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -37,6 +34,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.composables.icons.lucide.ChevronDown
+import com.composables.icons.lucide.ChevronUp
 import com.composables.icons.lucide.Gavel
 import com.composables.icons.lucide.Lucide
 import com.rabbitv.valheimviki.ui.theme.Shapes
@@ -124,7 +123,7 @@ fun BaseDarkGlassStatCard(
 				onClick = expand,
 			) {
 				Icon(
-					imageVector = if (isExpanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
+					imageVector = if (isExpanded) Lucide.ChevronUp else Lucide.ChevronDown,
 					contentDescription = null,
 					tint = Color(0xFFFF6B35),
 					modifier = Modifier.size(24.dp)

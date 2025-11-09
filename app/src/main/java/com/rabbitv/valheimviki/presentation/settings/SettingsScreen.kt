@@ -25,6 +25,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,22 +36,30 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.core.net.toUri
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.composables.icons.lucide.Book
 import com.composables.icons.lucide.CircleAlert
+import com.composables.icons.lucide.Coffee
 import com.composables.icons.lucide.Lucide
+import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.presentation.components.button.DarkGlassButton
+import com.rabbitv.valheimviki.presentation.components.dialog_pop_up.DialogPopUp
 import com.rabbitv.valheimviki.presentation.components.topbar.SimpleTopBar
 import com.rabbitv.valheimviki.presentation.settings.viewmodel.SettingsViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.Shapes
+import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
+import com.rabbitv.valheimviki.utils.Constants.VALHEIM_VIKI_LINK
 
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
@@ -69,6 +79,8 @@ fun SettingsScreenContent(
 	onBack: () -> Unit,
 ) {
 	val context = LocalContext.current
+	val showDialog = remember { mutableStateOf(false) }
+
 	Scaffold(
 		modifier = modifier.testTag("SettingsListScaffold"),
 		topBar = {
@@ -97,13 +109,36 @@ fun SettingsScreenContent(
 			Spacer(modifier = Modifier.height(20.dp))
 			DarkGlassButton(
 				onCardClick = {
-					val feedbackFormUrl = "https://valheim.fandom.com/wiki/Valheim_Wiki"
-					val intent = Intent(Intent.ACTION_VIEW, feedbackFormUrl.toUri())
+					val intent = Intent(Intent.ACTION_VIEW, VALHEIM_VIKI_LINK.toUri())
 					context.startActivity(intent)
 				},
 				icon = Lucide.Book,
-				label = "Valheim Wiki | Fandom",
+				label = stringResource(R.string.valheim_wiki_fandom),
 				value = null
+			)
+			Spacer(modifier = Modifier.height(20.dp))
+			DarkGlassButton(
+				onCardClick = {
+					showDialog.value = true
+				},
+				icon = Lucide.Coffee,
+				label = stringResource(R.string.button_donate_pop_up_label),
+				value = null
+
+			)
+		}
+	}
+	if (showDialog.value) {
+		Dialog(
+			onDismissRequest = { showDialog.value = false },
+			properties = DialogProperties(
+				usePlatformDefaultWidth = false
+			)
+		) {
+			DialogPopUp(
+				onDismiss = { showDialog.value = false },
+				text = stringResource(R.string.dialog_donate_pop_up_label),
+				icon = Lucide.CircleAlert
 			)
 		}
 	}
@@ -116,7 +151,7 @@ fun DarkGlassCard(
 	modifier: Modifier = Modifier,
 	onCardClick: () -> Unit,
 	icon: ImageVector = Lucide.CircleAlert,
-	text: String = "This app is Fully Fan-made, it  uses some images and game data from the Valheim Wiki.\n\n Most of the texts and images in this app belong to the Valheim Wiki (Fandom).\n\n For more details and complete game information, please visit the Valheim Wiki",
+	text: String = stringResource(R.string.valheim_viki_fandom_infromation_settings),
 ) {
 	Box(
 		modifier = modifier
@@ -136,8 +171,9 @@ fun DarkGlassCard(
 				modifier = Modifier
 					.matchParentSize()
 					.graphicsLayer {
-						renderEffect = RenderEffect.createBlurEffect(10f, 10f, Shader.TileMode.CLAMP)
-							.asComposeRenderEffect()
+						renderEffect =
+							RenderEffect.createBlurEffect(10f, 10f, Shader.TileMode.CLAMP)
+								.asComposeRenderEffect()
 					}
 			)
 		}
@@ -167,28 +203,31 @@ fun DarkGlassCard(
 			)
 		}
 	}
-
 }
 
 @RequiresApi(Build.VERSION_CODES.S)
 @Preview(name = "DarkGlassCard")
 @Composable
 private fun PreviewDarkGlassCard() {
-	DarkGlassCard(
-		modifier = Modifier,
-		icon = Lucide.CircleAlert,
-		text = "This app uses some images and game data from the Valheim Wiki All rights to Valheim belong to Iron Gate Studio and Coffee Stain Publishing. For more details and complete game information, please visit the Valheim Wiki",
-		onCardClick = {}
-	)
+	ValheimVikiAppTheme {
+		DarkGlassCard(
+			modifier = Modifier,
+			icon = Lucide.CircleAlert,
+			text = "This app uses some images and game data from the Valheim Wiki All rights to Valheim belong to Iron Gate Studio and Coffee Stain Publishing. For more details and complete game information, please visit the Valheim Wiki",
+			onCardClick = {}
+		)
+	}
 }
 
 @RequiresApi(Build.VERSION_CODES.S)
 @Preview(name = "SettingsScreen")
 @Composable
 private fun PreviewSettingsScreen() {
-	SettingsScreenContent(
-		modifier = Modifier,
-		onBack = {}
+	ValheimVikiAppTheme {
+		SettingsScreenContent(
+			modifier = Modifier,
+			onBack = {}
 
-	)
+		)
+	}
 }
