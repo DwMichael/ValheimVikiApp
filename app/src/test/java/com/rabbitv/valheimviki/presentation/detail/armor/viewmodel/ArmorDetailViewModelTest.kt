@@ -2,10 +2,10 @@ package com.rabbitv.valheimviki.presentation.detail.armor.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
+import com.rabbitv.valheimviki.data.mappers.favorite.toFavorite
 import com.rabbitv.valheimviki.domain.model.armor.Armor
 import com.rabbitv.valheimviki.domain.model.category.AppCategory
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingObject
-import com.rabbitv.valheimviki.domain.model.favorite.Favorite
 import com.rabbitv.valheimviki.domain.model.material.Material
 import com.rabbitv.valheimviki.domain.model.relation.RelatedItem
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
@@ -15,6 +15,7 @@ import com.rabbitv.valheimviki.domain.use_cases.armor.get_armor_by_id.GetArmorBy
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.CraftingObjectUseCases
 import com.rabbitv.valheimviki.domain.use_cases.crafting_object.get_crafting_object_by_ids.GetCraftingObjectByIdsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.favorite.FavoriteUseCases
+import com.rabbitv.valheimviki.domain.use_cases.food.FoodUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.MaterialUseCases
 import com.rabbitv.valheimviki.domain.use_cases.material.get_materials_by_ids.GetMaterialsByIdsUseCase
 import com.rabbitv.valheimviki.domain.use_cases.relation.RelationUseCases
@@ -36,10 +37,10 @@ import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -110,6 +111,9 @@ class ArmorDetailViewModelTest {
 	private lateinit var getCraftingObjectByIds: GetCraftingObjectByIdsUseCase
 
 	@Mock
+	private lateinit var foodUseCases: FoodUseCases
+
+	@Mock
 	private lateinit var favoriteUseCases: FavoriteUseCases
 
 	private lateinit var savedStateHandle: SavedStateHandle
@@ -148,7 +152,8 @@ class ArmorDetailViewModelTest {
 			favoriteUseCases = favoriteUseCases,
 			armorUseCases = armorUseCases,
 			craftingObjectUseCases = craftingObjectUseCases,
-			defaultDispatcher = testDispatcher
+			defaultDispatcher = testDispatcher,
+			foodUseCases = foodUseCases,
 		)
 
 	private fun emitValuesFromUseCases(
@@ -238,15 +243,12 @@ class ArmorDetailViewModelTest {
 			),
 		)
 
-
-
 		emitValuesFromUseCases(
 			relations = relations,
 			crafting = craftingObject,
 			materials = materials,
 			isFav = false
 		)
-
 
 		val vm = armorViewModel()
 
@@ -277,62 +279,47 @@ class ArmorDetailViewModelTest {
 		}
 	}
 
-
 	@Test
-	fun uiEvent_NotSelected_ShouldAddToFavorite() = runTest {
+	fun uiEvent_ToggleFavoriteWhenNotFavorite_ShouldCallToggleUseCaseWithTrue() = runTest {
 		emitValuesFromUseCases(isFav = false)
 		val vm = armorViewModel()
 
-		val favoriteArmor = Favorite(
-			id = testArmor.id,
-			name = testArmor.name,
-			description = testArmor.description,
-			imageUrl = testArmor.imageUrl,
-			category = testArmor.category,
-			subCategory = testArmor.subCategory,
-		)
-
 		vm.uiState.test {
-			skipItems(2)
-			val successEmit = awaitItem()
-			assertFalse(successEmit.isFavorite)
-
-			vm.uiEvent(ArmorDetailUiEvent.ToggleFavorite(favoriteArmor))
+			awaitItem()
+			awaitItem()
 			advanceUntilIdle()
 
-			val resultEmit = awaitItem()
-			assertTrue(resultEmit.isFavorite)
+			vm.uiEvent(ArmorDetailUiEvent.ToggleFavorite)
+			advanceUntilIdle()
 
+			verify(favoriteUseCases.toggleFavoriteUseCase).invoke(
+				favorite = testArmor.toFavorite(),
+				shouldBeFavorite = true
+			)
+
+			cancelAndIgnoreRemainingEvents()
 		}
 	}
 
 	@Test
-	fun uiEvent_SelectedFavorite_ShouldDeletedFromFavorite() = runTest {
-
+	fun uiEvent_ToggleFavoriteWhenFavorite_ShouldCallToggleUseCaseWithFalse() = runTest {
 		emitValuesFromUseCases(isFav = true)
 		val vm = armorViewModel()
 
-		val favoriteArmor = Favorite(
-			id = testArmor.id,
-			name = testArmor.name,
-			description = testArmor.description,
-			imageUrl = testArmor.imageUrl,
-			category = testArmor.category,
-			subCategory = testArmor.subCategory,
-		)
-
 		vm.uiState.test {
-			skipItems(2)
-			val successEmit = awaitItem()
-			assertTrue(successEmit.isFavorite)
-
-			vm.uiEvent(ArmorDetailUiEvent.ToggleFavorite(favoriteArmor))
+			awaitItem()
+			awaitItem()
 			advanceUntilIdle()
 
-			val resultEmit = awaitItem()
-			assertFalse(resultEmit.isFavorite)
+			vm.uiEvent(ArmorDetailUiEvent.ToggleFavorite)
+			advanceUntilIdle()
 
+			verify(favoriteUseCases.toggleFavoriteUseCase).invoke(
+				favorite = testArmor.toFavorite(),
+				shouldBeFavorite = false
+			)
 
+			cancelAndIgnoreRemainingEvents()
 		}
 	}
 }
