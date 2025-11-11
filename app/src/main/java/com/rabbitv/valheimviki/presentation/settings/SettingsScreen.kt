@@ -7,17 +7,17 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -47,6 +47,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.composables.icons.lucide.Book
+import com.composables.icons.lucide.ChevronRight
 import com.composables.icons.lucide.CircleAlert
 import com.composables.icons.lucide.Coffee
 import com.composables.icons.lucide.Lucide
@@ -80,6 +81,8 @@ fun SettingsScreenContent(
 ) {
 	val context = LocalContext.current
 	val showDialog = remember { mutableStateOf(false) }
+	val columnScrollable = rememberScrollState()
+
 
 	Scaffold(
 		modifier = modifier.testTag("SettingsListScaffold"),
@@ -97,14 +100,14 @@ fun SettingsScreenContent(
 			modifier = Modifier
 				.padding(innerPadding)
 				.fillMaxSize()
-				.padding(BODY_CONTENT_PADDING.dp),
+				.padding(BODY_CONTENT_PADDING.dp)
+				.verticalScroll(columnScrollable),
 			horizontalAlignment = Alignment.CenterHorizontally,
 			verticalArrangement = Arrangement.Top,
 
 			) {
 			Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
-			DarkGlassCard(onCardClick = {})
-			Spacer(modifier = Modifier.height(20.dp))
+			DarkGlassCard()
 			HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
 			Spacer(modifier = Modifier.height(20.dp))
 			DarkGlassButton(
@@ -114,7 +117,7 @@ fun SettingsScreenContent(
 				},
 				icon = Lucide.Book,
 				label = stringResource(R.string.valheim_wiki_fandom),
-				value = null
+				leadingIcon = Lucide.ChevronRight
 			)
 			Spacer(modifier = Modifier.height(20.dp))
 			DarkGlassButton(
@@ -123,8 +126,7 @@ fun SettingsScreenContent(
 				},
 				icon = Lucide.Coffee,
 				label = stringResource(R.string.button_donate_pop_up_label),
-				value = null
-
+				leadingIcon = Lucide.ChevronRight
 			)
 		}
 	}
@@ -149,14 +151,13 @@ fun SettingsScreenContent(
 @Composable
 fun DarkGlassCard(
 	modifier: Modifier = Modifier,
-	onCardClick: () -> Unit,
 	icon: ImageVector = Lucide.CircleAlert,
 	text: String = stringResource(R.string.valheim_viki_fandom_infromation_settings),
 ) {
 	Box(
 		modifier = modifier
-			.fillMaxWidth(0.8f)
-			.wrapContentHeight()
+			.padding(20.dp)
+			.wrapContentSize(Alignment.Center)
 			.clip(Shapes.large)
 			.background(Color.Black.copy(alpha = 0.3f))
 			.border(
@@ -164,7 +165,6 @@ fun DarkGlassCard(
 				color = Color(0xFF4A4A4A).copy(alpha = 0.5f),
 				shape = Shapes.large
 			)
-			.clickable { onCardClick() }
 	) {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
 			Box(
@@ -177,9 +177,8 @@ fun DarkGlassCard(
 					}
 			)
 		}
-
 		Column(
-			modifier = Modifier.padding(top = 20.dp, bottom = 20.dp, start = 10.dp, end = 10.dp),
+			modifier = Modifier.padding(24.dp),
 			horizontalAlignment = Alignment.CenterHorizontally,
 			verticalArrangement = Arrangement.Top
 		) {
@@ -214,7 +213,6 @@ private fun PreviewDarkGlassCard() {
 			modifier = Modifier,
 			icon = Lucide.CircleAlert,
 			text = "This app uses some images and game data from the Valheim Wiki All rights to Valheim belong to Iron Gate Studio and Coffee Stain Publishing. For more details and complete game information, please visit the Valheim Wiki",
-			onCardClick = {}
 		)
 	}
 }

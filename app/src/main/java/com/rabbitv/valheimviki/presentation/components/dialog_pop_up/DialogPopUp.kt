@@ -1,30 +1,24 @@
 package com.rabbitv.valheimviki.presentation.components.dialog_pop_up
 
 import android.content.Intent
-import android.graphics.RenderEffect
-import android.graphics.Shader
-import android.os.Build
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asComposeRenderEffect
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -34,6 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
+import com.composables.icons.lucide.ChevronRight
 import com.composables.icons.lucide.CircleAlert
 import com.composables.icons.lucide.Coffee
 import com.composables.icons.lucide.Lucide
@@ -52,36 +47,28 @@ fun DialogPopUp(
 	text: String = stringResource(R.string.valheim_viki_fandom_infromation_settings),
 ) {
 	val context = LocalContext.current
+	val columnState = rememberScrollState()
 
-	Box(
+	Surface(
 		modifier = modifier
-			.fillMaxWidth(0.90f)
-			.wrapContentHeight()
+			.wrapContentSize()
 			.clip(Shapes.large)
-			.background(Color.Black.copy(alpha = 0.3f))
 			.border(
 				width = 1.dp,
 				color = Color(0xFF4A4A4A).copy(alpha = 0.5f),
 				shape = Shapes.large
-			)
+			),
+		color = Color.Black.copy(alpha = 0.8f)
 	) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-			Box(
-				modifier = Modifier
-					.matchParentSize()
-					.graphicsLayer {
-						renderEffect =
-							RenderEffect.createBlurEffect(10f, 10f, Shader.TileMode.CLAMP)
-								.asComposeRenderEffect()
-					}
-			)
-		}
-
 		Column(
-			modifier = Modifier.padding(top = 20.dp, bottom = 20.dp, start = 10.dp, end = 10.dp),
+			modifier = Modifier
+				.fillMaxWidth()
+				.padding(20.dp)
+				.verticalScroll(columnState),
 			horizontalAlignment = Alignment.CenterHorizontally,
-			verticalArrangement = Arrangement.Top
-		) {
+			verticalArrangement = Arrangement.spacedBy(20.dp)
+		)
+		{
 			Icon(
 				imageVector = icon,
 				contentDescription = null,
@@ -100,18 +87,13 @@ fun DialogPopUp(
 				),
 				textAlign = TextAlign.Center
 			)
-			Spacer(modifier = Modifier.height(20.dp))
 			DarkGlassButton(
 				onCardClick = {
 					onDismiss()
 				},
 				icon = Lucide.X,
 				label = "Go Back",
-				value = null,
-				leadIcon = false
 			)
-
-			Spacer(modifier = Modifier.height(20.dp))
 			DarkGlassButton(
 				onCardClick = {
 					val intent = Intent(Intent.ACTION_VIEW, TIP_LINK.toUri())
@@ -120,7 +102,7 @@ fun DialogPopUp(
 				},
 				icon = Lucide.Coffee,
 				label = stringResource(R.string.button_donate_pop_up_label),
-				value = null
+				leadingIcon = Lucide.ChevronRight
 			)
 		}
 	}

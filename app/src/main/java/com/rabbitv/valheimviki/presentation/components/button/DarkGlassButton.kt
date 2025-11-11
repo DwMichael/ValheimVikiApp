@@ -8,20 +8,17 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,9 +27,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asComposeRenderEffect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -40,6 +36,7 @@ import androidx.compose.ui.unit.sp
 import com.composables.icons.lucide.ChevronRight
 import com.composables.icons.lucide.Gavel
 import com.composables.icons.lucide.Lucide
+import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.ui.theme.Shapes
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
@@ -50,10 +47,12 @@ fun DarkGlassButton(
 	onCardClick: () -> Unit,
 	icon: ImageVector? = null,
 	label: String? = null,
-	value: String? = null,
-	leadIcon: Boolean = true,
+	leadingIcon: ImageVector? = null,
 	height: Dp = 60.dp
 ) {
+	val iconSize = 18.dp
+	val leadingIconSize = 24.dp
+
 	Box(
 		modifier = modifier
 			.fillMaxWidth()
@@ -89,66 +88,59 @@ fun DarkGlassButton(
 		Row(
 			modifier = Modifier
 				.fillMaxSize()
-				.padding(horizontal = 24.dp),
-			horizontalArrangement = Arrangement.SpaceBetween,
+				.padding(horizontal = 16.dp),
 			verticalAlignment = Alignment.CenterVertically
 		) {
-			if (icon != null) {
-				Icon(
-					imageVector = icon,
-					contentDescription = null,
-					tint = Color(0xFFFF6B35),
-					modifier = Modifier.size(18.dp)
-				)
-			}
-
-			Spacer(modifier = Modifier.width(16.dp))
-
-			if (label != null) {
-				Text(
-					text = label,
-					color = Color(0xFFFF6B35),
-					style = MaterialTheme.typography.bodyLarge.copy(
-						fontSize = 16.sp,
-						fontWeight = FontWeight.Bold
-					),
-					letterSpacing = 1.sp
-				)
-			}
-
-			Spacer(modifier = Modifier.width(10.dp))
-
-			if (value != null) {
-				Text(
-					modifier = Modifier
-						.weight(1f)
-						.padding(horizontal = 5.dp),
-					text = value,
-					color = Color.White,
-					style = MaterialTheme.typography.bodyLarge.copy(
-						fontWeight = FontWeight.Bold,
-						lineHeight = 18.sp
-					),
-					maxLines = 2,
-					overflow = TextOverflow.Ellipsis,
-					textAlign = TextAlign.End
-				)
-			}
-			if(leadIcon){
-				IconButton(
-					onClick = { onCardClick() },
-				) {
+			Box(
+				modifier = Modifier.size(leadingIconSize),
+				contentAlignment = Alignment.Center
+			) {
+				if (icon != null) {
 					Icon(
-						imageVector = Lucide.ChevronRight,
+						imageVector = icon,
 						contentDescription = null,
 						tint = Color(0xFFFF6B35),
-						modifier = Modifier.size(24.dp)
+						modifier = Modifier.size(iconSize)
 					)
 				}
-			}else{
-				Spacer(modifier = Modifier.size(24.dp))
 			}
 
+			Box(
+				modifier = Modifier.weight(1f),
+				contentAlignment = Alignment.Center
+			) {
+				if (label != null) {
+					BasicText(
+						text = label,
+						style = MaterialTheme.typography.bodyLarge.copy(
+							fontSize = 16.sp,
+							fontWeight = FontWeight.Bold,
+							letterSpacing = 1.sp
+						),
+						autoSize = TextAutoSize.StepBased(
+							maxFontSize = 16.sp,
+							minFontSize = 12.sp,
+							stepSize = 1.sp
+						),
+						color = { Color(0xFFFF6B35) },
+						maxLines = 1
+					)
+				}
+			}
+
+			Box(
+				modifier = Modifier.size(leadingIconSize),
+				contentAlignment = Alignment.Center
+			) {
+				if (leadingIcon != null) {
+					Icon(
+						imageVector = leadingIcon,
+						contentDescription = null,
+						tint = Color(0xFFFF6B35),
+						modifier = Modifier.size(leadingIconSize)
+					)
+				}
+			}
 		}
 	}
 }
@@ -161,9 +153,51 @@ fun PreviewDarkGlassCard() {
 		DarkGlassButton(
 			modifier = Modifier,
 			onCardClick = {},
-			label = "Gavel",
-			value = null,
-			icon = Lucide.Gavel
+			label = stringResource(R.string.button_donate_pop_up_label),
+			icon = Lucide.Gavel,
+			leadingIcon = Lucide.ChevronRight,
+		)
+	}
+}
+
+@Preview("DarkGlassCardPreview No Left Icon")
+@Composable
+fun PreviewDarkGlassCardNoLeftIcon() {
+	ValheimVikiAppTheme {
+		DarkGlassButton(
+			modifier = Modifier,
+			onCardClick = {},
+			label = "CENTERED TEXT",
+			icon = null, // No left icon
+			leadingIcon = Lucide.ChevronRight,
+		)
+	}
+}
+
+@Preview("DarkGlassCardPreview No Right Icon")
+@Composable
+fun PreviewDarkGlassCardNoRightIcon() {
+	ValheimVikiAppTheme {
+		DarkGlassButton(
+			modifier = Modifier,
+			onCardClick = {},
+			label = "CENTERED TEXT",
+			icon = Lucide.Gavel,
+			leadingIcon = null, // No right icon
+		)
+	}
+}
+
+@Preview("DarkGlassCardPreview No Icons")
+@Composable
+fun PreviewDarkGlassCardNoIcons() {
+	ValheimVikiAppTheme {
+		DarkGlassButton(
+			modifier = Modifier,
+			onCardClick = {},
+			label = "FULLY CENTERED TEXT",
+			icon = null,
+			leadingIcon = null,
 		)
 	}
 }

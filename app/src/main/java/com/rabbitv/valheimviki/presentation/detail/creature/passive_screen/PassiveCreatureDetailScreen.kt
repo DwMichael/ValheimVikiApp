@@ -39,8 +39,12 @@ import com.composables.icons.lucide.Heart
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Trophy
 import com.rabbitv.valheimviki.R
-import com.rabbitv.valheimviki.domain.model.creature.aggresive.AggressiveCreature
+import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.creature.aggresive.LevelCreatureData
+import com.rabbitv.valheimviki.domain.model.creature.passive.PassiveCreature
+import com.rabbitv.valheimviki.domain.model.material.Material
+import com.rabbitv.valheimviki.domain.model.material.MaterialDrop
+import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
 import com.rabbitv.valheimviki.navigation.WorldDetailDestination
@@ -61,6 +65,7 @@ import com.rabbitv.valheimviki.presentation.detail.creature.passive_screen.model
 import com.rabbitv.valheimviki.presentation.detail.creature.passive_screen.viewmodel.PassiveCreatureDetailScreenViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
+import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import kotlinx.coroutines.launch
 
 
@@ -195,6 +200,7 @@ fun PassiveCreatureDetailContent(
 							divider = { SlavicDivider() }
 						) { data ->
 							DroppedItemsSection(
+								modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
 								list = data,
 								starLevel = pageIndex,
 								title = "Drop Items",
@@ -206,7 +212,7 @@ fun PassiveCreatureDetailContent(
 
 
 
-						TridentsDividedRow(text = "BOSS STATS")
+						TridentsDividedRow(text = "CREATURE STATS")
 						CardStatDetails(
 							title = stringResource(R.string.baseHp),
 							text = uiState.passiveCreature.levels[pageIndex].baseHp.toString(),
@@ -271,7 +277,7 @@ fun PassiveCreatureDetailContent(
 @Preview(name = "CreaturePage")
 @Composable
 fun PreviewCreaturePage() {
-	AggressiveCreature(
+	val pass = PassiveCreature(
 		id = "1",
 		category = "asd",
 		subCategory = "sdasd",
@@ -279,9 +285,6 @@ fun PreviewCreaturePage() {
 		name = "sadsdd",
 		description = "asdasd2",
 		order = 2,
-		weakness = "SDASD",
-		resistance = "dasdas2",
-		baseDamage = "dsasdasd",
 		levels = listOf(
 			LevelCreatureData(
 				level = 1,
@@ -290,9 +293,95 @@ fun PreviewCreaturePage() {
 				image = "dsadasd"
 			)
 		),
-		abilities = "SDASDAD"
+		notes = "",
+		abilities = "Poison, Fire",
+		weaknesses = "Sword",
 	)
 	remember { mutableStateOf(true) }
+	ValheimVikiAppTheme {
+		PassiveCreatureDetailContent(
+			onBack = {},
+			onItemClick = {},
+			onToggleFavorite = { },
+			uiState = PassiveCreatureDetailUiState(
+				passiveCreature = pass,
+				biome = Biome(
+					id = "ss",
+					category = "SWAMPS",
+					subCategory = "MAN",
+					imageUrl = "",
+					name = "",
+					description = "",
+					order = 2
+				),
+				materialDrops = UIState.Success(
+					listOf(
+						MaterialDrop(
+							itemDrop = Material(
+								id = "troll_hide",
+								category = "resource",
+								imageUrl = "https://example.com/material/troll_hide.png",
+								name = "Troll Hide",
+								description = "Thick and durable hide dropped by trolls.",
+								order = 5,
+								subCategory = "",
+								usage = "",
+								growthTime = "",
+								needCultivatorGround = "",
+								price = 332,
+								effect = "",
+								sellPrice = 2,
+								subType = ""
+							),
+							quantityList = listOf(3, 5, 7),
+							chanceStarList = listOf(100, 75, 50)
+						),
+						MaterialDrop(
+							itemDrop = Material(
+								id = "troll_hide",
+								category = "resource",
+								imageUrl = "https://example.com/material/troll_hide.png",
+								name = "Troll Hide",
+								description = "Thick and durable hide dropped by trolls.",
+								order = 5,
+								subCategory = "",
+								usage = "",
+								growthTime = "",
+								needCultivatorGround = "",
+								price = 332,
+								effect = "",
+								sellPrice = 2,
+								subType = ""
+							),
+							quantityList = listOf(3, 5, 7),
+							chanceStarList = listOf(100, 75, 50)
+						),
+						MaterialDrop(
+							itemDrop = Material(
+								id = "troll_hide",
+								category = "resource",
+								imageUrl = "https://example.com/material/troll_hide.png",
+								name = "Troll Hide",
+								description = "Thick and durable hide dropped by trolls.",
+								order = 5,
+								subCategory = "",
+								usage = "",
+								growthTime = "",
+								needCultivatorGround = "",
+								price = 332,
+								effect = "",
+								sellPrice = 2,
+								subType = ""
+							),
+							quantityList = listOf(3, 5, 7),
+							chanceStarList = listOf(100, 75, 50)
+						)
+					)
 
+				),
+				isFavorite = true
+			)
+		)
+	}
 }
 

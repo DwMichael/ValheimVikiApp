@@ -76,7 +76,7 @@ fun HorizontalPagerWithHeaderPreview() {
 
 	val headerData = PagerHeaderData(
 		title = "Craftable Items",
-		subTitle = "Items that can be created at this crafting station",
+		subTitle = "Materials that Drop from creature after defeating",
 		icon = Lucide.Wrench
 	)
 
