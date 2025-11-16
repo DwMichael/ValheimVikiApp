@@ -24,18 +24,18 @@ object DataRefetchConfig {
 
 	// Expected minimum size constants
 	const val MIN_SIZE_BIOMES = 9
-	const val MIN_SIZE_CREATURES = 83
+	const val MIN_SIZE_CREATURES = 86
 	const val MIN_SIZE_ORE_DEPOSITS = 14
-	const val MIN_SIZE_MATERIALS = 272
-	const val MIN_SIZE_POINTS_OF_INTEREST = 49
+	const val MIN_SIZE_MATERIALS = 280
+	const val MIN_SIZE_POINTS_OF_INTEREST = 51
 	const val MIN_SIZE_TREES = 8
-	const val MIN_SIZE_FOOD = 84
-	const val MIN_SIZE_WEAPONS = 99
-	const val MIN_SIZE_ARMORS = 51
+	const val MIN_SIZE_FOOD = 85
+	const val MIN_SIZE_WEAPONS = 117
+	const val MIN_SIZE_ARMORS = 57
 	const val MIN_SIZE_MEADS = 41
 	const val MIN_SIZE_TOOLS = 14
-	const val MIN_SIZE_TRINKETS = 14
-	const val MIN_SIZE_BUILDING_MATERIALS = 258
+	const val MIN_SIZE_TRINKETS = 13
+	const val MIN_SIZE_BUILDING_MATERIALS = 261
 	const val MIN_SIZE_CRAFTING_OBJECTS = 46
 	const val MIN_SIZE_RELATIONS = 2886
 

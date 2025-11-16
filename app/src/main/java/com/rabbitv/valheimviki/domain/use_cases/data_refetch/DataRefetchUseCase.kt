@@ -112,6 +112,7 @@ class DataRefetchUseCase @Inject constructor(
 			val language = dataStoreUseCases.languageProvider().first()
 
 			if (shouldNotRefreshData()) {
+				println("DataRefetchUseCase: Data already exists, skipping refresh")
 				return DataRefetchResult.Success
 			}
 
