@@ -70,7 +70,22 @@ abstract class ValheimVikiDatabase : RoomDatabase() {
 		}
 		val MIGRATION_2_3 = object : Migration(2, 3) {
 			override fun migrate(db: SupportSQLiteDatabase) {
-
+				db.execSQL("DELETE FROM biomes")
+				db.execSQL("DELETE FROM creatures")
+				db.execSQL("DELETE FROM relations")
+				db.execSQL("DELETE FROM ore_deposits")
+				db.execSQL("DELETE FROM materials")
+				db.execSQL("DELETE FROM point_of_interest")
+				db.execSQL("DELETE FROM trees")
+				db.execSQL("DELETE FROM food")
+				db.execSQL("DELETE FROM weapons")
+				db.execSQL("DELETE FROM armors")
+				db.execSQL("DELETE FROM trinkets")
+				db.execSQL("DELETE FROM meads")
+				db.execSQL("DELETE FROM building_materials")
+				db.execSQL("DELETE FROM crafting_objects")
+				db.execSQL("DELETE FROM search")
+				db.execSQL("DELETE FROM search_fts")
 			}
 		}
 
