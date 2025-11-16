@@ -2,6 +2,7 @@ package com.rabbitv.valheimviki.data.local.database
 
 
 import android.content.Context
+import android.util.Log
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -57,7 +58,7 @@ import com.rabbitv.valheimviki.domain.model.weapon.Weapon
 		Search::class,
 		SearchFTS::class],
 	version = 3,
-	exportSchema = true
+	exportSchema = false
 )
 @TypeConverters(Converters::class)
 abstract class ValheimVikiDatabase : RoomDatabase() {
@@ -70,6 +71,10 @@ abstract class ValheimVikiDatabase : RoomDatabase() {
 		}
 		val MIGRATION_2_3 = object : Migration(2, 3) {
 			override fun migrate(db: SupportSQLiteDatabase) {
+				Log.w(
+					"DB_MIGRATION",
+					"RUNNING MIGRATION 2 -> 3. Deleting all data."
+				) // <-- ADD THIS
 				db.execSQL("DELETE FROM biomes")
 				db.execSQL("DELETE FROM creatures")
 				db.execSQL("DELETE FROM relations")
