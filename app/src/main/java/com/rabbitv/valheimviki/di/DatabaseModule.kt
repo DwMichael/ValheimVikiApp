@@ -3,6 +3,8 @@ package com.rabbitv.valheimviki.di
 import android.app.Application
 import androidx.room.Room
 import com.rabbitv.valheimviki.data.local.database.ValheimVikiDatabase
+import com.rabbitv.valheimviki.data.local.database.ValheimVikiDatabase.Companion.MIGRATION_1_2
+import com.rabbitv.valheimviki.data.local.database.ValheimVikiDatabase.Companion.MIGRATION_2_3
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,9 +23,10 @@ object DatabaseModule {
 			application,
 			ValheimVikiDatabase::class.java,
 			"valheimViki_database"
-		)
-			.fallbackToDestructiveMigration(true)//for migration only
-			.build()
+		).addMigrations(
+			MIGRATION_1_2,
+			MIGRATION_2_3
+		).build()
 	}
 
 	@Provides

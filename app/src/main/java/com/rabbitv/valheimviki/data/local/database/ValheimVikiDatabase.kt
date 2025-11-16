@@ -6,6 +6,8 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.rabbitv.valheimviki.data.local.converter.Converters
 import com.rabbitv.valheimviki.data.local.dao.ArmorDao
 import com.rabbitv.valheimviki.data.local.dao.BiomeDao
@@ -54,22 +56,32 @@ import com.rabbitv.valheimviki.domain.model.weapon.Weapon
 		BuildingMaterial::class, CraftingObject::class,
 		Search::class,
 		SearchFTS::class],
-	version = 2,
-	exportSchema = false
+	version = 3,
+	exportSchema = true
 )
 @TypeConverters(Converters::class)
 abstract class ValheimVikiDatabase : RoomDatabase() {
 
 	companion object {
+		val MIGRATION_1_2 = object : Migration(1, 2) {
+			override fun migrate(db: SupportSQLiteDatabase) {
+
+			}
+		}
+		val MIGRATION_2_3 = object : Migration(2, 3) {
+			override fun migrate(db: SupportSQLiteDatabase) {
+
+			}
+		}
+
 		fun create(context: Context, useInMemory: Boolean): ValheimVikiDatabase {
 			val databaseBuilder = if (useInMemory) {
 				Room.inMemoryDatabaseBuilder(context, ValheimVikiDatabase::class.java)
 			} else {
 				Room.databaseBuilder(context, ValheimVikiDatabase::class.java, "valheimviki.db")
 			}
-			return databaseBuilder.fallbackToDestructiveMigration(true).build()
+			return databaseBuilder.build()
 		}
-
 	}
 
 	abstract fun searchDao(): SearchDao
