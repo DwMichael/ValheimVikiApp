@@ -34,6 +34,9 @@ class SearchRepositoryImpl @Inject constructor(
 		}
 	).flow.flowOn(ioDispatcher)
 
+	override fun getSearchData(): Flow<List<Search>> {
+		return searchDao.getAllSearch()
+	}
 
 	override suspend fun deleteAllAndInsertNew(searchData: List<Search>) {
 		return withContext(ioDispatcher) {

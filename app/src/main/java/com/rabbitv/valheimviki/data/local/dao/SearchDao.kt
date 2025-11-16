@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import com.rabbitv.valheimviki.domain.model.search.Search
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SearchDao {
@@ -28,6 +29,9 @@ interface SearchDao {
 
 	@Query("DELETE FROM search")
 	suspend fun deleteAllSearchData()
+
+	@Query("SELECT * FROM search")
+	fun getAllSearch(): Flow<List<Search>>
 
 	@Insert(onConflict = OnConflictStrategy.REPLACE)
 	suspend fun populateSearch(searchData: List<Search>)

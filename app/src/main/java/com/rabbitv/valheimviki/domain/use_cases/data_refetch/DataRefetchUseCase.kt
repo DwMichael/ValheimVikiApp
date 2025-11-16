@@ -68,6 +68,7 @@ import com.rabbitv.valheimviki.domain.use_cases.data_refetch.DataRefetchConfig.M
 import com.rabbitv.valheimviki.domain.use_cases.data_refetch.DataRefetchConfig.MIN_SIZE_TRINKETS
 import com.rabbitv.valheimviki.domain.use_cases.data_refetch.DataRefetchConfig.MIN_SIZE_WEAPONS
 import com.rabbitv.valheimviki.domain.use_cases.datastore.DataStoreUseCases
+import com.rabbitv.valheimviki.domain.use_cases.favorite.sync_favorite.SyncFavoritesUseCase
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -96,6 +97,7 @@ class DataRefetchUseCase @Inject constructor(
 	private val craftingObjectRepository: CraftingObjectRepository,
 	private val searchRepository: SearchRepository,
 	private val dataStoreUseCases: DataStoreUseCases,
+	private val syncFavoritesUseCase: SyncFavoritesUseCase
 ) {
 
 	// Data category configuration with expected minimum sizes
@@ -122,11 +124,13 @@ class DataRefetchUseCase @Inject constructor(
 			when {
 				results.allSuccessful -> {
 					updateSearchIndex(results.successfulData)
+					syncFavorites()
 					DataRefetchResult.Success
 				}
 
 				results.hasSuccessful -> {
 					updateSearchIndex(results.successfulData)
+					syncFavorites()
 					DataRefetchResult.PartialSuccess(
 						successfulCategories = results.successfulCategories,
 						failedCategories = results.failedCategories,
@@ -328,6 +332,15 @@ class DataRefetchUseCase @Inject constructor(
 			} catch (e: Exception) {
 				println("Failed to update search index: ${e.message}")
 			}
+		}
+	}
+
+	private suspend fun syncFavorites() {
+		try {
+			println("DataRefetchUseCase: Syncing favorites...")
+			syncFavoritesUseCase()
+		} catch (e: Exception) {
+			println("DataRefetchUseCase: Failed to sync favorites: ${e.message}")
 		}
 	}
 
