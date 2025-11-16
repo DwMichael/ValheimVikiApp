@@ -195,7 +195,7 @@ class DataRefetchUseCase @Inject constructor(
 			fetchFunction = { lang -> creatureRepository.fetchCreatures(lang) },
 			storeFunction = { data -> creatureRepository.insertCreatures(data as List<Creature>) },
 			toSearchList = { data -> (data as List<Creature>).toSearchList() },
-			expectedMinSize = 83
+			expectedMinSize = 86
 		),
 		DataCategory(
 			name = "Ore Deposits",
@@ -209,14 +209,14 @@ class DataRefetchUseCase @Inject constructor(
 			fetchFunction = { lang -> materialsRepository.fetchMaterials(lang) },
 			storeFunction = { data -> materialsRepository.insertMaterials(data as List<Material>) },
 			toSearchList = { data -> (data as List<Material>).toSearchList() },
-			expectedMinSize = 272
+			expectedMinSize = 280
 		),
 		DataCategory(
 			name = "Points of Interest",
 			fetchFunction = { lang -> pointOfInterestRepository.fetchPointOfInterests(lang) },
 			storeFunction = { data -> pointOfInterestRepository.insertPointOfInterest(data as List<PointOfInterest>) },
 			toSearchList = { data -> (data as List<PointOfInterest>).toSearchList() },
-			expectedMinSize = 49
+			expectedMinSize = 51
 		),
 		DataCategory(
 			name = "Trees",
@@ -230,21 +230,21 @@ class DataRefetchUseCase @Inject constructor(
 			fetchFunction = { lang -> foodRepository.fetchFoodList(lang) },
 			storeFunction = { data -> foodRepository.insertFoodList(data as List<Food>) },
 			toSearchList = { data -> (data as List<Food>).toSearchList() },
-			expectedMinSize = 84
+			expectedMinSize = 85
 		),
 		DataCategory(
 			name = "Weapons",
 			fetchFunction = { lang -> weaponRepository.fetchWeapons(lang) },
 			storeFunction = { data -> weaponRepository.insertWeapons(data as List<Weapon>) },
 			toSearchList = { data -> (data as List<Weapon>).toSearchList() },
-			expectedMinSize = 99
+			expectedMinSize = 117
 		),
 		DataCategory(
 			name = "Armor",
 			fetchFunction = { lang -> armorRepository.fetchArmor(lang) },
 			storeFunction = { data -> armorRepository.insertArmors(data as List<Armor>) },
 			toSearchList = { data -> (data as List<Armor>).toSearchList() },
-			expectedMinSize = 51
+			expectedMinSize = 57
 		),
 		DataCategory(
 			name = "Meads",
@@ -272,7 +272,7 @@ class DataRefetchUseCase @Inject constructor(
 			fetchFunction = { lang -> buildingMaterialRepository.fetchBuildingMaterial(lang) },
 			storeFunction = { data -> buildingMaterialRepository.insertBuildingMaterial(data as List<BuildingMaterial>) },
 			toSearchList = { data -> (data as List<BuildingMaterial>).toSearchList() },
-			expectedMinSize = 258
+			expectedMinSize = 261
 		),
 		DataCategory(
 			name = "Crafting Objects",

@@ -12,20 +12,20 @@ object DataRefetchConfig {
 	 */
 	val EXPECTED_DATA_SIZES = mapOf(
 		"biomes" to 9,
-		"creatures" to 83,
+		"creatures" to 86,
 		"oreDeposits" to 14,
-		"materials" to 272,
-		"pointsOfInterest" to 49,
+		"materials" to 280,
+		"pointsOfInterest" to 51,
 		"trees" to 8,
-		"food" to 84,
-		"weapons" to 99,
-		"armors" to 51,
+		"food" to 85,
+		"weapons" to 117,
+		"armors" to 57,
 		"meads" to 41,
 		"tools" to 14,
-		"trinkets" to 14,
-		"buildingMaterials" to 258,
+		"trinkets" to 13,
+		"buildingMaterials" to 261,
 		"craftingObjects" to 46,
-		"relations" to 2724
+		"relations" to 2886
 	)
 
 	/**
