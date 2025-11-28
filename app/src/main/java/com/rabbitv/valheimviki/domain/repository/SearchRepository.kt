@@ -8,6 +8,7 @@ interface SearchRepository {
 
 	fun getPagedSearchObjects(query: String, pageSize: Int): Flow<PagingData<Search>>
 
+	fun getSearchData(): Flow<List<Search>>
 
 	suspend fun deleteAllAndInsertNew(searchData: List<Search>)
 }

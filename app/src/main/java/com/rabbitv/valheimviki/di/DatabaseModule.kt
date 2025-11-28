@@ -1,8 +1,13 @@
 package com.rabbitv.valheimviki.di
 
 import android.app.Application
+import android.util.Log
 import androidx.room.Room
+import androidx.room.RoomDatabase
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.rabbitv.valheimviki.data.local.database.ValheimVikiDatabase
+import com.rabbitv.valheimviki.data.local.database.ValheimVikiDatabase.Companion.MIGRATION_1_2
+import com.rabbitv.valheimviki.data.local.database.ValheimVikiDatabase.Companion.MIGRATION_2_3
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,9 +26,20 @@ object DatabaseModule {
 			application,
 			ValheimVikiDatabase::class.java,
 			"valheimViki_database"
-		)
-			.fallbackToDestructiveMigration(true)//for migration only
-			.build()
+		).addMigrations(
+			MIGRATION_1_2,
+			MIGRATION_2_3
+		).addCallback(object : RoomDatabase.Callback() { // <-- ADD THIS
+			override fun onCreate(db: SupportSQLiteDatabase) {
+				super.onCreate(db)
+				Log.d("DB_LIFECYCLE", "Database is being CREATED (new install or data cleared)")
+			}
+
+			override fun onOpen(db: SupportSQLiteDatabase) {
+				super.onOpen(db)
+				Log.d("DB_LIFECYCLE", "Database is being OPENED (existing user)")
+			}
+		}).build()
 	}
 
 	@Provides

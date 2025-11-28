@@ -2,10 +2,13 @@ package com.rabbitv.valheimviki.data.local.database
 
 
 import android.content.Context
+import android.util.Log
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.rabbitv.valheimviki.data.local.converter.Converters
 import com.rabbitv.valheimviki.data.local.dao.ArmorDao
 import com.rabbitv.valheimviki.data.local.dao.BiomeDao
@@ -54,22 +57,51 @@ import com.rabbitv.valheimviki.domain.model.weapon.Weapon
 		BuildingMaterial::class, CraftingObject::class,
 		Search::class,
 		SearchFTS::class],
-	version = 2,
+	version = 3,
 	exportSchema = false
 )
 @TypeConverters(Converters::class)
 abstract class ValheimVikiDatabase : RoomDatabase() {
 
 	companion object {
+		val MIGRATION_1_2 = object : Migration(1, 2) {
+			override fun migrate(db: SupportSQLiteDatabase) {
+
+			}
+		}
+		val MIGRATION_2_3 = object : Migration(2, 3) {
+			override fun migrate(db: SupportSQLiteDatabase) {
+				Log.w(
+					"DB_MIGRATION",
+					"RUNNING MIGRATION 2 -> 3. Deleting all data."
+				) // <-- ADD THIS
+				db.execSQL("DELETE FROM biomes")
+				db.execSQL("DELETE FROM creatures")
+				db.execSQL("DELETE FROM relations")
+				db.execSQL("DELETE FROM ore_deposits")
+				db.execSQL("DELETE FROM materials")
+				db.execSQL("DELETE FROM point_of_interest")
+				db.execSQL("DELETE FROM trees")
+				db.execSQL("DELETE FROM food")
+				db.execSQL("DELETE FROM weapons")
+				db.execSQL("DELETE FROM armors")
+				db.execSQL("DELETE FROM trinkets")
+				db.execSQL("DELETE FROM meads")
+				db.execSQL("DELETE FROM building_materials")
+				db.execSQL("DELETE FROM crafting_objects")
+				db.execSQL("DELETE FROM search")
+				db.execSQL("DELETE FROM search_fts")
+			}
+		}
+
 		fun create(context: Context, useInMemory: Boolean): ValheimVikiDatabase {
 			val databaseBuilder = if (useInMemory) {
 				Room.inMemoryDatabaseBuilder(context, ValheimVikiDatabase::class.java)
 			} else {
 				Room.databaseBuilder(context, ValheimVikiDatabase::class.java, "valheimviki.db")
 			}
-			return databaseBuilder.fallbackToDestructiveMigration(true).build()
+			return databaseBuilder.build()
 		}
-
 	}
 
 	abstract fun searchDao(): SearchDao

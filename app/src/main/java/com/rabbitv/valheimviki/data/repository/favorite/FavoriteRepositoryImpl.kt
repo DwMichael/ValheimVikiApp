@@ -34,4 +34,10 @@ class FavoriteRepositoryImpl @Inject constructor(
 		}
 
 	}
+
+	override suspend fun updateFavorites(favorites: List<Favorite>) {
+		withContext(ioDispatcher) {
+			favoriteDao.updateFavorites(favorites = favorites)
+		}
+	}
 }
