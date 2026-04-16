@@ -68,6 +68,7 @@ import com.rabbitv.valheimviki.domain.use_cases.data_refetch.DataRefetchConfig.M
 import com.rabbitv.valheimviki.domain.use_cases.data_refetch.DataRefetchConfig.MIN_SIZE_TRINKETS
 import com.rabbitv.valheimviki.domain.use_cases.data_refetch.DataRefetchConfig.MIN_SIZE_WEAPONS
 import com.rabbitv.valheimviki.domain.use_cases.datastore.DataStoreUseCases
+import com.rabbitv.valheimviki.domain.use_cases.favorite.sync_favorite.SyncFavoritesUseCase
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope

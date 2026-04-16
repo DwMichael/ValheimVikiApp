@@ -3,7 +3,6 @@ package com.rabbitv.valheimviki.presentation.components.grid.grid_item
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope.PlaceHolderSize.Companion.animatedSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -101,8 +100,7 @@ fun AnimatedGridItem(
 				modifier = Modifier
 					.sharedElement(
 						sharedContentState = imageState,
-						animatedVisibilityScope = animatedVisibilityScope,
-						placeHolderSize = animatedSize
+						animatedVisibilityScope = animatedVisibilityScope
 					)
 					.fillMaxSize()
 					.clip(RoundedCornerShape(MEDIUM_PADDING)),
@@ -114,8 +112,7 @@ fun AnimatedGridItem(
 				modifier = Modifier
 					.sharedElement(
 						sharedContentState = surfaceState,
-						animatedVisibilityScope = animatedVisibilityScope,
-						placeHolderSize = animatedSize
+						animatedVisibilityScope = animatedVisibilityScope
 					)
 					.fillMaxHeight(0.20f)
 					.fillMaxWidth()
@@ -135,8 +132,7 @@ fun AnimatedGridItem(
 						.padding(horizontal = 8.dp)
 						.sharedBounds(
 							sharedContentState = textState,
-							placeHolderSize = animatedSize,
-							animatedVisibilityScope = animatedVisibilityScope,
+							animatedVisibilityScope = animatedVisibilityScope
 						)
 						.wrapContentHeight(Alignment.CenterVertically)
 				)

@@ -1,14 +1,12 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.io.FileInputStream
 import java.util.Properties
 
 plugins {
 	alias(libs.plugins.android.application)
-	alias(libs.plugins.kotlin.android)
 	alias(libs.plugins.kotlin.compose)
-	id("com.google.devtools.ksp")
-	kotlin("plugin.serialization") version "2.2.21"
-	id("com.google.dagger.hilt.android")
+	id("com.google.devtools.ksp") version "2.3.6"
+	kotlin("plugin.serialization") version "2.3.20"
+	id("com.google.dagger.hilt.android") version "2.59.2"
 }
 
 android {
@@ -23,8 +21,8 @@ android {
 		applicationId = "com.rabbitv.valheimviki"
 		minSdk = 26
 		targetSdk = 36
-		versionCode = 20
-		versionName = "1.1.3"
+		versionCode = 21
+		versionName = "1.1.4"
 
 		buildConfigField("String", "baseUrlSafe", properties.getProperty("baseUrl"))
 
@@ -36,19 +34,13 @@ android {
 	}
 
 	buildTypes {
-
 		release {
-			// Enables code-related app optimization.
 			isMinifyEnabled = true
-
-			// Enables resource shrinking.
 			isShrinkResources = true
-
 			proguardFiles(
 				getDefaultProguardFile("proguard-android-optimize.txt"),
 				"proguard-rules.pro"
 			)
-
 			ndk {
 				debugSymbolLevel = "SYMBOL_TABLE"
 			}
@@ -57,11 +49,6 @@ android {
 	compileOptions {
 		sourceCompatibility = JavaVersion.VERSION_17
 		targetCompatibility = JavaVersion.VERSION_17
-	}
-	kotlin {
-		compilerOptions {
-			jvmTarget = JvmTarget.fromTarget("17")
-		}
 	}
 	buildFeatures {
 		compose = true
@@ -73,15 +60,14 @@ android {
 			isReturnDefaultValues = true
 		}
 	}
-
 }
+
 val mockitoAgent: Configuration by configurations.creating {
 	isCanBeConsumed = false
 	isCanBeResolved = true
 }
 
 dependencies {
-
 	implementation(libs.androidx.core.ktx)
 	implementation(libs.androidx.lifecycle.runtime.ktx)
 	implementation(libs.androidx.activity.compose)
@@ -100,11 +86,11 @@ dependencies {
 	debugImplementation(libs.androidx.ui.tooling)
 	debugImplementation(libs.androidx.ui.test.manifest)
 
-	//Update imposts
+	implementation(libs.play.services.ads)
+
 	implementation(libs.app.update)
 	implementation(libs.app.update.ktx)
 
-	//Google API integrity Key
 	implementation(libs.integrity)
 
 	implementation(libs.androidx.paging.runtime)
@@ -121,7 +107,6 @@ dependencies {
 	androidTestImplementation(libs.androidx.navigation.testing)
 	implementation(libs.kotlinx.serialization.json)
 	implementation(libs.hilt.android)
-//    ksp("com.google.dagger:hilt-compiler:2.56.1")
 	ksp(libs.dagger.hilt.android.compiler)
 	implementation(libs.androidx.hilt.navigation.compose)
 
@@ -162,11 +147,9 @@ dependencies {
 	testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0") {
 		exclude(group = "org.mockito", module = "mockito-android")
 	}
-	// Kotlin Test with JUnit 5 (includes JUnit 5 engine)
-	testImplementation(libs.kotlin.test.junit5)
-	// Turbine for Flow testing
-	testImplementation(libs.turbine)
 
+	testImplementation(libs.kotlin.test.junit5)
+	testImplementation(libs.turbine)
 	testImplementation(libs.mockito.junit.jupiter)
 
 	implementation(libs.androidx.runtime.tracing)
@@ -175,11 +158,9 @@ dependencies {
 }
 
 tasks.withType<Test>().configureEach {
-	useJUnitPlatform()   // if you are on JUnit 5
+	useJUnitPlatform()
 	jvmArgs(
-		// needed since JDK 16 to let agents transform java.lang.*
 		"--add-opens", "java.base/java.lang=ALL-UNNAMED",
-		// pass the absolute path of the single JAR in our configuration
 		"-javaagent:${mockitoAgent.singleFile.absolutePath}"
 	)
 }

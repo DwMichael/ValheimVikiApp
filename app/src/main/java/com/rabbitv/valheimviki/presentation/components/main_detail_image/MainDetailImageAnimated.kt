@@ -5,7 +5,6 @@ import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.animation.SharedTransitionScope.PlaceHolderSize.Companion.animatedSize
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -86,8 +85,7 @@ fun MainDetailImageAnimated(
 				.fillMaxWidth()
 				.sharedElement(
 					imageState,
-					animatedVisibilityScope,
-					placeHolderSize = animatedSize
+					animatedVisibilityScope
 				)
 		) {
 			Box {
@@ -107,8 +105,7 @@ fun MainDetailImageAnimated(
 						.fillMaxHeight(0.22f)
 						.sharedElement(
 							surfaceState,
-							animatedVisibilityScope, 
-							placeHolderSize = animatedSize,
+							animatedVisibilityScope
 						)
 				) {
 					Text(
@@ -120,8 +117,7 @@ fun MainDetailImageAnimated(
 							.padding(horizontal = 8.dp)
 							.sharedBounds(
 								textState,
-								animatedVisibilityScope, 
-								placeHolderSize = animatedSize,
+								animatedVisibilityScope
 							)
 							.wrapContentHeight(Alignment.CenterVertically)
 					)

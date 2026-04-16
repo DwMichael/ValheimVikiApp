@@ -18,6 +18,7 @@ import com.rabbitv.valheimviki.domain.repository.TreeRepository
 import com.rabbitv.valheimviki.domain.repository.TrinketRepository
 import com.rabbitv.valheimviki.domain.repository.WeaponRepository
 import com.rabbitv.valheimviki.domain.use_cases.datastore.DataStoreUseCases
+import com.rabbitv.valheimviki.domain.use_cases.favorite.sync_favorite.SyncFavoritesUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -80,6 +81,9 @@ class DataRefetchUseCaseTest {
 	private lateinit var trinketRepository: TrinketRepository
 
 	@Mock
+	private lateinit var syncFavoritesUseCase: SyncFavoritesUseCase
+
+	@Mock
 	private lateinit var buildingMaterialRepository: BuildingMaterialRepository
 
 	@Mock
@@ -134,6 +138,7 @@ class DataRefetchUseCaseTest {
 			searchRepository = searchRepository,
 			dataStoreUseCases = dataStoreUseCases,
 			trinketRepository = trinketRepository,
+			syncFavoritesUseCase = syncFavoritesUseCase,
 		)
 	}
 
@@ -143,7 +148,7 @@ class DataRefetchUseCaseTest {
 	}
 
 	@Test
-	fun `refetchAllData should return Success when all categories succeed`() = runTest {
+	fun `refetchAllData_should_return_Success_when_all_categories_succeed`() = runTest {
 		// Given
 		val language = "en"
 		whenever(dataStoreUseCases.languageProvider()).thenReturn(flowOf(language))
@@ -159,7 +164,7 @@ class DataRefetchUseCaseTest {
 	}
 
 	@Test
-	fun `refetchAllData should return PartialSuccess when some categories fail`() = runTest {
+	fun `refetchAllData_should_return_PartialSuccess_when_some_categories_fail`() = runTest {
 		// Given
 		val language = "en"
 		whenever(dataStoreUseCases.languageProvider()).thenReturn(flowOf(language))
@@ -179,7 +184,7 @@ class DataRefetchUseCaseTest {
 	}
 
 	@Test
-	fun `refetchAllData should return NetworkError when all categories fail`() = runTest {
+	fun `refetchAllData_should_return_NetworkError_when_all_categories_fail`() = runTest {
 		// Given
 		val language = "en"
 		whenever(dataStoreUseCases.languageProvider()).thenReturn(flowOf(language))
