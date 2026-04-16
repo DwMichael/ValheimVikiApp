@@ -29,10 +29,6 @@ android {
 		testInstrumentationRunner = "com.rabbitv.valheimviki.CustomTestRunner"
 	}
 
-	base {
-		archivesName = "Translator -v${defaultConfig.versionCode}"
-	}
-
 	buildTypes {
 		release {
 			isMinifyEnabled = true
