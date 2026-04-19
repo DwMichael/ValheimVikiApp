@@ -22,18 +22,22 @@ import com.google.android.play.core.install.InstallStateUpdatedListener
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
+import com.rabbitv.valheimviki.domain.ads.AdManager
 import com.rabbitv.valheimviki.navigation.ValheimVikiApp
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import dagger.hilt.android.AndroidEntryPoint
+import jakarta.inject.Inject
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.Duration
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.seconds
 
-
 @AndroidEntryPoint
 class MainActivity() : ComponentActivity() {
+	@Inject
+	lateinit var adManager: AdManager
+
 	private lateinit var appUpdateManager: AppUpdateManager
 	private val updateType = AppUpdateType.FLEXIBLE
 
@@ -42,10 +46,10 @@ class MainActivity() : ComponentActivity() {
 		super.onCreate(savedInstanceState)
 		installSplashScreen()
 		enableEdgeToEdge()
-		
+
 		// Initialize AppUpdateManager
 		appUpdateManager = AppUpdateManagerFactory.create(this)
-		
+
 		val workRequest = OneTimeWorkRequestBuilder<FetchWorker>()
 			.setInitialDelay(5, TimeUnit.SECONDS)
 			.setBackoffCriteria(
@@ -54,19 +58,19 @@ class MainActivity() : ComponentActivity() {
 			)
 			.build()
 		WorkManager.getInstance(applicationContext).enqueue(workRequest)
-		
+
 		if (updateType == AppUpdateType.FLEXIBLE) {
 			appUpdateManager.registerListener(installStateUpdatedListener)
 		}
-		
+
 		// Check for updates after a short delay
 		lifecycleScope.launch {
 			delay(2000) // Wait 2 seconds for app to initialize
 			checkForAppUpdates()
 		}
-		
+
 		setContent {
-			ValheimVikiApp()
+			ValheimVikiApp(adManager)
 		}
 	}
 
@@ -76,16 +80,22 @@ class MainActivity() : ComponentActivity() {
 			Log.d("UpdateManager", "📱 Update info received:")
 			Log.d("UpdateManager", "   - Update availability: ${info.updateAvailability()}")
 			Log.d("UpdateManager", "   - Staleness days: ${info.clientVersionStalenessDays()}")
-			Log.d("UpdateManager", "   - Flexible allowed: ${info.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)}")
-			Log.d("UpdateManager", "   - Immediate allowed: ${info.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)}")
-			
+			Log.d(
+				"UpdateManager",
+				"   - Flexible allowed: ${info.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)}"
+			)
+			Log.d(
+				"UpdateManager",
+				"   - Immediate allowed: ${info.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)}"
+			)
+
 			val isUpdateAvailable = info.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
 			val isUpdateAllowed = when (updateType) {
 				AppUpdateType.FLEXIBLE -> info.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)
 				AppUpdateType.IMMEDIATE -> info.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
 				else -> false
 			}
-			
+
 			if (isUpdateAvailable && isUpdateAllowed) {
 				Log.d("UpdateManager", "✅ Update available! Starting update flow...")
 				appUpdateManager.startUpdateFlowForResult(

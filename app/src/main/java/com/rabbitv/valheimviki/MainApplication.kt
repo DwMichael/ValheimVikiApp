@@ -7,6 +7,7 @@ import androidx.work.Configuration
 import androidx.work.ListenableWorker
 import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
+import com.google.android.gms.ads.MobileAds
 import com.rabbitv.valheimviki.domain.use_cases.data_refetch.DataRefetchUseCase
 import dagger.hilt.android.HiltAndroidApp
 import jakarta.inject.Inject
@@ -17,6 +18,11 @@ class MainApplication : Application(), Configuration.Provider {
 
 	@Inject
 	lateinit var workerFactory: FetchWorkerFactory
+
+	override fun onCreate() {
+		super.onCreate()
+		MobileAds.initialize(this) {}
+	}
 
 	override val workManagerConfiguration: Configuration
 		get() = Configuration.Builder()

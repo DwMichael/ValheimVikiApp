@@ -4,8 +4,10 @@
 
 package com.rabbitv.valheimviki.navigation
 
+import android.app.Activity
 import android.os.Build
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.LocalActivity
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -45,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
+import com.rabbitv.valheimviki.domain.ads.AdManager
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -134,9 +137,9 @@ import kotlinx.coroutines.launch
 @RequiresApi(Build.VERSION_CODES.S)
 @Preview
 @Composable
-fun ValheimVikiApp() {
+fun ValheimVikiApp(adManager: com.rabbitv.valheimviki.domain.ads.AdManager? = null) {
 	ValheimVikiAppTheme {
-		MainContainer()
+		MainContainer(adManager = adManager)
 	}
 }
 
@@ -147,7 +150,9 @@ fun ValheimVikiApp() {
 fun MainContainer(
 	modifier: Modifier = Modifier,
 	valheimVikiNavController: NavHostController = rememberNavController(),
+	adManager: AdManager? = null,
 ) {
+	val activity = LocalActivity.current as Activity
 	val drawerState = rememberDrawerState(DrawerValue.Closed)
 	val scope = rememberCoroutineScope()
 
@@ -168,6 +173,33 @@ fun MainContainer(
 	}
 
 	val isTransitionActive = remember { mutableStateOf(false) }
+
+	// Pre-load the first interstitial ad as soon as app starts
+	LaunchedEffect(Unit) {
+		adManager?.preloadAd()
+	}
+
+	// Ad-aware navigation: shows interstitial after every N detail screens
+	// then proceeds to the destination automatically
+	val adAwareNavigate: (DetailDestination, (androidx.navigation.NavOptionsBuilder.() -> Unit)?) -> Unit = remember(adManager, activity) {
+		{ destination, builder ->
+			val navigateAction = {
+				if (builder != null) {
+					valheimVikiNavController.navigate(destination, builder)
+				} else {
+					valheimVikiNavController.navigate(destination)
+				}
+			}
+			
+			if (adManager != null && adManager.onDetailScreenVisited()) {
+				adManager.showAd(activity) {
+					navigateAction()
+				}
+			} else {
+				navigateAction()
+			}
+		}
+	}
 
 	NavigationDrawer(
 		modifier = modifier,
@@ -222,10 +254,11 @@ fun MainContainer(
 								!this@SharedTransitionLayout.isTransitionActive
 						}
 
-						ValheimNavGraph(
-							valheimVikiNavController = valheimVikiNavController,
-							innerPadding = PaddingValues(0.dp)
-						)
+				ValheimNavGraph(
+						valheimVikiNavController = valheimVikiNavController,
+						innerPadding = PaddingValues(0.dp),
+						adAwareNavigate = adAwareNavigate,
+					)
 					}
 				}
 
@@ -244,6 +277,9 @@ fun MainContainer(
 fun ValheimNavGraph(
 	valheimVikiNavController: NavHostController,
 	innerPadding: PaddingValues,
+	adAwareNavigate: (DetailDestination, (androidx.navigation.NavOptionsBuilder.() -> Unit)?) -> Unit = { dest, builder ->
+		if (builder != null) valheimVikiNavController.navigate(dest, builder) else valheimVikiNavController.navigate(dest)
+	},
 ) {
 	val lastClickTime = remember { mutableLongStateOf(0L) }
 	val clickDebounceMillis = 500
@@ -281,7 +317,7 @@ fun ValheimNavGraph(
 			FavoriteScreen(
 				onBack = { valheimVikiNavController.popBackStack() },
 				onItemClick = { destination ->
-					valheimVikiNavController.navigate(destination)
+					adAwareNavigate(destination, null)
 				},
 			)
 		}
@@ -289,7 +325,7 @@ fun ValheimNavGraph(
 			SettingsScreen(
 				onBack = { valheimVikiNavController.popBackStack() },
 				onItemClick = { destination ->
-					valheimVikiNavController.navigate(destination)
+					adAwareNavigate(destination, null)
 				},
 			)
 		}
@@ -297,7 +333,7 @@ fun ValheimNavGraph(
 			SearchScreen(
 				onBack = { valheimVikiNavController.popBackStack() },
 				onItemClick = { destination ->
-					valheimVikiNavController.navigate(destination)
+					adAwareNavigate(destination, null)
 				},
 			)
 		}
@@ -309,7 +345,7 @@ fun ValheimNavGraph(
 					val currentTime = System.currentTimeMillis()
 					if (currentTime - lastClickTime.longValue > clickDebounceMillis) {
 						lastClickTime.longValue = currentTime
-						valheimVikiNavController.navigate(destination) {
+						adAwareNavigate(destination) {
 							launchSingleTop = true
 							popUpTo(destination) {
 								inclusive = true
@@ -329,7 +365,7 @@ fun ValheimNavGraph(
 					val currentTime = System.currentTimeMillis()
 					if (currentTime - lastClickTime.longValue > clickDebounceMillis) {
 						lastClickTime.longValue = currentTime
-						valheimVikiNavController.navigate(destination) {
+						adAwareNavigate(destination) {
 							launchSingleTop = true
 							popUpTo(destination) {
 								inclusive = true
@@ -348,7 +384,7 @@ fun ValheimNavGraph(
 					val currentTime = System.currentTimeMillis()
 					if (currentTime - lastClickTime.longValue > clickDebounceMillis) {
 						lastClickTime.longValue = currentTime
-						valheimVikiNavController.navigate(destination) {
+						adAwareNavigate(destination) {
 							launchSingleTop = true
 							popUpTo(destination) {
 								inclusive = true
@@ -363,7 +399,7 @@ fun ValheimNavGraph(
 		composable<ListDestination.CreatureDestinations.MobList> {
 			MobListScreen(
 				onItemClick = { destination ->
-					valheimVikiNavController.navigate(destination)
+					adAwareNavigate(destination, null)
 				},
 				paddingValues = innerPadding,
 			)
@@ -373,7 +409,7 @@ fun ValheimNavGraph(
 			WeaponListScreen(
 				modifier = Modifier.padding(10.dp),
 				onItemClick = { destination ->
-					valheimVikiNavController.navigate(destination)
+					adAwareNavigate(destination, null)
 				},
 				paddingValues = innerPadding,
 			)
@@ -383,7 +419,7 @@ fun ValheimNavGraph(
 			ArmorListScreen(
 				modifier = Modifier.padding(10.dp),
 				onItemClick = { destination ->
-					valheimVikiNavController.navigate(destination)
+					adAwareNavigate(destination, null)
 				},
 				paddingValues = innerPadding,
 			)
@@ -393,7 +429,7 @@ fun ValheimNavGraph(
 			TrinketListScreen(
 				modifier = Modifier.padding(10.dp),
 				onItemClick = { destination ->
-					valheimVikiNavController.navigate(destination)
+					adAwareNavigate(destination, null)
 				},
 				paddingValues = innerPadding,
 			)
@@ -402,7 +438,7 @@ fun ValheimNavGraph(
 		composable<ListDestination.FoodDestinations.FoodList> {
 			FoodListScreen(
 				onItemClick = { destination ->
-					valheimVikiNavController.navigate(destination)
+					adAwareNavigate(destination, null)
 				},
 				paddingValues = innerPadding,
 			)
@@ -411,7 +447,7 @@ fun ValheimNavGraph(
 		composable<ListDestination.FoodDestinations.MeadList> {
 			MeadListScreen(
 				onItemClick = { destination ->
-					valheimVikiNavController.navigate(destination)
+					adAwareNavigate(destination, null)
 				},
 				paddingValues = innerPadding,
 			)
@@ -421,7 +457,7 @@ fun ValheimNavGraph(
 			CraftingListScreen(
 				modifier = Modifier.padding(10.dp),
 				onItemClick = { destination ->
-					valheimVikiNavController.navigate(destination)
+					adAwareNavigate(destination, null)
 				},
 				paddingValues = innerPadding,
 			)
@@ -430,7 +466,7 @@ fun ValheimNavGraph(
 		composable<ListDestination.ItemDestinations.ToolList> {
 			ToolListScreen(
 				onItemClick = { destination ->
-					valheimVikiNavController.navigate(destination)
+					adAwareNavigate(destination, null)
 				},
 				paddingValues = innerPadding,
 			)
@@ -461,7 +497,7 @@ fun ValheimNavGraph(
 				val vm = hiltViewModel<MaterialListViewModel>(parentEntry)
 				MaterialListScreen(
 					onItemClick = { destination ->
-						valheimVikiNavController.navigate(destination)
+						adAwareNavigate(destination, null)
 					},
 					onBackClick = {
 						valheimVikiNavController.popBackStack()
@@ -497,7 +533,7 @@ fun ValheimNavGraph(
 				val vm = hiltViewModel<BuildingMaterialListViewModel>(parentEntry)
 				BuildingMaterialListScreen(
 					onItemClick = { destination ->
-						valheimVikiNavController.navigate(destination)
+						adAwareNavigate(destination, null)
 					},
 					onBackClick = {
 						valheimVikiNavController.popBackStack()
@@ -514,7 +550,7 @@ fun ValheimNavGraph(
 					val currentTime = System.currentTimeMillis()
 					if (currentTime - lastClickTime.longValue > clickDebounceMillis) {
 						lastClickTime.longValue = currentTime
-						valheimVikiNavController.navigate(destination) {
+						adAwareNavigate(destination) {
 							launchSingleTop = true
 							popUpTo(destination) {
 								inclusive = true
@@ -534,7 +570,7 @@ fun ValheimNavGraph(
 					val currentTime = System.currentTimeMillis()
 					if (currentTime - lastClickTime.longValue > clickDebounceMillis) {
 						lastClickTime.longValue = currentTime
-						valheimVikiNavController.navigate(destination) {
+						adAwareNavigate(destination) {
 							launchSingleTop = true
 							popUpTo(destination) {
 								inclusive = true
@@ -550,7 +586,7 @@ fun ValheimNavGraph(
 		composable<ListDestination.WorldDestinations.PointOfInterestList> {
 			PoiListScreen(
 				onItemClick = { destination ->
-					valheimVikiNavController.navigate(destination)
+					adAwareNavigate(destination, null)
 				},
 				paddingValues = innerPadding,
 			)
@@ -566,7 +602,7 @@ fun ValheimNavGraph(
 			BiomeDetailScreen(
 				onBack = { valheimVikiNavController.popBackStack() },
 				onItemClick = { destination ->
-					valheimVikiNavController.navigate(destination)
+					adAwareNavigate(destination, null)
 				},
 				animatedVisibilityScope = animatedContentScope
 			)
@@ -580,7 +616,7 @@ fun ValheimNavGraph(
 					valheimVikiNavController.popBackStack()
 				},
 				onItemClick = { destination ->
-					valheimVikiNavController.navigate(destination)
+					adAwareNavigate(destination, null)
 				},
 				animatedVisibilityScope = this@composable,
 			)
@@ -595,7 +631,7 @@ fun ValheimNavGraph(
 					valheimVikiNavController.popBackStack()
 				},
 				onItemClick = { destination ->
-					valheimVikiNavController.navigate(destination)
+					adAwareNavigate(destination, null)
 				},
 				animatedVisibilityScope = this@composable,
 			)
@@ -606,7 +642,7 @@ fun ValheimNavGraph(
 					valheimVikiNavController.popBackStack()
 				},
 				onItemClick = { destination ->
-					valheimVikiNavController.navigate(destination)
+					adAwareNavigate(destination, null)
 				},
 			)
 		}
@@ -617,7 +653,7 @@ fun ValheimNavGraph(
 					valheimVikiNavController.popBackStack()
 				},
 				onItemClick = { destination ->
-					valheimVikiNavController.navigate(destination)
+					adAwareNavigate(destination, null)
 				},
 			)
 		}
@@ -627,7 +663,7 @@ fun ValheimNavGraph(
 					valheimVikiNavController.popBackStack()
 				},
 				onItemClick = { destination ->
-					valheimVikiNavController.navigate(destination)
+					adAwareNavigate(destination, null)
 				},
 			)
 		}
@@ -639,7 +675,7 @@ fun ValheimNavGraph(
 					valheimVikiNavController.popBackStack()
 				},
 				onItemClick = { destination ->
-					valheimVikiNavController.navigate(destination)
+					adAwareNavigate(destination, null)
 				},
 				category = args.category,
 			)
@@ -652,7 +688,7 @@ fun ValheimNavGraph(
 					valheimVikiNavController.popBackStack()
 				},
 				onItemClick = { destination ->
-					valheimVikiNavController.navigate(destination)
+					adAwareNavigate(destination, null)
 				},
 				category = args.category,
 
@@ -664,7 +700,7 @@ fun ValheimNavGraph(
 					valheimVikiNavController.popBackStack()
 				},
 				onItemClick = { destination ->
-					valheimVikiNavController.navigate(destination)
+					adAwareNavigate(destination, null)
 				},
 			)
 		}
@@ -675,7 +711,7 @@ fun ValheimNavGraph(
 					valheimVikiNavController.popBackStack()
 				},
 				onItemClick = { destination ->
-					valheimVikiNavController.navigate(destination)
+					adAwareNavigate(destination, null)
 				},
 			)
 		}
@@ -686,7 +722,7 @@ fun ValheimNavGraph(
 					valheimVikiNavController.popBackStack()
 				},
 				onItemClick = { destination ->
-					valheimVikiNavController.navigate(destination)
+					adAwareNavigate(destination, null)
 				},
 			)
 		}
@@ -696,7 +732,7 @@ fun ValheimNavGraph(
 					valheimVikiNavController.popBackStack()
 				},
 				onItemClick = { destination ->
-					valheimVikiNavController.navigate(destination)
+					adAwareNavigate(destination, null)
 				},
 			)
 		}
@@ -707,7 +743,7 @@ fun ValheimNavGraph(
 					valheimVikiNavController.popBackStack()
 				},
 				onItemClick = { destination ->
-					valheimVikiNavController.navigate(destination)
+					adAwareNavigate(destination, null)
 				},
 			)
 		}
@@ -719,7 +755,7 @@ fun ValheimNavGraph(
 					valheimVikiNavController.popBackStack()
 				},
 				onItemClick = { destination ->
-					valheimVikiNavController.navigate(destination)
+					adAwareNavigate(destination, null)
 				},
 				animatedVisibilityScope = this@composable,
 			)
@@ -732,7 +768,7 @@ fun ValheimNavGraph(
 					valheimVikiNavController.popBackStack()
 				},
 				onItemClick = { destination ->
-					valheimVikiNavController.navigate(destination)
+					adAwareNavigate(destination, null)
 				},
 				animatedVisibilityScope = this@composable,
 			)
@@ -744,7 +780,7 @@ fun ValheimNavGraph(
 					valheimVikiNavController.popBackStack()
 				},
 				onItemClick = { destination ->
-					valheimVikiNavController.navigate(destination)
+					adAwareNavigate(destination, null)
 				},
 			)
 		}
@@ -755,7 +791,7 @@ fun ValheimNavGraph(
 					valheimVikiNavController.popBackStack()
 				},
 				onItemClick = { destination ->
-					valheimVikiNavController.navigate(destination)
+					adAwareNavigate(destination, null)
 				},
 			)
 		}
@@ -766,7 +802,7 @@ fun ValheimNavGraph(
 					valheimVikiNavController.popBackStack()
 				},
 				onItemClick = { destination ->
-					valheimVikiNavController.navigate(destination)
+					adAwareNavigate(destination, null)
 				},
 			)
 		}
@@ -776,7 +812,7 @@ fun ValheimNavGraph(
 					valheimVikiNavController.popBackStack()
 				},
 				onItemClick = { destination ->
-					valheimVikiNavController.navigate(destination)
+					adAwareNavigate(destination, null)
 				},
 			)
 		}
@@ -786,7 +822,7 @@ fun ValheimNavGraph(
 					valheimVikiNavController.popBackStack()
 				},
 				onItemClick = { destination ->
-					valheimVikiNavController.navigate(destination)
+					adAwareNavigate(destination, null)
 				},
 			)
 		}
@@ -796,7 +832,7 @@ fun ValheimNavGraph(
 					valheimVikiNavController.popBackStack()
 				},
 				onItemClick = { destination ->
-					valheimVikiNavController.navigate(destination)
+					adAwareNavigate(destination, null)
 				},
 			)
 		}
@@ -806,7 +842,7 @@ fun ValheimNavGraph(
 					valheimVikiNavController.popBackStack()
 				},
 				onItemClick = { destination ->
-					valheimVikiNavController.navigate(destination)
+					adAwareNavigate(destination, null)
 				},
 			)
 		}
@@ -816,7 +852,7 @@ fun ValheimNavGraph(
 					valheimVikiNavController.popBackStack()
 				},
 				onItemClick = { destination ->
-					valheimVikiNavController.navigate(destination)
+					adAwareNavigate(destination, null)
 				},
 			)
 		}
@@ -826,7 +862,7 @@ fun ValheimNavGraph(
 					valheimVikiNavController.popBackStack()
 				},
 				onItemClick = { destination ->
-					valheimVikiNavController.navigate(destination)
+					adAwareNavigate(destination, null)
 				},
 			)
 		}
@@ -837,7 +873,7 @@ fun ValheimNavGraph(
 					valheimVikiNavController.popBackStack()
 				},
 				onItemClick = { destination ->
-					valheimVikiNavController.navigate(destination)
+					adAwareNavigate(destination, null)
 				},
 			)
 		}
@@ -847,7 +883,7 @@ fun ValheimNavGraph(
 					valheimVikiNavController.popBackStack()
 				},
 				onItemClick = { destination ->
-					valheimVikiNavController.navigate(destination)
+					adAwareNavigate(destination, null)
 				},
 			)
 		}
@@ -857,7 +893,7 @@ fun ValheimNavGraph(
 					valheimVikiNavController.popBackStack()
 				},
 				onItemClick = { destination ->
-					valheimVikiNavController.navigate(destination)
+					adAwareNavigate(destination, null)
 				},
 			)
 		}
@@ -867,7 +903,7 @@ fun ValheimNavGraph(
 					valheimVikiNavController.popBackStack()
 				},
 				onItemClick = { destination ->
-					valheimVikiNavController.navigate(destination)
+					adAwareNavigate(destination, null)
 				},
 			)
 		}
@@ -877,7 +913,7 @@ fun ValheimNavGraph(
 					valheimVikiNavController.popBackStack()
 				},
 				onItemClick = { destination ->
-					valheimVikiNavController.navigate(destination)
+					adAwareNavigate(destination, null)
 				},
 			)
 		}
