@@ -87,4 +87,231 @@
     <string name="close">Close</string>
     <string name="donate">Donate</string>
     <string name="fandom_info_title">About</string>
+
+    <!-- Categories / Segments -->
+    <string name="category_wood">WOOD</string>
+    <string name="category_core_wood">CORE WOOD</string>
+    <string name="category_resources">RESOURCES</string>
+    <string name="category_stone_and_metal">STONE &amp; METAL</string>
+    <string name="category_lights">LIGHTS</string>
+    <string name="category_transports">TRANSPORTS</string>
+    <string name="category_furniture">FURNITURE</string>
+    <string name="category_decor">DECOR</string>
+    <string name="category_roofs">ROOFS</string>
+    <string name="category_defense">DEFENSE</string>
+    <string name="category_siege">SIEGE</string>
+    <string name="category_misc">MISC</string>
+
+    <string name="category_boss_drop">BOSS DROP</string>
+    <string name="category_mini_boss_drop">MINI BOSS DROP</string>
+    <string name="category_mob_drop">MOB DROP</string>
+    <string name="category_offerings">OFFERINGS</string>
+    <string name="category_crafted">CRAFTED</string>
+    <string name="category_metal">METAL</string>
+    <string name="category_general">GENERAL</string>
+    <string name="category_gemstones">GEMSTONES</string>
+    <string name="category_seeds">SEEDS</string>
+    <string name="category_shop">SHOP</string>
+    <string name="category_valuable">VALUABLE</string>
+
+    <string name="segment_melee">Melee</string>
+    <string name="segment_ranged">Ranged</string>
+    <string name="segment_magic">Magic</string>
+    <string name="segment_ammo">Ammo</string>
+
+    <string name="segment_cooked">COOKED</string>
+    <string name="segment_uncooked">UNCOOKED</string>
+
+    <string name="segment_mead_bases">MEAD BASES</string>
+    <string name="segment_potions">POTIONS</string>
+
+    <string name="segment_passive">Passive</string>
+    <string name="segment_hostile">Hostile</string>
+    <string name="segment_npc">Npc</string>
+
+    <string name="segment_altars">ALTARS</string>
+    <string name="segment_structures">STRUCTURES</string>
+
+    <string name="segment_button_1" translatable="false">Button 1</string>
+    <string name="segment_button_2" translatable="false">Button 2</string>
+    <string name="segment_button_3" translatable="false">Button 3</string>
+
+    <!-- Chip Labels -->
+    <string name="chip_storage">Storage</string>
+    <string name="chip_functional">Functional</string>
+    <string name="chip_table">Table</string>
+    <string name="chip_chair">Chair</string>
+    <string name="chip_rug">Rug</string>
+    <string name="chip_banner">Banner</string>
+    <string name="chip_decorative">Decorative</string>
+    <string name="chip_misc">Misc</string>
+    <string name="chip_boat">Boat</string>
+
+    <string name="chip_axes">Axes</string>
+    <string name="chip_clubs">Clubs</string>
+    <string name="chip_swords">Swords</string>
+    <string name="chip_wooden_weapons">Wooden weapons</string>
+    <string name="chip_spears">Spears</string>
+    <string name="chip_polearms">Polearms</string>
+    <string name="chip_knives">Knives</string>
+    <string name="chip_fists">Fists</string>
+    <string name="chip_shields">Shields</string>
+    <string name="chip_bows">Bows</string>
+    <string name="chip_crossbows">Crossbows</string>
+    <string name="chip_elemental_magic">Elemental magic</string>
+    <string name="chip_blood_magic">Blood magic</string>
+    <string name="chip_arrows">Arrows</string>
+    <string name="chip_bolts">Bolts</string>
+    <string name="chip_missiles">Missiles</string>
+    <string name="chip_bombs">Bombs</string>
+    <string name="chip_blob_bombs">Blob Bombs</string>
+
+    <string name="chip_all">All</string>
+    <string name="chip_world">World</string>
+    <string name="chip_tools">Tools</string>
+    <string name="chip_equipment">Equipment</string>
+    <string name="chip_consumable">Consumable</string>
+    <string name="chip_building">Building</string>
+
+    <string name="chip_item">Item</string>
+    <string name="chip_trophy">Trophy</string>
+    <string name="chip_loot">Loot</string>
+    <string name="chip_crop_seed">Crop Seed</string>
+    <string name="chip_tree_seed">Tree Seed</string>
+    <string name="chip_ingots">Ingots</string>
+    <string name="chip_ores">Ores</string>
+    <string name="chip_haldor_items">Haldor Items</string>
+    <string name="chip_hildir_items">Hildir Items</string>
+    <string name="chip_bog_witch_items">Bog Witch Items</string>
+
+    <string name="chip_capes">Capes</string>
+    <string name="chip_chests_armor">Chests Armor</string>
+    <string name="chip_legs_armor">Legs Armor</string>
+    <string name="chip_accessories">Accessories</string>
+    <string name="chip_helmet">Helmet</string>
+
+    <string name="chip_food_crafting_stations">Food crafting Stations</string>
+    <string name="chip_smelting_stations">Smelting Stations</string>
+    <string name="chip_refinery_stations">Refinery Stations</string>
+    <string name="chip_crafting_upgraders">Crafting Upgraders</string>
+    <string name="chip_crafting_upgraders_food">Crafting Upgraders For Food Station</string>
+
+    <string name="chip_mead_consumption">Mead consumption</string>
+    <string name="chip_pickaxe">Pickaxes</string>
+    <string name="chip_farming">Farming</string>
+    <string name="chip_fishing">Fishing</string>
+
+    <!-- Settings UI -->
+    <string name="settings_language_label">LANGUAGE</string>
+    <string name="settings_downloading_data">Downloading data in %1$s…</string>
+    <string name="settings_select_language">Select Language</string>
+
+    <!-- General Labels -->
+    <string name="label_expand_filters">Expand filters</string>
+    <string name="label_back">Back</string>
+
+    <!-- Error Messages -->
+    <string name="error_unknown">An unknown error occurred</string>
+    <string name="error_data_access">Problem accessing local data.</string>
+    <string name="primary_spawn">PRIMARY SPAWN</string>
+    <string name="primary_spawns">PRIMARY SPAWNS</string>
+    <string name="drop_items">Drop Items</string>
+    <string name="details">DETAILS</string>
+    <string name="creature_stats">CREATURE STATS</string>
+    <string name="mob_stats">MOB STATS</string>
+    <string name="boss_detail">BOSS DETAIL</string>
+    <string name="boss_stats">BOSS STATS</string>
+    <string name="npc_detail">NPC DETAIL</string>
+    <string name="quests">QUESTS</string>
+    <string name="trading">TRADING</string>
+    <string name="sells">Sells</string>
+    <string name="buys">Buys</string>
+    <string name="note_upper">NOTE</string>
+    <string name="additional_effect">Additional Effect</string>
+    <string name="usage">Usage</string>
+    <string name="recipe">Recipe</string>
+    <string name="cooldown">Cooldown</string>
+    <string name="food_drops">Food Drops</string>
+    <string name="required_items">Required Items</string>
+    <string name="required_materials_colon">Required Materials:</string>
+    <string name="required_colon">Required:</string>
+    <string name="upgrade_level_unavailable">Upgrade to this level not yet available</string>
+    <string name="expand">Expand</string>
+    <string name="forsaken_power">FORSAKEN POWER</string>
+    <string name="where_to_hang_boss_trophy">WHERE TO HANG THE BOSS TROPHY</string>
+    <string name="summoning_items">SUMMONING ITEMS</string>
+    <string name="levels_label">Levels :</string>
+    <string name="comfort_level">Comfort Level</string>
+    <string name="axes">Axes</string>
+    <string name="pickaxes">Pickaxes</string>
+    <string name="extractor">Extractor</string>
+    <string name="altars">Altars</string>
+    <string name="aggressive_creatures">Aggressive Creatures</string>
+    <string name="passive_creatures">Passive Creatures</string>
+    <string name="craftable_items">Craftable Items</string>
+    <string name="food_items">Food Items</string>
+    <string name="mead_items">Mead Items</string>
+    <string name="weapon_items">Weapon Items</string>
+    <string name="armor_items">Armor Items</string>
+    <string name="material_items">Material Items</string>
+    <string name="fuel_items">Fuel Items</string>
+    <string name="tool_items">Tool Items</string>
+    <string name="crafting_ingredients">Crafting Ingredients</string>
+    <string name="offerings">Offerings</string>
+    <string name="point_of_interest">Point Of Interest</string>
+    <string name="ore_deposit">Ore Deposit</string>
+    <string name="npc">NPC</string>
+    <string name="cd_logo">Logo</string>
+    <string name="cd_go_to_home">Go to Home</string>
+    <string name="cd_button_up">Button Up</string>
+    <string name="cd_back">Back</string>
+    <string name="cd_info">Info</string>
+    <string name="cd_card_image">Card Image</string>
+    <string name="cd_drop_item">Drop item</string>
+    <string name="cd_food_image">Food Image</string>
+    <string name="cd_segment_icon">Segment Icon</string>
+    <string name="cd_rectangle_section_icon">Rectangle section Icon</string>
+    <string name="cd_divider_image">Divider Image</string>
+    <string name="cd_star">Star</string>
+    <string name="cd_trophy_image">Trophy Image</string>
+    <string name="cd_icon_label">Icon Label</string>
+    <string name="cd_shop_icon_image">Shop Icon Image</string>
+    <string name="cd_menu_icon">Menu section Icon</string>
+    <string name="cd_bookmarks_icon">Bookmarks section Icon</string>
+    <string name="cd_search_icon">Search section Icon</string>
+    <string name="cd_search_icon_simple">Search Icon</string>
+    <string name="cd_clear_icon">Clear Icon</string>
+    <string name="cd_grid_item_image">Grid item image</string>
+    <string name="cd_no_internet_icon">NO_INTERNET_CONECTION_ICON</string>
+    <string name="cd_viking_logo">VikingLogo</string>
+    <string name="level_number">Level %1$d</string>
+    <string name="drop_chance_percent">Drop chance: %1$s%%</string>
+    <string name="quantity_with_x">x%1$s</string>
+    <string name="health_value">Health: %1$s</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_title_app">ValheimViki</string>
+    <string name="onboarding_desc_app">Explore Valheim's vast world &amp; knowledge</string>
+    <string name="onboarding_cta_get_started">GET STARTED</string>
+    <string name="onboarding_title_explore">EXPLORE</string>
+    <string name="onboarding_desc_explore">A beautiful, procedurally generated world awaits you, shrouded in mystery. Venture into deep dark forests, climb snow-peaked mountains and discover what’s left of those who came before you. Take to the seas on a mighty longship, but be wary of sailing too far…</string>
+    <string name="onboarding_cta_continue">CONTINUE</string>
+    <string name="onboarding_title_welcome">WELCOME</string>
+    <string name="onboarding_desc_welcome">Thank you for downloading ValheimViki.
+ Dive into the world of Valheim and explore the rich knowledge base we have to offer.</string>
+    <string name="onboarding_cta_explore_now">EXPLORE NOW</string>
+
+    <!-- Horizontal pager / details subtitles -->
+    <string name="horizontal_pager_preview_title_creatures">Creatuers</string>
+    <string name="horizontal_pager_preview_subtitle_creatures">Creatures you may encounter in this biome</string>
+    <string name="simple_top_bar_preview_title">Top App Bar</string>
+    <string name="card_stat_preview_health">Health</string>
+
+    <!-- Metal material detail subtitles -->
+    <string name="metal_detail_subtitle_biomes">Biomes where you can find this material</string>
+    <string name="metal_detail_subtitle_creatures">Creatures that drop this material</string>
+    <string name="metal_detail_subtitle_poi">Poi where you can find this item</string>
+    <string name="metal_detail_subtitle_ore_deposits">Ore deposits where you can find this material</string>
+    <string name="metal_detail_subtitle_required_items">Items needed to build this material.</string>
+    <string name="metal_detail_subtitle_crafting_station">Crafting station where you can produce this item </string>
 </resources>
