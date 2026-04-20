@@ -1,75 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">Valheim Viki</string>
-    <string name="item_grid_image" translatable="false">Item Grid Image</string>
-    <string name="creatures_section" translatable="false">Creatures section</string>
-    <string name="biomes_section" translatable="false">Biomes section</string>
-    <string name="boss_section" translatable="false">Boss section</string>
-    <string name="minibosses_section" translatable="false">MiniBosses section</string>
-    <string name="biomes" translatable="false">Biomes</string>
-    <string name="creatures" translatable="false">Creatures</string>
-    <string name="bosses" translatable="false">Bosses</string>
-    <string name="minibosses" translatable="false">MiniBosses</string>
-    <string name="mainbosssection" translatable="false">MainBossSection</string>
-    <string name="immune" translatable="false">Immune</string>
-    <string name="resistance" translatable="false">Resistance</string>
-    <string name="weakness" translatable="false">Weakness</string>
-    <string name="base_damage" translatable="false">Base Damage</string>
-    <string name="baseHp" translatable="false">Base HP</string>
-    <string name="abilities" translatable="false">Abilities</string>
-    <string name="note" translatable="false">Note</string>
-    <string name="fun_fact">Fun Fact</string>
-    <string name="heart_icon" translatable="false">Heart Icon</string>
-    <string name="error_no_connection_with_empty_list_message" translatable="true">No internet connection and no local data available. Try to connect to the internet again.</string>
-    <string name="hildir_text_first">Hildir has a map table in front of her that leads to various different locations where special dungeons with special minibosses can be fought, and different loot is found. Interacting with the table adds the locations to your map. The locations are:</string>
-    <string name="hildir_text_second">Up to three of each type of these locations will generate in each world. The spawning rules for each location type are as follows:</string>
-    <string name="hildir_text_fourth">Each of these quest locations is full of loot, enemies, and unique minibosses. Once defeated, these minibosses each drop a quest item:</string>
-    <string name="hildir_text_third">When players find Hildir, it can be a good idea to drop a Portal in the vicinity to make easier returns.</string>
-    <string name="hildir_text_fifth">Each of these chests weighs 200, has a stack size of 1, and cannot be teleported. Chests can be returned to Hildir, which unlocks additional trades from her; note that only one of each type of chest can be returned.</string>
-    <string name="hildir_text_sixth">Returning a chest to Hildir will enable new Events, which will cause the chest\'s respective boss and their minions to invade your base.</string>
-    <string name="hildir_html_text"><![CDATA[<ul><li>Smouldering Tombs: Each 3000 meters apart, between 3000 – 8000 meters from the world center, at an altitude of at least 1 meter.</li>\n                        <li>Howling Caverns: Each 2000 meters apart, between 1000 – 8000 meters from the world center, at an altitude of at least 200 meters.</li>\n                        <li>Sealed Tower: Each 3000 meters apart, at an altitude of at least 8 meters.</li></ul>]]></string>
-    <string name="no_internet_connection_ms">Connect to internet to fetch data</string>
-    <string name="background">Background</string>
-    <string name="weapons">Weapons</string>
-    <string name="weapons_section">Weapons section</string>
-    <string name="armors">Armors</string>
-    <string name="food">Food</string>
-    <string name="meads">Meads</string>
-    <string name="tools">Tools</string>
-    <string name="materials">Materials</string>
-    <string name="building_materials">Building Materials</string>
-    <string name="ore_deposits">Ore Deposits</string>
-    <string name="trees">Trees</string>
-    <string name="points_of_interest">Points Of Interest</string>
-    <string name="points_of_interest_section">Points Of Interest section</string>
-    <string name="trees_section">Trees section</string>
-    <string name="ore_deposits_section">Ore Deposits section</string>
-    <string name="building_materials_section">Building Materials section</string>
-    <string name="materials_section">Materials section</string>
-    <string name="tools_section">Tools section</string>
-    <string name="mead_section">Mead section</string>
-    <string name="food_section">Food section</string>
-    <string name="armor_section">Armor section</string>
-    <string name="crafting_stations_section">Crafting Stations section</string>
-    <string name="crafting_stations">Crafting Stations</string>
-    <string name="health">Health</string>
-    <string name="what_is_health">The amount of health points this boss has</string>
-    <string name="trinkets">Trinkets</string>
-    <string name="trinket_section">Trinket Section</string>
-    <string name="duration">Duration</string>
-    <string name="adrenaline">Adrenaline</string>
-    <string name="healing">Healing</string>
-    <string name="stamina">Stamina</string>
+    <string name="creatures_section">Sekcja stworzeń</string>
+    <string name="biomes_section">Sekcja biomów</string>
+    <string name="boss_section">Sekcja bossów</string>
+    <string name="minibosses_section">Sekcja minibossów</string>
+    <string name="biomes">Biomy</string>
+    <string name="creatures">Stworzenia</string>
+    <string name="bosses">Bossowie</string>
+    <string name="minibosses">Minibossowie</string>
+    <string name="immune">Odporny</string>
+    <string name="resistance">Odporność</string>
+    <string name="weakness">Słabość</string>
+    <string name="base_damage">Obrażenia bazowe</string>
+    <string name="baseHp">Bazowe HP</string>
+    <string name="abilities">Umiejętności</string>
+    <string name="note">Notatka</string>
+    <string name="fun_fact">Ciekawostka</string>
+    <string name="error_no_connection_with_empty_list_message">Brak połączenia z internetem i brak danych lokalnych. Spróbuj ponownie połączyć się z internetem.</string>
+    <string name="no_internet_connection_ms">Połącz się z internetem, aby pobrać dane</string>
+    <string name="background">Tło</string>
+    <string name="weapons">Bronie</string>
+    <string name="weapons_section">Sekcja broni</string>
+    <string name="armors">Zbroje</string>
+    <string name="food">Jedzenie</string>
+    <string name="meads">Miody</string>
+    <string name="tools">Narzędzia</string>
+    <string name="materials">Materiały</string>
+    <string name="building_materials">Materiały budowlane</string>
+    <string name="ore_deposits">Złoża rud</string>
+    <string name="trees">Drzewa</string>
+    <string name="points_of_interest">Punkty zainteresowania</string>
+    <string name="points_of_interest_section">Sekcja punktów zainteresowania</string>
+    <string name="trees_section">Sekcja drzew</string>
+    <string name="ore_deposits_section">Sekcja złóż rud</string>
+    <string name="building_materials_section">Sekcja materiałów budowlanych</string>
+    <string name="materials_section">Sekcja materiałów</string>
+    <string name="tools_section">Sekcja narzędzi</string>
+    <string name="mead_section">Sekcja miodów</string>
+    <string name="food_section">Sekcja jedzenia</string>
+    <string name="armor_section">Sekcja zbroi</string>
+    <string name="crafting_stations_section">Sekcja stacji rzemieślniczych</string>
+    <string name="crafting_stations">Stacje rzemieślnicze</string>
+    <string name="health">Zdrowie</string>
+    <string name="what_is_health">Ilość punktów zdrowia tego bossa</string>
+    <string name="trinkets">Biżuteria</string>
+    <string name="trinket_section">Sekcja biżuterii</string>
+    <string name="duration">Czas trwania</string>
+    <string name="adrenaline">Adrenalina</string>
+    <string name="healing">Leczenie</string>
+    <string name="stamina">Wytrzymałość</string>
     <string name="eitr">Eitr</string>
-    <string name="weight">Weight</string>
-    <string name="fork_type">Fork Type</string>
-    <string name="stack_size">Stack Size</string>
-    <string name="growth_time">Growth Time</string>
-    <string name="need_cultivator">Need Cultivator?</string>
-    <string name="information_if_seeds_need_cultivator_to_be_planted">Information if seeds need cultivator to be planted</string>
-    <string name="time_needed_for_plant_to_fully_grow">Time needed for plant to fully grow.</string>
-    <string name="valheim_viki_fandom_infromation_settings">This app is Fully Fan-made, it  uses some images and game data from the Valheim Wiki.\n\n Most of the texts and images in this app belong to the Valheim Wiki (Fandom).\n\n For more details and complete game information, please visit the Valheim Wiki</string>
+    <string name="weight">Waga</string>
+    <string name="fork_type">Typ widelca</string>
+    <string name="stack_size">Rozmiar stosu</string>
+    <string name="growth_time">Czas wzrostu</string>
+    <string name="need_cultivator">Potrzebny kultywator?</string>
+    <string name="favorites">Ulubione</string>
+    <string name="settings">Ustawienia</string>
+    <string name="search">Szukaj</string>
+    <string name="language">Język</string>
+    <string name="select_language">Wybierz język</string>
+    <string name="cancel">Anuluj</string>
+    <string name="ok">OK</string>
+    <string name="back">Wstecz</string>
+    <string name="loading">Ładowanie…</string>
+    <string name="retry">Ponów</string>
+    <string name="no_results">Brak wyników</string>
+    <string name="share">Udostępnij</string>
+    <string name="close">Zamknij</string>
+    <string name="donate">Wspieraj</string>
+    <string name="fandom_info_title">O aplikacji</string>
+    <string name="information_if_seeds_need_cultivator_to_be_planted">Informacja, czy nasiona wymagają kultywatora do posadzenia</string>
+    <string name="time_needed_for_plant_to_fully_grow">Czas potrzebny roślinie do pełnego wyrośnięcia.</string>
+    <string name="valheim_viki_fandom_infromation_settings">Ta aplikacja jest w pełni stworzona przez fanów i wykorzystuje niektóre obrazy oraz dane z gry z Valheim Wiki.\n\n Większość tekstów i obrazów w tej aplikacji należy do Valheim Wiki (Fandom).\n\n Aby uzyskać więcej szczegółów i pełne informacje o grze, odwiedź Valheim Wiki</string>
     <string name="valheim_wiki_fandom">Valheim Wiki | Fandom</string>
-    <string name="dialog_donate_pop_up_label">You are about to open an external website \n(Buy me a coffee) to make an optional donation.\n\nPlease Note: This is an optional donation and is not a purchase. It does not provide any special features, content, or items within this app.\n\nYou can change currency on the bottom\n of the website if you want.\n\nThank you for your support!</string>
-    <string name="button_donate_pop_up_label"><![CDATA[Buy me a coffee to support me! <3]]></string>
+    <string name="dialog_donate_pop_up_label">Zamierzasz otworzyć zewnętrzną stronę internetową \n(Buy me a coffee), aby dokonać opcjonalnej darowizny.\n\nUwaga: Jest to opcjonalna darowizna, a nie zakup. Nie zapewnia żadnych specjalnych funkcji, treści ani przedmiotów w tej aplikacji.\n\nMożesz zmienić walutę na dole\n strony internetowej, jeśli chcesz.\n\nDziękujemy za wsparcie!</string>
+    <string name="button_donate_pop_up_label"><![CDATA[Postaw mi kawę, żeby mnie wesprzeć! <3]]></string>
+    <string name="hildir_text_first">Hildir ma przed sobą stół z mapą, który prowadzi do różnych lokacji, gdzie można walczyć w specjalnych lochach ze specjalnymi minibossami i znajdować różne łupy. Interakcja ze stołem dodaje lokacje do twojej mapy. Lokacje to:</string>
+    <string name="hildir_text_second">W każdym świecie wygenerują się maksymalnie trzy lokacje każdego typu. Zasady pojawiania się dla każdego typu lokacji są następujące:</string>
+    <string name="hildir_text_fourth">Każda z tych lokacji questowych jest pełna łupów, wrogów i unikalnych minibossów. Po pokonaniu każdy z tych minibossów upuszcza przedmiot questowy:</string>
+    <string name="hildir_text_third">Gdy gracze znajdą Hildir, dobrym pomysłem może być postawienie Portalu w pobliżu, aby ułatwić powroty.</string>
+    <string name="hildir_text_fifth">Każda z tych skrzyń waży 200, ma rozmiar stosu 1 i nie można jej teleportować. Skrzynie można zwrócić Hildir, co odblokowuje dodatkowe wymiany z nią; pamiętaj, że można zwrócić tylko jedną skrzynię każdego typu.</string>
+    <string name="hildir_text_sixth">Zwrócenie skrzyni Hildir odblokuje nowe Zdarzenia, które spowodują, że odpowiedni boss skrzyni i jego słudzy najadą na twoją bazę.</string>
+    <string name="hildir_html_text"><![CDATA[<ul><li>Smouldering Tombs: Każda w odległości 3000 metrów od siebie, między 3000 – 8000 metrów od centrum świata, na wysokości co najmniej 1 metra.</li>\n                        <li>Howling Caverns: Każda w odległości 2000 metrów od siebie, między 1000 – 8000 metrów od centrum świata, na wysokości co najmniej 200 metrów.</li>\n                        <li>Sealed Tower: Każda w odległości 3000 metrów od siebie, na wysokości co najmniej 8 metrów.</li></ul>]]></string>
 </resources>

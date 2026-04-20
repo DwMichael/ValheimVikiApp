@@ -1,22 +1,22 @@
 <resources>
     <string name="app_name" translatable="false">Valheim Viki</string>
     <string name="item_grid_image" translatable="false">Item Grid Image</string>
-    <string name="creatures_section" translatable="false">Creatures section</string>
-    <string name="biomes_section" translatable="false">Biomes section</string>
-    <string name="boss_section" translatable="false">Boss section</string>
-    <string name="minibosses_section" translatable="false">MiniBosses section</string>
-    <string name="biomes" translatable="false">Biomes</string>
-    <string name="creatures" translatable="false">Creatures</string>
-    <string name="bosses" translatable="false">Bosses</string>
-    <string name="minibosses" translatable="false">MiniBosses</string>
+    <string name="creatures_section">Creatures section</string>
+    <string name="biomes_section">Biomes section</string>
+    <string name="boss_section">Boss section</string>
+    <string name="minibosses_section">MiniBosses section</string>
+    <string name="biomes">Biomes</string>
+    <string name="creatures">Creatures</string>
+    <string name="bosses">Bosses</string>
+    <string name="minibosses">MiniBosses</string>
     <string name="mainbosssection" translatable="false">MainBossSection</string>
-    <string name="immune" translatable="false">Immune</string>
-    <string name="resistance" translatable="false">Resistance</string>
-    <string name="weakness" translatable="false">Weakness</string>
-    <string name="base_damage" translatable="false">Base Damage</string>
-    <string name="baseHp" translatable="false">Base HP</string>
-    <string name="abilities" translatable="false">Abilities</string>
-    <string name="note" translatable="false">Note</string>
+    <string name="immune">Immune</string>
+    <string name="resistance">Resistance</string>
+    <string name="weakness">Weakness</string>
+    <string name="base_damage">Base Damage</string>
+    <string name="baseHp">Base HP</string>
+    <string name="abilities">Abilities</string>
+    <string name="note">Note</string>
     <string name="fun_fact">Fun Fact</string>
     <string name="heart_icon" translatable="false">Heart Icon</string>
     <string name="error_no_connection_with_empty_list_message" translatable="true">No internet connection and no local data available. Try to connect to the internet again.</string>
@@ -71,4 +71,20 @@
     <string name="valheim_wiki_fandom">Valheim Wiki | Fandom</string>
     <string name="dialog_donate_pop_up_label">You are about to open an external website \n(Buy me a coffee) to make an optional donation.\n\nPlease Note: This is an optional donation and is not a purchase. It does not provide any special features, content, or items within this app.\n\nYou can change currency on the bottom\n of the website if you want.\n\nThank you for your support!</string>
     <string name="button_donate_pop_up_label"><![CDATA[Buy me a coffee to support me! <3]]></string>
+    <!-- Navigation / UI -->
+    <string name="favorites">Favorites</string>
+    <string name="settings">Settings</string>
+    <string name="search">Search</string>
+    <string name="language">Language</string>
+    <string name="select_language">Select Language</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+    <string name="back">Back</string>
+    <string name="loading">Loading…</string>
+    <string name="retry">Retry</string>
+    <string name="no_results">No results</string>
+    <string name="share">Share</string>
+    <string name="close">Close</string>
+    <string name="donate">Donate</string>
+    <string name="fandom_info_title">About</string>
 </resources>
