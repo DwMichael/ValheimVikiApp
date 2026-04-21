@@ -156,7 +156,7 @@ fun AdaptiveNavigationWrapper(
 			ModalNavigationDrawer(
 				modifier = modifier.fillMaxSize().testTag("ModalNavigationDrawer"),
 				drawerState = drawerState,
-				gesturesEnabled = isDetailScreen() && !isTransitionActive(),
+				gesturesEnabled = true,
 				drawerContent = {
 					ModalDrawerSheet(
 						modifier = Modifier.fillMaxWidth(0.8f),
