@@ -79,7 +79,7 @@ import com.rabbitv.valheimviki.presentation.building_material.viewmodel.Building
 import com.rabbitv.valheimviki.presentation.components.DrawerItem
 import com.rabbitv.valheimviki.presentation.components.DrawerItemCollection
 import com.rabbitv.valheimviki.presentation.components.FloatingHomeButton
-import com.rabbitv.valheimviki.presentation.components.NavigationDrawer
+import com.rabbitv.valheimviki.presentation.components.AdaptiveNavigationWrapper
 import com.rabbitv.valheimviki.presentation.components.topbar.MainAppBar
 import com.rabbitv.valheimviki.presentation.crafting.CraftingListScreen
 import com.rabbitv.valheimviki.presentation.creatures.bosses.BossGridScreen
@@ -130,6 +130,7 @@ import com.rabbitv.valheimviki.presentation.tool.ToolListScreen
 import com.rabbitv.valheimviki.presentation.tree.TreeScreen
 import com.rabbitv.valheimviki.presentation.trinkets.TrinketListScreen
 import com.rabbitv.valheimviki.presentation.weapons.WeaponListScreen
+import com.rabbitv.valheimviki.ui.adaptive.ProvideAdaptiveLayout
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import kotlinx.coroutines.launch
 
@@ -139,7 +140,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun ValheimVikiApp(adManager: com.rabbitv.valheimviki.domain.ads.AdManager? = null) {
 	ValheimVikiAppTheme {
-		MainContainer(adManager = adManager)
+		ProvideAdaptiveLayout {
+			MainContainer(adManager = adManager)
+		}
 	}
 }
 
@@ -201,71 +204,88 @@ fun MainContainer(
 		}
 	}
 
-	NavigationDrawer(
-		modifier = modifier,
-		drawerState = drawerState,
-		scope = scope,
-		childNavController = { valheimVikiNavController },
-		items = drawerCollection,
-		isDetailScreen = { showTopAppBar },
-		isTransitionActive = { isTransitionActive.value },
-	) {
+	val isOnboardingFlow by remember {
+		derivedStateOf {
+			val route = currentBackStackEntry?.destination?.route.orEmpty()
+			route.contains("TopLevelDestination.Splash") || route.contains("TopLevelDestination.Welcome")
+		}
+	}
 
-		Scaffold(
-			topBar = {
-				AnimatedVisibility(
-					visible = showTopAppBar,
-					enter = slideInVertically { -it },
-					exit = slideOutVertically { -it } + fadeOut(),
-				) {
-					MainAppBar(
-						scope = scope,
-						drawerState = drawerState,
-						enabled = { !isTransitionActive.value },
-						onSearchBarClick = {
-							valheimVikiNavController.navigate(TopLevelDestination.Search)
-						},
-						onBookMarkClick = {
-							valheimVikiNavController.navigate(TopLevelDestination.Favorite)
-						},
-						settingsClick = {
-							valheimVikiNavController.navigate(TopLevelDestination.Settings)
-						}
-					)
-				}
-			},
-		) { innerPadding ->
-			val targetTopPadding = if (showTopAppBar) innerPadding.calculateTopPadding() else 0.dp
-			val animatedTopPadding by animateDpAsState(
-				targetValue = targetTopPadding,
-				animationSpec = tween(durationMillis = 450, easing = LinearOutSlowInEasing),
-				label = "topPaddingAnimation"
+	if (isOnboardingFlow) {
+		Box(modifier = Modifier.fillMaxSize()) {
+			ValheimNavGraph(
+				valheimVikiNavController = valheimVikiNavController,
+				innerPadding = PaddingValues(0.dp),
+				adAwareNavigate = adAwareNavigate,
 			)
+		}
+	} else {
+		AdaptiveNavigationWrapper(
+			modifier = modifier,
+			drawerState = drawerState,
+			scope = scope,
+			childNavController = { valheimVikiNavController },
+			items = drawerCollection,
+			isDetailScreen = { showTopAppBar },
+			isTransitionActive = { isTransitionActive.value },
+		) {
 
-			Box(
-				modifier = Modifier
-					.padding(top = animatedTopPadding)
-					.fillMaxSize()
-			) {
-				SharedTransitionLayout {
-					CompositionLocalProvider(LocalSharedTransitionScope provides this) {
-						LaunchedEffect(this.isTransitionActive) {
-							isTransitionActive.value =
-								!this@SharedTransitionLayout.isTransitionActive
-						}
-
-				ValheimNavGraph(
-						valheimVikiNavController = valheimVikiNavController,
-						innerPadding = PaddingValues(0.dp),
-						adAwareNavigate = adAwareNavigate,
-					)
+			Scaffold(
+				topBar = {
+					AnimatedVisibility(
+						visible = showTopAppBar,
+						enter = slideInVertically { -it },
+						exit = slideOutVertically { -it } + fadeOut(),
+					) {
+						MainAppBar(
+							scope = scope,
+							drawerState = drawerState,
+							enabled = { !isTransitionActive.value },
+							onSearchBarClick = {
+								valheimVikiNavController.navigate(TopLevelDestination.Search)
+							},
+							onBookMarkClick = {
+								valheimVikiNavController.navigate(TopLevelDestination.Favorite)
+							},
+							settingsClick = {
+								valheimVikiNavController.navigate(TopLevelDestination.Settings)
+							}
+						)
 					}
-				}
-
-				FloatingHomeButton(
-					navController = valheimVikiNavController,
-					paddingValues = PaddingValues(bottom = 60.dp)
+				},
+			) { innerPadding ->
+				val targetTopPadding = if (showTopAppBar) innerPadding.calculateTopPadding() else 0.dp
+				val animatedTopPadding by animateDpAsState(
+					targetValue = targetTopPadding,
+					animationSpec = tween(durationMillis = 450, easing = LinearOutSlowInEasing),
+					label = "topPaddingAnimation"
 				)
+
+				Box(
+					modifier = Modifier
+						.padding(top = animatedTopPadding)
+						.fillMaxSize()
+				) {
+					SharedTransitionLayout {
+						CompositionLocalProvider(LocalSharedTransitionScope provides this) {
+							LaunchedEffect(this.isTransitionActive) {
+								isTransitionActive.value =
+									!this@SharedTransitionLayout.isTransitionActive
+							}
+
+							ValheimNavGraph(
+								valheimVikiNavController = valheimVikiNavController,
+								innerPadding = PaddingValues(0.dp),
+								adAwareNavigate = adAwareNavigate,
+							)
+						}
+					}
+
+					FloatingHomeButton(
+						navController = valheimVikiNavController,
+						paddingValues = PaddingValues(bottom = 60.dp)
+					)
+				}
 			}
 		}
 	}
