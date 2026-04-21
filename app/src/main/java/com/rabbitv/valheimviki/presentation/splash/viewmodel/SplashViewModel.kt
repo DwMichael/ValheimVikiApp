@@ -8,7 +8,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -18,15 +18,13 @@ class SplashViewModel @Inject constructor(
 //	val updateManager: UpdateManager,
 	@param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
-	private val _onBoardingCompleted = MutableStateFlow(false)
-	val onBoardingCompleted: StateFlow<Boolean> = _onBoardingCompleted
+	private val _onBoardingCompleted = MutableStateFlow<Boolean?>(null)
+	val onBoardingCompleted: StateFlow<Boolean?> = _onBoardingCompleted
 
 
 	init {
 		viewModelScope.launch(defaultDispatcher) {
-			_onBoardingCompleted.value =
-				useCases.readOnBoardingUseCase().stateIn(viewModelScope).value
+			_onBoardingCompleted.value = useCases.readOnBoardingUseCase().first()
 		}
-
 	}
 }

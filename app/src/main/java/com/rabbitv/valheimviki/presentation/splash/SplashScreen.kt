@@ -23,8 +23,9 @@ fun SplashScreen(
 	splashViewModel: SplashViewModel = hiltViewModel()
 ) {
 	val degrees = remember { Animatable(0f) }
-	val hasOnboarded by splashViewModel.onBoardingCompleted.collectAsState(initial = false)
+	val hasOnboarded by splashViewModel.onBoardingCompleted.collectAsState(initial = null)
 	LaunchedEffect(hasOnboarded) {
+		val completed = hasOnboarded ?: return@LaunchedEffect
 
 		degrees.animateTo(
 			targetValue = 10f,
@@ -33,7 +34,7 @@ fun SplashScreen(
 			)
 		)
 		val destination =
-			if (hasOnboarded) GridDestination.WorldDestinations.BiomeGrid else TopLevelDestination.Welcome
+			if (completed) GridDestination.WorldDestinations.BiomeGrid else TopLevelDestination.Welcome
 		navController.navigate(destination) {
 			popUpTo(0) { inclusive = true }
 		}
