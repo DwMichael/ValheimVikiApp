@@ -97,7 +97,7 @@ class SettingsViewModel @Inject constructor(
                 )
             }
 
-            delay(120)
+            delay(220)
 
             // 2) Save preference
             dataStoreUseCases.saveLanguageState(language.code)

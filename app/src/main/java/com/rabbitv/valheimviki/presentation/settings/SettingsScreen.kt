@@ -23,6 +23,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -42,7 +44,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asComposeRenderEffect
 import androidx.compose.ui.graphics.graphicsLayer
@@ -55,6 +56,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.net.toUri
@@ -67,7 +69,6 @@ import com.composables.icons.lucide.CircleAlert
 import com.composables.icons.lucide.Coffee
 import com.composables.icons.lucide.Globe
 import com.composables.icons.lucide.Lucide
-import com.composables.icons.lucide.Sparkles
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.language.AppLanguage
 import com.rabbitv.valheimviki.navigation.DetailDestination
@@ -212,7 +213,7 @@ fun SettingsScreenContent(
 
 	if (uiState.isLanguageSwitching) {
 		LaunchedEffect(Unit) {
-			kotlinx.coroutines.delay(720)
+			kotlinx.coroutines.delay(920)
 			onEvent(SettingsUiEvent.LanguageSwitchOverlayShown)
 		}
 		LanguageSwitchOverlay(currentLanguage = uiState.currentLanguage)
@@ -231,36 +232,36 @@ fun LanguagePickerDialog(
 	) {
 		Box(
 			modifier = Modifier
-				.fillMaxWidth(0.85f)
-				.clip(RoundedCornerShape(16.dp))
-				.background(ForestGreen20Dark)
+				.fillMaxWidth(0.9f)
+				.clip(RoundedCornerShape(20.dp))
+				.background(Color(0xFF0B1116))
 				.border(
 					width = 1.dp,
-					color = YellowDTBorder,
-					shape = RoundedCornerShape(16.dp)
+					color = Color(0xFF202A33),
+					shape = RoundedCornerShape(20.dp)
 				)
-				.padding(24.dp)
+				.padding(20.dp)
 		) {
-			Column(
-				horizontalAlignment = Alignment.CenterHorizontally
-			) {
+			Column(horizontalAlignment = Alignment.CenterHorizontally) {
 				Text(
 					text = stringResource(R.string.settings_select_language),
-					color = PrimaryWhite,
-					style = MaterialTheme.typography.headlineSmall.copy(
-						fontWeight = FontWeight.Bold
-					)
+					color = Color(0xFFE8EDF3),
+					style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold)
 				)
-				Spacer(Modifier.height(20.dp))
+				Spacer(Modifier.height(14.dp))
 
-				AppLanguage.entries.forEach { language ->
-					LanguageOptionRow(
-						language = language,
-						isSelected = language == currentLanguage,
-						onClick = { onLanguageSelected(language) }
-					)
-					if (language != AppLanguage.entries.last()) {
-						Spacer(Modifier.height(8.dp))
+				LazyColumn(
+					modifier = Modifier
+						.fillMaxWidth()
+						.heightIn(max = 360.dp),
+					verticalArrangement = Arrangement.spacedBy(8.dp)
+				) {
+					items(AppLanguage.entries) { language ->
+						LanguageOptionRow(
+							language = language,
+							isSelected = language == currentLanguage,
+							onClick = { onLanguageSelected(language) }
+						)
 					}
 				}
 			}
@@ -274,51 +275,28 @@ private fun LanguageOptionRow(
 	isSelected: Boolean,
 	onClick: () -> Unit,
 ) {
-	val cardShape = RoundedCornerShape(16.dp)
-	val backgroundBrush = if (isSelected) {
-		Brush.horizontalGradient(
-			colors = listOf(
-				Color(0xFF244A4F),
-				Color(0xFF1A373B),
-			)
-		)
-	} else {
-		Brush.horizontalGradient(
-			colors = listOf(
-				Color(0xFF10191B),
-				Color(0xFF0C1416),
-			)
-		)
-	}
-
-	val borderBrush = if (isSelected) {
-		Brush.linearGradient(listOf(Color(0xFFE3D2AE), Color(0xFFB49D73)))
-	} else {
-		Brush.linearGradient(listOf(Color.White.copy(alpha = 0.20f), Color.White.copy(alpha = 0.08f)))
-	}
+	val cardShape = RoundedCornerShape(14.dp)
+	val bg = if (isSelected) Color(0xFF161F27) else Color(0xFF0E151C)
+	val border = if (isSelected) Color(0xFF3A4A59) else Color(0xFF222C35)
 
 	Row(
 		modifier = Modifier
 			.fillMaxWidth()
 			.clip(cardShape)
-			.background(backgroundBrush)
-			.border(width = 1.dp, brush = borderBrush, shape = cardShape)
+			.background(bg)
+			.border(1.dp, border, cardShape)
 			.clickable { onClick() }
 			.padding(horizontal = 14.dp, vertical = 12.dp),
 		verticalAlignment = Alignment.CenterVertically,
 	) {
 		Box(
 			modifier = Modifier
-				.size(46.dp)
-				.clip(RoundedCornerShape(13.dp))
-				.background(Color.White.copy(alpha = if (isSelected) 0.14f else 0.08f))
-				.border(1.dp, Color.White.copy(alpha = 0.14f), RoundedCornerShape(13.dp)),
+				.size(42.dp)
+				.clip(RoundedCornerShape(11.dp))
+				.background(Color(0xFF18222B)),
 			contentAlignment = Alignment.Center,
 		) {
-			Text(
-				text = language.flagEmoji,
-				style = MaterialTheme.typography.headlineSmall,
-			)
+			Text(text = language.flagEmoji, style = MaterialTheme.typography.titleLarge)
 		}
 
 		Spacer(Modifier.width(12.dp))
@@ -326,24 +304,24 @@ private fun LanguageOptionRow(
 		Column(modifier = Modifier.weight(1f)) {
 			Text(
 				text = language.nativeLabel,
-				color = if (isSelected) Color(0xFFF3E6CA) else PrimaryWhite,
-				style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+				color = Color(0xFFE9EEF4),
+				style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
 			)
 			Text(
-				text = language.displayName.uppercase(),
-				color = if (isSelected) Color(0xFFD5C3A2) else PrimaryWhite.copy(alpha = 0.68f),
-				style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Medium),
+				text = language.displayName,
+				color = Color(0xFFAAB7C4),
+				style = MaterialTheme.typography.bodySmall,
 			)
 		}
 
 		Box(
 			modifier = Modifier
-				.size(28.dp)
+				.size(22.dp)
 				.clip(CircleShape)
-				.background(if (isSelected) Color(0xFFE7D6B3) else Color.Transparent)
+				.background(if (isSelected) Color(0xFF7F95AA) else Color.Transparent)
 				.border(
 					width = 1.dp,
-					color = if (isSelected) Color(0xFFE7D6B3) else PrimaryWhite.copy(alpha = 0.3f),
+					color = if (isSelected) Color(0xFF7F95AA) else Color(0xFF394754),
 					shape = CircleShape,
 				),
 			contentAlignment = Alignment.Center,
@@ -352,8 +330,8 @@ private fun LanguageOptionRow(
 				Icon(
 					imageVector = Lucide.Check,
 					contentDescription = null,
-					tint = Color(0xFF1B3438),
-					modifier = Modifier.size(16.dp),
+					tint = Color(0xFF0C141B),
+					modifier = Modifier.size(13.dp),
 				)
 			}
 		}
@@ -365,52 +343,34 @@ private fun LanguageSwitchOverlay(currentLanguage: AppLanguage) {
 	Box(
 		modifier = Modifier
 			.fillMaxSize()
-			.background(Color(0xCC071012)),
+			.background(Color(0xCC080D12)),
 		contentAlignment = Alignment.Center,
 	) {
 		Column(
 			modifier = Modifier
-				.fillMaxWidth(0.78f)
-				.clip(RoundedCornerShape(22.dp))
-				.background(
-					Brush.verticalGradient(
-						listOf(
-							Color(0xFF193E43),
-							Color(0xFF102B2F),
-						)
-					)
-				)
-				.border(
-					1.dp,
-					brush = Brush.linearGradient(listOf(Color(0xFFD9C7A4), Color(0xFF8F7B57))),
-					shape = RoundedCornerShape(22.dp),
-				)
-				.padding(horizontal = 20.dp, vertical = 24.dp),
+				.fillMaxWidth(0.76f)
+				.clip(RoundedCornerShape(20.dp))
+				.background(Color(0xFF0F161D))
+				.border(1.dp, Color(0xFF26303A), RoundedCornerShape(20.dp))
+				.padding(horizontal = 20.dp, vertical = 22.dp),
 			horizontalAlignment = Alignment.CenterHorizontally,
 		) {
-			Icon(
-				imageVector = Lucide.Sparkles,
-				contentDescription = null,
-				tint = Color(0xFFE7D5B2),
-				modifier = Modifier.size(24.dp),
-			)
-			Spacer(Modifier.height(12.dp))
 			Text(
 				text = stringResource(R.string.settings_applying_language),
-				color = PrimaryWhite,
+				color = Color(0xFFE7EDF4),
 				style = MaterialTheme.typography.titleMedium,
 				textAlign = TextAlign.Center,
 			)
-			Spacer(Modifier.height(6.dp))
+			Spacer(Modifier.height(8.dp))
 			Text(
 				text = "${currentLanguage.flagEmoji} ${currentLanguage.nativeLabel}",
-				color = Color(0xFFD9C7A4),
-				style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
+				color = Color(0xFFA9B6C3),
+				style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
 			)
-			Spacer(Modifier.height(18.dp))
+			Spacer(Modifier.height(16.dp))
 			CircularProgressIndicator(
-				color = Color(0xFFE7D5B2),
-				strokeWidth = 2.6.dp,
+				color = Color(0xFF8EA1B4),
+				strokeWidth = 2.4.dp,
 			)
 		}
 	}
