@@ -6,5 +6,6 @@ data class SettingsUiState(
     val currentLanguage: AppLanguage = AppLanguage.ENGLISH,
     val showLanguageDialog: Boolean = false,
     val isRefetching: Boolean = false,
+    val isLanguageSwitching: Boolean = false,
     val showAdTrigger: Boolean = false,
 )

@@ -89,8 +89,8 @@
     <string name="fandom_info_title">About</string>
 
     <!-- Categories / Segments -->
-    <string name="category_wood">WOOD</string>
-    <string name="category_core_wood">CORE WOOD</string>
+    <string name="category_wood">Wood</string>
+    <string name="category_core_wood">Corewood</string>
     <string name="category_resources">RESOURCES</string>
     <string name="category_stone_and_metal">STONE &amp; METAL</string>
     <string name="category_lights">LIGHTS</string>
@@ -205,6 +205,7 @@
     <string name="settings_language_label">LANGUAGE</string>
     <string name="settings_downloading_data">Downloading data in %1$s…</string>
     <string name="settings_select_language">Select Language</string>
+    <string name="settings_applying_language">Applying language preferences…</string>
 
     <!-- General Labels -->
     <string name="label_expand_filters">Expand filters</string>
@@ -291,7 +292,7 @@
 
     <!-- Onboarding -->
     <string name="onboarding_title_app">ValheimViki</string>
-    <string name="onboarding_desc_app">Explore Valheim's vast world &amp; knowledge</string>
+    <string name="onboarding_desc_app">Explore Valheim\'s vast world &amp; knowledge</string>
     <string name="onboarding_cta_get_started">GET STARTED</string>
     <string name="onboarding_title_explore">EXPLORE</string>
     <string name="onboarding_desc_explore">A beautiful, procedurally generated world awaits you, shrouded in mystery. Venture into deep dark forests, climb snow-peaked mountains and discover what’s left of those who came before you. Take to the seas on a mighty longship, but be wary of sailing too far…</string>
@@ -314,4 +315,12 @@
     <string name="metal_detail_subtitle_ore_deposits">Ore deposits where you can find this material</string>
     <string name="metal_detail_subtitle_required_items">Items needed to build this material.</string>
     <string name="metal_detail_subtitle_crafting_station">Crafting station where you can produce this item </string>
+    <string name="page_index_of_total">%1$d/%2$d</string>
+    <string name="value_with_colon">%1$s:</string>
+    <string name="coins_value">%1$s Coins</string>
+    <string name="effect_label">Effect:</string>
+    <string name="preview_centered_text">CENTERED TEXT</string>
+    <string name="preview_fully_centered_text">FULLY CENTERED TEXT</string>
+    <string name="preview_top_app_bar">Top App Bar</string>
+    <string name="cd_sacrificial_stones_image">Sacrifical Strones Image</string>
 </resources>
