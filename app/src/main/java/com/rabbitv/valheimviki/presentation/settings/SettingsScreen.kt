@@ -29,6 +29,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.CircularProgressIndicator
@@ -80,11 +85,9 @@ import com.rabbitv.valheimviki.presentation.settings.model.SettingsUiEvent
 import com.rabbitv.valheimviki.presentation.settings.model.SettingsUiState
 import com.rabbitv.valheimviki.presentation.settings.viewmodel.SettingsViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
-import com.rabbitv.valheimviki.ui.theme.ForestGreen20Dark
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.Shapes
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
-import com.rabbitv.valheimviki.ui.theme.YellowDTBorder
 import com.rabbitv.valheimviki.utils.Constants.VALHEIM_VIKI_LINK
 
 @RequiresApi(Build.VERSION_CODES.S)
@@ -211,9 +214,13 @@ fun SettingsScreenContent(
 		)
 	}
 
-	if (uiState.isLanguageSwitching) {
+	androidx.compose.animation.AnimatedVisibility(
+		visible = uiState.isLanguageSwitching,
+		enter = fadeIn(animationSpec = tween(220)),
+		exit = fadeOut(animationSpec = tween(260)),
+	) {
 		LaunchedEffect(Unit) {
-			kotlinx.coroutines.delay(920)
+			kotlinx.coroutines.delay(980)
 			onEvent(SettingsUiEvent.LanguageSwitchOverlayShown)
 		}
 		LanguageSwitchOverlay(currentLanguage = uiState.currentLanguage)
@@ -276,15 +283,24 @@ private fun LanguageOptionRow(
 	onClick: () -> Unit,
 ) {
 	val cardShape = RoundedCornerShape(14.dp)
-	val bg = if (isSelected) Color(0xFF161F27) else Color(0xFF0E151C)
-	val border = if (isSelected) Color(0xFF3A4A59) else Color(0xFF222C35)
+	val rowAlpha by animateFloatAsState(
+		targetValue = if (isSelected) 1f else 0.9f,
+		animationSpec = tween(220),
+		label = "langRowAlpha",
+	)
+	val indicatorScale by animateFloatAsState(
+		targetValue = if (isSelected) 1f else 0.85f,
+		animationSpec = spring(dampingRatio = 0.72f, stiffness = 520f),
+		label = "langIndicatorScale",
+	)
 
 	Row(
 		modifier = Modifier
 			.fillMaxWidth()
 			.clip(cardShape)
-			.background(bg)
-			.border(1.dp, border, cardShape)
+			.background(if (isSelected) Color(0xFF18232D) else Color(0xFF0E151C))
+			.border(1.dp, if (isSelected) Color(0xFF42586D) else Color(0xFF222C35), cardShape)
+			.graphicsLayer { alpha = rowAlpha }
 			.clickable { onClick() }
 			.padding(horizontal = 14.dp, vertical = 12.dp),
 		verticalAlignment = Alignment.CenterVertically,
@@ -317,29 +333,43 @@ private fun LanguageOptionRow(
 		Box(
 			modifier = Modifier
 				.size(22.dp)
+				.graphicsLayer {
+					scaleX = indicatorScale
+					scaleY = indicatorScale
+				}
 				.clip(CircleShape)
-				.background(if (isSelected) Color(0xFF7F95AA) else Color.Transparent)
+				.background(if (isSelected) Color(0xFF8CA5BB) else Color.Transparent)
 				.border(
 					width = 1.dp,
-					color = if (isSelected) Color(0xFF7F95AA) else Color(0xFF394754),
+					color = if (isSelected) Color(0xFF8CA5BB) else Color(0xFF394754),
 					shape = CircleShape,
 				),
 			contentAlignment = Alignment.Center,
 		) {
-			if (isSelected) {
-				Icon(
-					imageVector = Lucide.Check,
-					contentDescription = null,
-					tint = Color(0xFF0C141B),
-					modifier = Modifier.size(13.dp),
-				)
-			}
+			Icon(
+				imageVector = Lucide.Check,
+				contentDescription = null,
+				tint = Color(0xFF0C141B),
+				modifier = Modifier
+					.size(13.dp)
+					.graphicsLayer {
+						alpha = if (isSelected) 1f else 0f
+						scaleX = if (isSelected) 1f else 0.6f
+						scaleY = if (isSelected) 1f else 0.6f
+					},
+			)
 		}
 	}
 }
 
 @Composable
 private fun LanguageSwitchOverlay(currentLanguage: AppLanguage) {
+	val pulseAlpha by animateFloatAsState(
+		targetValue = 0.9f,
+		animationSpec = tween(durationMillis = 420),
+		label = "overlayPulse",
+	)
+
 	Box(
 		modifier = Modifier
 			.fillMaxSize()
@@ -350,9 +380,9 @@ private fun LanguageSwitchOverlay(currentLanguage: AppLanguage) {
 			modifier = Modifier
 				.fillMaxWidth(0.76f)
 				.clip(RoundedCornerShape(20.dp))
-				.background(Color(0xFF0F161D))
+				.background(Color(0xFF0F161D).copy(alpha = pulseAlpha))
 				.border(1.dp, Color(0xFF26303A), RoundedCornerShape(20.dp))
-				.padding(horizontal = 20.dp, vertical = 22.dp),
+				.padding(horizontal = 22.dp, vertical = 24.dp),
 			horizontalAlignment = Alignment.CenterHorizontally,
 		) {
 			Text(
@@ -367,7 +397,7 @@ private fun LanguageSwitchOverlay(currentLanguage: AppLanguage) {
 				color = Color(0xFFA9B6C3),
 				style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
 			)
-			Spacer(Modifier.height(16.dp))
+			Spacer(Modifier.height(18.dp))
 			CircularProgressIndicator(
 				color = Color(0xFF8EA1B4),
 				strokeWidth = 2.4.dp,
