@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -28,16 +29,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.rememberAsyncImagePainter
 import com.composables.icons.lucide.Axe
 import com.composables.icons.lucide.Gem
 import com.composables.icons.lucide.Lucide
+import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.tree.Tree
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
@@ -58,6 +62,7 @@ import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.Car
 import com.rabbitv.valheimviki.presentation.detail.tree.model.TreeDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.tree.model.TreeUiEvent
 import com.rabbitv.valheimviki.presentation.detail.tree.viewmodel.TreeDetailScreenViewModel
+import com.rabbitv.valheimviki.ui.adaptive.adaptiveDetailWidth
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
@@ -101,9 +106,10 @@ fun TreeDetailContent(
 ) {
 	val isRunning by remember { derivedStateOf { animatedVisibilityScope.transition.isRunning } }
 	val scrollState = rememberScrollState()
-	val axesData = remember {
+	val axesTitle = stringResource(R.string.axes)
+	val axesData = remember(axesTitle) {
 		HorizontalPagerData(
-			title = "Axes",
+			title = axesTitle,
 			subTitle = "List of axes that can cut this tree",
 			icon = Lucide.Axe,
 			iconRotationDegrees = 0f,
@@ -126,7 +132,8 @@ fun TreeDetailContent(
 				Column(
 					modifier = Modifier
 						.testTag("TreeDetailScreen")
-						.fillMaxSize()
+
+						.adaptiveDetailWidth()
 						.verticalScroll(scrollState, enabled = !isRunning),
 					verticalArrangement = Arrangement.Top,
 					horizontalAlignment = Alignment.Start,
@@ -149,9 +156,14 @@ fun TreeDetailContent(
 					) { data ->
 						Text(
 							modifier = Modifier.align(Alignment.CenterHorizontally),
-							text = "PRIMARY SPAWN",
+							text = stringResource(R.string.primary_spawn),
 							textAlign = TextAlign.Center,
-							style = MaterialTheme.typography.titleLarge,
+							style = MaterialTheme.typography.headlineSmall,
+							autoSize = TextAutoSize.StepBased(
+								minFontSize = 16.sp,
+								maxFontSize = 24.sp,
+								stepSize = 1.sp,
+							),
 							maxLines = 1,
 							overflow = TextOverflow.Visible
 						)
@@ -169,6 +181,11 @@ fun TreeDetailContent(
 										Text(
 											biome.name.uppercase(),
 											style = MaterialTheme.typography.bodyLarge,
+											autoSize = TextAutoSize.StepBased(
+												minFontSize = 13.sp,
+												maxFontSize = 18.sp,
+												stepSize = 1.sp,
+											),
 											modifier = Modifier,
 											color = Color.White,
 											textAlign = TextAlign.Center
@@ -194,7 +211,7 @@ fun TreeDetailContent(
 							list = data,
 							icon = { Lucide.Gem },
 							starLevel = 0,
-							title = "Materials",
+							title = stringResource(R.string.materials),
 							subTitle = "Unique drops are obtained by cutting this tree.",
 						)
 						Spacer(modifier = Modifier.height(90.dp))

@@ -41,8 +41,8 @@ class TreeScreenViewModel @Inject constructor(
 	}.onCompletion { error -> println("Error -> ${error?.message}") }
 		.catch { e ->
 			val errorMessage = when (e) {
-				is IOException -> "Problem accessing local data."
-				else -> "An unexpected error occurred."
+				is IOException -> com.rabbitv.valheimviki.R.string.error_data_access.toString()
+				else -> com.rabbitv.valheimviki.R.string.error_unknown.toString()
 			}
 			emit(UIState.Error(errorMessage))
 			Log.e("TreeVM", "Error in treeUiState flow", e)

@@ -48,7 +48,8 @@ fun DarkGlassButton(
 	icon: ImageVector? = null,
 	label: String? = null,
 	leadingIcon: ImageVector? = null,
-	height: Dp = 60.dp
+	height: Dp = 60.dp,
+	enabled: Boolean = true
 ) {
 	val iconSize = 18.dp
 	val leadingIconSize = 24.dp
@@ -66,7 +67,8 @@ fun DarkGlassButton(
 				color = Color(0xFF4A4A4A).copy(alpha = 0.5f),
 				shape = Shapes.large
 			)
-			.clickable {
+			.graphicsLayer { alpha = if (enabled) 1f else 0.5f }
+			.clickable(enabled = enabled) {
 				onCardClick()
 			}
 

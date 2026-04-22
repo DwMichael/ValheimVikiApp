@@ -8,11 +8,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Utensils
+import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
 
@@ -50,7 +52,13 @@ fun DarkGlassStatCard(
 fun PreviewFoodStatCard() {
 
 	ValheimVikiAppTheme {
-		DarkGlassStatCard(icon =  Lucide.Utensils, label =   "Health", value =  "100", expand = {}, isExpanded = false)
+		DarkGlassStatCard(
+			icon = Lucide.Utensils,
+			label = stringResource(R.string.health),
+			value = "100",
+			expand = {},
+			isExpanded = false
+		)
 	}
 
 }

@@ -13,6 +13,7 @@ import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -27,6 +28,7 @@ import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
 import com.rabbitv.valheimviki.ui.theme.PrimaryOrange
 import com.rabbitv.valheimviki.ui.theme.Shapes
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
+import com.rabbitv.valheimviki.R
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -62,7 +64,7 @@ fun SearchTopBar(
 					Icon(
 						Lucide.Search,
 						tint = PrimaryOrange,
-						contentDescription = "Search Icon"
+						contentDescription = stringResource(R.string.cd_search_icon_simple)
 					)
 				},
 				trailingIcon = {
@@ -72,7 +74,7 @@ fun SearchTopBar(
 						Icon(
 							Lucide.X,
 							tint = PrimaryOrange,
-							contentDescription = "Clear Icon",
+							contentDescription = stringResource(R.string.cd_clear_icon),
 						)
 					}
 				},

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -24,9 +25,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import com.rabbitv.valheimviki.ui.adaptive.LocalAdaptiveLayoutInfo
+import com.rabbitv.valheimviki.ui.adaptive.adaptiveDetailWidth
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,6 +53,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.wear.compose.material.ContentAlpha
@@ -152,7 +158,9 @@ fun NpcDetailContent(
 					.padding(padding)
 			) {
 				Column(
-					modifier = Modifier.verticalScroll(scrollState),
+					modifier = Modifier
+						.adaptiveDetailWidth()
+						.verticalScroll(scrollState),
 					verticalArrangement = Arrangement.Top,
 					horizontalAlignment = Alignment.Start,
 				) {
@@ -166,7 +174,7 @@ fun NpcDetailContent(
 						collapsedMaxLine = 3,
 						boxPadding = BODY_CONTENT_PADDING.dp
 					)
-					TridentsDividedRow(text = "NPC DETAIL")
+					TridentsDividedRow(text = stringResource(R.string.npc_detail))
 					uiState.biome?.let { biome ->
 						CardWithOverlayLabel(
 							painter = rememberAsyncImagePainter(biome.imageUrl),
@@ -187,12 +195,17 @@ fun NpcDetailContent(
 									) {
 										OverlayLabel(
 											icon = Lucide.TreePine,
-											label = " PRIMARY SPAWN",
+											label = stringResource(R.string.primary_spawn),
 										)
 									}
 									Text(
 										uiState.biome.name.uppercase(),
 										style = MaterialTheme.typography.bodyLarge,
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 13.sp,
+					maxFontSize = 18.sp,
+					stepSize = 1.sp,
+				),
 										modifier = Modifier
 											.align(Alignment.CenterVertically)
 											.fillMaxWidth()
@@ -208,7 +221,12 @@ fun NpcDetailContent(
 					if (it.location.isNotBlank()) {
 						Text(
 							"Location",
-							style = MaterialTheme.typography.titleLarge,
+							style = MaterialTheme.typography.headlineSmall,
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 16.sp,
+					maxFontSize = 24.sp,
+					stepSize = 1.sp,
+				),
 							modifier = Modifier
 								.align(Alignment.Start)
 								.fillMaxWidth()
@@ -226,7 +244,12 @@ fun NpcDetailContent(
 						TridentsDividedRow()
 						Text(
 							"Biography",
-							style = MaterialTheme.typography.titleLarge,
+							style = MaterialTheme.typography.headlineSmall,
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 16.sp,
+					maxFontSize = 24.sp,
+					stepSize = 1.sp,
+				),
 							modifier = Modifier
 								.align(Alignment.Start)
 								.fillMaxWidth()
@@ -243,7 +266,7 @@ fun NpcDetailContent(
 					if (uiState.npc.name == "Hildir") {
 						UiSection(
 
-							divider = { TridentsDividedRow(text = "QUESTS") },
+							divider = { TridentsDividedRow(text = stringResource(R.string.quests)) },
 							state = uiState.chestsLocation
 						) { locations ->
 							UiSection(
@@ -260,7 +283,7 @@ fun NpcDetailContent(
 					}
 					UiSection(
 						state = uiState.shopItems,
-						divider = { TridentsDividedRow(text = "TRADING") }
+						divider = { TridentsDividedRow(text = stringResource(R.string.trading)) }
 					) { data ->
 						Row(
 							modifier = Modifier
@@ -275,12 +298,17 @@ fun NpcDetailContent(
 							Icon(
 								painter = painterResource(R.drawable.money_bag_24px),
 								tint = Color.White,
-								contentDescription = "Rectangle section Icon",
+								contentDescription = stringResource(R.string.cd_rectangle_section_icon),
 							)
 							Spacer(modifier = Modifier.width(11.dp))
 							Text(
-								text = "Sells",
-								style = MaterialTheme.typography.titleLarge,
+								text = stringResource(R.string.sells),
+								style = MaterialTheme.typography.headlineSmall,
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 16.sp,
+					maxFontSize = 24.sp,
+					stepSize = 1.sp,
+				),
 							)
 						}
 						ShopItemsTable(
@@ -293,7 +321,7 @@ fun NpcDetailContent(
 
 					UiSection(
 						state = uiState.shopSellItems,
-						divider = { TridentsDividedRow(text = "TRADING") }
+						divider = { TridentsDividedRow(text = stringResource(R.string.trading)) }
 					) { data ->
 						Row(
 							modifier = Modifier.padding(
@@ -307,12 +335,17 @@ fun NpcDetailContent(
 							Icon(
 								painter = painterResource(R.drawable.paid_24px),
 								tint = Color.White,
-								contentDescription = "Rectangle section Icon",
+								contentDescription = stringResource(R.string.cd_rectangle_section_icon),
 							)
 							Spacer(modifier = Modifier.width(11.dp))
 							Text(
-								text = "Buys",
-								style = MaterialTheme.typography.titleLarge,
+								text = stringResource(R.string.buys),
+								style = MaterialTheme.typography.headlineSmall,
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 16.sp,
+					maxFontSize = 24.sp,
+					stepSize = 1.sp,
+				),
 							)
 						}
 						SellItemsTable(
@@ -485,6 +518,11 @@ fun CardItemData(
 					overflow = TextOverflow.Ellipsis,
 					color = Color.White,
 					style = MaterialTheme.typography.labelLarge,
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 12.sp,
+					maxFontSize = 16.sp,
+					stepSize = 1.sp,
+				),
 				)
 			}
 		}
@@ -536,7 +574,7 @@ fun SellItemsTable(
 							.crossfade(true)
 							.build(),
 						placeholder = painterResource(R.drawable.green_thorch2),
-						contentDescription = "Shop Icon Image",
+						contentDescription = stringResource(R.string.cd_shop_icon_image),
 						contentScale = ContentScale.Fit,
 						modifier = Modifier.size(48.dp)
 					)
@@ -552,7 +590,7 @@ fun SellItemsTable(
 					)
 					Spacer(Modifier.width(4.dp))
 					Text(
-						text = "${it.sellPrice} Coins",
+						text = stringResource(R.string.coins_value, it.sellPrice ?: 0),
 						color = Color(0xFFddbb2b),
 						style = MaterialTheme.typography.bodyLarge
 					)
@@ -613,7 +651,7 @@ fun ShopItemsTable(
 								.crossfade(true)
 								.build(),
 							placeholder = painterResource(R.drawable.green_thorch2),
-							contentDescription = "Shop Icon Image",
+							contentDescription = stringResource(R.string.cd_shop_icon_image),
 							contentScale = ContentScale.Fit,
 							modifier = Modifier.size(48.dp)
 						)
@@ -629,7 +667,7 @@ fun ShopItemsTable(
 						)
 						Spacer(Modifier.width(4.dp))
 						Text(
-							text = "${it.price} Coins",
+							text = stringResource(R.string.coins_value, it.price ?: 0),
 							color = Color(0xFFddbb2b),
 							style = MaterialTheme.typography.bodyLarge
 						)
@@ -639,7 +677,7 @@ fun ShopItemsTable(
 					Spacer(Modifier.height(10.dp))
 					Row {
 						Text(
-							"Effect: ",
+							stringResource(R.string.effect_label),
 							Modifier.weight(0.2f),
 							style = MaterialTheme.typography.bodyLarge
 						)
@@ -706,6 +744,11 @@ fun TableHeader(
 				textAlign = textAlign,
 				fontWeight = FontWeight.Bold,
 				style = MaterialTheme.typography.bodyLarge,
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 13.sp,
+					maxFontSize = 18.sp,
+					stepSize = 1.sp,
+				),
 			)
 		}
 	}

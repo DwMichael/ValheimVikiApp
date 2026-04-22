@@ -50,13 +50,14 @@ import com.rabbitv.valheimviki.presentation.components.topbar.SimpleTopBar
 import com.rabbitv.valheimviki.presentation.material.model.MaterialUiEvent
 import com.rabbitv.valheimviki.presentation.material.viewmodel.MaterialListViewModel
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
+import com.rabbitv.valheimviki.R
 import kotlinx.coroutines.launch
 
 @Stable
 class MaterialChip(
 	override val option: MaterialSubType,
 	override val icon: ImageVector,
-	override val label: String
+	@get:androidx.annotation.StringRes override val labelRes: Int
 ) : ChipData<MaterialSubType>
 
 
@@ -69,7 +70,8 @@ fun MaterialListScreen(
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 	val lazyListState = rememberLazyListState()
 	val scope = rememberCoroutineScope()
-	val title = uiState.selectedCategory?.let { viewModel.getLabelFor(it) }
+	val titleRes = uiState.selectedCategory?.let { viewModel.getLabelResFor(it) }
+	val title = titleRes?.let { androidx.compose.ui.res.stringResource(it) }
 	val backButtonVisibleState by remember {
 		derivedStateOf { lazyListState.firstVisibleItemIndex >= 2 }
 	}
@@ -198,12 +200,12 @@ private fun getChipsForCategory(category: MaterialSubCategory?): List<MaterialCh
 			MaterialChip(
 				MaterialSubType.ITEM,
 				Lucide.Amphora,
-				"Item"
+				R.string.chip_item
 			),
 			MaterialChip(
 				MaterialSubType.TROPHY,
 				Lucide.Trophy,
-				"Trophy"
+				R.string.chip_trophy
 			)
 		)
 
@@ -212,12 +214,12 @@ private fun getChipsForCategory(category: MaterialSubCategory?): List<MaterialCh
 			MaterialChip(
 				MaterialSubType.TROPHY,
 				Lucide.Trophy,
-				"Trophy"
+				R.string.chip_trophy
 			),
 			MaterialChip(
 				MaterialSubType.LOOT,
 				Lucide.Package,
-				"Loot"
+				R.string.chip_loot
 			),
 		)
 
@@ -229,12 +231,12 @@ private fun getChipsForCategory(category: MaterialSubCategory?): List<MaterialCh
 			MaterialChip(
 				MaterialSubType.CROP,
 				Lucide.Sprout,
-				"Crop Seed"
+				R.string.chip_crop_seed
 			),
 			MaterialChip(
 				MaterialSubType.TREE,
 				Lucide.TreeDeciduous,
-				"Tree Seed"
+				R.string.chip_tree_seed
 			),
 		)
 
@@ -242,26 +244,26 @@ private fun getChipsForCategory(category: MaterialSubCategory?): List<MaterialCh
 			MaterialChip(
 				MaterialSubType.INGOTS,
 				Lucide.Cuboid,
-				"Ingots"
+				R.string.chip_ingots
 			),
-			MaterialChip(MaterialSubType.ORES, Lucide.Mountain, "Ores")
+			MaterialChip(MaterialSubType.ORES, Lucide.Mountain, R.string.chip_ores)
 		)
 
 		MaterialSubCategory.SHOP -> listOf(
 			MaterialChip(
 				MaterialSubType.HALDOR,
 				Lucide.BadgeCent,
-				"Haldor Items"
+				R.string.chip_haldor_items
 			),
 			MaterialChip(
 				MaterialSubType.HILDIR,
 				Lucide.BadgeDollarSign,
-				"Hildir Items"
+				R.string.chip_hildir_items
 			),
 			MaterialChip(
 				MaterialSubType.BOG_WITCH,
 				Lucide.BadgeIndianRupee,
-				"Bog Witch Items"
+				R.string.chip_bog_witch_items
 			),
 		)
 

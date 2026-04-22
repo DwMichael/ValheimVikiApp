@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -16,8 +17,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import com.rabbitv.valheimviki.ui.adaptive.LocalAdaptiveLayoutInfo
+import com.rabbitv.valheimviki.ui.adaptive.adaptiveDetailWidth
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,6 +36,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.rememberAsyncImagePainter
@@ -124,7 +130,9 @@ fun PassiveCreatureDetailContent(
 						.fillMaxSize()
 				) {
 					Column(
-						modifier = Modifier.verticalScroll(sharedScrollState),
+						modifier = Modifier
+							.adaptiveDetailWidth()
+							.verticalScroll(sharedScrollState),
 						verticalArrangement = Arrangement.Top,
 						horizontalAlignment = Alignment.Start,
 					) {
@@ -156,13 +164,18 @@ fun PassiveCreatureDetailContent(
 							collapsedMaxLine = 3,
 							boxPadding = BODY_CONTENT_PADDING.dp
 						)
-						TridentsDividedRow(text = "DETAILS")
+						TridentsDividedRow(text = stringResource(R.string.details))
 						uiState.biome?.let { biome ->
 							Text(
 								modifier = Modifier.align(Alignment.CenterHorizontally),
-								text = "PRIMARY SPAWN",
+								text = stringResource(R.string.primary_spawn),
 								textAlign = TextAlign.Center,
-								style = MaterialTheme.typography.titleLarge,
+								style = MaterialTheme.typography.headlineSmall,
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 16.sp,
+					maxFontSize = 24.sp,
+					stepSize = 1.sp,
+				),
 								maxLines = 1,
 								overflow = TextOverflow.Visible
 							)
@@ -187,6 +200,11 @@ fun PassiveCreatureDetailContent(
 										Text(
 											biome.name.uppercase(),
 											style = MaterialTheme.typography.bodyLarge,
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 13.sp,
+					maxFontSize = 18.sp,
+					stepSize = 1.sp,
+				),
 											modifier = Modifier,
 											color = Color.White,
 											textAlign = TextAlign.Center
@@ -203,7 +221,7 @@ fun PassiveCreatureDetailContent(
 								modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
 								list = data,
 								starLevel = pageIndex,
-								title = "Drop Items",
+								title = stringResource(R.string.drop_items),
 								subTitle = "Materials that drop from creature after defeating",
 								onItemClick = handleClick,
 								icon = { Lucide.Trophy },
@@ -212,13 +230,13 @@ fun PassiveCreatureDetailContent(
 
 
 
-						TridentsDividedRow(text = "CREATURE STATS")
+						TridentsDividedRow(text = stringResource(R.string.creature_stats))
 						CardStatDetails(
 							title = stringResource(R.string.baseHp),
 							text = uiState.passiveCreature.levels[pageIndex].baseHp.toString(),
 							icon = Lucide.Heart,
 							iconColor = Color.Red,
-							styleTextFirst = MaterialTheme.typography.labelSmall,
+							styleTextFirst = MaterialTheme.typography.labelLarge,
 							styleTextSecond = MaterialTheme.typography.bodyLarge,
 							iconSize = 36.dp,
 							cardPadding = BODY_CONTENT_PADDING.dp
@@ -229,8 +247,8 @@ fun PassiveCreatureDetailContent(
 							text = uiState.passiveCreature.abilities.toString(),
 							icon = Lucide.Atom,
 							iconColor = Color.White,
-							styleTextFirst = MaterialTheme.typography.labelSmall,
-							styleTextSecond = MaterialTheme.typography.bodyMedium,
+							styleTextFirst = MaterialTheme.typography.labelLarge,
+							styleTextSecond = MaterialTheme.typography.bodyLarge,
 							iconSize = 36.dp,
 							cardPadding = BODY_CONTENT_PADDING.dp
 						)
@@ -240,9 +258,14 @@ fun PassiveCreatureDetailContent(
 								modifier = Modifier
 									.align(Alignment.CenterHorizontally)
 									.padding(horizontal = BODY_CONTENT_PADDING.dp),
-								text = "NOTE",
+								text = stringResource(R.string.note_upper),
 								textAlign = TextAlign.Center,
-								style = MaterialTheme.typography.headlineMedium,
+								style = MaterialTheme.typography.headlineSmall,
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 16.sp,
+					maxFontSize = 24.sp,
+					stepSize = 1.sp,
+				),
 							)
 							DetailExpandableText(
 								text = passiveCreature.notes,

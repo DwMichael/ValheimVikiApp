@@ -1,6 +1,7 @@
 package com.rabbitv.valheimviki.presentation.components.segmented
 
 interface SegmentedOption<T> {
-    val label: String
-    val value: T
+	@get:androidx.annotation.StringRes
+	val labelRes: Int
+	val value: T
 }

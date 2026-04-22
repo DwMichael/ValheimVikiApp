@@ -2,7 +2,9 @@ package com.rabbitv.valheimviki.presentation.components.list
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -14,11 +16,17 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -33,12 +41,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.model.category.AppCategory
 import com.rabbitv.valheimviki.domain.repository.ItemData
 import com.rabbitv.valheimviki.presentation.modifiers.lazyVerticalScrollbar
+import com.rabbitv.valheimviki.ui.adaptive.LocalAdaptiveLayoutInfo
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.DEFAULT_LIST_ITEM_HEIGHT
 import com.rabbitv.valheimviki.ui.theme.DEFAULT_WITH_LIST_IMAGE
@@ -65,51 +75,96 @@ fun ListContent(
 	horizontalPadding: Dp = BODY_CONTENT_PADDING.dp,
 	bottomBosPadding: Dp = 24.dp,
 ) {
+	val adaptiveInfo = LocalAdaptiveLayoutInfo.current
+	val listColumns = adaptiveInfo.listColumns
+	val adaptiveListItemHeight = adaptiveInfo.listItemHeight
+	val adaptiveListImageWidth = adaptiveInfo.listImageWidth
+
 	val typeOfItemList = remember {
 		{ appCategory: AppCategory ->
 			determineFavoriteListType(appCategory)
 		}
 	}
-	LazyColumn(
-		state = lazyListState,
-		modifier = Modifier
-			.padding(horizontal = horizontalPadding)
-			.padding(top = topPadding, bottom = bottomPadding)
-			.lazyVerticalScrollbar(lazyListState)
-			.fillMaxSize()
-	) {
-		items(items) { item ->
-			when (typeOfItemList(item.category.toAppCategory())) {
-				ListItemTypes.SMALL -> ListItem(
+
+	if (listColumns > 1) {
+		// Multi-column grid layout for tablets/foldables/landscape
+		val gridState = rememberLazyGridState()
+		LazyVerticalGrid(
+			state = gridState,
+			columns = GridCells.Fixed(listColumns),
+			horizontalArrangement = Arrangement.spacedBy(12.dp),
+			verticalArrangement = Arrangement.spacedBy(12.dp),
+			modifier = Modifier
+				.padding(horizontal = horizontalPadding)
+				.padding(top = topPadding, bottom = bottomPadding)
+				.fillMaxSize(),
+			contentPadding = PaddingValues(bottom = bottomBosPadding),
+		) {
+			items(
+				items = items,
+				key = { item -> item.id }
+			) { item ->
+				val itemType = typeOfItemList(item.category.toAppCategory())
+				val scale = if (itemType == ListItemTypes.SMALL) 0.9f else 1f
+				val imgScale = if (itemType == ListItemTypes.DEFAULT) imageScale else ContentScale.Fit
+				ListItem(
 					item = item,
 					startTextFrom = startTextFrom,
-					modifier = Modifier.scale(0.9f),
+					modifier = Modifier.scale(scale),
 					clickToNavigate = { clickToNavigate(item) },
-					imageScale = ContentScale.Fit
+					imageScale = imgScale,
+					itemHeight = adaptiveListItemHeight,
+					imageWidth = adaptiveListImageWidth,
 				)
-
-				ListItemTypes.MEDIUM -> ListItem(
-					item = item,
-					startTextFrom = startTextFrom,
-					clickToNavigate = { clickToNavigate(item) },
-					imageScale = ContentScale.Fit
-				)
-
-				ListItemTypes.DEFAULT -> ListItem(
-					item = item,
-					startTextFrom = startTextFrom,
-					clickToNavigate = { clickToNavigate(item) },
-					imageScale = imageScale
-				)
-
 			}
-
-			Spacer(modifier = Modifier.height(16.dp))
 		}
-		item {
-			Box(modifier = Modifier.padding(bottomBosPadding))
-		}
+	} else {
+		// Single column list for phones
+		LazyColumn(
+			state = lazyListState,
+			modifier = Modifier
+				.padding(horizontal = horizontalPadding)
+				.padding(top = topPadding, bottom = bottomPadding)
+				.lazyVerticalScrollbar(lazyListState)
+				.fillMaxSize()
+		) {
+			items(items) { item ->
+				when (typeOfItemList(item.category.toAppCategory())) {
+					ListItemTypes.SMALL -> ListItem(
+						item = item,
+						startTextFrom = startTextFrom,
+						modifier = Modifier.scale(0.9f),
+						clickToNavigate = { clickToNavigate(item) },
+						imageScale = ContentScale.Fit,
+						itemHeight = adaptiveListItemHeight,
+						imageWidth = adaptiveListImageWidth,
+					)
 
+					ListItemTypes.MEDIUM -> ListItem(
+						item = item,
+						startTextFrom = startTextFrom,
+						clickToNavigate = { clickToNavigate(item) },
+						imageScale = ContentScale.Fit,
+						itemHeight = adaptiveListItemHeight,
+						imageWidth = adaptiveListImageWidth,
+					)
+
+					ListItemTypes.DEFAULT -> ListItem(
+						item = item,
+						startTextFrom = startTextFrom,
+						clickToNavigate = { clickToNavigate(item) },
+						imageScale = imageScale,
+						itemHeight = adaptiveListItemHeight,
+						imageWidth = adaptiveListImageWidth,
+					)
+				}
+
+				Spacer(modifier = Modifier.height(16.dp))
+			}
+			item {
+				Box(modifier = Modifier.padding(bottomBosPadding))
+			}
+		}
 	}
 }
 
@@ -117,18 +172,16 @@ fun ListContent(
 fun ListItem(
 	modifier: Modifier = Modifier,
 	item: ItemData,
-	startTextFrom: String? =null,
+	startTextFrom: String? = null,
 	clickToNavigate: () -> Unit,
-	imageScale: ContentScale
+	imageScale: ContentScale,
+	itemHeight: Dp = DEFAULT_LIST_ITEM_HEIGHT,
+	imageWidth: Dp = DEFAULT_WITH_LIST_IMAGE,
 ) {
-//	val desiredText = remember { mutableStateOf(item.name) }
-//	if(!startTextFrom.isNullOrBlank()) {
-//		desiredText.value = item.name.substringAfter(startTextFrom)
-//	}
 	Row(
 		modifier = Modifier
 			.fillMaxWidth()
-			.height(DEFAULT_LIST_ITEM_HEIGHT)
+			.height(itemHeight)
 			.clip(RoundedCornerShape(DETAIL_ITEM_SHAPE_PADDING))
 			.background(ShimmerDarkGray)
 			.clickable { clickToNavigate() },
@@ -138,27 +191,31 @@ fun ListItem(
 			contentDescription = item.name,
 			modifier = modifier
 				.fillMaxHeight()
-				.width(DEFAULT_WITH_LIST_IMAGE)
+				.width(imageWidth)
 				.clip(RoundedCornerShape(DETAIL_ITEM_SHAPE_PADDING)),
 			placeholder = painterResource(R.drawable.ic_placeholder),
 			contentScale = imageScale,
 		)
-		Text(
+		BasicText(
 			text = item.name.trim(),
-			color = PrimaryWhite,
 			modifier = modifier
 				.weight(1f)
 				.fillMaxSize()
 				.wrapContentHeight(Alignment.CenterVertically)
 				.padding(start = 12.dp, end = 8.dp),
-			style = MaterialTheme.typography.titleLarge,
-			overflow = TextOverflow.Ellipsis
+			style = MaterialTheme.typography.titleLarge.copy(color = PrimaryWhite),
+			autoSize = TextAutoSize.StepBased(
+				minFontSize = 14.sp,
+				maxFontSize = 22.sp,
+				stepSize = 1.sp,
+			),
+			overflow = TextOverflow.Ellipsis,
+			maxLines = 2,
 		)
 	}
 }
 
 private fun determineFavoriteListType(appCategory: AppCategory): ListItemTypes {
-
 	return when (appCategory) {
 		AppCategory.BIOME -> ListItemTypes.DEFAULT
 		AppCategory.CREATURE -> ListItemTypes.DEFAULT
@@ -202,7 +259,6 @@ private fun PreviewListItem() {
 @Preview(name = "ContentList", showBackground = true)
 @Composable
 private fun PreviewContentList2() {
-
 	val sampleBiomes = listOf(
 		Biome(
 			id = "123123",
@@ -220,13 +276,11 @@ private fun PreviewContentList2() {
 		),
 	)
 
-
 	ValheimVikiAppTheme {
 		ListContent(
 			items = sampleBiomes,
 			clickToNavigate = { _ -> {} },
 			lazyListState = rememberLazyListState(),
-
 		)
 	}
 }

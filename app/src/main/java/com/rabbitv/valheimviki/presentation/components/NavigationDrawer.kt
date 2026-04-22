@@ -27,6 +27,7 @@ import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.mutableIntStateOf
@@ -69,6 +70,7 @@ import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.navigation.GridDestination
 import com.rabbitv.valheimviki.navigation.ListDestination
 import com.rabbitv.valheimviki.navigation.NavigationDestination
+import com.rabbitv.valheimviki.ui.adaptive.LocalAdaptiveLayoutInfo
 import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
 import com.rabbitv.valheimviki.ui.theme.ForestGreen40Dark
 import com.rabbitv.valheimviki.ui.theme.PrimaryText
@@ -183,7 +185,11 @@ private fun DrawerContent(
 
 	) {
 	ModalDrawerSheet(
-		modifier = Modifier.fillMaxWidth(0.8f),
+		modifier = Modifier.fillMaxWidth(
+			if (LocalAdaptiveLayoutInfo.current.isExpandedWidth) 0.45f
+			else if (LocalAdaptiveLayoutInfo.current.isMediumWidth) 0.6f
+			else 0.8f
+		),
 		drawerContainerColor = ForestGreen40Dark,
 	) {
 		LazyColumn(
@@ -224,7 +230,7 @@ private fun DrawerHeader() {
 		)
 		Spacer(Modifier.padding(12.dp))
 		Text(
-			text = "ValheimViki",
+			text = stringResource(R.string.app_name),
 			fontWeight = FontWeight.Medium,
 			fontSize = 28.sp,
 			color = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -268,9 +274,8 @@ private fun DrawerNavigationItem(
 		label = {
 			Text(
 				item.label,
+				style = MaterialTheme.typography.bodyLarge,
 				fontWeight = FontWeight.Normal,
-				lineHeight = 20.sp,
-				fontSize = 16.sp,
 			)
 		},
 		selected = isSelected(),
@@ -308,100 +313,100 @@ private fun PreviewNavigationDrawer() {
 	val items = listOf(
 		DrawerItem(
 			icon = Lucide.MountainSnow,
-			label = "Biomes",
-			contentDescription = "List of Biomes",
+			label = stringResource(R.string.biomes),
+			contentDescription = stringResource(R.string.biomes_section),
 			navigationDestination = GridDestination.WorldDestinations.BiomeGrid,
 		),
 		DrawerItem(
 			iconPainter = painterResource(R.drawable.boss_1),
-			label = "Bosses",
-			contentDescription = "Bosses section",
+			label = stringResource(R.string.bosses),
+			contentDescription = stringResource(R.string.boss_section),
 			navigationDestination = GridDestination.CreatureDestinations.BossGrid
 		),
 		DrawerItem(
 			iconPainter = painterResource(R.drawable.miniboss),
-			label = "MiniBosses",
-			contentDescription = "MiniBosses section",
+			label = stringResource(R.string.minibosses),
+			contentDescription = stringResource(R.string.minibosses_section),
 			navigationDestination = GridDestination.CreatureDestinations.MiniBossGrid
 		),
 		DrawerItem(
 			icon = Lucide.Rabbit,
-			label = "Creatures",
-			contentDescription = "Creatures section",
+			label = stringResource(R.string.creatures),
+			contentDescription = stringResource(R.string.creatures_section),
 			navigationDestination = ListDestination.CreatureDestinations.MobList
 		),
 		DrawerItem(
 			icon = Lucide.Swords,
-			label = "Weapons",
-			contentDescription = "Weapons section",
+			label = stringResource(R.string.weapons),
+			contentDescription = stringResource(R.string.weapons_section),
 			navigationDestination = ListDestination.ItemDestinations.WeaponList
 		),
 		DrawerItem(
 			icon = Lucide.Shield,
-			label = "Armor",
-			contentDescription = "Armor section",
+			label = stringResource(R.string.armors),
+			contentDescription = stringResource(R.string.armor_section),
 			navigationDestination = ListDestination.ItemDestinations.ArmorList
 		),
 		DrawerItem(
 			icon = Lucide.Omega,
-			label = "Trinket",
-			contentDescription = "Trinket section",
+			label = stringResource(R.string.trinkets),
+			contentDescription = stringResource(R.string.trinket_section),
 			navigationDestination = ListDestination.ItemDestinations.TrinketList
 		),
 		DrawerItem(
 			icon = Lucide.Utensils,
-			label = "Food",
-			contentDescription = "Food section",
+			label = stringResource(R.string.food),
+			contentDescription = stringResource(R.string.food_section),
 			navigationDestination = ListDestination.FoodDestinations.FoodList
 		),
 		DrawerItem(
 			icon = Lucide.FlaskRound,
-			label = "Mead",
-			contentDescription = "Mead section",
+			label = stringResource(R.string.meads),
+			contentDescription = stringResource(R.string.mead_section),
 			navigationDestination = ListDestination.FoodDestinations.MeadList
 		),
 
 		DrawerItem(
 
 			icon = Lucide.Anvil,
-			label = "Crafting Stations",
-			contentDescription = "Crafting Station section",
+			label = stringResource(R.string.crafting_stations),
+			contentDescription = stringResource(R.string.crafting_stations_section),
 			navigationDestination = ListDestination.CraftingDestinations.CraftingObjectsList
 		),
 		DrawerItem(
 			icon = Lucide.Gavel,
-			label = "Tools",
-			contentDescription = "Tools section",
+			label = stringResource(R.string.tools),
+			contentDescription = stringResource(R.string.tools_section),
 			navigationDestination = ListDestination.ItemDestinations.ToolList
 		),
 		DrawerItem(
 			icon = Lucide.Cuboid,
-			label = "Materials",
-			contentDescription = "Materials section",
+			label = stringResource(R.string.materials),
+			contentDescription = stringResource(R.string.materials_section),
 			navigationDestination = ListDestination.CraftingDestinations.MaterialCategory
 		),
 		DrawerItem(
 			icon = Lucide.House,
-			label = "Building Materials",
-			contentDescription = "Building Materials section",
+			label = stringResource(R.string.building_materials),
+			contentDescription = stringResource(R.string.building_materials_section),
 			navigationDestination = ListDestination.CraftingDestinations.BuildingMaterialCategory
 		),
 		DrawerItem(
 			icon = Lucide.Pickaxe,
-			label = "Ore Deposits",
-			contentDescription = "Ore Deposits section",
+			label = stringResource(R.string.ore_deposits),
+			contentDescription = stringResource(R.string.ore_deposits_section),
 			navigationDestination = GridDestination.WorldDestinations.OreDepositGrid
 		),
 		DrawerItem(
 			icon = Lucide.Trees,
-			label = "Trees",
-			contentDescription = "Trees section",
+			label = stringResource(R.string.trees),
+			contentDescription = stringResource(R.string.trees_section),
 			navigationDestination = GridDestination.WorldDestinations.TreeGrid
 		),
 		DrawerItem(
 			icon = Lucide.MapPinned,
-			label = "Points Of Interest",
-			contentDescription = "Points Of Interest section",
+			label = stringResource(R.string.points_of_interest),
+			contentDescription = stringResource(R.string.points_of_interest_section),
 			navigationDestination = ListDestination.WorldDestinations.PointOfInterestList
 		)
 	).mapIndexed { index, item ->

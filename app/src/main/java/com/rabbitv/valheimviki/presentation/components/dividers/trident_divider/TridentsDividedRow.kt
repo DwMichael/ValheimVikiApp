@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -18,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.Text
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
+import com.rabbitv.valheimviki.R
 
 @Composable
 fun TridentsDividedRow(
@@ -65,7 +67,7 @@ fun TridentsDividedRow(
 fun PreviewRowTwoTridentDividersWithText() {
     ValheimVikiAppTheme {
         TridentsDividedRow(
-            "BOSS DETAIL"
+            stringResource(R.string.boss_detail)
         )
     }
 }

@@ -16,7 +16,10 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
@@ -33,6 +36,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
@@ -48,6 +52,7 @@ import com.rabbitv.valheimviki.ui.theme.LightDark
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
+import com.rabbitv.valheimviki.R
 
 
 @Composable
@@ -57,7 +62,7 @@ fun DroppedItemsSection(
 	list: List<Droppable>,
 	starLevel: Int,
 	icon: () -> ImageVector,
-	title: String? = "Drop Items",
+	title: String? = stringResource(R.string.drop_items),
 	subTitle: String? = "Materials that drop from creature after defeating",
 ) {
 
@@ -134,7 +139,7 @@ fun DropItemCard(
 					.data(itemData.imageUrl)
 					.crossfade(true)
 					.build(),
-				contentDescription = "Drop item",
+				contentDescription = stringResource(R.string.cd_drop_item),
 				contentScale = ContentScale.Crop
 			)
 			Column(
@@ -148,12 +153,22 @@ fun DropItemCard(
 					overflow = TextOverflow.Ellipsis,
 					color = PrimaryWhite,
 					style = MaterialTheme.typography.bodyLarge,
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 13.sp,
+					maxFontSize = 18.sp,
+					stepSize = 1.sp,
+				),
 				)
 				chanceStarList.getOrNull(starLevel)?.let { chance ->
 					Text(
-						text = "Drop chance: $chance%",
+						text = stringResource(R.string.drop_chance_percent, chance),
 						color = PrimaryWhite,
 						style = MaterialTheme.typography.bodyLarge,
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 13.sp,
+					maxFontSize = 18.sp,
+					stepSize = 1.sp,
+				),
 					)
 				}
 			}

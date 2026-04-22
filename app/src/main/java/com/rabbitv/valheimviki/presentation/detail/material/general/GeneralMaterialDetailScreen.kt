@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -14,9 +15,15 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import com.rabbitv.valheimviki.ui.adaptive.LocalAdaptiveLayoutInfo
+import com.rabbitv.valheimviki.ui.adaptive.adaptiveDetailWidth
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.runtime.Composable
+import com.rabbitv.valheimviki.R
+import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -26,6 +33,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.rememberAsyncImagePainter
@@ -87,21 +95,21 @@ fun GeneralMaterialDetailContent(
 	}
 
 	val pointOfInterestData = HorizontalPagerData(
-		title = "Point Of Interest",
+		title = stringResource(R.string.point_of_interest),
 		subTitle = "Places where you can find this item",
 		icon = Lucide.MapPinned,
 		iconRotationDegrees = 0f,
 		itemContentScale = ContentScale.Crop,
 	)
 	val oreDepositData = HorizontalPagerData(
-		title = "Ore Deposit",
+		title = stringResource(R.string.ore_deposit),
 		subTitle = "Ore from witch you can mine this resource",
 		icon = Lucide.Pickaxe,
 		iconRotationDegrees = 0f,
 		itemContentScale = ContentScale.Crop,
 	)
 	val treesData = HorizontalPagerData(
-		title = "Trees",
+		title = stringResource(R.string.trees),
 		subTitle = "Trees from witch this wood drop",
 		icon = Lucide.Trees,
 		iconRotationDegrees = 0f,
@@ -122,7 +130,8 @@ fun GeneralMaterialDetailContent(
 			uiState.material?.let { material ->
 				Column(
 					modifier = Modifier
-						.fillMaxSize()
+						
+						.adaptiveDetailWidth()
 						.verticalScroll(scrollState)
 						.padding(
 							top = 20.dp,
@@ -136,7 +145,12 @@ fun GeneralMaterialDetailContent(
 					Text(
 						material.name,
 						modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-						style = MaterialTheme.typography.displayMedium,
+						style = MaterialTheme.typography.headlineLarge,
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 22.sp,
+					maxFontSize = 34.sp,
+					stepSize = 1.sp,
+				),
 						textAlign = TextAlign.Center
 					)
 					SlavicDivider()
@@ -173,6 +187,11 @@ fun GeneralMaterialDetailContent(
 										Text(
 											biome.name.uppercase(),
 											style = MaterialTheme.typography.bodyLarge,
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 13.sp,
+					maxFontSize = 18.sp,
+					stepSize = 1.sp,
+				),
 											modifier = Modifier
 												.fillMaxWidth()
 												.padding(8.dp),

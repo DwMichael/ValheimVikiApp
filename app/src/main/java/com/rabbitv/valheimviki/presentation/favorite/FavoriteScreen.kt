@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridS
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -57,6 +58,7 @@ import com.rabbitv.valheimviki.presentation.components.topbar.SimpleTopBar
 import com.rabbitv.valheimviki.presentation.favorite.model.FavoriteUiEvent
 import com.rabbitv.valheimviki.presentation.favorite.model.FavoriteUiState
 import com.rabbitv.valheimviki.presentation.favorite.viewmodel.FavoriteViewModel
+import com.rabbitv.valheimviki.ui.adaptive.LocalAdaptiveLayoutInfo
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_SMALL_IMAGES
 import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_TWO_COLUMNS
@@ -68,7 +70,7 @@ import kotlinx.coroutines.launch
 class FavoriteChip(
 	override val option: AppCategory,
 	override val icon: ImageVector,
-	override val label: String
+	@get:androidx.annotation.StringRes override val labelRes: Int
 ) : ChipData<AppCategory>
 
 enum class FavoriteGridItemTypes {
@@ -136,7 +138,7 @@ fun FavoriteScreenContent(
 		topBar = {
 			SimpleTopBar(
 				modifier = Modifier,
-				title = "Favorites",
+				title = stringResource(R.string.favorites),
 				onClick = {
 					onBack()
 				}
@@ -157,15 +159,19 @@ fun FavoriteScreenContent(
 		},
 		floatingActionButtonPosition = FabPosition.End,
 		content = { innerScaffoldPadding ->
+			val adaptiveInfo = LocalAdaptiveLayoutInfo.current
+			val gridColumns = adaptiveInfo.gridColumns
+			val gridItemHeight = adaptiveInfo.gridItemHeight
+			val padding = adaptiveInfo.contentPadding
 			LazyVerticalStaggeredGrid(
 				modifier = Modifier
 					.fillMaxSize()
 					.padding(innerScaffoldPadding)
-					.padding(BODY_CONTENT_PADDING.dp),
+					.padding(padding),
 				state = lazyGridState,
-				columns = StaggeredGridCells.Fixed(2),
-				horizontalArrangement = Arrangement.spacedBy(BODY_CONTENT_PADDING.dp),
-				verticalItemSpacing = BODY_CONTENT_PADDING.dp,
+				columns = StaggeredGridCells.Fixed(gridColumns),
+				horizontalArrangement = Arrangement.spacedBy(padding),
+				verticalItemSpacing = padding,
 				contentPadding = PaddingValues(bottom = 100.dp),
 			) {
 				item(span = StaggeredGridItemSpan.FullLine, key = "SlavicDivider") {
@@ -205,7 +211,7 @@ fun FavoriteScreenContent(
 										.scale(0.7f),
 									item = favorite,
 									onItemClick = handleFavoriteItemClick,
-									height = ITEM_HEIGHT_SMALL_IMAGES,
+									height = gridItemHeight * 0.6f,
 									contentScale = ContentScale.Fit,
 									imageBg = imageBg
 								)
@@ -213,7 +219,7 @@ fun FavoriteScreenContent(
 								FavoriteGridItemTypes.MEDIUM -> FavoriteGridItem(
 									item = favorite,
 									onItemClick = handleFavoriteItemClick,
-									height = ITEM_HEIGHT_TWO_COLUMNS,
+									height = gridItemHeight,
 									contentScale = ContentScale.Fit,
 									imageBg = imageBg
 								)
@@ -221,7 +227,7 @@ fun FavoriteScreenContent(
 								FavoriteGridItemTypes.DEFAULT -> FavoriteGridItem(
 									item = favorite,
 									onItemClick = handleFavoriteItemClick,
-									height = ITEM_HEIGHT_TWO_COLUMNS,
+									height = gridItemHeight,
 								)
 							}
 						}
@@ -257,67 +263,67 @@ private fun getChipsForCategory(): List<FavoriteChip> {
 		FavoriteChip(
 			option = AppCategory.BIOME,
 			icon = Lucide.MountainSnow,
-			label = "Biomes"
+			labelRes = R.string.biomes
 		),
 		FavoriteChip(
 			option = AppCategory.CREATURE,
 			icon = Lucide.Rabbit,
-			label = "Creatures"
+			labelRes = R.string.creatures
 		),
 		FavoriteChip(
 			option = AppCategory.FOOD,
 			icon = Lucide.Utensils,
-			label = "Food"
+			labelRes = R.string.food
 		),
 		FavoriteChip(
 			option = AppCategory.ARMOR,
 			icon = Lucide.Shield,
-			label = "Armor"
+			labelRes = R.string.armors
 		),
 		FavoriteChip(
 			option = AppCategory.WEAPON,
 			icon = Lucide.Swords,
-			label = "Weapons"
+			labelRes = R.string.weapons
 		),
 		FavoriteChip(
 			option = AppCategory.BUILDING_MATERIAL,
 			icon = Lucide.House,
-			label = "Building Materials"
+			labelRes = R.string.building_materials
 		),
 		FavoriteChip(
 			option = AppCategory.MATERIAL,
 			icon = Lucide.Cuboid,
-			label = "Materials"
+			labelRes = R.string.materials
 		),
 		FavoriteChip(
 			option = AppCategory.CRAFTING,
 			icon = Lucide.Anvil,
-			label = "Crafting Stations"
+			labelRes = R.string.crafting_stations
 		),
 		FavoriteChip(
 			option = AppCategory.TOOL,
 			icon = Lucide.Gavel,
-			label = "Tools"
+			labelRes = R.string.tools
 		),
 		FavoriteChip(
 			option = AppCategory.MEAD,
 			icon = Lucide.FlaskRound,
-			label = "Meads"
+			labelRes = R.string.meads
 		),
 		FavoriteChip(
 			option = AppCategory.POINTOFINTEREST,
 			icon = Lucide.MapPinned,
-			label = "Points Of Interest"
+			labelRes = R.string.points_of_interest
 		),
 		FavoriteChip(
 			option = AppCategory.TREE,
 			icon = Lucide.Trees,
-			label = "Trees"
+			labelRes = R.string.trees
 		),
 		FavoriteChip(
 			option = AppCategory.OREDEPOSITE,
 			icon = Lucide.Pickaxe,
-			label = "Ore Deposits"
+			labelRes = R.string.ore_deposits
 		)
 	)
 }

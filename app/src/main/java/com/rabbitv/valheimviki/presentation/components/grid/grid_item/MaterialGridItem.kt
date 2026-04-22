@@ -14,12 +14,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,6 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.rabbitv.valheimviki.presentation.components.grid.grid_category.GridCategoryOption
 import com.rabbitv.valheimviki.presentation.material.model.MaterialSegmentOption
 import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_TWO_COLUMNS
@@ -37,6 +40,7 @@ import com.rabbitv.valheimviki.ui.theme.SMALL_PADDING
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.ui.theme.YellowDT
 import com.rabbitv.valheimviki.ui.theme.YellowDTIconColor
+import com.rabbitv.valheimviki.R
 
 
 @Composable
@@ -66,7 +70,7 @@ fun <T> MaterialGridItem(
         ) {
             Image(
                 painter = painterResource(item.image),
-                contentDescription = "Grid item image",
+                contentDescription = stringResource(R.string.cd_grid_item_image),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(160.dp)
@@ -85,15 +89,21 @@ fun <T> MaterialGridItem(
                 Icon(
                     imageVector = item.icon,
                     tint = YellowDTIconColor,
-                    contentDescription = "Icon ${item.label}",
+                    contentDescription = null,
                 )
                 Spacer(Modifier.size(8.dp))
-                Text(
-                    text = item.label.uppercase(),
+                BasicText(
+                    text = androidx.compose.ui.res.stringResource(item.labelRes).uppercase(),
                     maxLines = 2,
-                    textAlign = TextAlign.Start,
-                    color = PrimaryWhite,
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        textAlign = TextAlign.Start,
+                        color = PrimaryWhite,
+                    ),
+                    autoSize = TextAutoSize.StepBased(
+                        minFontSize = 12.sp,
+                        maxFontSize = 18.sp,
+                        stepSize = 1.sp,
+                    ),
                 )
             }
 

@@ -10,11 +10,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -25,6 +27,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
@@ -35,6 +38,7 @@ import com.rabbitv.valheimviki.ui.theme.DarkWood
 import com.rabbitv.valheimviki.ui.theme.LightDark
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
+import com.rabbitv.valheimviki.R
 
 @Composable
 fun CustomItemCard(
@@ -76,7 +80,7 @@ fun CustomItemCard(
 					.data(imageUrl)
 					.crossfade(true)
 					.build(),
-				contentDescription = "Drop item",
+				contentDescription = stringResource(R.string.cd_drop_item),
 				contentScale = ContentScale.Fit
 			)
 			Column(
@@ -85,19 +89,29 @@ fun CustomItemCard(
 					.padding(6.dp),
 				horizontalAlignment = Alignment.CenterHorizontally
 			) {
-				Text(
+				BasicText(
 					text = name,
 					maxLines = 2,
 					overflow = TextOverflow.Ellipsis,
-					color = PrimaryWhite,
-					style = MaterialTheme.typography.bodyLarge,
-					textAlign = TextAlign.Center
+					style = MaterialTheme.typography.bodyLarge.copy(
+						color = PrimaryWhite,
+						textAlign = TextAlign.Center,
+					),
+					autoSize = TextAutoSize.StepBased(
+						minFontSize = 11.sp,
+						maxFontSize = 16.sp,
+						stepSize = 1.sp,
+					),
 				)
 				if (quantity != null) {
-					Text(
-						text = "x${quantity}",
-						color = PrimaryWhite,
-						style = MaterialTheme.typography.bodyLarge,
+					BasicText(
+						text = stringResource(R.string.quantity_with_x, quantity),
+						style = MaterialTheme.typography.bodyLarge.copy(color = PrimaryWhite),
+						autoSize = TextAutoSize.StepBased(
+							minFontSize = 11.sp,
+							maxFontSize = 16.sp,
+							stepSize = 1.sp,
+						),
 					)
 				}
 			}

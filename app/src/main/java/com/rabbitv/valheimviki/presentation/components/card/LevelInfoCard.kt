@@ -25,7 +25,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -175,15 +178,20 @@ fun LevelInfoCard(
 					) {
 						Icon(
 							imageVector = Lucide.Info,
-							contentDescription = "Info",
+							contentDescription = stringResource(R.string.cd_info),
 							tint = Color(0xFFFFB800),
 							modifier = Modifier.size(20.dp)
 						)
 						Spacer(modifier = Modifier.width(5.dp))
 						Text(
-							text = "Upgrade to this level not yet available",
+							text = stringResource(R.string.upgrade_level_unavailable),
 							color = Color(0xFFFFB800),
 							style = MaterialTheme.typography.bodyLarge,
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 13.sp,
+					maxFontSize = 18.sp,
+					stepSize = 1.sp,
+				),
 							fontWeight = FontWeight.Medium
 						)
 					}
@@ -202,10 +210,10 @@ fun RequiredMaterialColumn(
 	materialsForUpgrade: List<MaterialUpgrade> = emptyList(),
 ) {
 	Text(
-		text = "Required Materials:",
+		text = stringResource(R.string.required_materials_colon),
 		modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
 		color = PrimaryWhite,
-		style = MaterialTheme.typography.titleLarge
+		style = MaterialTheme.typography.headlineSmall
 	)
 	Column(
 		modifier = Modifier
@@ -277,18 +285,33 @@ fun MaterialForUpgrade(
 			Text(
 				text = name,
 				style = MaterialTheme.typography.bodyLarge,
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 13.sp,
+					maxFontSize = 18.sp,
+					stepSize = 1.sp,
+				),
 				color = Color.White,
 				fontWeight = FontWeight.Bold
 			)
 			Row {
 				Text(
-					text = "Required:",
-					style = MaterialTheme.typography.bodyMedium,
+					text = stringResource(R.string.required_colon),
+					style = MaterialTheme.typography.bodyLarge,
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 13.sp,
+					maxFontSize = 18.sp,
+					stepSize = 1.sp,
+				),
 					color = Color.Gray
 				)
 				Text(
-					text = " $quantity",
-					style = MaterialTheme.typography.bodyMedium,
+					text = stringResource(R.string.quantity_with_x, quantity),
+					style = MaterialTheme.typography.bodyLarge,
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 13.sp,
+					maxFontSize = 18.sp,
+					stepSize = 1.sp,
+				),
 					color = Color.White,
 					fontWeight = FontWeight.Bold
 				)
@@ -317,14 +340,24 @@ fun LevelInfoGridItem(
 		)
 		Spacer(Modifier.width(8.dp))
 		Text(
-			text = "${upgradeInfo.title}:",
+			text = stringResource(R.string.value_with_colon, upgradeInfo.title),
 			style = MaterialTheme.typography.bodyLarge,
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 13.sp,
+					maxFontSize = 18.sp,
+					stepSize = 1.sp,
+				),
 			modifier = Modifier.padding(end = 4.dp),
 			fontWeight = FontWeight.Bold
 		)
 		Text(
 			text = upgradeInfo.power?.toString() ?: "",
 			style = MaterialTheme.typography.bodyLarge,
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 13.sp,
+					maxFontSize = 18.sp,
+					stepSize = 1.sp,
+				),
 			fontWeight = FontWeight.Bold
 		)
 		Spacer(Modifier.width(10.dp))
@@ -358,7 +391,7 @@ fun TopExpandableItem(
 		horizontalArrangement = Arrangement.SpaceBetween
 	) {
 		Text(
-			text = "Level ${level + 1}",
+			text = stringResource(R.string.level_number, level + 1),
 			fontWeight = FontWeight.Bold,
 			fontSize = 24.sp
 		)
@@ -367,7 +400,7 @@ fun TopExpandableItem(
 		) {
 			Icon(
 				imageVector = Lucide.ChevronDown,
-				contentDescription = "Expand",
+				contentDescription = stringResource(R.string.expand),
 				modifier = modifier,
 				tint = PrimaryWhite
 			)

@@ -2,8 +2,10 @@ package com.rabbitv.valheimviki.presentation.components.card.animated_stat_card
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -13,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card_stat.DarkGlassStatCard
 import com.rabbitv.valheimviki.presentation.components.card.dark_glass_card_stat.DarkGlassStatCardPainter
 import com.rabbitv.valheimviki.presentation.detail.creature.components.column.StatColumn

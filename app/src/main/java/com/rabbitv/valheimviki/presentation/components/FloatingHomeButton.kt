@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,6 +32,7 @@ import com.composables.icons.lucide.Lucide
 import com.rabbitv.valheimviki.navigation.shouldShowTopBar
 import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
+import com.rabbitv.valheimviki.R
 
 @Composable
 fun FloatingHomeButton(
@@ -95,7 +97,7 @@ fun FloatingHomeButton(
 			) {
 				Icon(
 					imageVector = Lucide.House,
-					contentDescription = "Go to Home",
+					contentDescription = stringResource(R.string.cd_go_to_home),
 					modifier = Modifier.size(24.dp),
 					tint = Color.White
 				)

@@ -18,6 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -58,12 +59,13 @@ import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import kotlinx.coroutines.launch
+import com.rabbitv.valheimviki.R
 
 @Stable
 class BuildingMaterialChip(
 	override val option: BuildingMaterialSubType,
 	override val icon: ImageVector,
-	override val label: String
+	@get:androidx.annotation.StringRes override val labelRes: Int
 ) : ChipData<BuildingMaterialSubType>
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -77,7 +79,8 @@ fun BuildingMaterialListScreen(
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 	val lazyListState = rememberLazyListState()
 	val scope = rememberCoroutineScope()
-	val title = uiState.selectedCategory?.let { viewModel.getLabelFor(it) }
+	val titleRes = uiState.selectedCategory?.let { viewModel.getLabelResFor(it) }
+	val title = titleRes?.let { androidx.compose.ui.res.stringResource(it) }
 
 	val backButtonVisibleState by remember {
 		derivedStateOf { lazyListState.firstVisibleItemIndex >= 2 }
@@ -119,7 +122,7 @@ fun BuildingMaterialListScreen(
 				) {
 					Icon(
 						Lucide.ArrowLeft,
-						contentDescription = "Back"
+						contentDescription = stringResource(R.string.cd_back)
 					)
 				}
 
@@ -235,37 +238,37 @@ private fun getChipsForCategory(category: BuildingMaterialSubCategory?): List<Bu
 			BuildingMaterialChip(
 				BuildingMaterialSubType.STORAGE,
 				Lucide.Archive,
-				"Storage"
+				com.rabbitv.valheimviki.R.string.chip_storage
 			),
 			BuildingMaterialChip(
 				BuildingMaterialSubType.FUNCTIONAL,
 				Lucide.Cog,
-				"Functional"
+				com.rabbitv.valheimviki.R.string.chip_functional
 			),
 			BuildingMaterialChip(
 				BuildingMaterialSubType.TABLE,
 				Lucide.Table,
-				"Table"
+				com.rabbitv.valheimviki.R.string.chip_table
 			),
 			BuildingMaterialChip(
 				BuildingMaterialSubType.CHAIR,
 				Lucide.Armchair,
-				"Chair"
+				com.rabbitv.valheimviki.R.string.chip_chair
 			),
 			BuildingMaterialChip(
 				BuildingMaterialSubType.RUG,
 				Lucide.Grid2x2,
-				"Rug"
+				com.rabbitv.valheimviki.R.string.chip_rug
 			),
 			BuildingMaterialChip(
 				BuildingMaterialSubType.BANNER,
 				Lucide.Flag,
-				"Banner"
+				com.rabbitv.valheimviki.R.string.chip_banner
 			),
 			BuildingMaterialChip(
 				BuildingMaterialSubType.DECORATIVE,
 				Lucide.Star,
-				"Decorative"
+				com.rabbitv.valheimviki.R.string.chip_decorative
 			)
 		)
 
@@ -278,12 +281,12 @@ private fun getChipsForCategory(category: BuildingMaterialSubCategory?): List<Bu
 			BuildingMaterialChip(
 				BuildingMaterialSubType.MISC,
 				Lucide.Box,
-				"Misc"
+				com.rabbitv.valheimviki.R.string.chip_misc
 			),
 			BuildingMaterialChip(
 				BuildingMaterialSubType.BOAT,
 				Lucide.Sailboat,
-				"Boat"
+				com.rabbitv.valheimviki.R.string.chip_boat
 			)
 		)
 

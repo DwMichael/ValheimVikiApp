@@ -73,6 +73,10 @@ dependencies {
 	implementation(libs.androidx.ui.tooling.preview)
 	implementation(libs.androidx.material3)
 	implementation(libs.androidx.compose.material)
+	implementation(libs.androidx.material3.adaptive)
+	implementation(libs.androidx.material3.adaptive.layout)
+	implementation(libs.androidx.material3.adaptive.navigation)
+	implementation(libs.androidx.material3.windowsizeclass)
 	implementation(libs.androidx.navigation.testing)
 	testImplementation(libs.junit.jupiter)
 	androidTestImplementation(libs.androidx.junit)
@@ -131,7 +135,7 @@ dependencies {
 	androidTestImplementation(libs.dagger.hilt.android.testing)
 	ksp(libs.androidx.room.compiler)
 
-	kspTest(libs.dagger.hilt.compiler)
+//	kspTest(libs.dagger.hilt.compiler)
 	kspAndroidTest(libs.com.google.dagger.hilt.compiler)
 	implementation(libs.androidx.hilt.work)
 

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -21,8 +22,12 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import com.rabbitv.valheimviki.ui.adaptive.LocalAdaptiveLayoutInfo
+import com.rabbitv.valheimviki.ui.adaptive.adaptiveDetailWidth
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -36,6 +41,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.rememberAsyncImagePainter
@@ -123,7 +129,7 @@ fun MainBossContent(
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
 	}
 	val dropData = HorizontalPagerData(
-		title = "Drop Items",
+		title = stringResource(R.string.drop_items),
 		subTitle = "Items that drop from boss after defeating him",
 		icon = Lucide.Trophy,
 		iconRotationDegrees = 0f,
@@ -145,7 +151,8 @@ fun MainBossContent(
 					Column(
 						modifier = Modifier
 							.testTag("MainBossDetailScreen")
-							.fillMaxSize()
+							
+							.adaptiveDetailWidth()
 							.verticalScroll(scrollState, enabled = !isRunning),
 						verticalArrangement = Arrangement.Top,
 						horizontalAlignment = Alignment.CenterHorizontally,
@@ -162,7 +169,7 @@ fun MainBossContent(
 							text = mainBossUiState.mainBoss.description,
 							boxPadding = BODY_CONTENT_PADDING.dp
 						)
-						TridentsDividedRow(text = "BOSS DETAIL")
+						TridentsDividedRow(text = stringResource(R.string.boss_detail))
 						mainBossUiState.relatedBiome?.let { biome ->
 							CardWithOverlayLabel(
 								painter = rememberAsyncImagePainter(mainBossUiState.relatedBiome.imageUrl),
@@ -175,12 +182,17 @@ fun MainBossContent(
 										) {
 											OverlayLabel(
 												icon = Lucide.TreePine,
-												label = " PRIMARY SPAWN",
+												label = stringResource(R.string.primary_spawn),
 											)
 										}
 										Text(
 											biome.name.uppercase(),
 											style = MaterialTheme.typography.bodyLarge,
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 13.sp,
+					maxFontSize = 18.sp,
+					stepSize = 1.sp,
+				),
 											modifier = Modifier
 												.align(Alignment.CenterVertically)
 												.fillMaxWidth()
@@ -199,7 +211,7 @@ fun MainBossContent(
 								onItemClick = handleClick,
 								itemData = mainBossUiState.relatedForsakenAltar,
 								horizontalDividerWidth = 250.dp,
-								textStyle = MaterialTheme.typography.titleLarge
+								textStyle = MaterialTheme.typography.headlineSmall
 							)
 						}
 						SlavicDivider()
@@ -212,7 +224,7 @@ fun MainBossContent(
 									.wrapContentHeight()
 									.padding(horizontal = BODY_CONTENT_PADDING.dp),
 								data = SectionHeaderData(
-									"SUMMONING ITEMS",
+									stringResource(R.string.summoning_items),
 									"Items needed to summon boss",
 									Lucide.TrendingUp
 								),
@@ -239,7 +251,7 @@ fun MainBossContent(
 								data = dropData
 							)
 						}
-						GreenTorchesDivider(text = "FORSAKEN POWER")
+						GreenTorchesDivider(text = stringResource(R.string.forsaken_power))
 						mainBossUiState.trophy?.let { trophy ->
 							Row(
 								modifier = Modifier.padding(BODY_CONTENT_PADDING.dp)
@@ -264,7 +276,7 @@ fun MainBossContent(
 									mainBossUiState.sacrificialStones?.let { sacrificialStones ->
 										CardWithImageAndTitle(
 											onCardClick = { handleClick(sacrificialStones) },
-											title = "WHERE TO HANG THE BOSS TROPHY",
+											title = stringResource(R.string.where_to_hang_boss_trophy),
 											imageUrl = sacrificialStones.imageUrl,
 											itemName = sacrificialStones.name,
 											contentScale = ContentScale.Crop,
@@ -273,7 +285,7 @@ fun MainBossContent(
 								}
 							}
 						}
-						TridentsDividedRow(text = "BOSS STATS")
+						TridentsDividedRow(text = stringResource(R.string.boss_stats))
 
 						if (mainBossUiState.mainBoss.baseHP.toString().isNotBlank()) {
 							AnimatedStatCard(

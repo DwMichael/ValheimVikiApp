@@ -109,11 +109,13 @@ class DataRefetchUseCase @Inject constructor(
 		val expectedMinSize: Int
 	)
 
-	suspend fun refetchAllData(): DataRefetchResult {
+	suspend fun refetchAllData(forceRefresh: Boolean = false): DataRefetchResult {
 		return try {
-			val language = dataStoreUseCases.languageProvider().first()
+			// User requested that Api and Database should remain as they are for now 
+			// because API does not yet support other languages.
+			val language = "en"
 
-			if (shouldNotRefreshData()) {
+			if (!forceRefresh && shouldNotRefreshData()) {
 				println("DataRefetchUseCase: Data already exists, skipping refresh")
 				return DataRefetchResult.Success
 			}

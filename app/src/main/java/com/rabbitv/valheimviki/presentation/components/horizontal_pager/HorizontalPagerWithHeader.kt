@@ -13,7 +13,10 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,6 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Wrench
 import com.rabbitv.valheimviki.domain.model.food.Food
@@ -29,6 +33,7 @@ import com.rabbitv.valheimviki.domain.repository.Droppable
 import com.rabbitv.valheimviki.presentation.components.section_header.SectionHeader
 import com.rabbitv.valheimviki.presentation.components.section_header.SectionHeaderData
 import com.rabbitv.valheimviki.utils.FakeData
+import com.rabbitv.valheimviki.R
 
 @Immutable
 data class PagerHeaderData(
@@ -75,7 +80,7 @@ internal fun <T : Droppable> HorizontalPagerWithHeader(
 fun HorizontalPagerWithHeaderPreview() {
 
 	val headerData = PagerHeaderData(
-		title = "Craftable Items",
+		title = stringResource(R.string.craftable_items),
 		subTitle = "Materials that Drop from creature after defeating",
 		icon = Lucide.Wrench
 	)
@@ -102,12 +107,22 @@ fun HorizontalPagerWithHeaderPreview() {
 			) {
 				Text(
 					text = item.itemDrop.name,
-					style = MaterialTheme.typography.headlineSmall,
+					style = MaterialTheme.typography.headlineMedium,
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 18.sp,
+					maxFontSize = 28.sp,
+					stepSize = 1.sp,
+				),
 					fontWeight = FontWeight.Bold
 				)
 				Text(
 					text = item.itemDrop.name,
-					style = MaterialTheme.typography.bodyMedium,
+					style = MaterialTheme.typography.bodyLarge,
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 13.sp,
+					maxFontSize = 18.sp,
+					stepSize = 1.sp,
+				),
 					maxLines = 2,
 					overflow = TextOverflow.Ellipsis
 				)
@@ -116,7 +131,7 @@ fun HorizontalPagerWithHeaderPreview() {
 					horizontalArrangement = Arrangement.SpaceBetween
 				) {
 					Text(
-						text = "Health: ${item.itemDrop.category}",
+						text = stringResource(R.string.health_value, item.itemDrop.category),
 					)
 				}
 			}

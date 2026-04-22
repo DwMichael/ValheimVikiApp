@@ -92,7 +92,7 @@ fun DialogPopUp(
 					onDismiss()
 				},
 				icon = Lucide.X,
-				label = "Go Back",
+				label = stringResource(R.string.back),
 			)
 			DarkGlassButton(
 				onCardClick = {

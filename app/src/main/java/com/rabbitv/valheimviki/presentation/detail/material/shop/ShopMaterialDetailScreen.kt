@@ -4,12 +4,17 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import com.rabbitv.valheimviki.ui.adaptive.LocalAdaptiveLayoutInfo
+import com.rabbitv.valheimviki.ui.adaptive.adaptiveDetailWidth
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -19,6 +24,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
@@ -82,7 +88,8 @@ fun ShopMaterialDetailContent(
 			uiState.material?.let { material ->
 				Column(
 					modifier = Modifier
-						.fillMaxSize()
+						
+						.adaptiveDetailWidth()
 						.verticalScroll(scrollState)
 						.padding(
 							top = 20.dp,
@@ -96,7 +103,12 @@ fun ShopMaterialDetailContent(
 					Text(
 						material.name,
 						modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-						style = MaterialTheme.typography.displayMedium,
+						style = MaterialTheme.typography.headlineLarge,
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 22.sp,
+					maxFontSize = 34.sp,
+					stepSize = 1.sp,
+				),
 						textAlign = TextAlign.Center
 					)
 					SlavicDivider()
@@ -113,6 +125,11 @@ fun ShopMaterialDetailContent(
 							material.effect.toString(),
 							modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
 							style = MaterialTheme.typography.bodyLarge,
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 13.sp,
+					maxFontSize = 18.sp,
+					stepSize = 1.sp,
+				),
 							textAlign = TextAlign.Center
 						)
 					}

@@ -23,6 +23,7 @@ class DataStoreOperationsImpl(private val context: Context) : DataStoreOperation
     private object PreferencesKey {
         val onBoardingKey = booleanPreferencesKey(name = PREFERENCES_KEY)
         val languageKey = stringPreferencesKey(name = PREFERENCES_LANGUAGE_KEY)
+        val languagePopupKey = booleanPreferencesKey(name = com.rabbitv.valheimviki.utils.Constants.PREFERENCES_LANGUAGE_POPUP_KEY)
     }
 
     private val dataStore = context.dataStore
@@ -62,4 +63,22 @@ class DataStoreOperationsImpl(private val context: Context) : DataStoreOperation
     .map { preferences ->
         preferences[PreferencesKey.languageKey] ?: "en"
     }
+
+    override suspend fun saveLanguagePopupState(shown: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKey.languagePopupKey] = shown
+        }
+    }
+
+    override fun readLanguagePopupState(): Flow<Boolean> = dataStore.data
+        .catch { exception ->
+            if (exception is IOException) {
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }
+        .map { preferences ->
+            preferences[PreferencesKey.languagePopupKey] ?: false
+        }
 }

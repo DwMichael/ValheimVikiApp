@@ -22,54 +22,54 @@ import com.rabbitv.valheimviki.presentation.components.grid.grid_category.GridCa
 enum class BuildingMaterialSegmentOption(
 	override val image: Int,
 	override val icon: ImageVector,
-	override val label: String,
+	override val labelRes: Int,
 	override val value: BuildingMaterialSubCategory
 ) : GridCategoryOption<BuildingMaterialSubCategory> {
-	WOOD(R.drawable.wood, Lucide.Trees, "WOOD", BuildingMaterialSubCategory.WOOD),
+	WOOD(R.drawable.wood, Lucide.Trees, R.string.category_wood, BuildingMaterialSubCategory.WOOD),
 	CORE_WOOD(
 		R.drawable.core_wood,
 		Lucide.Layers,
-		"CORE WOOD",
+		R.string.category_core_wood,
 		BuildingMaterialSubCategory.CORE_WOOD
 	),
 	RESOURCE(
 		R.drawable.resources,
 		Lucide.Package,
-		"RESOURCES",
+		R.string.category_resources,
 		BuildingMaterialSubCategory.RESOURCE
 	),
 	STONE_AND_METAL(
 		R.drawable.stone_and_metals,
 		Lucide.Hammer,
-		"STONE & METAL",
+		R.string.category_stone_and_metal,
 		BuildingMaterialSubCategory.STONE_AND_METAL
 	),
 	LIGHT_SOURCE(
 		R.drawable.light_source,
 		Lucide.Lamp,
-		"LIGHTS",
+		R.string.category_lights,
 		BuildingMaterialSubCategory.LIGHT_SOURCE
 	),
 	TRANSPORT(
 		R.drawable.transport,
 		Lucide.Truck,
-		"TRANSPORTS",
+		R.string.category_transports,
 		BuildingMaterialSubCategory.TRANSPORT
 	),
 	FURNITURE(
 		R.drawable.furniture,
 		Lucide.Armchair,
-		"FURNITURE",
+		R.string.category_furniture,
 		BuildingMaterialSubCategory.FURNITURE
 	),
 	DECORATIVE(
 		R.drawable.decorative,
 		Lucide.Star,
-		"DECOR",
+		R.string.category_decor,
 		BuildingMaterialSubCategory.DECORATIVE
 	),
-	ROOF(R.drawable.roof, Lucide.House, "ROOFS", BuildingMaterialSubCategory.ROOF),
-	DEFENSE(R.drawable.defense, Lucide.Shield, "DEFENSE", BuildingMaterialSubCategory.DEFENSE),
-	SIEGE(R.drawable.siege, Lucide.Crosshair, "SIEGE", BuildingMaterialSubCategory.SIEGE),
-	MISC(R.drawable.aprilfoolsimage, Lucide.LayoutGrid, "MISC", BuildingMaterialSubCategory.MISC)
+	ROOF(R.drawable.roof, Lucide.House, R.string.category_roofs, BuildingMaterialSubCategory.ROOF),
+	DEFENSE(R.drawable.defense, Lucide.Shield, R.string.category_defense, BuildingMaterialSubCategory.DEFENSE),
+	SIEGE(R.drawable.siege, Lucide.Crosshair, R.string.category_siege, BuildingMaterialSubCategory.SIEGE),
+	MISC(R.drawable.aprilfoolsimage, Lucide.LayoutGrid, R.string.category_misc, BuildingMaterialSubCategory.MISC)
 }

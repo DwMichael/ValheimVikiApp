@@ -11,6 +11,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import com.rabbitv.valheimviki.R
+import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -80,7 +82,7 @@ fun SearchScreenContent(
 	}
 	Scaffold(
 		topBar = {
-			SimpleTopBar(title = "Search", onClick = onBack)
+			SimpleTopBar(title = stringResource(R.string.search), onClick = onBack)
 		}
 	) { innerPadding ->
 		Column(

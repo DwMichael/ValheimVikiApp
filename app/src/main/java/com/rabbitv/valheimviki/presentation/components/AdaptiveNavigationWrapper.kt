@@ -32,6 +32,7 @@ import androidx.compose.material3.PermanentNavigationDrawer
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -242,7 +243,7 @@ private fun NavigationRailContent(
 					.padding(top = 12.dp, bottom = 8.dp)
 					.size(36.dp),
 				painter = painterResource(R.drawable.valheim_viki_oval),
-				contentDescription = "Logo",
+				contentDescription = stringResource(R.string.cd_logo),
 				contentScale = ContentScale.Crop,
 			)
 		},
@@ -334,12 +335,12 @@ private fun DrawerHeaderCompact() {
 		Image(
 			modifier = Modifier.size(42.dp),
 			painter = painterResource(R.drawable.valheim_viki_oval),
-			contentDescription = "Logo",
+			contentDescription = stringResource(R.string.cd_logo),
 			contentScale = ContentScale.Crop,
 		)
 		Spacer(Modifier.padding(12.dp))
 		Text(
-			text = "ValheimViki",
+			text = stringResource(R.string.app_name),
 			fontWeight = FontWeight.Medium,
 			fontSize = 28.sp,
 			color = MaterialTheme.colorScheme.onPrimaryContainer,

@@ -5,15 +5,22 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import com.rabbitv.valheimviki.ui.adaptive.LocalAdaptiveLayoutInfo
+import com.rabbitv.valheimviki.ui.adaptive.adaptiveDetailWidth
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.runtime.Composable
+import com.rabbitv.valheimviki.R
+import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -23,6 +30,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.composables.icons.lucide.Lucide
@@ -88,7 +96,7 @@ fun MetalMaterialDetailContent(
 	}
 
 	val biomesData = HorizontalPagerData(
-		title = "Biomes",
+		title = stringResource(R.string.biomes),
 		subTitle = "Biomes where you can find this material",
 		icon = Lucide.Trees,
 		iconRotationDegrees = 0f,
@@ -96,7 +104,7 @@ fun MetalMaterialDetailContent(
 	)
 
 	val creaturesData = HorizontalPagerData(
-		title = "Creatures",
+		title = stringResource(R.string.creatures),
 		subTitle = "Creatures that drop this material",
 		icon = Lucide.PawPrint,
 		iconRotationDegrees = -85f,
@@ -104,7 +112,7 @@ fun MetalMaterialDetailContent(
 	)
 
 	val pointOfInterestData = HorizontalPagerData(
-		title = "Points of interest",
+		title = stringResource(R.string.points_of_interest),
 		subTitle = "Poi where you can find this item",
 		icon = Lucide.PawPrint,
 		iconRotationDegrees = -85f,
@@ -112,7 +120,7 @@ fun MetalMaterialDetailContent(
 	)
 
 	val oreDepositsData = HorizontalPagerData(
-		title = "Ore Deposits",
+		title = stringResource(R.string.ore_deposits),
 		subTitle = "Ore deposits where you can find this material",
 		icon = Lucide.PawPrint,
 		iconRotationDegrees = -85f,
@@ -133,7 +141,8 @@ fun MetalMaterialDetailContent(
 			uiState.material?.let { material ->
 				Column(
 					modifier = Modifier
-						.fillMaxSize()
+						
+						.adaptiveDetailWidth()
 						.verticalScroll(scrollState)
 						.padding(
 							top = 20.dp,
@@ -147,7 +156,12 @@ fun MetalMaterialDetailContent(
 					Text(
 						material.name,
 						modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-						style = MaterialTheme.typography.displayMedium,
+						style = MaterialTheme.typography.headlineLarge,
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 22.sp,
+					maxFontSize = 34.sp,
+					stepSize = 1.sp,
+				),
 						textAlign = TextAlign.Center
 					)
 					SlavicDivider()
@@ -211,7 +225,7 @@ fun MetalMaterialDetailContent(
 						) {
 							SectionHeader(
 								data = SectionHeaderData(
-									title = "Required Items",
+									title = stringResource(R.string.required_items),
 									subTitle = "Items needed to build this material.",
 									icon = Lucide.ScrollText,
 								),

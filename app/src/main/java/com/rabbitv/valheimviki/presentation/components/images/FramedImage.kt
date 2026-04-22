@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -48,7 +49,7 @@ fun FramedImage(imageUrl: String, size: Dp = 150.dp, contentScale: ContentScale 
 				.data(imageUrl)
 				.crossfade(true)
 				.build(),
-			contentDescription = "Food Image",
+			contentDescription = stringResource(R.string.cd_food_image),
 			error = if (LocalInspectionMode.current) painterResource(R.drawable.testweapon) else null,
 			contentScale = contentScale,
 		)

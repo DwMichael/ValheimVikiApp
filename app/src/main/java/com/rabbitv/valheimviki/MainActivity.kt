@@ -5,7 +5,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.seconds
 
 @AndroidEntryPoint
-class MainActivity() : ComponentActivity() {
+class MainActivity() : AppCompatActivity() {
 	@Inject
 	lateinit var adManager: AdManager
 

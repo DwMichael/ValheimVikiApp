@@ -5,7 +5,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 interface ChipData<T> {
     val option: T
     val icon: ImageVector
-    val label: String
+    @get:androidx.annotation.StringRes val labelRes: Int
 }
 
 

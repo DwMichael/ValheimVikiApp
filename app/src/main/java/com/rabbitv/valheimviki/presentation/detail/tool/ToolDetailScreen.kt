@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -16,9 +17,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import com.rabbitv.valheimviki.ui.adaptive.LocalAdaptiveLayoutInfo
+import com.rabbitv.valheimviki.ui.adaptive.adaptiveDetailWidth
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -31,6 +37,7 @@ import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.composables.icons.lucide.Hammer
@@ -100,7 +107,7 @@ fun ToolDetailContent(
 	) {
 
 	val oreDepositData = HorizontalPagerData(
-		title = "Ore Deposits",
+		title = stringResource(R.string.ore_deposits),
 		subTitle = "Ore Deposits that can be mine with this pickaxe",
 		icon = Lucide.Pickaxe,
 		iconRotationDegrees = -85f,
@@ -125,7 +132,8 @@ fun ToolDetailContent(
 			uiState.tool?.let { tool ->
 				Column(
 					modifier = Modifier
-						.fillMaxSize()
+						
+						.adaptiveDetailWidth()
 						.verticalScroll(scrollState)
 						.padding(
 							top = 20.dp,
@@ -139,7 +147,12 @@ fun ToolDetailContent(
 					Text(
 						tool.name,
 						modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-						style = MaterialTheme.typography.displayMedium,
+						style = MaterialTheme.typography.headlineLarge,
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 22.sp,
+					maxFontSize = 34.sp,
+					stepSize = 1.sp,
+				),
 						textAlign = TextAlign.Center
 					)
 					SlavicDivider()
@@ -160,7 +173,7 @@ fun ToolDetailContent(
 						) {
 							SectionHeader(
 								data = SectionHeaderData(
-									title = "Crafting Ingredients",
+									title = stringResource(R.string.crafting_ingredients),
 									subTitle = "Items required to craft this item",
 									icon = Lucide.Hammer
 								)
@@ -197,7 +210,7 @@ fun ToolDetailContent(
 								bottom = BODY_CONTENT_PADDING.dp
 							),
 							color = PrimaryWhite,
-							style = MaterialTheme.typography.headlineMedium
+							style = MaterialTheme.typography.headlineSmall
 						)
 						if (!tool.upgradeInfoList.isNullOrEmpty()) {
 							tool.upgradeInfoList.forEachIndexed { levelIndex, upgradeInfoForLevel ->

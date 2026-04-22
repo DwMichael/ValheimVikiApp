@@ -12,6 +12,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,6 +26,7 @@ import com.composables.icons.lucide.WifiOff
 import com.rabbitv.valheimviki.domain.exceptions.ErrorType
 
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
+import com.rabbitv.valheimviki.R
 
 @Composable
 fun EmptyScreen(
@@ -54,7 +56,7 @@ fun EmptyScreen(
                     modifier = Modifier.size(75.dp),
                     imageVector = selectedImageVector,
                     tint = Color.White,
-                    contentDescription = "NO_INTERNET_CONECTION_ICON",
+                    contentDescription = stringResource(R.string.cd_no_internet_icon),
                 )
             Spacer(modifier = Modifier.fillMaxWidth().height(20.dp))
             Text(

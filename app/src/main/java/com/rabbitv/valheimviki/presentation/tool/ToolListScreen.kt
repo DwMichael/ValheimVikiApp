@@ -125,32 +125,32 @@ private fun getChipsForCategory(): List<ToolChip> {
 		ToolChip(
 			ToolSubCategory.MEAD_CONSUMPTION,
 			Lucide.TestTubeDiagonal,
-			"Mead consumption"
+			R.string.chip_mead_consumption
 		),
 		ToolChip(
 			ToolSubCategory.BUILDING,
 			Lucide.Wrench,
-			"Building"
+			R.string.chip_building
 		),
 		ToolChip(
 			ToolSubCategory.PICKAXES,
 			Lucide.Pickaxe,
-			"Pickaxe"
+			R.string.chip_pickaxe
 		),
 		ToolChip(
 			ToolSubCategory.TRAVERSAL,
 			Lucide.Diamond,
-			"Accessories"
+			R.string.chip_accessories
 		),
 		ToolChip(
 			ToolSubCategory.FARMING,
 			Lucide.Wheat,
-			"Farming"
+			R.string.chip_farming
 		),
 		ToolChip(
 			ToolSubCategory.FISHING,
 			ImageVector.vectorResource(id = R.drawable.fishing_rod),
-			"Fishing"
+			R.string.chip_fishing
 		),
 	)
 }

@@ -11,6 +11,7 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -19,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.composables.icons.lucide.ArrowLeft
 import com.composables.icons.lucide.Lucide
 import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
+import com.rabbitv.valheimviki.R
 
 @Composable
 fun SimpleTopBar(
@@ -41,7 +43,7 @@ fun SimpleTopBar(
 		) {
 			Icon(
 				Lucide.ArrowLeft,
-				contentDescription = "Back",
+				contentDescription = stringResource(R.string.cd_back),
 				tint = Color.White
 			)
 		}

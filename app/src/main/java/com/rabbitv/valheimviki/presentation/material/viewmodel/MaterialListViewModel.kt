@@ -132,8 +132,8 @@ class MaterialListViewModel @Inject constructor(
 		}
 	}
 
-	fun getLabelFor(subCategory: MaterialSubCategory): String =
+	fun getLabelResFor(subCategory: MaterialSubCategory): Int =
 		MaterialSegmentOption.entries
 			.first { it.value == subCategory }
-			.label
+			.labelRes
 }

@@ -13,5 +13,7 @@ data class DataStoreUseCases @Inject constructor(
 	val readOnBoardingUseCase: ReadOnBoardingState,
 	val saveOnBoardingState: SaveOnBoardingState,
 	val languageProvider: LanguageProvider,
-	val saveLanguageState: SaveLanguageState
+	val saveLanguageState: SaveLanguageState,
+	val readLanguagePopupState: com.rabbitv.valheimviki.domain.use_cases.datastore.get_language_popup_state.ReadLanguagePopupState,
+	val saveLanguagePopupState: com.rabbitv.valheimviki.domain.use_cases.datastore.save_language_popup_state.SaveLanguagePopupState
 )

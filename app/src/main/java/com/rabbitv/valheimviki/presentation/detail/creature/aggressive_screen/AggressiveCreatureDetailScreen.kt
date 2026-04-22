@@ -15,9 +15,11 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -30,6 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.rememberAsyncImagePainter
@@ -68,6 +71,7 @@ import com.rabbitv.valheimviki.presentation.detail.creature.aggressive_screen.mo
 import com.rabbitv.valheimviki.presentation.detail.creature.aggressive_screen.viewModel.AggressiveCreatureDetailScreenViewModel
 import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.CardWithOverlayLabel
 import com.rabbitv.valheimviki.presentation.detail.creature.components.rows.StarLevelRow
+import com.rabbitv.valheimviki.ui.adaptive.adaptiveDetailWidth
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
@@ -124,7 +128,9 @@ fun AggressiveCreatureDetailContent(
 						.fillMaxSize()
 				) {
 					Column(
-						modifier = Modifier.verticalScroll(sharedScrollState),
+						modifier = Modifier
+							.adaptiveDetailWidth()
+							.verticalScroll(sharedScrollState),
 						verticalArrangement = Arrangement.Top,
 						horizontalAlignment = Alignment.Start,
 					) {
@@ -158,13 +164,18 @@ fun AggressiveCreatureDetailContent(
 							boxPadding = BODY_CONTENT_PADDING.dp
 						)
 
-						TridentsDividedRow(text = "DETAILS")
+						TridentsDividedRow(text = stringResource(R.string.details))
 						uiState.biome?.let { biome ->
 							Text(
 								modifier = Modifier.align(Alignment.CenterHorizontally),
-								text = "PRIMARY SPAWN",
+								text = stringResource(R.string.primary_spawn),
 								textAlign = TextAlign.Center,
-								style = MaterialTheme.typography.titleLarge,
+								style = MaterialTheme.typography.headlineSmall,
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 16.sp,
+					maxFontSize = 24.sp,
+					stepSize = 1.sp,
+				),
 								maxLines = 1,
 								overflow = TextOverflow.Visible
 							)
@@ -189,6 +200,11 @@ fun AggressiveCreatureDetailContent(
 										Text(
 											biome.name.uppercase(),
 											style = MaterialTheme.typography.bodyLarge,
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 13.sp,
+					maxFontSize = 18.sp,
+					stepSize = 1.sp,
+				),
 											modifier = Modifier,
 											color = Color.White,
 											textAlign = TextAlign.Center
@@ -207,7 +223,7 @@ fun AggressiveCreatureDetailContent(
 								onItemClick = handleClick,
 								list = state,
 								starLevel = pageIndex,
-								title = "Drop Items",
+								title = stringResource(R.string.drop_items),
 								subTitle = "Materials that drop from creature after defeating",
 								icon = { Lucide.Trophy }
 							)
@@ -223,12 +239,12 @@ fun AggressiveCreatureDetailContent(
 								list = state,
 								icon = { Lucide.Beef },
 								starLevel = pageIndex,
-								title = "Food Drops",
+								title = stringResource(R.string.food_drops),
 								subTitle = "Food items that drop from creature and can be instantly eaten",
 							)
 						}
 
-						TridentsDividedRow(text = "MOB STATS")
+						TridentsDividedRow(text = stringResource(R.string.mob_stats))
 						AnimatedStatCard(
 							modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
 							id = "aggr_health_stat",

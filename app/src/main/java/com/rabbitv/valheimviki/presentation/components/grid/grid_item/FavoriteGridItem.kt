@@ -9,9 +9,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,6 +23,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.wear.compose.material.ContentAlpha
 import coil3.compose.AsyncImage
 import coil3.request.CachePolicy
@@ -74,13 +76,17 @@ fun FavoriteGridItem(
 				.fillMaxWidth(),
 			color = Color.Black.copy(alpha = ContentAlpha.medium),
 		) {
-			Text(
+			BasicText(
 				modifier = Modifier
 					.padding(horizontal = 8.dp)
 					.wrapContentHeight(align = Alignment.CenterVertically),
 				text = item.name,
-				color = PrimaryWhite,
-				style = MaterialTheme.typography.titleMedium,
+				style = MaterialTheme.typography.titleMedium.copy(color = PrimaryWhite),
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 12.sp,
+					maxFontSize = 18.sp,
+					stepSize = 1.sp,
+				),
 				overflow = TextOverflow.Ellipsis,
 				maxLines = 1
 			)

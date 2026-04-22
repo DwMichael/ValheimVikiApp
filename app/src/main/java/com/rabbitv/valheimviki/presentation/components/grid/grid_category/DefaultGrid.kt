@@ -20,8 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.rabbitv.valheimviki.domain.model.biome.Biome
 import com.rabbitv.valheimviki.domain.repository.ItemData
 import com.rabbitv.valheimviki.presentation.components.grid.grid_item.AnimatedGridItem
-import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
-import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_TWO_COLUMNS
+import com.rabbitv.valheimviki.ui.adaptive.LocalAdaptiveLayoutInfo
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
 
@@ -36,12 +35,16 @@ fun DefaultGrid(
 	animatedVisibilityScope: AnimatedVisibilityScope,
 	lazyGridState: LazyGridState,
 ) {
+	val adaptiveInfo = LocalAdaptiveLayoutInfo.current
+	val columns = adaptiveInfo.gridColumns
+	val itemHeight = adaptiveInfo.gridItemHeight
+	val padding = adaptiveInfo.contentPadding
 
 	LazyVerticalGrid(
 		state = lazyGridState,
-		columns = GridCells.Fixed(numbersOfColumns),
-		horizontalArrangement = Arrangement.spacedBy(BODY_CONTENT_PADDING.dp),
-		verticalArrangement = Arrangement.spacedBy(BODY_CONTENT_PADDING.dp),
+		columns = GridCells.Fixed(columns),
+		horizontalArrangement = Arrangement.spacedBy(padding),
+		verticalArrangement = Arrangement.spacedBy(padding),
 		modifier = modifier.clipToBounds(),
 		contentPadding = PaddingValues(bottom = 70.dp),
 	) {
@@ -53,7 +56,7 @@ fun DefaultGrid(
 			AnimatedGridItem(
 				item = item,
 				onItemClick = onItemClick,
-				height = height,
+				height = itemHeight,
 				animatedVisibilityScope = animatedVisibilityScope
 			)
 		}
@@ -92,7 +95,7 @@ private fun PreviewContentGrid() {
 				items = sampleBiomes,
 				onItemClick = { _ -> {} },
 				numbersOfColumns = 2,
-				height = ITEM_HEIGHT_TWO_COLUMNS,
+				height = 200.dp,
 				this,
 				rememberLazyGridState()
 			)

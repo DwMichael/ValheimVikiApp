@@ -5,8 +5,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Surface
@@ -24,9 +26,9 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.composables.icons.lucide.FlaskConical
+import com.composables.icons.lucide.Church
+import com.composables.icons.lucide.House
 import com.composables.icons.lucide.Lucide
-import com.composables.icons.lucide.Soup
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
@@ -57,8 +59,8 @@ fun PoiListScreen(
 	}
 
 	val icons: List<ImageVector> = listOf(
-		Lucide.Soup,
-		Lucide.FlaskConical,
+		Lucide.Church,
+		Lucide.House,
 	)
 	val handleItemClick = remember {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
@@ -86,7 +88,8 @@ fun PoiListScreen(
 							lazyListState.animateScrollToItem(0)
 						}
 					},
-					icons = icons
+					icons = icons,
+					modifier = Modifier.wrapContentWidth()
 				)
 				Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
 				Box(modifier = Modifier.fillMaxSize()) {

@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.rabbitv.valheimviki.presentation.components.grid.grid_item.MaterialGridItem
 import com.rabbitv.valheimviki.presentation.material.model.MaterialSegmentOption
-import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
+import com.rabbitv.valheimviki.ui.adaptive.LocalAdaptiveLayoutInfo
 import com.rabbitv.valheimviki.ui.theme.ITEM_HEIGHT_TWO_COLUMNS
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
@@ -29,18 +29,23 @@ fun <T> CategoryGrid(
 	height: Dp,
 	lazyGridState: LazyGridState,
 ) {
+	val adaptiveInfo = LocalAdaptiveLayoutInfo.current
+	val columns = adaptiveInfo.categoryGridColumns
+	val itemHeight = adaptiveInfo.gridItemHeight
+	val padding = adaptiveInfo.contentPadding
+
 	LazyVerticalGrid(
 		state = lazyGridState,
-		columns = GridCells.Fixed(numbersOfColumns),
-		horizontalArrangement = Arrangement.spacedBy(BODY_CONTENT_PADDING.dp),
-		verticalArrangement = Arrangement.spacedBy(BODY_CONTENT_PADDING.dp),
+		columns = GridCells.Fixed(columns),
+		horizontalArrangement = Arrangement.spacedBy(padding),
+		verticalArrangement = Arrangement.spacedBy(padding),
 		contentPadding = PaddingValues(bottom = 100.dp),
 	) {
 		itemsIndexed(items) { index, item ->
 			MaterialGridItem(
 				item = item,
 				onClick = { onItemClick(item.value) },
-				height = height,
+				height = itemHeight,
 			)
 		}
 
@@ -51,8 +56,6 @@ fun <T> CategoryGrid(
 @Preview(name = "CategoryGrid", showBackground = true)
 @Composable
 private fun PreviewCategoryGrid() {
-
-
 	val items = MaterialSegmentOption.entries
 
 	ValheimVikiAppTheme {

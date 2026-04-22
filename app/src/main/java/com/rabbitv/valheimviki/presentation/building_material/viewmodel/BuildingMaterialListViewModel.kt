@@ -130,8 +130,8 @@ class BuildingMaterialListViewModel @Inject constructor(
 	}
 
 
-	fun getLabelFor(subCategory: BuildingMaterialSubCategory): String =
+	fun getLabelResFor(subCategory: BuildingMaterialSubCategory): Int =
 		BuildingMaterialSegmentOption.entries
 			.first { it.value == subCategory }
-			.label
+			.labelRes
 }

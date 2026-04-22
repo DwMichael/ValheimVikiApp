@@ -12,7 +12,6 @@ import com.rabbitv.valheimviki.domain.use_cases.data_refetch.DataRefetchUseCase
 import dagger.hilt.android.HiltAndroidApp
 import jakarta.inject.Inject
 
-
 @HiltAndroidApp
 class MainApplication : Application(), Configuration.Provider {
 

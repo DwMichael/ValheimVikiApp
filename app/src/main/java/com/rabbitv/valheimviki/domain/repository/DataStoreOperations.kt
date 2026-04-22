@@ -7,4 +7,6 @@ interface DataStoreOperations {
     fun readOnBoardingState(): Flow<Boolean>
     suspend fun saveLanguage(language: String)
     fun languageProvider(): Flow<String>
+    suspend fun saveLanguagePopupState(shown: Boolean)
+    fun readLanguagePopupState(): Flow<Boolean>
 }

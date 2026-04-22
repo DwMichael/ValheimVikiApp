@@ -5,8 +5,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Surface
@@ -86,7 +88,8 @@ fun MeadListScreen(
 							lazyListState.animateScrollToItem(0)
 						}
 					},
-					icons = icons
+					icons = icons,
+					modifier = Modifier.wrapContentWidth()
 				)
 				Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
 				Box(modifier = Modifier.fillMaxSize()) {

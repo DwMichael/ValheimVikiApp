@@ -5,6 +5,7 @@ import androidx.compose.material3.ElevatedFilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -22,7 +23,7 @@ fun <T> CustomElevatedFilterChip(
 	index: Int,
 	selectedChipIndex: Int?,
 	onSelectedChange: (index: Int, option: T?) -> Unit,
-	label: String,
+	labelRes: Int,
 	icon: ImageVector,
 	option: T,
 ) {
@@ -30,7 +31,7 @@ fun <T> CustomElevatedFilterChip(
 	ElevatedFilterChip(
 		selected = index == selectedChipIndex,
 		onClick = { onSelectedChange(index, option) },
-		label = { Text(label) },
+		label = { Text(androidx.compose.ui.res.stringResource(labelRes), style = MaterialTheme.typography.labelLarge) },
 		colors = AppStyleDefaults.yellowDTSelectableChipColors(),
 		leadingIcon = if (index == selectedChipIndex) {
 			{
@@ -60,7 +61,7 @@ fun PreviewCustomElevatedFilterChipNotSelected() {
 			index = 1,
 			selectedChipIndex = 0,
 			onSelectedChange = { i, s -> {} },
-			label = "Axes",
+			labelRes = com.rabbitv.valheimviki.R.string.chip_axes,
 			icon = Lucide.Axe,
 			option = WeaponSubType.CROSSBOW,
 		)

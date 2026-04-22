@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -32,6 +33,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.wear.compose.material.ContentAlpha
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
@@ -45,17 +47,17 @@ import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
 @Composable
 fun ImageWithTopLabel(
-    modifier: Modifier = Modifier,
-    itemData: ItemData,
-    errorPainter: Painter? = null,
-    horizontalDividerWidth: Dp = 100.dp ,
-    subTitle: String? = null,
-    textStyle: TextStyle = MaterialTheme.typography.titleMedium,
-    contentScale: ContentScale =  ContentScale.Crop,
-    onItemClick: (itemData: ItemData) -> Unit ={},
+	modifier: Modifier = Modifier,
+	itemData: ItemData,
+	errorPainter: Painter? = null,
+	horizontalDividerWidth: Dp = 100.dp,
+	subTitle: String? = null,
+	textStyle: TextStyle = MaterialTheme.typography.labelLarge,
+	contentScale: ContentScale = ContentScale.Crop,
+	onItemClick: (itemData: ItemData) -> Unit = {},
 ) {
-    Box(
-        modifier = modifier
+	Box(
+		modifier = modifier
             .padding(BODY_CONTENT_PADDING.dp)
             .height(250.dp)
             .clip(RoundedCornerShape(DETAIL_ITEM_SHAPE_PADDING))
@@ -63,60 +65,66 @@ fun ImageWithTopLabel(
                 elevation = 8.dp,
                 shape = RoundedCornerShape(8.dp),
                 spotColor = Color.Black.copy(alpha = 0.25f)
-            ).clickable { onItemClick(itemData) },
-        contentAlignment = Alignment.TopStart
-    ) {
-        AsyncImage(
-            modifier = Modifier.fillMaxSize(),
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(itemData.imageUrl)
-                .crossfade(true)
-                .build(),
-            placeholder = painterResource(R.drawable.ic_placeholder),
-            error = errorPainter,
-            contentDescription = stringResource(R.string.mainbosssection),
-            contentScale = contentScale,
-        )
-        Surface(
-            modifier = Modifier
+            )
+            .clickable { onItemClick(itemData) },
+		contentAlignment = Alignment.TopStart
+	) {
+		AsyncImage(
+			modifier = Modifier.fillMaxSize(),
+			model = ImageRequest.Builder(LocalContext.current)
+				.data(itemData.imageUrl)
+				.crossfade(true)
+				.build(),
+			placeholder = painterResource(R.drawable.ic_placeholder),
+			error = errorPainter,
+			contentDescription = stringResource(R.string.mainbosssection),
+			contentScale = contentScale,
+		)
+		Surface(
+			modifier = Modifier
                 .fillMaxHeight(0.2f)
                 .fillMaxWidth(),
-            tonalElevation = 0.dp,
-            color = Color.Black.copy(alpha = ContentAlpha.medium),
-        ) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = itemData.name,
-                    color = Color.White,
-                    style =textStyle,
-                    modifier = Modifier
+			tonalElevation = 0.dp,
+			color = Color.Black.copy(alpha = ContentAlpha.medium),
+		) {
+			Column(
+				modifier = Modifier.fillMaxSize(),
+				verticalArrangement = Arrangement.Center,
+				horizontalAlignment = Alignment.CenterHorizontally
+			) {
+				Text(
+					text = itemData.name,
+					color = Color.White,
+					style = textStyle,
+					modifier = Modifier
                         .wrapContentSize(align = Alignment.Center)
                         .padding
                             (horizontal = 8.dp),
-                )
-                HorizontalDivider(
-                    modifier = Modifier.width(horizontalDividerWidth),
-                    thickness = 1.dp,
-                    color = Color.White
-                )
-                subTitle?.let {
-                    Text(
-                        text = subTitle,
-                        color = Color.White,
-                        style = MaterialTheme.typography.labelMedium,
-                        modifier = Modifier
+				)
+				HorizontalDivider(
+					modifier = Modifier.width(horizontalDividerWidth),
+					thickness = 1.dp,
+					color = Color.White
+				)
+				subTitle?.let {
+					Text(
+						text = subTitle,
+						color = Color.White,
+						style = MaterialTheme.typography.labelLarge,
+						autoSize = TextAutoSize.StepBased(
+							minFontSize = 12.sp,
+							maxFontSize = 16.sp,
+							stepSize = 1.sp,
+						),
+						modifier = Modifier
                             .wrapContentSize(align = Alignment.Center)
                             .padding
                                 (horizontal = 8.dp),
-                    )
-                }
-            }
-        }
-    }
+					)
+				}
+			}
+		}
+	}
 }
 
 
@@ -125,26 +133,26 @@ fun ImageWithTopLabel(
 @Composable
 fun PreviewBiomeImageHeaderSection50() {
 
-    val fakeMainBoss = MainBoss(
-        id = "boss1",
-        imageUrl = "https://via.placeholder.com/400x200.png?text=MainBoss+Image",
-        category = "CREATURE",
-        subCategory = "BOSS",
-        name = "BoneMass",
-        description = "Przykładowy opis głównego bossa.",
-        order = 1,
-        baseHP = 1500,
-        weakness = "Ogień",
-        resistance = "Lód",
-        baseDamage = "100",
-        collapseImmune = "False",
-        forsakenPower = "High"
-    )
-    ValheimVikiAppTheme {
-        ImageWithTopLabel(
-            errorPainter = painterResource(R.drawable.neck),
-            itemData = fakeMainBoss,
-            subTitle = "UUUU"
-        )
-    }
+	val fakeMainBoss = MainBoss(
+		id = "boss1",
+		imageUrl = "https://via.placeholder.com/400x200.png?text=MainBoss+Image",
+		category = "CREATURE",
+		subCategory = "BOSS",
+		name = "BoneMass",
+		description = "Przykładowy opis głównego bossa.",
+		order = 1,
+		baseHP = 1500,
+		weakness = "Ogień",
+		resistance = "Lód",
+		baseDamage = "100",
+		collapseImmune = "False",
+		forsakenPower = "High"
+	)
+	ValheimVikiAppTheme {
+		ImageWithTopLabel(
+			errorPainter = painterResource(R.drawable.neck),
+			itemData = fakeMainBoss,
+			subTitle = "UUUU"
+		)
+	}
 }

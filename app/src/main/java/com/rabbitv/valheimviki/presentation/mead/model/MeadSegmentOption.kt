@@ -5,9 +5,9 @@ import com.rabbitv.valheimviki.presentation.components.segmented.SegmentedOption
 
 
 enum class MeadSegmentOption(
-    override val label: String,
+    override val labelRes: Int,
     override val value: MeadSubCategory
 ) : SegmentedOption<MeadSubCategory> {
-    MEAD_BASES("MEAD BASES", MeadSubCategory.MEAD_BASE),
-    POTIONS("POTIONS", MeadSubCategory.POTION),
+    MEAD_BASES(com.rabbitv.valheimviki.R.string.segment_mead_bases, MeadSubCategory.MEAD_BASE),
+    POTIONS(com.rabbitv.valheimviki.R.string.segment_potions, MeadSubCategory.POTION),
 }

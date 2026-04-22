@@ -13,6 +13,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -56,14 +57,14 @@ fun MainAppBar(
 			{
 				Icon(
 					painter = painterResource(id = R.drawable.bars),
-					contentDescription = "Menu section Icon",
+					contentDescription = stringResource(R.string.cd_menu_icon),
 					modifier = Modifier.size(ICON_SIZE)
 				)
 			}
 		},
 		title = {
 			Text(
-				"ValheimViki",
+				stringResource(R.string.app_name),
 				color = MaterialTheme.colorScheme.onPrimaryContainer,
 				style = MaterialTheme.typography.headlineMedium,
 			)
@@ -76,7 +77,7 @@ fun MainAppBar(
 			) {
 				Icon(
 					painter = painterResource(R.drawable.ic_bookmarks),
-					contentDescription = "Bookmarks section Icon",
+					contentDescription = stringResource(R.string.cd_bookmarks_icon),
 					modifier = Modifier.size(ICON_SIZE)
 				)
 			}
@@ -87,7 +88,7 @@ fun MainAppBar(
 			) {
 				Icon(
 					painter = painterResource(R.drawable.icon_search),
-					contentDescription = "Search section Icon",
+					contentDescription = stringResource(R.string.cd_search_icon),
 					modifier = Modifier.size(ICON_SIZE)
 				)
 			}
@@ -98,7 +99,7 @@ fun MainAppBar(
 			) {
 				Icon(
 					imageVector = Lucide.Settings,
-					contentDescription = "Settings",
+					contentDescription = stringResource(R.string.settings),
 					modifier = Modifier.size(ICON_SIZE)
 				)
 			}

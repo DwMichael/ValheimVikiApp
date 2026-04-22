@@ -10,6 +10,7 @@ import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -20,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.composables.icons.lucide.ArrowLeft
 import com.composables.icons.lucide.Lucide
 import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
+import com.rabbitv.valheimviki.R
 
 @Composable
 fun AnimatedBackButton(
@@ -58,7 +60,7 @@ fun AnimatedBackButton(
 		) {
 			Icon(
 				Lucide.ArrowLeft,
-				contentDescription = "Back",
+				contentDescription = stringResource(R.string.cd_back),
 				tint = Color.White
 			)
 		}

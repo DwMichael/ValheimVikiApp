@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -23,13 +24,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.ScrollText
+import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.navigation.BuildingDetailDestination
 import com.rabbitv.valheimviki.navigation.DetailDestination
@@ -50,6 +54,7 @@ import com.rabbitv.valheimviki.presentation.components.ui_section.UiSection
 import com.rabbitv.valheimviki.presentation.detail.crafting.model.CraftingDetailUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.crafted.model.CraftedMaterialUiState
 import com.rabbitv.valheimviki.presentation.detail.material.crafted.viewmodel.CraftedMaterialDetailViewModel
+import com.rabbitv.valheimviki.ui.adaptive.adaptiveDetailWidth
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.CUSTOM_ITEM_CARD_FILL_WIDTH
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
@@ -81,7 +86,7 @@ fun CraftedMaterialDetailContent(
 	onToggleFavorite: () -> Unit,
 	uiState: CraftedMaterialUiState,
 ) {
-    val scrollState = rememberScrollState()
+	val scrollState = rememberScrollState()
 	val handleClick = remember {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
 	}
@@ -100,7 +105,7 @@ fun CraftedMaterialDetailContent(
 			uiState.material?.let { material ->
 				Column(
 					modifier = Modifier
-						.fillMaxSize()
+						.adaptiveDetailWidth()
 						.verticalScroll(scrollState)
 						.padding(
 							top = 20.dp,
@@ -114,17 +119,22 @@ fun CraftedMaterialDetailContent(
 					Text(
 						material.name,
 						modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-						style = MaterialTheme.typography.displayMedium,
+						style = MaterialTheme.typography.headlineLarge,
+						autoSize = TextAutoSize.StepBased(
+							minFontSize = 22.sp,
+							maxFontSize = 34.sp,
+							stepSize = 1.sp,
+						),
 						textAlign = TextAlign.Center
 					)
 					SlavicDivider()
-                    material.description?.let {
-                        DetailExpandableText(
-                            text = material.description,
-                            boxPadding = BODY_CONTENT_PADDING.dp,
-                        )
+					material.description?.let {
+						DetailExpandableText(
+							text = material.description,
+							boxPadding = BODY_CONTENT_PADDING.dp,
+						)
 
-                    }
+					}
 
 					UiSection(
 						state = uiState.requiredCraftingStations,
@@ -159,7 +169,7 @@ fun CraftedMaterialDetailContent(
 
 							SectionHeader(
 								data = SectionHeaderData(
-									title = "Required Items",
+									title = stringResource(R.string.required_items),
 									subTitle = "Items needed to build this material.",
 									icon = Lucide.ScrollText,
 								),

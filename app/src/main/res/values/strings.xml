@@ -323,4 +323,9 @@
     <string name="preview_fully_centered_text">FULLY CENTERED TEXT</string>
     <string name="preview_top_app_bar">Top App Bar</string>
     <string name="cd_sacrificial_stones_image">Sacrifical Strones Image</string>
+    <!-- Language Popup -->
+    <string name="language_popup_title">Multiple Languages</string>
+    <string name="language_popup_message">The app supports multiple languages, but since it is a one-person fan project, currently only buttons and UI elements are translated, not the content in the users\' native language. This will be introduced in future updates.\n\nThank you for downloading the app! You can change the language in settings.</string>
+    <string name="language_popup_dismiss">I understand</string>
+    <string name="language_popup_wait">Wait (%d)</string>
 </resources>

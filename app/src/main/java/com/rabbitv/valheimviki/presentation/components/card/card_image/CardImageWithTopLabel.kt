@@ -23,6 +23,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
@@ -43,6 +45,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.wear.compose.material.ContentAlpha
 import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
@@ -64,7 +67,7 @@ fun CardImageWithTopLabel(
 	horizontalDividerWidth: Dp = 150.dp,
 	cradHeight: Dp = 300.dp,
 	subTitle: String? = null,
-	textStyle: TextStyle = MaterialTheme.typography.titleLarge,
+	textStyle: TextStyle = MaterialTheme.typography.headlineSmall,
 	contentScale: ContentScale = ContentScale.Crop,
 	painter: Painter? = painterResource(id = R.drawable.bg_crafting)
 ) {
@@ -125,6 +128,11 @@ fun CardImageWithTopLabel(
 							text = subTitle,
 							color = Color.White,
 							style = MaterialTheme.typography.labelLarge,
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 12.sp,
+					maxFontSize = 16.sp,
+					stepSize = 1.sp,
+				),
 							modifier = Modifier
 								.wrapContentSize(align = Alignment.Center)
 								.padding(horizontal = 8.dp),
@@ -159,7 +167,7 @@ fun CardImageWithTopLabel(
 						Image(
 							modifier = Modifier.fillMaxSize(),
 							painter = painterAsync,
-							contentDescription = "Card Image",
+							contentDescription = stringResource(R.string.cd_card_image),
 							contentScale = contentScale
 						)
 					}

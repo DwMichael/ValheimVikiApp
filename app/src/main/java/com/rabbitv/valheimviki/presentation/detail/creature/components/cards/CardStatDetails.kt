@@ -42,7 +42,7 @@ fun CardStatDetails(
 	icon: ImageVector,
 	iconColor: Color,
 	iconSize: Dp = 64.dp,
-	styleTextFirst: TextStyle = MaterialTheme.typography.bodyMedium,
+	styleTextFirst: TextStyle = MaterialTheme.typography.bodyLarge,
 	styleTextSecond: TextStyle = MaterialTheme.typography.bodyLarge,
 	cardPadding: Dp = 0.dp
 ) {
@@ -116,7 +116,7 @@ fun CardStatDetailsPreview() {
 		)
 		{
 			CardStatDetails(
-				title = "Health",
+				title = stringResource(R.string.health),
 				text = "10000",
 				icon = Lucide.Heart,
 				iconColor = Color(0xFFE91E63)
@@ -136,7 +136,7 @@ fun CardStatDetailsNullTextPreview() {
 		)
 		{
 			CardStatDetails(
-				title = "Health",
+				title = stringResource(R.string.health),
 				icon = Lucide.Heart,
 				iconColor = Color(0xFFE91E63)
 			)

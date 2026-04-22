@@ -16,6 +16,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -28,6 +30,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil3.ImageLoader
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
@@ -111,7 +114,12 @@ fun MainDetailImageAnimated(
 					Text(
 						text = title,
 						color = Color.White,
-						style = MaterialTheme.typography.displaySmall,
+						style = MaterialTheme.typography.headlineLarge,
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 22.sp,
+					maxFontSize = 34.sp,
+					stepSize = 1.sp,
+				),
 						textAlign = textAlign,
 						modifier = Modifier
 							.padding(horizontal = 8.dp)

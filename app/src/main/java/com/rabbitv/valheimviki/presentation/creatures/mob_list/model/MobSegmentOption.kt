@@ -5,10 +5,10 @@ import com.rabbitv.valheimviki.presentation.components.segmented.SegmentedOption
 
 
 enum class MobSegmentOption(
-    override val label: String,
+    override val labelRes: Int,
     override val value: CreatureSubCategory
 ) : SegmentedOption<CreatureSubCategory> {
-    PASSIVE("Passive", CreatureSubCategory.PASSIVE_CREATURE),
-    AGGRESSIVE("Hostile", CreatureSubCategory.AGGRESSIVE_CREATURE),
-    NPC("Npc", CreatureSubCategory.NPC),
+    PASSIVE(com.rabbitv.valheimviki.R.string.segment_passive, CreatureSubCategory.PASSIVE_CREATURE),
+    AGGRESSIVE(com.rabbitv.valheimviki.R.string.segment_hostile, CreatureSubCategory.AGGRESSIVE_CREATURE),
+    NPC(com.rabbitv.valheimviki.R.string.segment_npc, CreatureSubCategory.NPC),
 }

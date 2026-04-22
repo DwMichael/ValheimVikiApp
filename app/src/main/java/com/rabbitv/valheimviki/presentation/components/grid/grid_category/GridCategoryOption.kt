@@ -6,6 +6,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 interface GridCategoryOption<T> {
     val image: Int
     val icon : ImageVector
-    val label: String
+    @get:androidx.annotation.StringRes val labelRes: Int
     val value: T
 }

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -17,9 +18,15 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import com.rabbitv.valheimviki.ui.adaptive.LocalAdaptiveLayoutInfo
+import com.rabbitv.valheimviki.ui.adaptive.adaptiveDetailWidth
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.runtime.Composable
+import com.rabbitv.valheimviki.R
+import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -32,6 +39,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.rememberAsyncImagePainter
@@ -102,18 +110,20 @@ fun OreDepositDetailContent(
 	val handleClick = remember(onItemClick) {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
 	}
-	val pickaxesData = remember {
+	val pickaxesTitle = stringResource(R.string.pickaxes)
+	val pickaxesData = remember(pickaxesTitle) {
 		HorizontalPagerData(
-			title = "Pickaxes",
+			title = pickaxesTitle,
 			subTitle = "List of pickaxes that can mine this ore out",
 			icon = Lucide.Pickaxe,
 			iconRotationDegrees = 0f,
 			itemContentScale = ContentScale.Crop
 		)
 	}
-	val craftingObjectData = remember {
+	val extractorTitle = stringResource(R.string.extractor)
+	val craftingObjectData = remember(extractorTitle) {
 		HorizontalPagerData(
-			title = "Extractor",
+			title = extractorTitle,
 			subTitle = "List of extractors that can extract resource",
 			icon = Lucide.Combine,
 			iconRotationDegrees = 0f,
@@ -131,7 +141,8 @@ fun OreDepositDetailContent(
 				Column(
 					modifier = Modifier
 						.testTag("OreDepositDetailScreen")
-						.fillMaxSize()
+						
+						.adaptiveDetailWidth()
 						.verticalScroll(scrollState, enabled = !isRunning),
 					verticalArrangement = Arrangement.Top,
 					horizontalAlignment = Alignment.Start,
@@ -154,9 +165,14 @@ fun OreDepositDetailContent(
 					) { data ->
 						Text(
 							modifier = Modifier.align(Alignment.CenterHorizontally),
-							text = "PRIMARY SPAWN",
+							text = stringResource(R.string.primary_spawn),
 							textAlign = TextAlign.Center,
-							style = MaterialTheme.typography.titleLarge,
+							style = MaterialTheme.typography.headlineSmall,
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 16.sp,
+					maxFontSize = 24.sp,
+					stepSize = 1.sp,
+				),
 							maxLines = 1,
 							overflow = TextOverflow.Visible
 						)
@@ -174,6 +190,11 @@ fun OreDepositDetailContent(
 										Text(
 											biome.name.uppercase(),
 											style = MaterialTheme.typography.bodyLarge,
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 13.sp,
+					maxFontSize = 18.sp,
+					stepSize = 1.sp,
+				),
 											modifier = Modifier,
 											color = Color.White,
 											textAlign = TextAlign.Center
@@ -211,7 +232,7 @@ fun OreDepositDetailContent(
 							list = data,
 							icon = { Lucide.Gem },
 							starLevel = 0,
-							title = "Materials",
+							title = stringResource(R.string.materials),
 							subTitle = "Unique drops are obtained by mining this ore",
 						)
 					}

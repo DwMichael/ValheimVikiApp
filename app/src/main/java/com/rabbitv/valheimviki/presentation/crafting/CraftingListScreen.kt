@@ -28,6 +28,7 @@ import com.composables.icons.lucide.Flame
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.TrendingUp
 import com.composables.icons.lucide.Wrench
+import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.armor.ArmorSubCategory
 import com.rabbitv.valheimviki.domain.model.crafting_object.CraftingSubCategory
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
@@ -50,7 +51,7 @@ data class CraftingChip(
 	override val option: CraftingSubCategory,
 	override val icon: ImageVector,
 	val secondIcon: ImageVector? = null,
-	override val label: String
+	@get:androidx.annotation.StringRes override val labelRes: Int
 ) : ChipData<CraftingSubCategory>
 
 @Composable
@@ -142,33 +143,33 @@ private fun getChipsForCategory(): List<CraftingChip> {
 		CraftingChip(
 			CraftingSubCategory.CRAFTING_STATION,
 			Lucide.Wrench,
-			label = "Crafting Stations"
+			labelRes = R.string.crafting_stations
 		),
 		CraftingChip(
 			CraftingSubCategory.FOOD_CRAFTING,
 			Lucide.ChefHat,
-			label = "Food crafting Stations"
+			labelRes = R.string.chip_food_crafting_stations
 		),
 		CraftingChip(
 			CraftingSubCategory.SMELTING_CRAFTING,
 			Lucide.Flame,
-			label = "Smelting Stations"
+			labelRes = R.string.chip_smelting_stations
 		),
 		CraftingChip(
 			CraftingSubCategory.REFINING_STATION,
 			Lucide.Cog,
-			label = "Refinery Stations"
+			labelRes = R.string.chip_refinery_stations
 		),
 		CraftingChip(
 			CraftingSubCategory.CRAFTING_UPGRADER,
 			Lucide.TrendingUp,
-			label = "Crafting Upgraders"
+			labelRes = R.string.chip_crafting_upgraders
 		),
 		CraftingChip(
 			CraftingSubCategory.CRAFTING_UPGRADER_FOOD,
 			Lucide.Apple,
 			Lucide.TrendingUp,
-			label = "Crafting Upgraders For Food Station"
+			labelRes = R.string.chip_crafting_upgraders_food
 		),
 	)
 }
@@ -179,7 +180,7 @@ private fun getChipsForCategory(): List<CraftingChip> {
 fun PreviewSingleChoiceChip() {
 	ValheimVikiAppTheme {
 		SearchFilterBar(
-			onSelectedChange = { _,_-> },
+			onSelectedChange = { _, _ -> },
 			modifier = Modifier,
 			selectedOption = CraftingSubCategory.CRAFTING_STATION,
 			chips = getChipsForCategory()
@@ -196,8 +197,8 @@ fun PreviewCustomElevatedFilterChipSelected() {
 
 			index = 0,
 			selectedChipIndex = 0,
-			onSelectedChange = { _,_-> },
-			label = "Axes",
+			onSelectedChange = { _, _ -> },
+			labelRes = R.string.chip_axes,
 			icon = Lucide.Axe,
 			option = ArmorSubCategory.CAPE,
 		)
@@ -212,8 +213,8 @@ fun PreviewCustomElevatedFilterChipNotSelected() {
 		CustomElevatedFilterChip(
 			index = 1,
 			selectedChipIndex = 0,
-			onSelectedChange = { _,_-> },
-			label = "Axes",
+			onSelectedChange = { _, _ -> },
+			labelRes = R.string.chip_axes,
 			icon = Lucide.Axe,
 			option = ArmorSubCategory.CAPE,
 		)
@@ -234,7 +235,7 @@ fun PreviewWeaponListStateRenderer() {
 			paddingValues = PaddingValues(),
 			modifier = Modifier,
 			onChipSelected = {},
-			onItemClick = { _ ->  }
+			onItemClick = { _ -> }
 		)
 	}
 }

@@ -26,6 +26,7 @@ import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -141,7 +142,7 @@ fun PagerScreen(onBoardingPage: OnBoardingPage, position: Int, horizontalPadding
 		if (position == 0) {
 			Image(
 				painter = painterResource(id = R.drawable.valheim_viki_log_no_bg),
-				contentDescription = "VikingLogo",
+				contentDescription = stringResource(R.string.cd_viking_logo),
 				contentScale = ContentScale.Crop,
 				modifier = Modifier
 					.size(260.dp)

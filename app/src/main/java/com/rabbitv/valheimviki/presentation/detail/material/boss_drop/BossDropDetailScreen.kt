@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -18,13 +19,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.data.mappers.creatures.toMainBoss
 import com.rabbitv.valheimviki.domain.model.material.MaterialSubType
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
@@ -41,6 +45,7 @@ import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsD
 import com.rabbitv.valheimviki.presentation.detail.material.boss_drop.model.BossDropUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.boss_drop.model.BossDropUiState
 import com.rabbitv.valheimviki.presentation.detail.material.boss_drop.viewmodel.BossDropDetailViewModel
+import com.rabbitv.valheimviki.ui.adaptive.adaptiveDetailWidth
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
@@ -74,7 +79,7 @@ fun BossDropDetailContent(
 	uiState: BossDropUiState,
 ) {
 
-    val scrollState = rememberScrollState()
+	val scrollState = rememberScrollState()
 
 
 
@@ -92,7 +97,7 @@ fun BossDropDetailContent(
 			uiState.material?.let { material ->
 				Column(
 					modifier = Modifier
-						.fillMaxSize()
+						.adaptiveDetailWidth()
 						.verticalScroll(scrollState)
 						.padding(
 							top = 20.dp,
@@ -106,26 +111,36 @@ fun BossDropDetailContent(
 					Text(
 						material.name,
 						modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-						style = MaterialTheme.typography.displayMedium,
+						style = MaterialTheme.typography.headlineLarge,
+						autoSize = TextAutoSize.StepBased(
+							minFontSize = 22.sp,
+							maxFontSize = 34.sp,
+							stepSize = 1.sp,
+						),
 						textAlign = TextAlign.Center
 					)
 					SlavicDivider()
 
-                    material.description?.let {
-                        DetailExpandableText(
-                            text = material.description,
-                            boxPadding = BODY_CONTENT_PADDING.dp,
-                        )
+					material.description?.let {
+						DetailExpandableText(
+							text = material.description,
+							boxPadding = BODY_CONTENT_PADDING.dp,
+						)
 
 					}
 					material.usage?.let {
-						TridentsDividedRow("Usage")
+						TridentsDividedRow(stringResource(R.string.usage))
 						Text(
 							text = remember(it) {
 								AnnotatedString.fromHtml(it)
 							},
 							modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
 							style = MaterialTheme.typography.bodyLarge,
+							autoSize = TextAutoSize.StepBased(
+								minFontSize = 13.sp,
+								maxFontSize = 18.sp,
+								stepSize = 1.sp,
+							),
 						)
 					}
 
@@ -138,6 +153,11 @@ fun BossDropDetailContent(
 										text = boss.forsakenPower,
 										modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
 										style = MaterialTheme.typography.bodyLarge,
+										autoSize = TextAutoSize.StepBased(
+											minFontSize = 13.sp,
+											maxFontSize = 18.sp,
+											stepSize = 1.sp,
+										),
 									)
 								}
 								TridentsDividedRow()

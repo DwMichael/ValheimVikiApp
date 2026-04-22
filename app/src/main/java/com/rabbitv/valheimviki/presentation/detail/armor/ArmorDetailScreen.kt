@@ -15,10 +15,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -53,6 +56,7 @@ import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsD
 import com.rabbitv.valheimviki.presentation.detail.armor.model.ArmorDetailUiEvent
 import com.rabbitv.valheimviki.presentation.detail.armor.model.ArmorDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.armor.viewmodel.ArmorDetailViewModel
+import com.rabbitv.valheimviki.ui.adaptive.adaptiveDetailWidth
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ForestGreen20Dark
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
@@ -60,6 +64,7 @@ import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.ui.theme.YellowDTBorder
 import com.rabbitv.valheimviki.ui.theme.YellowDTNotSelected
 import com.rabbitv.valheimviki.utils.mapUpgradeArmorInfoToGridList
+import com.rabbitv.valheimviki.R
 
 
 @Composable
@@ -106,7 +111,7 @@ fun ArmorDetailContent(
 			) {
 				Column(
 					modifier = Modifier
-						.fillMaxSize()
+						.adaptiveDetailWidth()
 						.verticalScroll(scrollState)
 						.padding(
 							top = 20.dp,
@@ -119,7 +124,12 @@ fun ArmorDetailContent(
 					Text(
 						armor.name,
 						modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-						style = MaterialTheme.typography.displayMedium,
+						style = MaterialTheme.typography.headlineLarge,
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 22.sp,
+					maxFontSize = 34.sp,
+					stepSize = 1.sp,
+				),
 						textAlign = TextAlign.Center
 					)
 					SlavicDivider()
@@ -140,7 +150,7 @@ fun ArmorDetailContent(
 								bottom = BODY_CONTENT_PADDING.dp
 							),
 							color = PrimaryWhite,
-							style = MaterialTheme.typography.headlineMedium
+							style = MaterialTheme.typography.headlineSmall
 						)
 
 						armor.upgradeInfoList.forEachIndexed { levelIndex, upgradeInfoForLevel ->
@@ -197,7 +207,7 @@ fun ArmorDetailContent(
 					armor.effects?.let { effectContent ->
 						if (effectContent.isNotBlank()) {
 							InfoSection(
-								title = "Additional Effect",
+								title = stringResource(R.string.additional_effect),
 								content = effectContent
 							)
 						}
@@ -206,7 +216,7 @@ fun ArmorDetailContent(
 					armor.usage?.let { usageContent ->
 						if (usageContent.isNotBlank()) {
 							InfoSection(
-								title = "Usage",
+								title = stringResource(R.string.usage),
 								content = usageContent
 							)
 						}
@@ -284,7 +294,12 @@ fun InfoSection(
 				title,
 			),
 			color = PrimaryWhite,
-			style = MaterialTheme.typography.titleMedium,
+			style = MaterialTheme.typography.labelLarge,
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 12.sp,
+					maxFontSize = 16.sp,
+					stepSize = 1.sp,
+				),
 			fontWeight = FontWeight.Bold
 		)
 		Spacer(modifier = Modifier.height(8.dp))
@@ -294,6 +309,11 @@ fun InfoSection(
 			),
 			color = YellowDTNotSelected,
 			style = MaterialTheme.typography.bodyLarge,
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 13.sp,
+					maxFontSize = 18.sp,
+					stepSize = 1.sp,
+				),
 			lineHeight = 22.sp
 		)
 	}

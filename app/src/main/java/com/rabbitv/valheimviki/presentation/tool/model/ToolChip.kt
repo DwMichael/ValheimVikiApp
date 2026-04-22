@@ -7,5 +7,5 @@ import com.rabbitv.valheimviki.presentation.components.chip.ChipData
 class ToolChip(
 	override val option: ToolSubCategory,
 	override val icon: ImageVector,
-	override val label: String
+	@get:androidx.annotation.StringRes override val labelRes: Int
 ) : ChipData<ToolSubCategory>

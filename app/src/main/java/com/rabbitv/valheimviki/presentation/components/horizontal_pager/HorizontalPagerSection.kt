@@ -29,6 +29,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
@@ -52,6 +54,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
 import androidx.wear.compose.material.ContentAlpha
 import coil3.compose.AsyncImage
@@ -177,20 +180,30 @@ fun HorizontalHeader(
 			Icon(
 				data.icon,
 				tint = Color.White,
-				contentDescription = "Rectangle section Icon",
+				contentDescription = stringResource(R.string.cd_rectangle_section_icon),
 				modifier = modifier.rotate(data.iconRotationDegrees)
 			)
 			Spacer(modifier = Modifier.width(11.dp))
 			Text(
 				data.title,
-				style = MaterialTheme.typography.titleLarge,
+				style = MaterialTheme.typography.headlineSmall,
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 16.sp,
+					maxFontSize = 24.sp,
+					stepSize = 1.sp,
+				),
 			)
 		}
 		if (data.subTitle.isNotBlank()) {
 			Spacer(modifier = Modifier.padding(6.dp))
 			Text(
 				data.subTitle,
-				style = MaterialTheme.typography.titleMedium,
+				style = MaterialTheme.typography.labelLarge,
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 12.sp,
+					maxFontSize = 16.sp,
+					stepSize = 1.sp,
+				),
 			)
 		}
 	}
@@ -271,11 +284,11 @@ fun HorizontalPagerItem(
 				color = ForestGreen10Dark,
 			) {
 				Text(
-					text = "${pageIndex + 1}/$totalSize",
+					text = stringResource(R.string.page_index_of_total, pageIndex + 1, totalSize),
 					modifier = Modifier.fillMaxWidth(),
 					textAlign = TextAlign.Center,
 					color = Color.White,
-					style = MaterialTheme.typography.labelSmall
+					style = MaterialTheme.typography.labelLarge
 				)
 			}
 
@@ -297,6 +310,11 @@ fun HorizontalPagerItem(
 					overflow = TextOverflow.Ellipsis,
 					color = Color.White,
 					style = MaterialTheme.typography.labelLarge,
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 12.sp,
+					maxFontSize = 16.sp,
+					stepSize = 1.sp,
+				),
 				)
 			}
 		}
@@ -334,7 +352,7 @@ fun PreviewRectangleSectionHeader() {
 		})
 
 		val horizontalPagerData = HorizontalPagerData(
-			title = "Creatuers",
+			title = stringResource(R.string.creatures),
 			subTitle = "Creatures you may encounter in this biome",
 			icon = Lucide.PawPrint,
 			iconRotationDegrees = -85f,

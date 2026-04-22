@@ -5,9 +5,9 @@ import com.rabbitv.valheimviki.presentation.components.segmented.SegmentedOption
 
 
 enum class PoiSegmentOption(
-    override val label: String,
+    override val labelRes: Int,
     override val value: PointOfInterestSubCategory
 ) : SegmentedOption<PointOfInterestSubCategory> {
-    FORSAKEN_ALTAR("ALTARS", PointOfInterestSubCategory.FORSAKEN_ALTAR),
-    STRUCTURE("STRUCTURES", PointOfInterestSubCategory.STRUCTURE),
+    FORSAKEN_ALTAR(com.rabbitv.valheimviki.R.string.segment_altars, PointOfInterestSubCategory.FORSAKEN_ALTAR),
+    STRUCTURE(com.rabbitv.valheimviki.R.string.segment_structures, PointOfInterestSubCategory.STRUCTURE),
 }

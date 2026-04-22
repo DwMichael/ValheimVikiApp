@@ -6,15 +6,21 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import com.rabbitv.valheimviki.ui.adaptive.LocalAdaptiveLayoutInfo
+import com.rabbitv.valheimviki.ui.adaptive.adaptiveDetailWidth
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -25,6 +31,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.composables.icons.lucide.Clock2
@@ -126,7 +133,8 @@ fun MeadDetailContent(
 			uiState.mead?.let { mead ->
 				Column(
 					modifier = Modifier
-						.fillMaxSize()
+						
+						.adaptiveDetailWidth()
 						.verticalScroll(scrollState)
 						.padding(
 							top = 20.dp,
@@ -140,7 +148,12 @@ fun MeadDetailContent(
 					Text(
 						mead.name,
 						modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-						style = MaterialTheme.typography.displayMedium,
+						style = MaterialTheme.typography.headlineLarge,
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 22.sp,
+					maxFontSize = 34.sp,
+					stepSize = 1.sp,
+				),
 						textAlign = TextAlign.Center
 					)
 					SlavicDivider()
@@ -165,7 +178,7 @@ fun MeadDetailContent(
 								SectionHeader(
 									modifier = Modifier.fillMaxWidth(),
 									data = SectionHeaderData(
-										title = "Recipe",
+										title = stringResource(R.string.recipe),
 										subTitle = "Ingredients required to craft this item",
 										icon = if (category == MeadSubCategory.MEAD_BASE) Lucide.CookingPot else Lucide.FlaskRound,
 									)
@@ -201,7 +214,7 @@ fun MeadDetailContent(
 								AnimatedStatCard(
 									id = "duration_stat",
 									icon = Lucide.Clock2,
-									label = "Duration",
+									label = stringResource(R.string.duration),
 									value = "${mead.duration.toString()} min",
 									details = "How long this potion's effects remain active after consumption. The timer begins immediately upon eating and cannot be paused or extended.",
 								)
@@ -210,7 +223,7 @@ fun MeadDetailContent(
 								AnimatedStatCard(
 									id = "cooldown_stat",
 									icon = Lucide.ClockArrowDown,
-									label = "Cooldown",
+									label = stringResource(R.string.cooldown),
 									value = mead.cooldown.toString(),
 									details = "The cooldown is the time you must wait before consuming another potion or mead of the same type. It prevents immediate re-use and encourages strategic planning in combat or exploration.",
 								)
@@ -219,7 +232,7 @@ fun MeadDetailContent(
 								AnimatedStatCard(
 									id = "stack_size_stat",
 									icon = Lucide.Layers2,
-									label = "Stack size",
+									label = stringResource(R.string.stack_size),
 									value = mead.recipeOutput.toString(),
 									details = "The amount of meads produced by fermenting the mead base for two in-game days.",
 								)

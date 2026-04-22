@@ -54,7 +54,7 @@ import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 data class WeaponChip(
 	override val option: WeaponSubType,
 	override val icon: ImageVector,
-	override val label: String
+	@get:androidx.annotation.StringRes override val labelRes: Int
 ) : ChipData<WeaponSubType>
 
 @Composable
@@ -182,73 +182,73 @@ fun WeaponListDisplay(
 private fun getChipsForCategory(category: WeaponSubCategory): List<WeaponChip> {
 	return when (category) {
 		WeaponSubCategory.MELEE_WEAPON -> listOf(
-			WeaponChip(WeaponSubType.AXE, Lucide.Axe, "Axes"),
+			WeaponChip(WeaponSubType.AXE, Lucide.Axe, R.string.chip_axes),
 			WeaponChip(
 				WeaponSubType.CLUB,
 				ImageVector.vectorResource(id = R.drawable.club),
-				"Clubs"
+				R.string.chip_clubs
 			),
 			WeaponChip(
 				WeaponSubType.SWORD,
 				ImageVector.vectorResource(id = R.drawable.sword),
-				"Swords"
+				R.string.chip_swords
 			),
-			WeaponChip(WeaponSubType.WOODEN_WEAPON, Lucide.Swords, "Wooden weapons"),
+			WeaponChip(WeaponSubType.WOODEN_WEAPON, Lucide.Swords, R.string.chip_wooden_weapons),
 			WeaponChip(
 				WeaponSubType.SPEAR,
 				ImageVector.vectorResource(id = R.drawable.spear),
-				"Spears"
+				R.string.chip_spears
 			),
 			WeaponChip(
 				WeaponSubType.POLEARM,
 				ImageVector.vectorResource(id = R.drawable.polearm),
-				"Polearms"
+				R.string.chip_polearms
 			), // Fixed typo
 			WeaponChip(
 				WeaponSubType.KNIFES,
 				ImageVector.vectorResource(id = R.drawable.knife),
-				"Knives"
+				R.string.chip_knives
 			),
-			WeaponChip(WeaponSubType.FISTS, Lucide.Grab, "Fists"),
-			WeaponChip(WeaponSubType.SHIELD, Lucide.Shield, "Shields")
+			WeaponChip(WeaponSubType.FISTS, Lucide.Grab, R.string.chip_fists),
+			WeaponChip(WeaponSubType.SHIELD, Lucide.Shield, R.string.chip_shields)
 		)
 
 		WeaponSubCategory.RANGED_WEAPON -> listOf(
 			WeaponChip(
 				WeaponSubType.BOW,
 				ImageVector.vectorResource(id = R.drawable.bow_arrow),
-				"Bows"
+				R.string.chip_bows
 			),
 			WeaponChip(
 				WeaponSubType.CROSSBOW,
 				ImageVector.vectorResource(id = R.drawable.crossbow),
-				"Crossbows"
+				R.string.chip_crossbows
 			)
 		)
 
 		WeaponSubCategory.MAGIC_WEAPON -> listOf(
-			WeaponChip(WeaponSubType.ELEMENTAL_MAGIC, Lucide.WandSparkles, "Elemental magic"),
-			WeaponChip(WeaponSubType.BLOOD_MAGIC, Lucide.Wand, "Blood magic")
+			WeaponChip(WeaponSubType.ELEMENTAL_MAGIC, Lucide.WandSparkles, R.string.chip_elemental_magic),
+			WeaponChip(WeaponSubType.BLOOD_MAGIC, Lucide.Wand, R.string.chip_blood_magic)
 		)
 
 		WeaponSubCategory.AMMO -> listOf(
 			WeaponChip(
 				WeaponSubType.ARROW,
 				ImageVector.vectorResource(id = R.drawable.arrow),
-				"Arrows"
+				R.string.chip_arrows
 			),
 			WeaponChip(
 				WeaponSubType.BOLT,
 				ImageVector.vectorResource(id = R.drawable.bolt),
-				"Bolts"
+				R.string.chip_bolts
 			), // Fixed label
 			WeaponChip(
 				WeaponSubType.MISSILE,
 				ImageVector.vectorResource(id = R.drawable.missile),
-				"Missiles"
+				R.string.chip_missiles
 			),
-			WeaponChip(WeaponSubType.BOMB, Lucide.Bomb, "Bombs"),
-			WeaponChip(WeaponSubType.BLOB_BOMB, Lucide.Sparkles, "Blob Bombs"),
+			WeaponChip(WeaponSubType.BOMB, Lucide.Bomb, R.string.chip_bombs),
+			WeaponChip(WeaponSubType.BLOB_BOMB, Lucide.Sparkles, R.string.chip_blob_bombs),
 		)
 	}
 }

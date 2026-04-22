@@ -12,9 +12,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -30,6 +31,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.wear.compose.material.ContentAlpha
 import coil3.ImageLoader
 import coil3.compose.AsyncImage
@@ -123,11 +125,16 @@ fun AnimatedGridItem(
 						)
 					)
 			) {
-				Text(
+				BasicText(
 					text = item.name,
-					color = PrimaryWhite,
-					style = MaterialTheme.typography.headlineSmall,
+					style = MaterialTheme.typography.titleMedium.copy(color = PrimaryWhite),
+					autoSize = TextAutoSize.StepBased(
+						minFontSize = 12.sp,
+						maxFontSize = 18.sp,
+						stepSize = 1.sp,
+					),
 					overflow = TextOverflow.Ellipsis,
+					maxLines = 2,
 					modifier = Modifier
 						.padding(horizontal = 8.dp)
 						.sharedBounds(

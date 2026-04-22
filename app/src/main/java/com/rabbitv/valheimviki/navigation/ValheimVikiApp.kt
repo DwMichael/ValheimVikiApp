@@ -289,6 +289,7 @@ fun MainContainer(
 			}
 		}
 	}
+	com.rabbitv.valheimviki.presentation.components.language_popup.LanguageNotificationDialog()
 }
 
 

@@ -64,7 +64,7 @@ fun <T> SearchFilterBar(
 						index = index,
 						selectedChipIndex = selectedIndex,
 						onSelectedChange = onSelectedChange,
-						label = chip.label,
+						labelRes = chip.labelRes,
 						icon = chip.icon,
 						option = chip.option
 					)
@@ -84,7 +84,7 @@ fun <T> SearchFilterBar(
 						index = index,
 						selectedChipIndex = selectedIndex,
 						onSelectedChange = onSelectedChange,
-						label = chip.label,
+						labelRes = chip.labelRes,
 						icon = chip.icon,
 						option = chip.option
 					)
@@ -108,7 +108,7 @@ private fun StartRow(
 			border = null,
 			selected = expanded,
 			onClick = onToggle,
-			label = { Text("Expand filters") },
+			label = { Text(androidx.compose.ui.res.stringResource(com.rabbitv.valheimviki.R.string.label_expand_filters)) },
 			leadingIcon = {
 				Icon(
 					imageVector = Lucide.SlidersHorizontal,

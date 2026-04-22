@@ -48,7 +48,7 @@ import com.rabbitv.valheimviki.utils.FakeData
 class ArmorChip(
 	override val option: ArmorSubCategory,
 	override val icon: ImageVector,
-	override val label: String
+	@get:androidx.annotation.StringRes override val labelRes: Int
 ) : ChipData<ArmorSubCategory>
 
 @Composable
@@ -144,27 +144,27 @@ private fun getChipsForCategory(): List<ArmorChip> {
 		ArmorChip(
 			ArmorSubCategory.CAPE,
 			ImageVector.vectorResource(id = R.drawable.cape),
-			"Capes"
+			R.string.chip_capes
 		),
 		ArmorChip(
 			ArmorSubCategory.CHEST_ARMOR,
 			ImageVector.vectorResource(id = R.drawable.chest_armor),
-			"Chests Armor"
+			R.string.chip_chests_armor
 		),
 		ArmorChip(
 			ArmorSubCategory.LEG_ARMOR,
 			ImageVector.vectorResource(id = R.drawable.leg_armor),
-			"Legs Armor"
+			R.string.chip_legs_armor
 		),
 		ArmorChip(
 			ArmorSubCategory.ACCESSORIES,
 			Lucide.Blend,
-			"Accessories"
+			R.string.chip_accessories
 		),
 		ArmorChip(
 			ArmorSubCategory.HELMET,
 			ImageVector.vectorResource(id = R.drawable.helmet),
-			"Helmet"
+			R.string.chip_helmet
 		),
 	)
 }
@@ -192,7 +192,7 @@ fun PreviewCustomElevatedFilterChipSelected() {
 			index = 0,
 			selectedChipIndex = 0,
 			onSelectedChange = { _,_ -> },
-			label = "Axes",
+			labelRes = R.string.chip_axes,
 			icon = Lucide.Axe,
 			option = ArmorSubCategory.CAPE,
 		)
@@ -208,7 +208,7 @@ fun PreviewCustomElevatedFilterChipNotSelected() {
 			index = 1,
 			selectedChipIndex = 0,
 			onSelectedChange = { _,_ -> },
-			label = "Axes",
+			labelRes = R.string.chip_axes,
 			icon = Lucide.Axe,
 			option = ArmorSubCategory.CAPE,
 		)

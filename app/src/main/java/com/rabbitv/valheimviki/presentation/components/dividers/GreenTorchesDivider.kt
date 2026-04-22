@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -44,7 +45,7 @@ fun GreenTorchesDivider(
 	) {
 		Image(
 			painter = painterResource(id = R.drawable.green_thorch2),
-			contentDescription = "Divider Image",
+			contentDescription = stringResource(R.string.cd_divider_image),
 			contentScale = ContentScale.Fit,
 			modifier = Modifier.height(45.dp) // Adjust height as needed
 		)
@@ -68,7 +69,7 @@ fun GreenTorchesDivider(
 		}
 		Image(
 			painter = painterResource(id = R.drawable.green_thorch2),
-			contentDescription = "Divider Image",
+			contentDescription = stringResource(R.string.cd_divider_image),
 			contentScale = ContentScale.Fit,
 			modifier = Modifier
                 .height(45.dp)
@@ -84,5 +85,5 @@ fun GreenTorchesDivider(
 @PreviewLightDark
 @Preview
 fun PreviewGreenTorchesDivider() {
-	GreenTorchesDivider(text = "FORSAKEN POWER")
+	GreenTorchesDivider(text = stringResource(R.string.forsaken_power))
 }

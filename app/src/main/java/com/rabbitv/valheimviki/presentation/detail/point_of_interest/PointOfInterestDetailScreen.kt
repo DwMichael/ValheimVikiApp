@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -12,9 +13,15 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import com.rabbitv.valheimviki.ui.adaptive.LocalAdaptiveLayoutInfo
+import com.rabbitv.valheimviki.ui.adaptive.adaptiveDetailWidth
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.runtime.Composable
+import com.rabbitv.valheimviki.R
+import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -26,6 +33,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.rememberAsyncImagePainter
@@ -89,21 +97,21 @@ fun PointOfInterestDetailContent(
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
 	}
 	val altarOfferings = HorizontalPagerData(
-		title = "Offerings",
+		title = stringResource(R.string.offerings),
 		subTitle = "List of offerings that are needed to summon boss",
 		icon = Lucide.HandCoins,
 		iconRotationDegrees = 0f,
 		itemContentScale = ContentScale.Crop
 	)
 	val weaponsData = HorizontalPagerData(
-		title = "Weapons",
+		title = stringResource(R.string.weapons),
 		subTitle = "Weapons that can be found in this place",
 		icon = Lucide.Swords,
 		iconRotationDegrees = 0f,
 		itemContentScale = ContentScale.Crop
 	)
 	val creatureData = HorizontalPagerData(
-		title = "Creatures",
+		title = stringResource(R.string.creatures),
 		subTitle = "Creatures related to this place",
 		icon = Lucide.Skull,
 		iconRotationDegrees = 0f,
@@ -120,7 +128,8 @@ fun PointOfInterestDetailContent(
 			Column(
 				modifier = Modifier
 					.testTag("TreeDetailScreen")
-					.fillMaxSize()
+					
+					.adaptiveDetailWidth()
 					.verticalScroll(scrollState),
 				verticalArrangement = Arrangement.Top,
 				horizontalAlignment = Alignment.Start,
@@ -142,9 +151,14 @@ fun PointOfInterestDetailContent(
 					{ data ->
 						Text(
 							modifier = Modifier.align(Alignment.CenterHorizontally),
-							text = "PRIMARY SPAWN",
+							text = stringResource(R.string.primary_spawn),
 							textAlign = TextAlign.Center,
-							style = MaterialTheme.typography.titleLarge,
+							style = MaterialTheme.typography.headlineSmall,
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 16.sp,
+					maxFontSize = 24.sp,
+					stepSize = 1.sp,
+				),
 							maxLines = 1,
 							overflow = TextOverflow.Visible
 						)
@@ -171,6 +185,11 @@ fun PointOfInterestDetailContent(
 										Text(
 											biome.name.uppercase(),
 											style = MaterialTheme.typography.bodyLarge,
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 13.sp,
+					maxFontSize = 18.sp,
+					stepSize = 1.sp,
+				),
 											modifier = Modifier,
 											color = Color.White,
 											textAlign = TextAlign.Center
@@ -196,7 +215,7 @@ fun PointOfInterestDetailContent(
 							list = data,
 							icon = { Lucide.Gem },
 							starLevel = 0,
-							title = "Materials",
+							title = stringResource(R.string.materials),
 							subTitle = "Unique drops are obtained in this place"
 						)
 					}

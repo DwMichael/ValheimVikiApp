@@ -33,4 +33,14 @@ class DataStoreRepository @Inject constructor(
 	fun languageProvider(): Flow<String> {
 		return dataStore.languageProvider()
 	}
+
+	suspend fun saveLanguagePopupState(shown: Boolean) {
+		withContext(ioDispatcher) {
+			dataStore.saveLanguagePopupState(shown)
+		}
+	}
+
+	fun readLanguagePopupState(): Flow<Boolean> {
+		return dataStore.readLanguagePopupState()
+	}
 }

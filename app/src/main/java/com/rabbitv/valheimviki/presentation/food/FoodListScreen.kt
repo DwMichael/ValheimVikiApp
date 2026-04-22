@@ -5,8 +5,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -24,11 +26,10 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.composables.icons.lucide.Apple
+import com.composables.icons.lucide.CookingPot
 import com.composables.icons.lucide.Heart
 import com.composables.icons.lucide.Lucide
-import com.composables.icons.lucide.Rat
-import com.composables.icons.lucide.Skull
-import com.composables.icons.lucide.User
 import com.composables.icons.lucide.WandSparkles
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.food.FoodSubCategory
@@ -52,7 +53,7 @@ import kotlinx.coroutines.launch
 data class FoodChip(
 	override val option: FoodSortType,
 	override val icon: ImageVector,
-	override val label: String
+	@get:androidx.annotation.StringRes override val labelRes: Int
 ) : ChipData<FoodSortType>
 
 @Composable
@@ -62,9 +63,8 @@ fun FoodListScreen(
 	viewModel: FoodListViewModel = hiltViewModel()
 ) {
 	val icons: List<ImageVector> = listOf(
-		Lucide.Rat,
-		Lucide.Skull,
-		Lucide.User
+		Lucide.CookingPot,
+		Lucide.Apple,
 	)
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 	val lazyListState = rememberLazyListState()
@@ -96,7 +96,8 @@ fun FoodListScreen(
 							lazyListState.animateScrollToItem(0)
 						}
 					},
-					icons = icons
+					icons = icons,
+					modifier = Modifier.wrapContentWidth()
 				)
 				Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
 				SearchFilterBar(
@@ -152,14 +153,14 @@ private fun getChipsForSortType(category: FoodSubCategory): List<FoodChip> {
 			FoodChip(
 				FoodSortType.STAMINA,
 				ImageVector.vectorResource(id = R.drawable.sprint_24px),
-				"Stamina"
+				R.string.stamina
 			),
-			FoodChip(FoodSortType.HEALTH, Lucide.Heart, "Health"),
-			FoodChip(FoodSortType.EITR, Lucide.WandSparkles, "Eitr"),
+			FoodChip(FoodSortType.HEALTH, Lucide.Heart, R.string.health),
+			FoodChip(FoodSortType.EITR, Lucide.WandSparkles, R.string.eitr),
 			FoodChip(
 				FoodSortType.HEALING,
 				ImageVector.vectorResource(id = R.drawable.heart_plus_24px),
-				"Healing"
+				R.string.healing
 			)
 		)
 

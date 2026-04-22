@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -17,8 +18,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import com.rabbitv.valheimviki.ui.adaptive.LocalAdaptiveLayoutInfo
+import com.rabbitv.valheimviki.ui.adaptive.adaptiveDetailWidth
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -124,7 +129,8 @@ fun TrinketDetailContent(
 			) {
 				Column(
 					modifier = Modifier
-						.fillMaxSize()
+						
+						.adaptiveDetailWidth()
 						.verticalScroll(scrollState)
 						.padding(
 							top = 20.dp,
@@ -137,7 +143,12 @@ fun TrinketDetailContent(
 					Text(
 						trinket.name,
 						modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-						style = MaterialTheme.typography.displayMedium,
+						style = MaterialTheme.typography.headlineLarge,
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 22.sp,
+					maxFontSize = 34.sp,
+					stepSize = 1.sp,
+				),
 						textAlign = TextAlign.Center
 					)
 					SlavicDivider()
@@ -174,7 +185,7 @@ fun TrinketDetailContent(
 					trinket.effects.let { effectContent ->
 						if (effectContent.isNotEmpty()) {
 							InfoSection(
-								title = "Additional Effect",
+								title = stringResource(R.string.additional_effect),
 								content = effectContent
 							)
 						}
@@ -282,7 +293,12 @@ fun InfoSection(
 				title,
 			),
 			color = PrimaryWhite,
-			style = MaterialTheme.typography.titleMedium,
+			style = MaterialTheme.typography.labelLarge,
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 12.sp,
+					maxFontSize = 16.sp,
+					stepSize = 1.sp,
+				),
 			fontWeight = FontWeight.Bold
 		)
 		Spacer(modifier = Modifier.height(8.dp))
@@ -293,6 +309,11 @@ fun InfoSection(
 				),
 				color = YellowDTNotSelected,
 				style = MaterialTheme.typography.bodyLarge,
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 13.sp,
+					maxFontSize = 18.sp,
+					stepSize = 1.sp,
+				),
 				lineHeight = 22.sp
 			)
 		}

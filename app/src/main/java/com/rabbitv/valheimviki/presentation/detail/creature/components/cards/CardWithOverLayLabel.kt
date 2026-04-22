@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -103,13 +104,13 @@ fun OverlayLabel(
 				icon,
 				modifier = Modifier.height(12.dp),
 				tint = Color.White,
-				contentDescription = "Icon Label",
+				contentDescription = stringResource(R.string.cd_icon_label),
 
 				)
 			Spacer(modifier = Modifier.padding(1.dp))
 			Text(
 				label,
-				style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+				style = MaterialTheme.typography.labelLarge.copy(fontSize = 10.sp),
 				color = Color.White
 			)
 		}
@@ -132,7 +133,7 @@ fun PreviewCardWithOverlayLabel() {
 					OverlayLabel(
 
 						icon = Lucide.Flame,
-						label = "SUMMONING ITEMS",
+						label = stringResource(R.string.summoning_items),
 					)
 				}
 				CustomRowLayout(

@@ -5,9 +5,9 @@ import com.rabbitv.valheimviki.presentation.components.segmented.SegmentedOption
 
 
 enum class FoodSegmentOption(
-    override val label: String,
+    override val labelRes: Int,
     override val value: FoodSubCategory
 ) : SegmentedOption<FoodSubCategory> {
-    COOKED("COOKED", FoodSubCategory.COOKED_FOOD),
-    UNCOOKED("UNCOOKED", FoodSubCategory.UNCOOKED_FOOD),
+    COOKED(com.rabbitv.valheimviki.R.string.segment_cooked, FoodSubCategory.COOKED_FOOD),
+    UNCOOKED(com.rabbitv.valheimviki.R.string.segment_uncooked, FoodSubCategory.UNCOOKED_FOOD),
 }

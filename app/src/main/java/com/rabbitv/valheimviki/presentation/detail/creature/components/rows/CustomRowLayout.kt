@@ -18,6 +18,8 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,6 +32,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.wear.compose.material.ContentAlpha
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
@@ -113,11 +116,11 @@ fun ItemCard(
 					color = ForestGreen10Dark,
 				) {
 					Text(
-						text = "${pageIndex + 1}/${list.size}",
+						text = stringResource(R.string.page_index_of_total, pageIndex + 1, list.size),
 						modifier = Modifier.fillMaxWidth(),
 						textAlign = TextAlign.Center,
 						color = Color.White,
-						style = MaterialTheme.typography.labelSmall
+						style = MaterialTheme.typography.labelLarge
 					)
 				}
 				Surface(
@@ -136,7 +139,12 @@ fun ItemCard(
                             .wrapContentHeight(align = Alignment.CenterVertically),
 						text = it[pageIndex]?.name.toString(),
 						color = Color.White,
-						style = MaterialTheme.typography.labelSmall,
+						style = MaterialTheme.typography.labelLarge,
+				autoSize = TextAutoSize.StepBased(
+					minFontSize = 12.sp,
+					maxFontSize = 16.sp,
+					stepSize = 1.sp,
+				),
 					)
 				}
 			}

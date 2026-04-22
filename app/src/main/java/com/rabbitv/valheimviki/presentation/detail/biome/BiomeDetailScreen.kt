@@ -17,6 +17,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import com.rabbitv.valheimviki.R
+import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -55,6 +57,7 @@ import com.rabbitv.valheimviki.presentation.components.main_detail_image.MainDet
 import com.rabbitv.valheimviki.presentation.components.trident_divider.TridentsDividedRow
 import com.rabbitv.valheimviki.presentation.detail.biome.model.BiomeDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.biome.viewmodel.BiomeDetailScreenViewModel
+import com.rabbitv.valheimviki.ui.adaptive.adaptiveDetailWidth
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 
@@ -117,44 +120,55 @@ fun BiomeDetailContent(
 	val handleClick = remember(onItemClick) {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
 	}
+	val creaturesTitle = stringResource(R.string.creatures)
+	val oreDepositsTitle = stringResource(R.string.ore_deposits)
+	val materialsTitle = stringResource(R.string.materials)
+	val pointsOfInterestTitle = stringResource(R.string.points_of_interest)
+	val treesTitle = stringResource(R.string.trees)
+
 	val sectionConfigs = remember(
 		uiState.relatedCreatures,
 		uiState.relatedOreDeposits,
 		uiState.relatedMaterials,
 		uiState.relatedPointOfInterest,
-		uiState.relatedTrees
+		uiState.relatedTrees,
+		creaturesTitle,
+		oreDepositsTitle,
+		materialsTitle,
+		pointsOfInterestTitle,
+		treesTitle,
 	) {
 		listOf(
 			uiState.relatedCreatures to HorizontalPagerData(
-				title = "Creatures",
+				title = creaturesTitle,
 				subTitle = "Creatures you may encounter in this biome",
 				icon = Lucide.PawPrint,
 				iconRotationDegrees = -85f,
 				itemContentScale = ContentScale.Crop
 			),
 			uiState.relatedOreDeposits to HorizontalPagerData(
-				title = "Ore Deposits",
+				title = oreDepositsTitle,
 				subTitle = "Ore deposits you may encounter in this biome",
 				icon = Lucide.Pickaxe,
 				iconRotationDegrees = 0f,
 				itemContentScale = ContentScale.Crop
 			),
 			uiState.relatedMaterials to HorizontalPagerData(
-				title = "Materials",
+				title = materialsTitle,
 				subTitle = "Unique materials",
 				icon = Lucide.Gem,
 				iconRotationDegrees = 0f,
 				itemContentScale = ContentScale.Crop
 			),
 			uiState.relatedPointOfInterest to HorizontalPagerData(
-				title = "Points Of Interest",
+				title = pointsOfInterestTitle,
 				subTitle = "Points of interest you may encounter",
 				icon = Lucide.House,
 				iconRotationDegrees = 0f,
 				itemContentScale = ContentScale.Crop
 			),
 			uiState.relatedTrees to HorizontalPagerData(
-				title = "Trees",
+				title = treesTitle,
 				subTitle = "Trees you may encounter",
 				icon = Lucide.Trees,
 				iconRotationDegrees = 0f,
@@ -175,7 +189,7 @@ fun BiomeDetailContent(
 				Column(
 					modifier = Modifier
 						.testTag("BiomeDetailScreen")
-						.fillMaxSize()
+						.adaptiveDetailWidth()
 						.verticalScroll(scrollState, enabled = !isAnimating),
 					verticalArrangement = Arrangement.Top,
 					horizontalAlignment = Alignment.Start,
@@ -298,8 +312,8 @@ fun PreviewBiomeDetailContent() {
 					sharedTransitionScope = this@SharedTransitionLayout,
 					animatedVisibilityScope = this,
 					uiState = uiState,
-					onItemClick = { _ ->  },
-					onToggleFavorite = { _, _ ->  },
+					onItemClick = { _ -> },
+					onToggleFavorite = { _, _ -> },
 					vmStart = {},
 					biomeId = "",
 					headerImageUrl = "",

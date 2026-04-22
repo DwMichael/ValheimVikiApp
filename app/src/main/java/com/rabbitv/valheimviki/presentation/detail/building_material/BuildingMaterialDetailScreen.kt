@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -21,14 +22,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.composables.icons.lucide.Gauge
 import com.composables.icons.lucide.Lucide
+import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
@@ -36,8 +40,8 @@ import com.rabbitv.valheimviki.presentation.components.LoadingIndicator
 import com.rabbitv.valheimviki.presentation.components.bg_image.BgImage
 import com.rabbitv.valheimviki.presentation.components.button.AnimatedBackButton
 import com.rabbitv.valheimviki.presentation.components.button.FavoriteButton
-import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.card.animated_stat_card.AnimatedStatCard
+import com.rabbitv.valheimviki.presentation.components.card.card_image.CardImageWithTopLabel
 import com.rabbitv.valheimviki.presentation.components.dividers.SlavicDivider
 import com.rabbitv.valheimviki.presentation.components.expandable_text.DetailExpandableText
 import com.rabbitv.valheimviki.presentation.components.flow_row.flow_as_grid.TwoColumnGrid
@@ -46,6 +50,7 @@ import com.rabbitv.valheimviki.presentation.components.images.FramedImage
 import com.rabbitv.valheimviki.presentation.detail.building_material.model.BuildingMaterialUiEvent
 import com.rabbitv.valheimviki.presentation.detail.building_material.model.BuildingMaterialUiState
 import com.rabbitv.valheimviki.presentation.detail.building_material.viewmodel.BuildingMaterialDetailViewModel
+import com.rabbitv.valheimviki.ui.adaptive.adaptiveDetailWidth
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 
@@ -77,7 +82,7 @@ fun BuildingMaterialDetailContent(
 	) {
 
 	val scrollState = rememberScrollState()
-    
+
 	val handleClick = remember(onItemClick) {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
 	}
@@ -107,6 +112,7 @@ fun BuildingMaterialDetailContent(
 			uiState.buildingMaterial?.let { buildingMaterial ->
 				Column(
 					modifier = Modifier
+						.adaptiveDetailWidth()
 						.verticalScroll(scrollState)
 						.padding(
 							top = 20.dp,
@@ -120,7 +126,12 @@ fun BuildingMaterialDetailContent(
 					Text(
 						buildingMaterial.name,
 						modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
-						style = MaterialTheme.typography.displayMedium,
+						style = MaterialTheme.typography.headlineLarge,
+						autoSize = TextAutoSize.StepBased(
+							minFontSize = 22.sp,
+							maxFontSize = 34.sp,
+							stepSize = 1.sp,
+						),
 						textAlign = TextAlign.Center
 					)
 
@@ -133,16 +144,16 @@ fun BuildingMaterialDetailContent(
 						)
 
 					}
-                    if (uiState.buildingMaterial.comfortLevel != null) {
-                        SlavicDivider()
-                        AnimatedStatCard(
-                            id = "comfort_level_stat",
-                            icon = Lucide.Gauge,
-                            label = "Comfort Level",
-                            value = uiState.buildingMaterial.comfortLevel.toString(),
-                            details = AnnotatedString.fromHtml(comfortDescription).text,
-                        )
-                    }
+					if (uiState.buildingMaterial.comfortLevel != null) {
+						SlavicDivider()
+						AnimatedStatCard(
+							id = "comfort_level_stat",
+							icon = Lucide.Gauge,
+							label = stringResource(R.string.comfort_level),
+							value = uiState.buildingMaterial.comfortLevel.toString(),
+							details = AnnotatedString.fromHtml(comfortDescription).text,
+						)
+					}
 					when (val craftingState = uiState.craftingStation) {
 						is UIState.Error -> {}
 						is UIState.Loading -> {
@@ -172,7 +183,12 @@ fun BuildingMaterialDetailContent(
 						SlavicDivider()
 						Text(
 							"Required Materials",
-							style = MaterialTheme.typography.headlineMedium,
+							style = MaterialTheme.typography.headlineSmall,
+							autoSize = TextAutoSize.StepBased(
+								minFontSize = 16.sp,
+								maxFontSize = 24.sp,
+								stepSize = 1.sp,
+							),
 							modifier = Modifier.padding(
 								top = BODY_CONTENT_PADDING.dp,
 								start = BODY_CONTENT_PADDING.dp,
@@ -228,4 +244,3 @@ fun BuildingMaterialDetailContent(
 		}
 	}
 }
-

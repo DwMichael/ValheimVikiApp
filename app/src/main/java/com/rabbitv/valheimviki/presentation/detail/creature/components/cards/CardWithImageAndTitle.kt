@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -26,9 +27,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.wear.compose.material.ContentAlpha
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
@@ -47,9 +50,9 @@ fun CardWithImageAndTitle(
 ) {
 	Card(
 		modifier = Modifier
-            .height(height)
-            .fillMaxWidth()
-            .clickable { onCardClick() },
+			.height(height)
+			.fillMaxWidth()
+			.clickable { onCardClick() },
 		colors = CardDefaults.cardColors(
 			containerColor = SecondGrey
 		),
@@ -57,56 +60,61 @@ fun CardWithImageAndTitle(
 	) {
 		Column(
 			modifier = Modifier
-                .fillMaxSize()
-                .padding(8.dp),
+				.fillMaxSize()
+				.padding(8.dp),
 			verticalArrangement = Arrangement.Center,
 			horizontalAlignment = Alignment.CenterHorizontally
 		) {
 
 			Text(
 				title,
-				style = MaterialTheme.typography.labelMedium
+				style = MaterialTheme.typography.labelLarge
 			)
 			Spacer(modifier = Modifier.padding(4.dp))
 			Box(
 				modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentWidth(Alignment.End)
+					.fillMaxWidth()
+					.wrapContentWidth(Alignment.End)
 			) {
 				AsyncImage(
 					modifier = Modifier
-                        .fillMaxSize()
-                        .clip(RoundedCornerShape(12.dp)),
+						.fillMaxSize()
+						.clip(RoundedCornerShape(12.dp)),
 					model = ImageRequest.Builder(LocalContext.current)
 						.data(imageUrl)
 						.crossfade(true)
 						.build(),
-					contentDescription = "Sacrifical Strones Image",
+					contentDescription = stringResource(R.string.cd_sacrificial_stones_image),
 					placeholder = painterResource(R.drawable.ic_placeholder),
 					contentScale = contentScale
 				)
 				Surface(
 					modifier = Modifier
-                        .align(Alignment.BottomStart)
-                        .fillMaxHeight(0.2f)
-                        .fillMaxWidth()
-                        .clip(
-                            RoundedCornerShape(
-                                bottomStart = 12.dp, bottomEnd = 12.dp
-                            )
-                        ),
+						.align(Alignment.BottomStart)
+						.fillMaxHeight(0.2f)
+						.fillMaxWidth()
+						.clip(
+							RoundedCornerShape(
+								bottomStart = 12.dp, bottomEnd = 12.dp
+							)
+						),
 					tonalElevation = 0.dp,
 					color = Color.Black.copy(alpha = ContentAlpha.medium),
 				) {
 					Text(
 						modifier = Modifier
-                            .padding
-                                (horizontal = 5.dp)
-                            .wrapContentHeight(align = Alignment.CenterVertically),
+							.padding
+								(horizontal = 5.dp)
+							.wrapContentHeight(align = Alignment.CenterVertically),
 						text = itemName,
 						textAlign = TextAlign.Center,
 						color = Color.White,
 						style = MaterialTheme.typography.labelLarge,
+						autoSize = TextAutoSize.StepBased(
+							minFontSize = 12.sp,
+							maxFontSize = 16.sp,
+							stepSize = 1.sp,
+						),
 					)
 				}
 			}
