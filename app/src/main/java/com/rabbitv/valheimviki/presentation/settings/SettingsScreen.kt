@@ -7,9 +7,17 @@ import android.graphics.Shader
 import android.os.Build
 import androidx.activity.compose.LocalActivity
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +27,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -29,14 +39,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -46,14 +51,23 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asComposeRenderEffect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -61,9 +75,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.zIndex
 import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -76,7 +90,6 @@ import com.composables.icons.lucide.Globe
 import com.composables.icons.lucide.Lucide
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.language.AppLanguage
-import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.presentation.components.LoadingIndicator
 import com.rabbitv.valheimviki.presentation.components.button.DarkGlassButton
 import com.rabbitv.valheimviki.presentation.components.dialog_pop_up.DialogPopUp
@@ -89,20 +102,19 @@ import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.Shapes
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.Constants.VALHEIM_VIKI_LINK
+import kotlinx.coroutines.delay
 
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun SettingsScreen(
 	modifier: Modifier = Modifier,
 	onBack: () -> Unit,
-	onItemClick: (DetailDestination) -> Unit,
 	viewModel: SettingsViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 	val activity = LocalActivity.current as Activity
 	val onEvent = remember<(SettingsUiEvent) -> Unit>(viewModel) { { viewModel.onEvent(it) } }
 
-	// Trigger ad when ViewModel flags it
 	if (uiState.showAdTrigger) {
 		viewModel.showAdIfNeeded(activity)
 	}
@@ -127,103 +139,128 @@ fun SettingsScreenContent(
 	val showDonateDialog = remember { mutableStateOf(false) }
 	val columnScrollable = rememberScrollState()
 
-	Scaffold(
-		modifier = modifier.testTag("SettingsListScaffold"),
-		topBar = {
-			SimpleTopBar(
-				title = stringResource(R.string.settings),
-				onClick = { onBack() }
-			)
-		},
-	) { innerPadding ->
-		Column(
-			modifier = Modifier
-				.padding(innerPadding)
-				.fillMaxSize()
-				.padding(BODY_CONTENT_PADDING.dp)
-				.verticalScroll(columnScrollable),
-			horizontalAlignment = Alignment.CenterHorizontally,
-			verticalArrangement = Arrangement.Top,
-		) {
-			Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
-			DarkGlassCard()
-			HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
+	var languageButtonBounds by remember { mutableStateOf(Rect.Zero) }
+	var donateButtonBounds by remember { mutableStateOf(Rect.Zero) }
+	var overlayOrigin by remember { mutableStateOf(Offset.Zero) }
 
-			Spacer(modifier = Modifier.height(10.dp))
-			if (uiState.isRefetching) {
-				LoadingIndicator(paddingValues = PaddingValues(16.dp))
-				Spacer(modifier = Modifier.height(8.dp))
-				Text(
-					text = stringResource(
-						R.string.settings_downloading_data,
-						uiState.currentLanguage.displayName
-					),
-					color = PrimaryWhite.copy(alpha = 0.7f),
-					style = MaterialTheme.typography.bodyMedium,
+	Box(
+		modifier = modifier
+			.fillMaxSize()
+			.onGloballyPositioned { overlayOrigin = it.positionInRoot() }
+	) {
+		Scaffold(
+			modifier = Modifier.testTag("SettingsListScaffold"),
+			topBar = {
+				SimpleTopBar(
+					title = stringResource(R.string.settings),
+					onClick = { onBack() }
 				)
-			} else {
+			},
+		) { innerPadding ->
+			Column(
+				modifier = Modifier
+					.padding(innerPadding)
+					.fillMaxSize()
+					.padding(BODY_CONTENT_PADDING.dp)
+					.verticalScroll(columnScrollable),
+				horizontalAlignment = Alignment.CenterHorizontally,
+				verticalArrangement = Arrangement.Top,
+			) {
+				Spacer(modifier = Modifier.height(BODY_CONTENT_PADDING.dp))
+				DarkGlassCard()
+				HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
+
+				Spacer(modifier = Modifier.height(10.dp))
+				if (uiState.isRefetching) {
+					LoadingIndicator(paddingValues = PaddingValues(16.dp))
+					Spacer(modifier = Modifier.height(8.dp))
+					Text(
+						text = stringResource(
+							R.string.settings_downloading_data,
+							uiState.currentLanguage.displayName
+						),
+						color = PrimaryWhite.copy(alpha = 0.7f),
+						style = MaterialTheme.typography.bodyMedium,
+					)
+				} else {
+					DarkGlassButton(
+						modifier = Modifier.onGloballyPositioned {
+							languageButtonBounds = it.boundsInRoot()
+						},
+						onCardClick = { onEvent(SettingsUiEvent.ShowLanguageDialog) },
+						icon = Lucide.Globe,
+						label = "${uiState.currentLanguage.flagEmoji}  ${uiState.currentLanguage.displayName}",
+						leadingIcon = Lucide.ChevronRight
+					)
+				}
+
+				// --- Links Section ---
+				Spacer(modifier = Modifier.height(20.dp))
 				DarkGlassButton(
-					onCardClick = { onEvent(SettingsUiEvent.ShowLanguageDialog) },
-					icon = Lucide.Globe,
-					label = "${uiState.currentLanguage.flagEmoji}  ${uiState.currentLanguage.displayName}",
+					onCardClick = {
+						val intent = Intent(Intent.ACTION_VIEW, VALHEIM_VIKI_LINK.toUri())
+						context.startActivity(intent)
+					},
+					icon = Lucide.Book,
+					label = stringResource(R.string.valheim_wiki_fandom),
+					leadingIcon = Lucide.ChevronRight
+				)
+				Spacer(modifier = Modifier.height(20.dp))
+				DarkGlassButton(
+					modifier = Modifier.onGloballyPositioned {
+						donateButtonBounds = it.boundsInRoot()
+					},
+					onCardClick = { showDonateDialog.value = true },
+					icon = Lucide.Coffee,
+					label = stringResource(R.string.button_donate_pop_up_label),
 					leadingIcon = Lucide.ChevronRight
 				)
 			}
+		}
 
-			// --- Links Section ---
-			Spacer(modifier = Modifier.height(20.dp))
-			DarkGlassButton(
-				onCardClick = {
-					val intent = Intent(Intent.ACTION_VIEW, VALHEIM_VIKI_LINK.toUri())
-					context.startActivity(intent)
-				},
-				icon = Lucide.Book,
-				label = stringResource(R.string.valheim_wiki_fandom),
-				leadingIcon = Lucide.ChevronRight
-			)
-			Spacer(modifier = Modifier.height(20.dp))
-			DarkGlassButton(
-				onCardClick = { showDonateDialog.value = true },
-				icon = Lucide.Coffee,
-				label = stringResource(R.string.button_donate_pop_up_label),
-				leadingIcon = Lucide.ChevronRight
+		// Donate dialog
+		if (showDonateDialog.value) {
+			Dialog(
+				onDismissRequest = { showDonateDialog.value = false },
+				properties = DialogProperties(usePlatformDefaultWidth = false)
+			) {
+				DialogPopUp(
+					onDismiss = { showDonateDialog.value = false },
+					text = stringResource(R.string.dialog_donate_pop_up_label),
+					icon = Lucide.CircleAlert
+				)
+			}
+		}
+
+		// Language picker dialog
+		if (uiState.showLanguageDialog) {
+			LanguagePickerDialog(
+				currentLanguage = uiState.currentLanguage,
+				onLanguageSelected = { onEvent(SettingsUiEvent.LanguageSelected(it)) },
+				onDismiss = { onEvent(SettingsUiEvent.DismissLanguageDialog) }
 			)
 		}
-	}
 
-	// Donate dialog
-	if (showDonateDialog.value) {
-		Dialog(
-			onDismissRequest = { showDonateDialog.value = false },
-			properties = DialogProperties(usePlatformDefaultWidth = false)
+		AnimatedVisibility(
+			visible = uiState.isLanguageSwitching,
+			enter = fadeIn(animationSpec = tween(220)),
+			exit = fadeOut(animationSpec = tween(260)),
 		) {
-			DialogPopUp(
-				onDismiss = { showDonateDialog.value = false },
-				text = stringResource(R.string.dialog_donate_pop_up_label),
-				icon = Lucide.CircleAlert
+			LaunchedEffect(Unit) {
+				delay(500)
+				onEvent(SettingsUiEvent.LanguageSwitchOverlayShown)
+			}
+			LanguageSwitchOverlay(currentLanguage = uiState.currentLanguage)
+		}
+
+		if (uiState.tooltipStep > 0) {
+			SettingsTutorialOverlay(
+				step = uiState.tooltipStep,
+				languageBounds = languageButtonBounds.translate(-overlayOrigin.x, -overlayOrigin.y),
+				donateBounds = donateButtonBounds.translate(-overlayOrigin.x, -overlayOrigin.y),
+				onNext = { onEvent(SettingsUiEvent.NextTooltipStep) }
 			)
 		}
-	}
-
-	// Language picker dialog
-	if (uiState.showLanguageDialog) {
-		LanguagePickerDialog(
-			currentLanguage = uiState.currentLanguage,
-			onLanguageSelected = { onEvent(SettingsUiEvent.LanguageSelected(it)) },
-			onDismiss = { onEvent(SettingsUiEvent.DismissLanguageDialog) }
-		)
-	}
-
-	androidx.compose.animation.AnimatedVisibility(
-		visible = uiState.isLanguageSwitching,
-		enter = fadeIn(animationSpec = tween(220)),
-		exit = fadeOut(animationSpec = tween(260)),
-	) {
-		LaunchedEffect(Unit) {
-			kotlinx.coroutines.delay(980)
-			onEvent(SettingsUiEvent.LanguageSwitchOverlayShown)
-		}
-		LanguageSwitchOverlay(currentLanguage = uiState.currentLanguage)
 	}
 }
 
@@ -408,6 +445,82 @@ private fun LanguageSwitchOverlay(currentLanguage: AppLanguage) {
 
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
+fun SettingsTutorialOverlay(
+	step: Int,
+	languageBounds: Rect,
+	donateBounds: Rect,
+	onNext: () -> Unit
+) {
+	val bounds = if (step == 1) languageBounds else donateBounds
+	val text =
+		if (step == 1) stringResource(R.string.settings_tooltip_language) else stringResource(R.string.settings_tooltip_donate)
+	val buttonText =
+		if (step == 1) stringResource(R.string.settings_tooltip_next) else stringResource(R.string.settings_tooltip_finish)
+
+	Box(
+		modifier = Modifier
+			.fillMaxSize()
+			.zIndex(100f)
+			.clickable(
+				interactionSource = remember { MutableInteractionSource() },
+				indication = null
+			) {
+				// Prevent clicks from passing through
+			}
+	) {
+		Canvas(
+			modifier = Modifier
+				.fillMaxSize()
+				.graphicsLayer(alpha = 0.99f)
+		) {
+			drawRect(Color.Black.copy(alpha = 0.75f))
+
+			if (bounds != Rect.Zero) {
+				drawRoundRect(
+					color = Color.Transparent,
+					topLeft = bounds.topLeft,
+					size = bounds.size,
+					cornerRadius = CornerRadius(16.dp.toPx(), 16.dp.toPx()),
+					blendMode = BlendMode.Clear
+				)
+			}
+		}
+
+		if (bounds != Rect.Zero) {
+			val tooltipY = with(LocalDensity.current) { bounds.bottom.toDp() + 16.dp }
+			Box(
+				modifier = Modifier
+					.offset(y = tooltipY)
+					.padding(horizontal = 24.dp)
+					.fillMaxWidth()
+			) {
+				Column(
+					modifier = Modifier
+						.clip(RoundedCornerShape(16.dp))
+						.background(Color(0xFF18222B))
+						.border(1.dp, Color(0xFF42586D), RoundedCornerShape(16.dp))
+						.padding(20.dp)
+				) {
+					Text(
+						text = text,
+						color = Color.White,
+						style = MaterialTheme.typography.bodyLarge
+					)
+					Spacer(Modifier.height(16.dp))
+					DarkGlassButton(
+						onCardClick = onNext,
+						label = buttonText,
+						height = 50.dp,
+						icon = if (step == 2) Lucide.Check else null
+					)
+				}
+			}
+		}
+	}
+}
+
+@RequiresApi(Build.VERSION_CODES.S)
+@Composable
 fun DarkGlassCard(
 	modifier: Modifier = Modifier,
 	icon: ImageVector = Lucide.CircleAlert,
@@ -425,41 +538,41 @@ fun DarkGlassCard(
 				shape = Shapes.large
 			)
 	) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-			Box(
-				modifier = Modifier
-					.matchParentSize()
-					.graphicsLayer {
-						renderEffect =
-							RenderEffect.createBlurEffect(10f, 10f, Shader.TileMode.CLAMP)
-								.asComposeRenderEffect()
-					}
-			)
-		}
-		Column(
-			modifier = Modifier.padding(24.dp),
-			horizontalAlignment = Alignment.CenterHorizontally,
-			verticalArrangement = Arrangement.Top
-		) {
-			Icon(
-				imageVector = icon,
-				contentDescription = null,
-				tint = Color(0xFFFF6B35),
-				modifier = Modifier.size(24.dp)
-			)
-			Text(
-				modifier = Modifier.padding(top = 8.dp),
-				text = text,
-				color = Color(0xFFFF6B35),
-				style = MaterialTheme.typography.bodyLarge.copy(
-					fontWeight = FontWeight.Bold,
-					lineHeight = 18.sp
-				),
-				textAlign = TextAlign.Center
-			)
-		}
+
+		Box(
+			modifier = Modifier
+				.matchParentSize()
+				.graphicsLayer {
+					renderEffect =
+						RenderEffect.createBlurEffect(10f, 10f, Shader.TileMode.CLAMP)
+							.asComposeRenderEffect()
+				}
+		)
+	}
+	Column(
+		modifier = Modifier.padding(24.dp),
+		horizontalAlignment = Alignment.CenterHorizontally,
+		verticalArrangement = Arrangement.Top
+	) {
+		Icon(
+			imageVector = icon,
+			contentDescription = null,
+			tint = Color(0xFFFF6B35),
+			modifier = Modifier.size(24.dp)
+		)
+		Text(
+			modifier = Modifier.padding(top = 8.dp),
+			text = text,
+			color = Color(0xFFFF6B35),
+			style = MaterialTheme.typography.bodyLarge.copy(
+				fontWeight = FontWeight.Bold,
+				lineHeight = 18.sp
+			),
+			textAlign = TextAlign.Center
+		)
 	}
 }
+
 
 @RequiresApi(Build.VERSION_CODES.S)
 @Preview(name = "DarkGlassCard")

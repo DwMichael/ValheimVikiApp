@@ -6,12 +6,15 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.rabbitv.valheimviki.domain.repository.DataStoreOperations
 import com.rabbitv.valheimviki.utils.Constants.PREFERENCES_KEY
 import com.rabbitv.valheimviki.utils.Constants.PREFERENCES_LANGUAGE_KEY
+import com.rabbitv.valheimviki.utils.Constants.PREFERENCES_LANGUAGE_POPUP_KEY
 import com.rabbitv.valheimviki.utils.Constants.PREFERENCES_NAME
+import com.rabbitv.valheimviki.utils.Constants.PREFERENCES_SETTINGS_TOOLTIP_KEY
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
@@ -20,65 +23,84 @@ import java.io.IOException
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = PREFERENCES_NAME)
 
 class DataStoreOperationsImpl(private val context: Context) : DataStoreOperations {
-    private object PreferencesKey {
-        val onBoardingKey = booleanPreferencesKey(name = PREFERENCES_KEY)
-        val languageKey = stringPreferencesKey(name = PREFERENCES_LANGUAGE_KEY)
-        val languagePopupKey = booleanPreferencesKey(name = com.rabbitv.valheimviki.utils.Constants.PREFERENCES_LANGUAGE_POPUP_KEY)
-    }
+	private object PreferencesKey {
+		val onBoardingKey = booleanPreferencesKey(name = PREFERENCES_KEY)
+		val languageKey = stringPreferencesKey(name = PREFERENCES_LANGUAGE_KEY)
+		val languagePopupKey = booleanPreferencesKey(name = PREFERENCES_LANGUAGE_POPUP_KEY)
+		val settingsTooltipStepKey = intPreferencesKey(name = PREFERENCES_SETTINGS_TOOLTIP_KEY)
+	}
 
-    private val dataStore = context.dataStore
+	private val dataStore = context.dataStore
 
-    override suspend fun saveOnBoardingState(completed: Boolean) {
-        dataStore.edit { preferences ->
-            preferences[PreferencesKey.onBoardingKey] = completed
-        }
-    }
+	override suspend fun saveOnBoardingState(completed: Boolean) {
+		dataStore.edit { preferences ->
+			preferences[PreferencesKey.onBoardingKey] = completed
+		}
+	}
 
-    override fun readOnBoardingState(): Flow<Boolean> = dataStore.data
-        .catch { exception ->
-            if (exception is IOException) {
-                emit(emptyPreferences())
-            } else {
-                throw exception
-            }
-        }
-        .map { preferences ->
-            preferences[PreferencesKey.onBoardingKey] ?: false
-        }
+	override fun readOnBoardingState(): Flow<Boolean> = dataStore.data
+		.catch { exception ->
+			if (exception is IOException) {
+				emit(emptyPreferences())
+			} else {
+				throw exception
+			}
+		}
+		.map { preferences ->
+			preferences[PreferencesKey.onBoardingKey] ?: false
+		}
 
-    override suspend fun saveLanguage(language: String) {
-        dataStore.edit { preferences ->
-            preferences[PreferencesKey.languageKey] = language
-        }
-    }
+	override suspend fun saveLanguage(language: String) {
+		dataStore.edit { preferences ->
+			preferences[PreferencesKey.languageKey] = language
+		}
+	}
 
-    override fun languageProvider(): Flow<String> = dataStore.data
-    .catch { exception ->
-        if (exception is IOException) {
-            emit(emptyPreferences())
-        } else {
-            throw exception
-        }
-    }
-    .map { preferences ->
-        preferences[PreferencesKey.languageKey] ?: "en"
-    }
+	override fun languageProvider(): Flow<String> = dataStore.data
+		.catch { exception ->
+			if (exception is IOException) {
+				emit(emptyPreferences())
+			} else {
+				throw exception
+			}
+		}
+		.map { preferences ->
+			preferences[PreferencesKey.languageKey] ?: "en"
+		}
 
-    override suspend fun saveLanguagePopupState(shown: Boolean) {
-        dataStore.edit { preferences ->
-            preferences[PreferencesKey.languagePopupKey] = shown
-        }
-    }
+	override suspend fun saveLanguagePopupState(shown: Boolean) {
+		dataStore.edit { preferences ->
+			preferences[PreferencesKey.languagePopupKey] = shown
+		}
+	}
 
-    override fun readLanguagePopupState(): Flow<Boolean> = dataStore.data
-        .catch { exception ->
-            if (exception is IOException) {
-                emit(emptyPreferences())
-            } else {
-                throw exception
-            }
-        }
-        .map { preferences ->
-            preferences[PreferencesKey.languagePopupKey] ?: false
-        }
+	override fun readLanguagePopupState(): Flow<Boolean> = dataStore.data
+		.catch { exception ->
+			if (exception is IOException) {
+				emit(emptyPreferences())
+			} else {
+				throw exception
+			}
+		}
+		.map { preferences ->
+			preferences[PreferencesKey.languagePopupKey] ?: false
+		}
+
+	override suspend fun saveSettingsTooltipStep(step: Int) {
+		dataStore.edit { preferences ->
+			preferences[PreferencesKey.settingsTooltipStepKey] = step
+		}
+	}
+
+	override fun readSettingsTooltipStep(): Flow<Int> = dataStore.data
+		.catch { exception ->
+			if (exception is IOException) {
+				emit(emptyPreferences())
+			} else {
+				throw exception
+			}
+		}
+		.map { preferences ->
+			preferences[PreferencesKey.settingsTooltipStepKey] ?: 0
+		}
 }

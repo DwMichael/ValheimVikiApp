@@ -285,4 +285,23 @@
     <string name="metal_detail_subtitle_ore_deposits">Depósitos de minério onde pode encontrar este material</string>
     <string name="metal_detail_subtitle_required_items">Itens necessários para construir este material.</string>
     <string name="metal_detail_subtitle_crafting_station">Estação de fabrico onde pode produzir este item</string>
+
+    <string name="page_index_of_total">%1$d/%2$d</string>
+    <string name="value_with_colon">%1$s:</string>
+    <string name="coins_value">%1$s Moedas</string>
+    <string name="effect_label">Efeito:</string>
+    <string name="preview_centered_text">TEXTO CENTRALIZADO</string>
+    <string name="preview_fully_centered_text">TEXTO TOTALMENTE CENTRALIZADO</string>
+    <string name="preview_top_app_bar">Barra superior do aplicativo</string>
+    <string name="cd_sacrificial_stones_image">Imagem de Pedras de Sacrifício</string>
+    <!-- Language Popup -->
+    <string name="language_popup_title">Vários idiomas</string>
+    <string name="language_popup_message">O aplicativo suporta vários idiomas, mas como é um projeto de fã de uma pessoa só, atualmente apenas os botões e elementos da interface do usuário estão traduzidos, não o conteúdo para a língua nativa dos usuários. Isso será introduzido em atualizações futuras.\n\nObrigado por baixar o aplicativo! Você pode alterar o idioma nas configurações.</string>
+    <string name="language_popup_dismiss">Eu entendo</string>
+    <string name="language_popup_wait">Esperar (%d)</string>
+    <string name="settings_tooltip_language">Aqui você pode alterar o idioma do aplicativo para o seu preferido.</string>
+    <string name="settings_tooltip_donate">Este é um projeto de fã. Se você gosta, pode apoiar o desenvolvimento com uma pequena doação aqui!</string>
+    <string name="settings_tooltip_next">Próximo</string>
+    <string name="settings_tooltip_finish">Entendi</string>
+    <string name="settings_applying_language">Aplicando preferências de idioma…</string>
 </resources>

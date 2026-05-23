@@ -285,4 +285,23 @@
     <string name="metal_detail_subtitle_ore_deposits">Maagisisaldused, kust seda materjali leida</string>
     <string name="metal_detail_subtitle_required_items">Selle materjali valmistamiseks vajalikud esemed.</string>
     <string name="metal_detail_subtitle_crafting_station">Valmistamisjaam, kus seda eset toota</string>
+
+    <string name="page_index_of_total">%1$d/%2$d</string>
+    <string name="value_with_colon">%1$s:</string>
+    <string name="coins_value">%1$s Münti</string>
+    <string name="effect_label">Efekt:</string>
+    <string name="preview_centered_text">KESKEL TEKST</string>
+    <string name="preview_fully_centered_text">TÄIESTI KESKEL TEKST</string>
+    <string name="preview_top_app_bar">Rakenduse ülemine riba</string>
+    <string name="cd_sacrificial_stones_image">Ohvrikivide pilt</string>
+    <!-- Language Popup -->
+    <string name="language_popup_title">Mitu keelt</string>
+    <string name="language_popup_message">Rakendus toetab mitut keelt, kuid kuna tegemist on ühe inimese fänniprojektiga, on praegu tõlgitud ainult nupud ja kasutajaliidese elemendid, mitte kasutajate emakeelne sisu. See võetakse kasutusele tulevastes värskendustes.\n\nTäname rakenduse allalaadimise eest! Keelt saate muuta seadetes.</string>
+    <string name="language_popup_dismiss">Ma mõistan</string>
+    <string name="language_popup_wait">Oota (%d)</string>
+    <string name="settings_tooltip_language">Siin saate muuta rakenduse keele oma eelistatud keeleks.</string>
+    <string name="settings_tooltip_donate">See on fänniprojekt. Kui see teile meeldib, saate selle arengut toetada väikese annetusega siin!</string>
+    <string name="settings_tooltip_next">Järgmine</string>
+    <string name="settings_tooltip_finish">Sain aru</string>
+    <string name="settings_applying_language">Keele-eelistuste rakendamine…</string>
 </resources>

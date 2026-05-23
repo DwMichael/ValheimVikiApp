@@ -285,4 +285,23 @@
     <string name="metal_detail_subtitle_ore_deposits">Depósitos de mineral donde puedes encontrar este material</string>
     <string name="metal_detail_subtitle_required_items">Objetos necesarios para fabricar este material.</string>
     <string name="metal_detail_subtitle_crafting_station">Estación de fabricación donde puedes producir este objeto</string>
+
+    <string name="page_index_of_total">%1$d/%2$d</string>
+    <string name="value_with_colon">%1$s:</string>
+    <string name="coins_value">%1$s Monedas</string>
+    <string name="effect_label">Efecto:</string>
+    <string name="preview_centered_text">TEXTO CENTRADO</string>
+    <string name="preview_fully_centered_text">TEXTO TOTALMENTE CENTRADO</string>
+    <string name="preview_top_app_bar">Barra superior de la aplicación</string>
+    <string name="cd_sacrificial_stones_image">Imagen de Piedras Sacrificiales</string>
+    <!-- Language Popup -->
+    <string name="language_popup_title">Múltiples idiomas</string>
+    <string name="language_popup_message">La aplicación admite múltiples idiomas, pero dado que es un proyecto de fanático de una sola persona, actualmente solo los botones y los elementos de la interfaz de usuario están traducidos, no el contenido al idioma nativo de los usuarios. Esto se introducirá en futuras actualizaciones.\n\n¡Gracias por descargar la aplicación! Puedes cambiar el idioma en la configuración.</string>
+    <string name="language_popup_dismiss">Entendido</string>
+    <string name="language_popup_wait">Esperar (%d)</string>
+    <string name="settings_tooltip_language">Aquí puedes cambiar el idioma de la aplicación al que prefieras.</string>
+    <string name="settings_tooltip_donate">Este es un proyecto de fanáticos. ¡Si te gusta, puedes apoyar su desarrollo con una pequeña donación aquí!</string>
+    <string name="settings_tooltip_next">Siguiente</string>
+    <string name="settings_tooltip_finish">Entendido</string>
+    <string name="settings_applying_language">Aplicando preferencias de idioma…</string>
 </resources>

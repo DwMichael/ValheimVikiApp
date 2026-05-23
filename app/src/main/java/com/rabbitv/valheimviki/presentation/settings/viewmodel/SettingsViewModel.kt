@@ -37,6 +37,23 @@ class SettingsViewModel @Inject constructor(
 
     init {
         observeLanguage()
+        observeTooltipState()
+    }
+
+    private fun observeTooltipState() {
+        dataStoreUseCases.readSettingsTooltipState()
+            .onEach { savedStep ->
+                // -1 = completed, 0 = not started (show step 1), 1 or 2 = resume
+                val resumeStep = when {
+                    savedStep == TOOLTIP_COMPLETED -> 0
+                    savedStep <= 0 -> 1
+                    else -> savedStep
+                }
+                if (_uiState.value.tooltipStep != resumeStep) {
+                    _uiState.update { it.copy(tooltipStep = resumeStep) }
+                }
+            }
+            .launchIn(viewModelScope)
     }
 
     fun onEvent(event: SettingsUiEvent) {
@@ -53,6 +70,20 @@ class SettingsViewModel @Inject constructor(
             }
             is SettingsUiEvent.LanguageSwitchOverlayShown -> {
                 _uiState.update { it.copy(isLanguageSwitching = false) }
+            }
+            is SettingsUiEvent.NextTooltipStep -> {
+                val currentStep = _uiState.value.tooltipStep
+                if (currentStep == 1) {
+                    _uiState.update { it.copy(tooltipStep = 2) }
+                    viewModelScope.launch {
+                        dataStoreUseCases.saveSettingsTooltipState(2)
+                    }
+                } else if (currentStep == 2) {
+                    _uiState.update { it.copy(tooltipStep = 0) }
+                    viewModelScope.launch {
+                        dataStoreUseCases.saveSettingsTooltipState(TOOLTIP_COMPLETED)
+                    }
+                }
             }
         }
     }
@@ -119,5 +150,7 @@ class SettingsViewModel @Inject constructor(
     companion object {
         /** Number of language changes before an interstitial ad is shown. */
         const val AD_THRESHOLD = 3
+        /** Sentinel persisted when the settings tutorial has been completed. */
+        const val TOOLTIP_COMPLETED = -1
     }
 }

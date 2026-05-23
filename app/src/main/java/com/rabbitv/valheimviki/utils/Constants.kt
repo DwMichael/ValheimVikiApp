@@ -14,6 +14,7 @@ object Constants {
 	const val PREFERENCES_KEY = "on_boarding_completed"
 	const val PREFERENCES_LANGUAGE_KEY = "language_saved"
 	const val PREFERENCES_LANGUAGE_POPUP_KEY = "language_popup_shown"
+	const val PREFERENCES_SETTINGS_TOOLTIP_KEY = "settings_tooltip_step"
 
 	//GITDSIZE
 	const val BIOME_GRID_COLUMNS = 2

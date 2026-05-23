@@ -285,4 +285,23 @@
     <string name="metal_detail_subtitle_ore_deposits">Rudné ložiská, kde možno nájsť tento materiál</string>
     <string name="metal_detail_subtitle_required_items">Predmety potrebné na výrobu tohto materiálu.</string>
     <string name="metal_detail_subtitle_crafting_station">Výrobná stanica, kde možno vyrobiť túto položku</string>
+
+    <string name="page_index_of_total">%1$d/%2$d</string>
+    <string name="value_with_colon">%1$s:</string>
+    <string name="coins_value">%1$s Mincí</string>
+    <string name="effect_label">Efekt:</string>
+    <string name="preview_centered_text">VYCENTROVANÝ TEXT</string>
+    <string name="preview_fully_centered_text">PLNE VYCENTROVANÝ TEXT</string>
+    <string name="preview_top_app_bar">Horná lišta aplikácie</string>
+    <string name="cd_sacrificial_stones_image">Obrázok obetných kameňov</string>
+    <!-- Language Popup -->
+    <string name="language_popup_title">Viacero jazykov</string>
+    <string name="language_popup_message">Aplikácia podporuje viacero jazykov, ale keďže ide o fanúšikovský projekt jedného človeka, v súčasnosti sú preložené iba tlačidlá a prvky používateľského rozhrania, nie obsah do materinského jazyka používateľov. Bude to zavedené v budúcich aktualizáciách.\n\nĎakujeme za stiahnutie aplikácie! Jazyk môžete zmeniť v nastaveniach.</string>
+    <string name="language_popup_dismiss">Rozumiem</string>
+    <string name="language_popup_wait">Počkajte (%d)</string>
+    <string name="settings_tooltip_language">Tu môžete zmeniť jazyk aplikácie na váš preferovaný.</string>
+    <string name="settings_tooltip_donate">Toto je fanúšikovský projekt. Ak sa vám páči, môžete podporiť jeho vývoj malým darom tu!</string>
+    <string name="settings_tooltip_next">Ďalej</string>
+    <string name="settings_tooltip_finish">Mám to</string>
+    <string name="settings_applying_language">Aplikovanie jazykových preferencií…</string>
 </resources>

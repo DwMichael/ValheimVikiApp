@@ -285,4 +285,23 @@
     <string name="metal_detail_subtitle_ore_deposits">Месторождения руды, где можно найти этот материал</string>
     <string name="metal_detail_subtitle_required_items">Предметы, необходимые для создания этого материала.</string>
     <string name="metal_detail_subtitle_crafting_station">Станция крафта, где можно создать этот предмет</string>
+
+    <string name="page_index_of_total">%1$d/%2$d</string>
+    <string name="value_with_colon">%1$s:</string>
+    <string name="coins_value">%1$s Монет</string>
+    <string name="effect_label">Эффект:</string>
+    <string name="preview_centered_text">ЦЕНТРИРОВАННЫЙ ТЕКСТ</string>
+    <string name="preview_fully_centered_text">ПОЛНОСТЬЮ ЦЕНТРИРОВАННЫЙ ТЕКСТ</string>
+    <string name="preview_top_app_bar">Верхняя панель приложения</string>
+    <string name="cd_sacrificial_stones_image">Изображение жертвенных камней</string>
+    <!-- Language Popup -->
+    <string name="language_popup_title">Несколько языков</string>
+    <string name="language_popup_message">Приложение поддерживает несколько языков, но поскольку это фанатский проект одного человека, в настоящее время переведены только кнопки и элементы интерфейса, а не контент на родной язык пользователей. Это будет введено в будущих обновлениях.\n\nСпасибо за загрузку приложения! Вы можете изменить язык в настройках.</string>
+    <string name="language_popup_dismiss">Понятно</string>
+    <string name="language_popup_wait">Подождите (%d)</string>
+    <string name="settings_tooltip_language">Здесь вы можете изменить язык приложения на предпочитаемый.</string>
+    <string name="settings_tooltip_donate">Это фанатский проект. Если он вам нравится, вы можете поддержать его развитие небольшим пожертвованием здесь!</string>
+    <string name="settings_tooltip_next">Далее</string>
+    <string name="settings_tooltip_finish">Понятно</string>
+    <string name="settings_applying_language">Применение языковых настроек…</string>
 </resources>

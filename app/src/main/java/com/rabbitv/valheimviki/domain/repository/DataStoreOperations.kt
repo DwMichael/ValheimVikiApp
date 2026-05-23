@@ -9,4 +9,6 @@ interface DataStoreOperations {
     fun languageProvider(): Flow<String>
     suspend fun saveLanguagePopupState(shown: Boolean)
     fun readLanguagePopupState(): Flow<Boolean>
+    suspend fun saveSettingsTooltipStep(step: Int)
+    fun readSettingsTooltipStep(): Flow<Int>
 }

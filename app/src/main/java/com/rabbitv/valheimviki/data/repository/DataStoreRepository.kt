@@ -43,4 +43,14 @@ class DataStoreRepository @Inject constructor(
 	fun readLanguagePopupState(): Flow<Boolean> {
 		return dataStore.readLanguagePopupState()
 	}
+
+	suspend fun saveSettingsTooltipStep(step: Int) {
+		withContext(ioDispatcher) {
+			dataStore.saveSettingsTooltipStep(step)
+		}
+	}
+
+	fun readSettingsTooltipStep(): Flow<Int> {
+		return dataStore.readSettingsTooltipStep()
+	}
 }

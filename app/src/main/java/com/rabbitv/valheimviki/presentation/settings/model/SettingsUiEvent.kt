@@ -8,4 +8,5 @@ sealed class SettingsUiEvent {
     data object ShowLanguageDialog : SettingsUiEvent()
     data object AdShown : SettingsUiEvent()
     data object LanguageSwitchOverlayShown : SettingsUiEvent()
+    data object NextTooltipStep : SettingsUiEvent()
 }

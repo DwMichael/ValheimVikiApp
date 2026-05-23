@@ -285,4 +285,23 @@
     <string name="metal_detail_subtitle_ore_deposits">Erzlagerstätten, in denen dieses Material zu finden ist</string>
     <string name="metal_detail_subtitle_required_items">Gegenstände, die zum Herstellen dieses Materials benötigt werden.</string>
     <string name="metal_detail_subtitle_crafting_station">Herstellungsstation, wo dieser Gegenstand produziert werden kann</string>
+
+    <string name="page_index_of_total">%1$d/%2$d</string>
+    <string name="value_with_colon">%1$s:</string>
+    <string name="coins_value">%1$s Münzen</string>
+    <string name="effect_label">Effekt:</string>
+    <string name="preview_centered_text">ZENTRIERTER TEXT</string>
+    <string name="preview_fully_centered_text">VOLL ZENTRIERTER TEXT</string>
+    <string name="preview_top_app_bar">Obere App-Leiste</string>
+    <string name="cd_sacrificial_stones_image">Opfersteine Bild</string>
+    <!-- Language Popup -->
+    <string name="language_popup_title">Mehrere Sprachen</string>
+    <string name="language_popup_message">Die App unterstützt mehrere Sprachen, aber da es sich um ein Ein-Personen-Fanprojekt handelt, sind derzeit nur Schaltflächen und UI-Elemente übersetzt, nicht jedoch der Inhalt in die Muttersprache der Benutzer. Dies wird in zukünftigen Updates eingeführt.\n\nVielen Dank für das Herunterladen der App! Du kannst die Sprache in den Einstellungen ändern.</string>
+    <string name="language_popup_dismiss">Ich verstehe</string>
+    <string name="language_popup_wait">Warten (%d)</string>
+    <string name="settings_tooltip_language">Hier kannst du die Sprache der App auf deine bevorzugte Sprache ändern.</string>
+    <string name="settings_tooltip_donate">Dies ist ein Fanprojekt. Wenn es dir gefällt, kannst du die Entwicklung hier mit einer kleinen Spende unterstützen!</string>
+    <string name="settings_tooltip_next">Weiter</string>
+    <string name="settings_tooltip_finish">Verstanden</string>
+    <string name="settings_applying_language">Spracheinstellungen werden angewendet…</string>
 </resources>

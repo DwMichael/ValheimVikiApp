@@ -285,4 +285,23 @@
     <string name="metal_detail_subtitle_ore_deposits">Gisements de minerai où vous pouvez trouver ce matériau</string>
     <string name="metal_detail_subtitle_required_items">Objets nécessaires pour fabriquer ce matériau.</string>
     <string name="metal_detail_subtitle_crafting_station">Station d\'artisanat où vous pouvez produire cet objet</string>
+
+    <string name="page_index_of_total">%1$d/%2$d</string>
+    <string name="value_with_colon">%1$s :</string>
+    <string name="coins_value">%1$s Pièces</string>
+    <string name="effect_label">Effet :</string>
+    <string name="preview_centered_text">TEXTE CENTRÉ</string>
+    <string name="preview_fully_centered_text">TEXTE ENTIÈREMENT CENTRÉ</string>
+    <string name="preview_top_app_bar">Barre supérieure de l\'application</string>
+    <string name="cd_sacrificial_stones_image">Image des Pierres Sacrificielles</string>
+    <!-- Language Popup -->
+    <string name="language_popup_title">Plusieurs langues</string>
+    <string name="language_popup_message">L\'application prend en charge plusieurs langues, mais comme il s\'agit d\'un projet de fan réalisé par une seule personne, seuls les boutons et les éléments de l\'interface utilisateur sont actuellement traduits, pas le contenu dans la langue maternelle des utilisateurs. Cela sera introduit dans les futures mises à jour.\n\nMerci d\'avoir téléchargé l\'application ! Vous pouvez changer la langue dans les paramètres.</string>
+    <string name="language_popup_dismiss">Je comprends</string>
+    <string name="language_popup_wait">Attendre (%d)</string>
+    <string name="settings_tooltip_language">Ici, vous pouvez changer la langue de l\'application pour celle que vous préférez.</string>
+    <string name="settings_tooltip_donate">C\'est un projet de fan. Si vous l\'aimez, vous pouvez soutenir son développement avec un petit don ici !</string>
+    <string name="settings_tooltip_next">Suivant</string>
+    <string name="settings_tooltip_finish">Compris</string>
+    <string name="settings_applying_language">Application des préférences de langue…</string>
 </resources>

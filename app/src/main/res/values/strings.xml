@@ -328,4 +328,8 @@
     <string name="language_popup_message">The app supports multiple languages, but since it is a one-person fan project, currently only buttons and UI elements are translated, not the content in the users\' native language. This will be introduced in future updates.\n\nThank you for downloading the app! You can change the language in settings.</string>
     <string name="language_popup_dismiss">I understand</string>
     <string name="language_popup_wait">Wait (%d)</string>
+    <string name="settings_tooltip_language">Here you can change the app language to your preferred one.</string>
+    <string name="settings_tooltip_donate">This is a fan project. If you like it, you can support its development with a small donation here!</string>
+    <string name="settings_tooltip_next">Next</string>
+    <string name="settings_tooltip_finish">Got it</string>
 </resources>

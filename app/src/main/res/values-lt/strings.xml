@@ -285,4 +285,23 @@
     <string name="metal_detail_subtitle_ore_deposits">Depositi di minerale dove puoi trovare questo materiale</string>
     <string name="metal_detail_subtitle_required_items">Oggetti necessari per costruire questo materiale.</string>
     <string name="metal_detail_subtitle_crafting_station">Stazione di fabbricazione dove puoi produrre questo oggetto</string>
+
+    <string name="page_index_of_total">%1$d/%2$d</string>
+    <string name="value_with_colon">%1$s:</string>
+    <string name="coins_value">%1$s Monetų</string>
+    <string name="effect_label">Poveikis:</string>
+    <string name="preview_centered_text">CENTRUOTAS TEKSTAS</string>
+    <string name="preview_fully_centered_text">VISIŠKAI CENTRUOTAS TEKSTAS</string>
+    <string name="preview_top_app_bar">Viršutinė programos juosta</string>
+    <string name="cd_sacrificial_stones_image">Aukojimo akmenų vaizdas</string>
+    <!-- Language Popup -->
+    <string name="language_popup_title">Keliomis kalbomis</string>
+    <string name="language_popup_message">Programa palaiko kelias kalbas, tačiau kadangi tai yra vieno asmens gerbėjų projektas, šiuo metu išversti tik mygtukai ir vartotojo sąsajos elementai, o ne turinys į vartotojų gimtąją kalbą. Tai bus įdiegta būsimuose atnaujinimuose.\n\nDėkojame, kad atsisiuntėte programą! Kalbą galite pakeisti nustatymuose.</string>
+    <string name="language_popup_dismiss">Aš suprantu</string>
+    <string name="language_popup_wait">Laukti (%d)</string>
+    <string name="settings_tooltip_language">Čia galite pakeisti programos kalbą į pageidaujamą.</string>
+    <string name="settings_tooltip_donate">Tai yra gerbėjų projektas. Jei jums patinka, galite palaikyti jo plėtrą nedidele auka čia!</string>
+    <string name="settings_tooltip_next">Kitas</string>
+    <string name="settings_tooltip_finish">Supratau</string>
+    <string name="settings_applying_language">Taikomos kalbos nuostatos…</string>
 </resources>

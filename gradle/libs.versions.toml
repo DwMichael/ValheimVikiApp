@@ -1,5 +1,5 @@
 [versions]
-agp = "9.1.1"
+agp = "9.2.0"
 appcompat = "1.7.1"
 assetDelivery = "2.3.0"
 coilCompose = "3.4.0"
@@ -54,6 +54,7 @@ uiTextGoogleFonts = "1.11.0-rc01"
 workRuntimeKtx = "2.11.2"
 workTesting = "2.11.2"
 appUpdate = "2.1.0"
+runtime = "1.11.0"
 
 
 [libraries]
@@ -124,6 +125,7 @@ turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 work-testing = { module = "androidx.work:work-testing", version.ref = "workTesting" }
 app-update = { group = "com.google.android.play", name = "app-update", version.ref = "appUpdate" }
 app-update-ktx = { group = "com.google.android.play", name = "app-update-ktx", version.ref = "appUpdate" }
+androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "runtime" }
 
 
 [plugins]

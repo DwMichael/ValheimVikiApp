@@ -23,13 +23,11 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.TextAutoSize
-import androidx.compose.material3.Text
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -106,7 +104,8 @@ fun ListContent(
 			) { item ->
 				val itemType = typeOfItemList(item.category.toAppCategory())
 				val scale = if (itemType == ListItemTypes.SMALL) 0.9f else 1f
-				val imgScale = if (itemType == ListItemTypes.DEFAULT) imageScale else ContentScale.Fit
+				val imgScale =
+					if (itemType == ListItemTypes.DEFAULT) imageScale else ContentScale.Fit
 				ListItem(
 					item = item,
 					startTextFrom = startTextFrom,
