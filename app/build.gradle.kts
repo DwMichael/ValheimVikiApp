@@ -16,6 +16,15 @@ android {
 	val file = rootProject.file("local.properties")
 	val properties = Properties()
 	properties.load(FileInputStream(file))
+	fun buildConfigString(value: String, requireTrailingSlash: Boolean = false): String {
+		val unquotedValue = value.trim().removeSurrounding("\"")
+		val normalizedValue = if (requireTrailingSlash && !unquotedValue.endsWith("/")) {
+			"$unquotedValue/"
+		} else {
+			unquotedValue
+		}
+		return "\"$normalizedValue\""
+	}
 
 	defaultConfig {
 		applicationId = "com.rabbitv.valheimviki"
@@ -24,9 +33,34 @@ android {
 		versionCode = 21
 		versionName = "1.1.4"
 
-		buildConfigField("String", "baseUrlSafe", properties.getProperty("baseUrl"))
-
 		testInstrumentationRunner = "com.rabbitv.valheimviki.CustomTestRunner"
+	}
+
+	flavorDimensions += "backend"
+
+	productFlavors {
+		create("real_app_varian") {
+			dimension = "backend"
+			buildConfigField(
+				"String",
+				"baseUrlSafe",
+				buildConfigString(
+					properties.getProperty("baseUrl"),
+					requireTrailingSlash = true
+				)
+			)
+		}
+		create("local_app_varian") {
+			dimension = "backend"
+			buildConfigField(
+				"String",
+				"baseUrlSafe",
+				buildConfigString(
+					properties.getProperty("localBaseUrl") ?: "http://10.0.2.2:8100/",
+					requireTrailingSlash = true
+				)
+			)
+		}
 	}
 
 	buildTypes {
@@ -55,6 +89,10 @@ android {
 			isIncludeAndroidResources = true
 			isReturnDefaultValues = true
 		}
+	}
+
+	sourceSets {
+		getByName("androidTest").assets.srcDir("$projectDir/schemas")
 	}
 }
 
@@ -134,6 +172,10 @@ dependencies {
 	implementation(libs.androidx.security.crypto)
 
 	androidTestImplementation(libs.dagger.hilt.android.testing)
+	androidTestImplementation(libs.androidx.test.uiautomator)
+	androidTestImplementation(libs.androidx.room.testing)
+	androidTestImplementation(libs.okhttp.mockwebserver)
+	androidTestImplementation(libs.turbine)
 	ksp(libs.androidx.room.compiler)
 
 //	kspTest(libs.dagger.hilt.compiler)
@@ -156,6 +198,10 @@ dependencies {
 	implementation(libs.androidx.runtime.tracing)
 
 	mockitoAgent("org.mockito:mockito-core:5.18.0") { isTransitive = false }
+}
+
+ksp {
+	arg("room.schemaLocation", "$projectDir/schemas")
 }
 
 tasks.withType<Test>().configureEach {

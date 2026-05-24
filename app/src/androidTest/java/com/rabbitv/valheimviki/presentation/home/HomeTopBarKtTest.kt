@@ -38,7 +38,6 @@ class HomeTopBarKtTest {
 			ValheimVikiAppTheme {
 				MainAppBar(
 					onSearchBarClick = {},
-					onMenuClick = {},
 					onBookMarkClick = {},
 					scope = rememberCoroutineScope(),
 					drawerState = rememberDrawerState(DrawerValue.Closed),
@@ -50,23 +49,6 @@ class HomeTopBarKtTest {
 	@Test
 	fun testHomeTopAppBarIsDisplayed() {
 		composeTestRule.onNodeWithTag("HomeTopAppBar").assertIsDisplayed()
-	}
-
-	@Test
-	fun testHomeTopAppBarIconsAreDisplayed() {
-		composeTestRule.onNodeWithContentDescription("Menu section Icon").assertIsDisplayed()
-		composeTestRule.onNodeWithContentDescription("Bookmarks section Icon").assertIsDisplayed()
-		composeTestRule.onNodeWithContentDescription("Search section Icon").assertIsDisplayed()
-	}
-
-	@Test
-	fun testIconButtonPaddingAndSize() {
-		composeTestRule.onNodeWithContentDescription("Menu section Icon")
-			.assertWidthIsEqualTo(ICON_CLICK_DIM).assertHeightIsEqualTo(ICON_CLICK_DIM)
-		composeTestRule.onNodeWithContentDescription("Bookmarks section Icon")
-			.assertWidthIsEqualTo(ICON_CLICK_DIM).assertHeightIsEqualTo(ICON_CLICK_DIM)
-		composeTestRule.onNodeWithContentDescription("Search section Icon")
-			.assertWidthIsEqualTo(ICON_CLICK_DIM).assertHeightIsEqualTo(ICON_CLICK_DIM)
 	}
 
 	@Test

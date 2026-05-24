@@ -1,5 +1,5 @@
 [versions]
-agp = "9.2.0"
+agp = "9.2.1"
 appcompat = "1.7.1"
 assetDelivery = "2.3.0"
 coilCompose = "3.4.0"
@@ -55,6 +55,8 @@ workRuntimeKtx = "2.11.2"
 workTesting = "2.11.2"
 appUpdate = "2.1.0"
 runtime = "1.11.0"
+uiautomator = "2.3.0"
+roomTesting = "2.8.4"
 
 
 [libraries]
@@ -124,6 +126,9 @@ room-paging = { module = "androidx.room:room-paging", version.ref = "roomPaging"
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 work-testing = { module = "androidx.work:work-testing", version.ref = "workTesting" }
 app-update = { group = "com.google.android.play", name = "app-update", version.ref = "appUpdate" }
+androidx-test-uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "uiautomator" }
+androidx-room-testing = { module = "androidx.room:room-testing", version.ref = "roomTesting" }
+okhttp-mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "okhttp" }
 app-update-ktx = { group = "com.google.android.play", name = "app-update-ktx", version.ref = "appUpdate" }
 androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "runtime" }
 

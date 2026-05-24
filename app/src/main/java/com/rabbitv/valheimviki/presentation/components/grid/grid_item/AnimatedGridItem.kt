@@ -25,6 +25,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -90,6 +91,7 @@ fun AnimatedGridItem(
 		val textState = rememberSharedContentState("text-${item.id}")
 		Box(
 			modifier = Modifier
+				.testTag("GridItem_${item.id}")
 				.height(height)
 				.clickable { onItemClick(item) },
 			contentAlignment = Alignment.BottomStart

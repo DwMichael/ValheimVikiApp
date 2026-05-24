@@ -83,7 +83,7 @@ fun MainAppBar(
             actions = {
                 IconButton(
                         onClick = { onBookMarkClick() },
-                        modifier = Modifier.size(ICON_CLICK_DIM)
+                        modifier = Modifier.testTag("nav_favorites").size(ICON_CLICK_DIM)
                 ) {
                     Icon(
                             painter = painterResource(R.drawable.ic_bookmarks),
@@ -112,7 +112,8 @@ fun MainAppBar(
                 IconButton(
                         onClick = { settingsClick() },
                         modifier =
-                                Modifier.size(ICON_CLICK_DIM)
+                                Modifier.testTag("nav_settings")
+                                        .size(ICON_CLICK_DIM)
                                         .graphicsLayer {
                                             if (highlightSettings) {
                                                 this.alpha = 1f

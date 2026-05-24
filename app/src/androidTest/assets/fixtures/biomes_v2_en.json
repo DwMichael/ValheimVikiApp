@@ -1,0 +1,11 @@
+[
+  {"id":"biome-1","category":"BIOME","imageUrl":"https://example.com/meadows.jpg","name":"Meadows","description":"A peaceful starter biome. [v2_updated]","order":1},
+  {"id":"biome-2","category":"BIOME","imageUrl":"https://example.com/blackforest.jpg","name":"Black Forest","description":"Dark forest with dangerous enemies.","order":2},
+  {"id":"biome-3","category":"BIOME","imageUrl":"https://example.com/swamp.jpg","name":"Swamp","description":"A murky, dangerous wetland.","order":3},
+  {"id":"biome-4","category":"BIOME","imageUrl":"https://example.com/mountain.jpg","name":"Mountain","description":"Frozen peaks and deadly cold.","order":4},
+  {"id":"biome-5","category":"BIOME","imageUrl":"https://example.com/plains.jpg","name":"Plains","description":"Open grasslands with powerful foes.","order":5},
+  {"id":"biome-6","category":"BIOME","imageUrl":"https://example.com/mistlands.jpg","name":"Mistlands","description":"Mysterious mist-shrouded region.","order":6},
+  {"id":"biome-7","category":"BIOME","imageUrl":"https://example.com/ashlands.jpg","name":"Ashlands","description":"Volcanic hellscape at the south pole.","order":7},
+  {"id":"biome-8","category":"BIOME","imageUrl":"https://example.com/deepnorth.jpg","name":"Deep North","description":"The frozen north, mostly unexplored.","order":8},
+  {"id":"biome-9","category":"BIOME","imageUrl":"https://example.com/ashlands2.jpg","name":"Ashlands Highlands","description":"New area discovered in the Ashlands.","order":9}
+]

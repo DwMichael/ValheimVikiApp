@@ -461,6 +461,7 @@ fun SettingsTutorialOverlay(
 		modifier = Modifier
 			.fillMaxSize()
 			.zIndex(100f)
+			.testTag("SettingsTutorialOverlay")
 			.clickable(
 				interactionSource = remember { MutableInteractionSource() },
 				indication = null
@@ -511,7 +512,8 @@ fun SettingsTutorialOverlay(
 						onCardClick = onNext,
 						label = buttonText,
 						height = 50.dp,
-						icon = if (step == 2) Lucide.Check else null
+						icon = if (step == 2) Lucide.Check else null,
+						modifier = Modifier.testTag("TutorialNextButton")
 					)
 				}
 			}

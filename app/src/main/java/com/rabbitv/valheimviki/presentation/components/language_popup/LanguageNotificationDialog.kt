@@ -19,6 +19,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -76,6 +78,7 @@ private fun LanguageNotificationContent(
             .fillMaxWidth(0.9f)
             .wrapContentSize()
             .clip(Shapes.large)
+            .semantics { testTag = "LanguageNotificationDialog" }
             .border(
                 width = 1.dp,
                 color = Color(0xFF42586D).copy(alpha = 0.5f),

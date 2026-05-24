@@ -17,3 +17,22 @@
 .cxx
 local.properties
 /app/src/main/java/com/rabbitv/valheimviki/utils/ApiKey.kt
+
+# Local workspace / agent tooling (private to dev machine)
+.claude/
+AGENTS.md
+CLAUDE.md
+
+# Build outputs / local dumps
+app/release/
+backups/
+dependencies.txt
+gradle/gradle-daemon-jvm.properties
+
+# Internal planning docs (not for public repo)
+doc/E2E_Test_plan.md
+doc/LOCAL_DB_PLAN.md
+scripts/
+
+# IDE noise
+/.idea/androidTestResultsUserPreferences.xml

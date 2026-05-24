@@ -1,5 +1,7 @@
 package com.rabbitv.valheimviki.domain.use_cases.data_refetch
 
+import com.rabbitv.valheimviki.BuildConfig
+
 /**
  * Configuration for data refetch operations
  * Contains expected minimum sizes for each data category
@@ -39,11 +41,7 @@ object DataRefetchConfig {
 	const val MIN_SIZE_CRAFTING_OBJECTS = 46
 	const val MIN_SIZE_RELATIONS = 2886
 
-	/**
-	 * Expected minimum sizes for each data category
-	 * These values should be updated when the API data structure changes
-	 */
-	val EXPECTED_DATA_SIZES = mapOf(
+	private val REMOTE_EXPECTED_DATA_SIZES = mapOf(
 		CATEGORY_BIOMES to MIN_SIZE_BIOMES,
 		CATEGORY_CREATURES to MIN_SIZE_CREATURES,
 		CATEGORY_ORE_DEPOSITS to MIN_SIZE_ORE_DEPOSITS,
@@ -60,6 +58,31 @@ object DataRefetchConfig {
 		CATEGORY_CRAFTING_OBJECTS to MIN_SIZE_CRAFTING_OBJECTS,
 		CATEGORY_RELATIONS to MIN_SIZE_RELATIONS
 	)
+
+	private val LOCAL_EXPECTED_DATA_SIZES = mapOf(
+		CATEGORY_BIOMES to 9,
+		CATEGORY_CREATURES to 83,
+		CATEGORY_ORE_DEPOSITS to 9,
+		CATEGORY_MATERIALS to 270,
+		CATEGORY_POINTS_OF_INTEREST to 51,
+		CATEGORY_TREES to 8,
+		CATEGORY_FOOD to 84,
+		CATEGORY_WEAPONS to 100,
+		CATEGORY_ARMORS to 51,
+		CATEGORY_MEADS to 40,
+		CATEGORY_TOOLS to 14,
+		CATEGORY_TRINKETS to 0,
+		CATEGORY_BUILDING_MATERIALS to 248,
+		CATEGORY_CRAFTING_OBJECTS to 46,
+		CATEGORY_RELATIONS to 1273
+	)
+
+	/**
+	 * Expected minimum sizes for each data category.
+	 * Local flavor uses the private dump counts; real flavor keeps production API thresholds.
+	 */
+	val EXPECTED_DATA_SIZES =
+		if (BuildConfig.FLAVOR == "local_app_varian") LOCAL_EXPECTED_DATA_SIZES else REMOTE_EXPECTED_DATA_SIZES
 
 	/**
 	 * Categories that should be included in search indexing

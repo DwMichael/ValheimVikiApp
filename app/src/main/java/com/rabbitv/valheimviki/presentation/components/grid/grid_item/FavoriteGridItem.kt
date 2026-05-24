@@ -20,6 +20,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -47,6 +48,7 @@ fun FavoriteGridItem(
 
 	Box(
 		modifier = Modifier
+			.testTag("FavoriteItem_${item.id}")
 			.height(height)
 			.clip(Shapes.large)
 			.clickable { onItemClick(item) },

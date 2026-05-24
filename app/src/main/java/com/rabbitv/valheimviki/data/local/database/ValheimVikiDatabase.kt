@@ -58,7 +58,7 @@ import com.rabbitv.valheimviki.domain.model.weapon.Weapon
 		Search::class,
 		SearchFTS::class],
 	version = 3,
-	exportSchema = false
+	exportSchema = true
 )
 @TypeConverters(Converters::class)
 abstract class ValheimVikiDatabase : RoomDatabase() {

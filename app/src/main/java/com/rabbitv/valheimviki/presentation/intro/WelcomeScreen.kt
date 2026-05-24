@@ -181,6 +181,7 @@ fun NavigationButton(
 			}
 		},
 		modifier = Modifier
+			.testTag("OnboardingNextButton")
 			.height(64.dp)
 			.fillMaxWidth()
 			.padding(horizontal = horizontalPadding),
