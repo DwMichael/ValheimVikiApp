@@ -400,7 +400,7 @@
     <string name="cd_sacrificial_stones_image">Sacrifical Strones Image</string>
     <!-- Guided onboarding -->
     <string name="guided_onboarding_info_title">Before You Begin</string>
-    <string name="guided_onboarding_info_message">Valheim Viki is a student project made with care for Valheim players.\n\nTranslations use official Valheim terms where available, plus verified internet sources and automatic translation tools. Some names or descriptions may still differ from the game.\n\nThis short tour will show you where to change language, read more about the app, and support development.</string>
+    <string name="guided_onboarding_info_message">Valheim Viki is a one-man student project made with care for Valheim players. Only one developer works on it and maintains it.\n\nTranslations use official Valheim terms where available, plus verified internet sources and automatic translation tools. Some names or descriptions may still differ from the game.\n\nThis short tour will show you where to change language, read more about the app, and support development.</string>
     <string name="guided_onboarding_info_accept">Start tour</string>
     <string name="guided_onboarding_wait">Wait (%d)</string>
     <string name="guided_onboarding_settings_title">Open Settings</string>

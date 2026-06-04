@@ -372,7 +372,7 @@
     <string name="cd_sacrificial_stones_image">Ohvrikivide pilt</string>
     <!-- Guided onboarding -->
     <string name="guided_onboarding_info_title">Enne alustamist</string>
-    <string name="guided_onboarding_info_message">Valheim Viki on tudengiprojekt, mis on loodud hoolega Valheimi mängijatele.\n\nTõlked kasutavad ametlikke Valheimi termineid, kui need on saadaval, ning kontrollitud internetiallikaid ja automaatseid tõlketööriistu. Mõned nimed või kirjeldused võivad siiski mängust erineda.\n\nSee lühike tutvustus näitab, kus muuta keelt, lugeda rakenduse kohta rohkem ja toetada arendust.</string>
+    <string name="guided_onboarding_info_message">Valheim Viki on ühe inimese tudengiprojekt, mis on loodud hoolega Valheimi mängijatele. Sellega töötab ja seda hooldab ainult üks arendaja.\n\nTõlked kasutavad ametlikke Valheimi termineid, kui need on saadaval, ning kontrollitud internetiallikaid ja automaatseid tõlketööriistu. Mõned nimed või kirjeldused võivad siiski mängust erineda.\n\nSee lühike tutvustus näitab, kus muuta keelt, lugeda rakenduse kohta rohkem ja toetada arendust.</string>
     <string name="guided_onboarding_info_accept">Alusta tutvustust</string>
     <string name="guided_onboarding_wait">Oota (%d)</string>
     <string name="guided_onboarding_settings_title">Ava seaded</string>

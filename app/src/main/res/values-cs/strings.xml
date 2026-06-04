@@ -372,7 +372,7 @@
     <string name="cd_sacrificial_stones_image">Obrázek obětních kamenů</string>
     <!-- Guided onboarding -->
     <string name="guided_onboarding_info_title">Než začneš</string>
-    <string name="guided_onboarding_info_message">Valheim Viki je studentský projekt tvořený s péčí pro hráče Valheimu.\n\nPřeklady používají oficiální termíny Valheimu, pokud jsou dostupné, a také ověřené internetové zdroje a automatické překladové nástroje. Některé názvy nebo popisy se proto stále mohou od hry lišit.\n\nTento krátký průvodce ti ukáže, kde změnit jazyk, přečíst si více o aplikaci a podpořit její vývoj.</string>
+    <string name="guided_onboarding_info_message">Valheim Viki je studentský projekt jednoho člověka, tvořený s péčí pro hráče Valheimu. Pracuje na něm a udržuje ho pouze jeden vývojář.\n\nPřeklady používají oficiální termíny Valheimu, pokud jsou dostupné, a také ověřené internetové zdroje a automatické překladové nástroje. Některé názvy nebo popisy se proto stále mohou od hry lišit.\n\nTento krátký průvodce ti ukáže, kde změnit jazyk, přečíst si více o aplikaci a podpořit její vývoj.</string>
     <string name="guided_onboarding_info_accept">Spustit průvodce</string>
     <string name="guided_onboarding_wait">Počkejte (%d)</string>
     <string name="guided_onboarding_settings_title">Otevřít nastavení</string>

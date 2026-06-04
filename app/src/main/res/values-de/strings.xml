@@ -371,7 +371,7 @@
     <string name="cd_sacrificial_stones_image">Bild der Opfersteine</string>
     <!-- Guided onboarding -->
     <string name="guided_onboarding_info_title">Bevor du beginnst</string>
-    <string name="guided_onboarding_info_message">Valheim Viki ist ein Studentenprojekt, das mit Sorgfalt für Valheim-Spieler entwickelt wird.\n\nDie Übersetzungen verwenden offizielle Valheim-Begriffe, wo sie verfügbar waren, sowie geprüfte Internetquellen und automatische Übersetzungstools. Manche Namen oder Beschreibungen können trotzdem vom Spiel abweichen.\n\nDiese kurze Einführung zeigt dir, wo du die Sprache änderst, mehr über die App erfährst und die Entwicklung unterstützen kannst.</string>
+    <string name="guided_onboarding_info_message">Valheim Viki ist ein Ein-Personen-Studentenprojekt, das mit Sorgfalt für Valheim-Spieler entwickelt wird. Ein einziger Entwickler arbeitet daran und pflegt es.\n\nDie Übersetzungen verwenden offizielle Valheim-Begriffe, wo sie verfügbar waren, sowie geprüfte Internetquellen und automatische Übersetzungstools. Manche Namen oder Beschreibungen können trotzdem vom Spiel abweichen.\n\nDiese kurze Einführung zeigt dir, wo du die Sprache änderst, mehr über die App erfährst und die Entwicklung unterstützen kannst.</string>
     <string name="guided_onboarding_info_accept">Tour starten</string>
     <string name="guided_onboarding_wait">Warten (%d)</string>
     <string name="guided_onboarding_settings_title">Einstellungen öffnen</string>

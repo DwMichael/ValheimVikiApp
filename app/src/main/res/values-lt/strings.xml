@@ -371,7 +371,7 @@
     <string name="cd_sacrificial_stones_image">Aukojimo akmenų vaizdas</string>
     <!-- Guided onboarding -->
     <string name="guided_onboarding_info_title">Prieš pradedant</string>
-    <string name="guided_onboarding_info_message">Valheim Viki yra studento projektas, kruopščiai kuriamas Valheim žaidėjams.\n\nVertimuose naudojami oficialūs Valheim terminai, kai jie prieinami, taip pat patikrinti interneto šaltiniai ir automatinio vertimo įrankiai. Kai kurie pavadinimai ar aprašymai vis tiek gali skirtis nuo žaidimo.\n\nŠis trumpas turas parodys, kur pakeisti kalbą, sužinoti daugiau apie programėlę ir paremti jos kūrimą.</string>
+    <string name="guided_onboarding_info_message">Valheim Viki yra vieno žmogaus studento projektas, kruopščiai kuriamas Valheim žaidėjams. Jį kuria ir prižiūri tik vienas kūrėjas.\n\nVertimuose naudojami oficialūs Valheim terminai, kai jie prieinami, taip pat patikrinti interneto šaltiniai ir automatinio vertimo įrankiai. Kai kurie pavadinimai ar aprašymai vis tiek gali skirtis nuo žaidimo.\n\nŠis trumpas turas parodys, kur pakeisti kalbą, sužinoti daugiau apie programėlę ir paremti jos kūrimą.</string>
     <string name="guided_onboarding_info_accept">Pradėti turą</string>
     <string name="guided_onboarding_wait">Palaukite (%d)</string>
     <string name="guided_onboarding_settings_title">Atidaryti nustatymus</string>

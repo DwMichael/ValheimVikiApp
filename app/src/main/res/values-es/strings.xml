@@ -371,7 +371,7 @@
     <string name="cd_sacrificial_stones_image">Imagen de las piedras sacrificiales</string>
     <!-- Guided onboarding -->
     <string name="guided_onboarding_info_title">Antes de empezar</string>
-    <string name="guided_onboarding_info_message">Valheim Viki es un proyecto estudiantil creado con cuidado para jugadores de Valheim.\n\nLas traducciones usan términos oficiales de Valheim cuando están disponibles, además de fuentes de Internet verificadas y herramientas de traducción automática. Algunos nombres o descripciones pueden seguir siendo distintos a los del juego.\n\nEste breve recorrido te mostrará dónde cambiar el idioma, leer más sobre la aplicación y apoyar su desarrollo.</string>
+    <string name="guided_onboarding_info_message">Valheim Viki es un proyecto estudiantil de una sola persona, creado con cuidado para jugadores de Valheim. Solo un desarrollador trabaja en él y lo mantiene.\n\nLas traducciones usan términos oficiales de Valheim cuando están disponibles, además de fuentes de Internet verificadas y herramientas de traducción automática. Algunos nombres o descripciones pueden seguir siendo distintos a los del juego.\n\nEste breve recorrido te mostrará dónde cambiar el idioma, leer más sobre la aplicación y apoyar su desarrollo.</string>
     <string name="guided_onboarding_info_accept">Iniciar recorrido</string>
     <string name="guided_onboarding_wait">Espera (%d)</string>
     <string name="guided_onboarding_settings_title">Abrir configuración</string>
