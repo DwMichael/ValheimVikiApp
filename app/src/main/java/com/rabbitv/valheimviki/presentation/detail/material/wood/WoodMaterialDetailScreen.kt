@@ -88,7 +88,7 @@ fun WoodMaterialDetailContent(
 	}
 	val treesData = HorizontalPagerData(
 		title = stringResource(R.string.trees),
-		subTitle = "Trees from witch this wood drop",
+		subTitle = stringResource(R.string.detail_subtitle_trees_drop_wood),
 		icon = Lucide.Trees,
 		iconRotationDegrees = 0f,
 		itemContentScale = ContentScale.Crop

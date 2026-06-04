@@ -152,7 +152,7 @@ fun WeaponDetailContent(
 							if (weapon.upgradeInfoList?.isNotEmpty() == true) {
 								TridentsDividedRow()
 								Text(
-									"Upgrade Information",
+									stringResource(R.string.upgrade_information),
 									modifier = Modifier.padding(
 										start = BODY_CONTENT_PADDING.dp,
 										end = BODY_CONTENT_PADDING.dp,
@@ -199,7 +199,7 @@ fun WeaponDetailContent(
 									list = list,
 									data = HorizontalPagerData(
 										title = stringResource(R.string.points_of_interest),
-										subTitle = "Point Of Interest Where You Can Find This Object",
+										subTitle = stringResource(R.string.detail_subtitle_object_poi),
 										icon = Lucide.House,
 										iconRotationDegrees = 0f,
 										itemContentScale = ContentScale.Crop
@@ -225,7 +225,7 @@ fun WeaponDetailContent(
 								CardImageWithTopLabel(
 									onClickedItem = handleClick,
 									itemData = craftingStation,
-									subTitle = "Crafting Station Needed to Make This Item",
+									subTitle = stringResource(R.string.detail_subtitle_crafting_station_needed),
 									contentScale = ContentScale.FillBounds,
 								)
 							}

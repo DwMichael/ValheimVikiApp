@@ -34,6 +34,17 @@ class DataStoreRepository @Inject constructor(
 		return dataStore.languageProvider()
 	}
 
+	suspend fun saveDataLanguage(language: String) {
+		withContext(ioDispatcher)
+		{
+			dataStore.saveDataLanguage(language = language)
+		}
+	}
+
+	fun dataLanguageProvider(): Flow<String> {
+		return dataStore.dataLanguageProvider()
+	}
+
 	suspend fun saveLanguagePopupState(shown: Boolean) {
 		withContext(ioDispatcher) {
 			dataStore.saveLanguagePopupState(shown)

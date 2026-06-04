@@ -69,6 +69,7 @@ import com.rabbitv.valheimviki.domain.use_cases.data_refetch.DataRefetchConfig.M
 import com.rabbitv.valheimviki.domain.use_cases.data_refetch.DataRefetchConfig.MIN_SIZE_WEAPONS
 import com.rabbitv.valheimviki.domain.use_cases.datastore.DataStoreUseCases
 import com.rabbitv.valheimviki.domain.use_cases.favorite.sync_favorite.SyncFavoritesUseCase
+import com.rabbitv.valheimviki.utils.Constants.DEFAULT_LANG
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -111,11 +112,9 @@ class DataRefetchUseCase @Inject constructor(
 
 	suspend fun refetchAllData(forceRefresh: Boolean = false): DataRefetchResult {
 		return try {
-			// User requested that Api and Database should remain as they are for now 
-			// because API does not yet support other languages.
-			val language = "en"
+			val language = dataStoreUseCases.languageProvider().first().ifBlank { DEFAULT_LANG }
 
-			if (!forceRefresh && shouldNotRefreshData()) {
+			if (!forceRefresh && shouldNotRefreshData(language)) {
 				println("DataRefetchUseCase: Data already exists, skipping refresh")
 				return DataRefetchResult.Success
 			}
@@ -127,12 +126,14 @@ class DataRefetchUseCase @Inject constructor(
 				results.allSuccessful -> {
 					updateSearchIndex(results.successfulData)
 					syncFavorites()
+					dataStoreUseCases.saveDataLanguageState(cacheTokenFor(language))
 					DataRefetchResult.Success
 				}
 
 				results.hasSuccessful -> {
 					updateSearchIndex(results.successfulData)
 					syncFavorites()
+					dataStoreUseCases.saveDataLanguageState(cacheTokenFor(language))
 					DataRefetchResult.PartialSuccess(
 						successfulCategories = results.successfulCategories,
 						failedCategories = results.failedCategories,
@@ -163,31 +164,38 @@ class DataRefetchUseCase @Inject constructor(
 	): RefetchResults = coroutineScope {
 		val deferredResults = categories.map { category ->
 			async {
-				retryWithBackoff(
-					maxAttempts = DataRefetchConfig.MAX_RETRY_ATTEMPTS,
-					initialDelay = 1000L
-				) {
-					try {
-						val response = category.fetchFunction(language)
-						if (response.isSuccessful) {
-							val data = response.body()
-							if (data != null && (data as List<*>).isNotEmpty()) {
-								category.storeFunction(data)
-								val searchItems = category.toSearchList(data)
-								RefetchResult.Success(category.name, searchItems)
+				try {
+					retryWithBackoff(
+						maxAttempts = DataRefetchConfig.MAX_RETRY_ATTEMPTS,
+						initialDelay = 1000L
+					) {
+						try {
+							val response = category.fetchFunction(language)
+							if (response.isSuccessful) {
+								val data = response.body()
+								if (data != null && (data as List<*>).isNotEmpty()) {
+									category.storeFunction(data)
+									val searchItems = category.toSearchList(data)
+									RefetchResult.Success(category.name, searchItems)
+								} else {
+									throw Exception("Empty or null data received for ${category.name}")
+								}
 							} else {
-								throw Exception("Empty or null data received for ${category.name}")
+								throw Exception(
+									"API error for ${category.name}: ${
+										response.errorBody()?.string() ?: "Unknown"
+									}"
+								)
 							}
-						} else {
-							throw Exception(
-								"API error for ${category.name}: ${
-									response.errorBody()?.string() ?: "Unknown"
-								}"
-							)
+						} catch (e: Exception) {
+							throw Exception("Failed to fetch ${category.name}: ${e.message}")
 						}
-					} catch (e: Exception) {
-						throw Exception("Failed to fetch ${category.name}: ${e.message}")
 					}
+				} catch (e: Exception) {
+					RefetchResult.Failure(
+						categoryName = category.name,
+						errorMessage = e.message ?: "Unknown error"
+					)
 				}
 			}
 		}
@@ -347,7 +355,14 @@ class DataRefetchUseCase @Inject constructor(
 	}
 
 	@Suppress("UNCHECKED_CAST")
-	private suspend fun shouldNotRefreshData(): Boolean = coroutineScope {
+	private suspend fun shouldNotRefreshData(language: String): Boolean = coroutineScope {
+		val cachedLanguage = dataStoreUseCases.dataLanguageProvider().first()
+		val expectedCacheToken = cacheTokenFor(language)
+		if (cachedLanguage != expectedCacheToken) {
+			println("DataRefetchUseCase: Cached data marker '$cachedLanguage' differs from '$expectedCacheToken', refreshing data")
+			return@coroutineScope false
+		}
+
 		val expectedSizes = DataRefetchConfig.EXPECTED_DATA_SIZES
 
 		val deferredResults = listOf(
@@ -405,6 +420,8 @@ class DataRefetchUseCase @Inject constructor(
 				)
 	}
 
+	private fun cacheTokenFor(language: String): String = "$language:$DATA_CACHE_VERSION"
+
 	// Helper classes for better organization
 	private sealed class RefetchResult {
 		data class Success(val categoryName: String, val searchItems: List<Search>) :
@@ -430,5 +447,9 @@ class DataRefetchUseCase @Inject constructor(
 
 		val allSuccessful: Boolean = results.all { it is RefetchResult.Success }
 		val hasSuccessful: Boolean = results.any { it is RefetchResult.Success }
+	}
+
+	private companion object {
+		const val DATA_CACHE_VERSION = "translations-v2"
 	}
 }

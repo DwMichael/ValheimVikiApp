@@ -224,7 +224,7 @@ fun AggressiveCreatureDetailContent(
 								list = state,
 								starLevel = pageIndex,
 								title = stringResource(R.string.drop_items),
-								subTitle = "Materials that drop from creature after defeating",
+								subTitle = stringResource(R.string.detail_subtitle_materials_drop_from_creature),
 								icon = { Lucide.Trophy }
 							)
 						}
@@ -240,7 +240,7 @@ fun AggressiveCreatureDetailContent(
 								icon = { Lucide.Beef },
 								starLevel = pageIndex,
 								title = stringResource(R.string.food_drops),
-								subTitle = "Food items that drop from creature and can be instantly eaten",
+								subTitle = stringResource(R.string.detail_subtitle_food_drop_from_creature),
 							)
 						}
 
@@ -251,7 +251,7 @@ fun AggressiveCreatureDetailContent(
 							icon = Lucide.Heart,
 							label = stringResource(R.string.health),
 							value = currentLevel.baseHp.toString(),
-							details = "The amount of health points this mob have",
+							details = stringResource(R.string.mob_detail_health_info),
 						)
 
 						// Base Damage

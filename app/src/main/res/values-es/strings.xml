@@ -206,7 +206,7 @@
     <string name="usage">Uso</string>
     <string name="recipe">Receta</string>
     <string name="cooldown">Tiempo de recarga</string>
-    <string name="food_drops">Drops de comida</string>
+    <string name="food_drops">Botín de comida</string>
     <string name="required_items">Objetos requeridos</string>
     <string name="required_materials_colon">Materiales requeridos:</string>
     <string name="required_colon">Requerido:</string>
@@ -257,12 +257,20 @@
     <string name="cd_search_icon_simple">Icono de búsqueda</string>
     <string name="cd_clear_icon">Icono de borrar</string>
     <string name="cd_grid_item_image">Imagen de elemento de cuadrícula</string>
-    <string name="cd_no_internet_icon">ICONO_SIN_CONEXIÓN_A_INTERNET</string>
+    <string name="cd_no_internet_icon">Icono sin conexión a Internet</string>
     <string name="cd_viking_logo">Logo vikingo</string>
     <string name="level_number">Nivel %1$d</string>
-    <string name="drop_chance_percent">Probabilidad de drop: %1$s%%</string>
+    <string name="drop_chance_percent">Probabilidad de obtención: %1$s%%</string>
     <string name="quantity_with_x">x%1$s</string>
     <string name="health_value">Salud: %1$s</string>
+    <string name="show_more">... ver más</string>
+    <string name="show_less"> ver menos</string>
+    <string name="location">Ubicación</string>
+    <string name="biography">Biografía</string>
+    <string name="name">Nombre</string>
+    <string name="icon">Icono</string>
+    <string name="cost">Coste</string>
+    <string name="price_for_one">Precio por unidad</string>
     <!-- Onboarding -->
     <string name="onboarding_title_app">ValheimViki</string>
     <string name="onboarding_desc_app">Explora el vasto mundo &amp; conocimiento de Valheim</string>
@@ -285,4 +293,9 @@
     <string name="metal_detail_subtitle_ore_deposits">Depósitos de mineral donde puedes encontrar este material</string>
     <string name="metal_detail_subtitle_required_items">Objetos necesarios para fabricar este material.</string>
     <string name="metal_detail_subtitle_crafting_station">Estación de fabricación donde puedes producir este objeto</string>
+    <!-- Language Popup -->
+    <string name="language_popup_title">Aviso sobre traducciones</string>
+    <string name="language_popup_message">El contenido del juego en idiomas distintos del inglés se tradujo usando términos oficiales de Valheim cuando estaban disponibles, además de fuentes de Internet y herramientas de traducción automática. Por eso, algunos nombres o descripciones pueden sonar diferentes a como aparecen en el juego.\n\nPara la referencia más segura, cambia a inglés. Si ves una palabra incorrecta, envía un comentario con el texto exacto que debe corregirse. Gracias.</string>
+    <string name="language_popup_dismiss">Entiendo</string>
+    <string name="language_popup_wait">Espera (%d)</string>
 </resources>

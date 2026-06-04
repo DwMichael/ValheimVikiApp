@@ -66,7 +66,7 @@ fun CardWithTrophy(
 				horizontalArrangement = Arrangement.SpaceBetween
 			) {
 				Text(
-					"TROPHY",
+					stringResource(R.string.chip_trophy),
 					style = MaterialTheme.typography.labelLarge
 				)
 				AsyncImage(

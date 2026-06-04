@@ -96,9 +96,9 @@
     <string name="category_defense">DEFESA</string>
     <string name="category_siege">CERCO</string>
     <string name="category_misc">DIVERSOS</string>
-    <string name="category_boss_drop">DROP DE CHEFE</string>
-    <string name="category_mini_boss_drop">DROP DE MINICHEFE</string>
-    <string name="category_mob_drop">DROP DE MOB</string>
+    <string name="category_boss_drop">BUTIM DE CHEFE</string>
+    <string name="category_mini_boss_drop">BUTIM DE MINICHEFE</string>
+    <string name="category_mob_drop">BUTIM DE CRIATURA</string>
     <string name="category_offerings">OFERENDAS</string>
     <string name="category_crafted">FABRICADO</string>
     <string name="category_metal">METAL</string>
@@ -206,7 +206,7 @@
     <string name="usage">Utilização</string>
     <string name="recipe">Receita</string>
     <string name="cooldown">Tempo de recarga</string>
-    <string name="food_drops">Drops de comida</string>
+    <string name="food_drops">Butim de comida</string>
     <string name="required_items">Itens necessários</string>
     <string name="required_materials_colon">Materiais necessários:</string>
     <string name="required_colon">Necessário:</string>
@@ -257,12 +257,20 @@
     <string name="cd_search_icon_simple">Ícone de pesquisa</string>
     <string name="cd_clear_icon">Ícone de limpar</string>
     <string name="cd_grid_item_image">Imagem de elemento da grelha</string>
-    <string name="cd_no_internet_icon">ÍCONE_SEM_LIGAÇÃO_À_INTERNET</string>
+    <string name="cd_no_internet_icon">Ícone sem ligação à Internet</string>
     <string name="cd_viking_logo">Logo viking</string>
     <string name="level_number">Nível %1$d</string>
-    <string name="drop_chance_percent">Probabilidade de drop: %1$s%%</string>
+    <string name="drop_chance_percent">Probabilidade de obtenção: %1$s%%</string>
     <string name="quantity_with_x">x%1$s</string>
     <string name="health_value">Saúde: %1$s</string>
+    <string name="show_more">... mostrar mais</string>
+    <string name="show_less"> mostrar menos</string>
+    <string name="location">Localização</string>
+    <string name="biography">Biografia</string>
+    <string name="name">Nome</string>
+    <string name="icon">Ícone</string>
+    <string name="cost">Custo</string>
+    <string name="price_for_one">Preço unitário</string>
     <!-- Onboarding -->
     <string name="onboarding_title_app">ValheimViki</string>
     <string name="onboarding_desc_app">Explore o vasto mundo &amp; conhecimento de Valheim</string>
@@ -285,4 +293,9 @@
     <string name="metal_detail_subtitle_ore_deposits">Depósitos de minério onde pode encontrar este material</string>
     <string name="metal_detail_subtitle_required_items">Itens necessários para construir este material.</string>
     <string name="metal_detail_subtitle_crafting_station">Estação de fabrico onde pode produzir este item</string>
+    <!-- Language Popup -->
+    <string name="language_popup_title">Aviso sobre traduções</string>
+    <string name="language_popup_message">O conteúdo do jogo em idiomas diferentes do inglês foi traduzido usando termos oficiais de Valheim quando disponíveis, além de fontes da Internet e ferramentas de tradução automática. Por isso, alguns nomes ou descrições podem soar de forma diferente do jogo.\n\nPara a referência mais segura, mude para inglês. Se notar uma palavra incorreta, envie feedback com o texto exato a corrigir. Obrigado.</string>
+    <string name="language_popup_dismiss">Compreendo</string>
+    <string name="language_popup_wait">Aguarde (%d)</string>
 </resources>

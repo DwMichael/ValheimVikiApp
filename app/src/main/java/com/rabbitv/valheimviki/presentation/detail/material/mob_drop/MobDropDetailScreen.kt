@@ -93,7 +93,7 @@ fun MobDropDetailContent(
 
 	val aggressiveCreatureData = HorizontalPagerData(
 		title = stringResource(R.string.aggressive_creatures),
-		subTitle = "Aggressive creatures that drop this material",
+		subTitle = stringResource(R.string.detail_subtitle_aggressive_creatures_drop_material),
 		icon = Lucide.Sword,
 		iconRotationDegrees = 0f,
 		itemContentScale = ContentScale.Crop
@@ -101,7 +101,7 @@ fun MobDropDetailContent(
 
 	val passiveCreatureData = HorizontalPagerData(
 		title = stringResource(R.string.passive_creatures),
-		subTitle = "Passive creatures that drop this material",
+		subTitle = stringResource(R.string.detail_subtitle_passive_creatures_drop_material),
 		icon = Lucide.Rabbit,
 		iconRotationDegrees = 0f,
 		itemContentScale = ContentScale.Crop
@@ -109,7 +109,7 @@ fun MobDropDetailContent(
 
 	val pointsOfInterestData = HorizontalPagerData(
 		title = stringResource(R.string.points_of_interest),
-		subTitle = "Poi where you can find this item",
+		subTitle = stringResource(R.string.detail_subtitle_poi_find_item),
 		icon = Lucide.MapPinned,
 		iconRotationDegrees = 0f,
 		itemContentScale = ContentScale.Crop

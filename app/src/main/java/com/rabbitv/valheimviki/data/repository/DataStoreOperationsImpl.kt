@@ -9,6 +9,8 @@ import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.rabbitv.valheimviki.domain.repository.DataStoreOperations
+import com.rabbitv.valheimviki.utils.Constants.DEFAULT_LANG
+import com.rabbitv.valheimviki.utils.Constants.PREFERENCES_DATA_LANGUAGE_KEY
 import com.rabbitv.valheimviki.utils.Constants.PREFERENCES_KEY
 import com.rabbitv.valheimviki.utils.Constants.PREFERENCES_LANGUAGE_KEY
 import com.rabbitv.valheimviki.utils.Constants.PREFERENCES_NAME
@@ -23,6 +25,7 @@ class DataStoreOperationsImpl(private val context: Context) : DataStoreOperation
     private object PreferencesKey {
         val onBoardingKey = booleanPreferencesKey(name = PREFERENCES_KEY)
         val languageKey = stringPreferencesKey(name = PREFERENCES_LANGUAGE_KEY)
+        val dataLanguageKey = stringPreferencesKey(name = PREFERENCES_DATA_LANGUAGE_KEY)
         val languagePopupKey = booleanPreferencesKey(name = com.rabbitv.valheimviki.utils.Constants.PREFERENCES_LANGUAGE_POPUP_KEY)
     }
 
@@ -61,8 +64,26 @@ class DataStoreOperationsImpl(private val context: Context) : DataStoreOperation
         }
     }
     .map { preferences ->
-        preferences[PreferencesKey.languageKey] ?: "en"
+        preferences[PreferencesKey.languageKey] ?: DEFAULT_LANG
     }
+
+    override suspend fun saveDataLanguage(language: String) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKey.dataLanguageKey] = language
+        }
+    }
+
+    override fun dataLanguageProvider(): Flow<String> = dataStore.data
+        .catch { exception ->
+            if (exception is IOException) {
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }
+        .map { preferences ->
+            preferences[PreferencesKey.dataLanguageKey] ?: DEFAULT_LANG
+        }
 
     override suspend fun saveLanguagePopupState(shown: Boolean) {
         dataStore.edit { preferences ->

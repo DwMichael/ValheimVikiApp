@@ -111,10 +111,11 @@ fun MiniBossContent(
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
 	}
 	val dropItemsTitle = stringResource(R.string.drop_items)
-	val dropItemData = remember(dropItemsTitle) {
+	val dropItemsSubtitle = stringResource(R.string.detail_subtitle_boss_drops)
+	val dropItemData = remember(dropItemsTitle, dropItemsSubtitle) {
 		HorizontalPagerData(
 			title = dropItemsTitle,
-			subTitle = "Items that drop from boss after defeating him",
+			subTitle = dropItemsSubtitle,
 			icon = Lucide.Trophy,
 			iconRotationDegrees = 0f,
 			itemContentScale = ContentScale.Crop,
@@ -216,7 +217,7 @@ fun MiniBossContent(
 								icon = Lucide.Heart,
 								label = stringResource(R.string.health),
 								value = miniBossUiSate.miniBoss.baseHP.toString(),
-								details = "The amount of health points this boss have",
+								details = stringResource(R.string.what_is_health),
 							)
 						}
 

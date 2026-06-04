@@ -107,10 +107,11 @@ fun TreeDetailContent(
 	val isRunning by remember { derivedStateOf { animatedVisibilityScope.transition.isRunning } }
 	val scrollState = rememberScrollState()
 	val axesTitle = stringResource(R.string.axes)
-	val axesData = remember(axesTitle) {
+	val axesSubtitle = stringResource(R.string.detail_subtitle_axes_cut_tree)
+	val axesData = remember(axesTitle, axesSubtitle) {
 		HorizontalPagerData(
 			title = axesTitle,
-			subTitle = "List of axes that can cut this tree",
+			subTitle = axesSubtitle,
 			icon = Lucide.Axe,
 			iconRotationDegrees = 0f,
 			itemContentScale = ContentScale.Crop
@@ -212,7 +213,7 @@ fun TreeDetailContent(
 							icon = { Lucide.Gem },
 							starLevel = 0,
 							title = stringResource(R.string.materials),
-							subTitle = "Unique drops are obtained by cutting this tree.",
+							subTitle = stringResource(R.string.detail_subtitle_unique_drops_cut_tree),
 						)
 						Spacer(modifier = Modifier.height(90.dp))
 					}

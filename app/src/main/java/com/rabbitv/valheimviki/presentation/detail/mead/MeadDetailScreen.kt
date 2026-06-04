@@ -179,7 +179,7 @@ fun MeadDetailContent(
 									modifier = Modifier.fillMaxWidth(),
 									data = SectionHeaderData(
 										title = stringResource(R.string.recipe),
-										subTitle = "Ingredients required to craft this item",
+										subTitle = stringResource(R.string.detail_subtitle_ingredients_required_to_craft_item),
 										icon = if (category == MeadSubCategory.MEAD_BASE) Lucide.CookingPot else Lucide.FlaskRound,
 									)
 								)
@@ -216,7 +216,7 @@ fun MeadDetailContent(
 									icon = Lucide.Clock2,
 									label = stringResource(R.string.duration),
 									value = "${mead.duration.toString()} min",
-									details = "How long this potion's effects remain active after consumption. The timer begins immediately upon eating and cannot be paused or extended.",
+									details = stringResource(R.string.mead_detail_duration_info),
 								)
 							}
 							if (shouldShowValue(mead.cooldown)) {
@@ -225,7 +225,7 @@ fun MeadDetailContent(
 									icon = Lucide.ClockArrowDown,
 									label = stringResource(R.string.cooldown),
 									value = mead.cooldown.toString(),
-									details = "The cooldown is the time you must wait before consuming another potion or mead of the same type. It prevents immediate re-use and encourages strategic planning in combat or exploration.",
+									details = stringResource(R.string.mead_detail_cooldown_info),
 								)
 							}
 							if (shouldShowValue(mead.recipeOutput)) {
@@ -234,7 +234,7 @@ fun MeadDetailContent(
 									icon = Lucide.Layers2,
 									label = stringResource(R.string.stack_size),
 									value = mead.recipeOutput.toString(),
-									details = "The amount of meads produced by fermenting the mead base for two in-game days.",
+									details = stringResource(R.string.mead_detail_produced_amount_info),
 								)
 							}
 						}
@@ -252,7 +252,11 @@ fun MeadDetailContent(
 								CardImageWithTopLabel(
 									onClickedItem = handleClick,
 									itemData = craftingObject,
-									subTitle = if (category == MeadSubCategory.MEAD_BASE) "Requires cooking station" else "Requires fermenting station",
+									subTitle = if (category == MeadSubCategory.MEAD_BASE) {
+										stringResource(R.string.detail_subtitle_requires_cooking_station)
+									} else {
+										stringResource(R.string.detail_subtitle_requires_fermenting_station)
+									},
 									contentScale = ContentScale.Fit,
 									painter = craftingStationPainter
 								)

@@ -2,8 +2,12 @@ package com.rabbitv.valheimviki.presentation.splash.viewmodel
 
 import app.cash.turbine.test
 import com.rabbitv.valheimviki.domain.use_cases.datastore.DataStoreUseCases
+import com.rabbitv.valheimviki.domain.use_cases.datastore.data_language_provider.DataLanguageProvider
+import com.rabbitv.valheimviki.domain.use_cases.datastore.get_language_popup_state.ReadLanguagePopupState
 import com.rabbitv.valheimviki.domain.use_cases.datastore.get_onboarding_state.ReadOnBoardingState
 import com.rabbitv.valheimviki.domain.use_cases.datastore.language_state_provider.LanguageProvider
+import com.rabbitv.valheimviki.domain.use_cases.datastore.save_data_language_state.SaveDataLanguageState
+import com.rabbitv.valheimviki.domain.use_cases.datastore.save_language_popup_state.SaveLanguagePopupState
 import com.rabbitv.valheimviki.domain.use_cases.datastore.save_onboarding_state.SaveOnBoardingState
 import com.rabbitv.valheimviki.domain.use_cases.datastore.saved_language_state.SaveLanguageState
 import kotlinx.coroutines.Dispatchers
@@ -46,6 +50,18 @@ class SplashViewModelTest {
 	@Mock
 	private lateinit var saveLanguageState: SaveLanguageState
 
+	@Mock
+	private lateinit var dataLanguageProvider: DataLanguageProvider
+
+	@Mock
+	private lateinit var saveDataLanguageState: SaveDataLanguageState
+
+	@Mock
+	private lateinit var readLanguagePopupState: ReadLanguagePopupState
+
+	@Mock
+	private lateinit var saveLanguagePopupState: SaveLanguagePopupState
+
 	@BeforeEach
 	fun setUp() {
 		Dispatchers.setMain(testDispatcher)
@@ -54,7 +70,11 @@ class SplashViewModelTest {
 			readOnBoardingUseCase = readOnBoardingUseCase,
 			saveOnBoardingState = saveOnBoardingState,
 			languageProvider = languageProvider,
-			saveLanguageState = saveLanguageState
+			saveLanguageState = saveLanguageState,
+			dataLanguageProvider = dataLanguageProvider,
+			saveDataLanguageState = saveDataLanguageState,
+			readLanguagePopupState = readLanguagePopupState,
+			saveLanguagePopupState = saveLanguagePopupState
 		)
 
 	}
@@ -72,7 +92,7 @@ class SplashViewModelTest {
 			defaultDispatcher = testDispatcher
 		)
 
-		assertFalse(viewModel.onBoardingCompleted.value)
+		assertFalse(viewModel.onBoardingCompleted.value == true)
 	}
 
 	@Test
@@ -84,17 +104,19 @@ class SplashViewModelTest {
 				readOnBoardingUseCase,
 				saveOnBoardingState,
 				languageProvider,
-				saveLanguageState
+				saveLanguageState,
+				dataLanguageProvider,
+				saveDataLanguageState,
+				readLanguagePopupState,
+				saveLanguagePopupState
 			),
 			testDispatcher
 		)
 
 		viewModel.onBoardingCompleted.test {
-			assertFalse(awaitItem())
-			assertTrue(awaitItem())
+			assertFalse(awaitItem() == true)
+			assertTrue(awaitItem() == true)
 			cancelAndConsumeRemainingEvents()
 		}
 	}
-
-
 }

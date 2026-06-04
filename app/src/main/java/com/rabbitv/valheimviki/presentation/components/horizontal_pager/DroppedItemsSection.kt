@@ -63,13 +63,14 @@ fun DroppedItemsSection(
 	starLevel: Int,
 	icon: () -> ImageVector,
 	title: String? = stringResource(R.string.drop_items),
-	subTitle: String? = "Materials that drop from creature after defeating",
+	subTitle: String? = null,
 ) {
 
-	val headerData = remember(title, subTitle, icon, starLevel) {
+	val resolvedSubTitle = subTitle ?: stringResource(R.string.detail_subtitle_materials_drop_from_creature)
+	val headerData = remember(title, resolvedSubTitle, icon, starLevel) {
 		PagerHeaderData(
 			title = title,
-			subTitle = subTitle,
+			subTitle = resolvedSubTitle,
 			icon = icon()
 		)
 	}

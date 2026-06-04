@@ -1,6 +1,5 @@
 package com.rabbitv.valheimviki.presentation.detail.material.crafted
 
-
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
@@ -150,7 +149,7 @@ fun CraftedMaterialDetailContent(
 									onItemClick(destination)
 								},
 								itemData = craftingStation,
-								subTitle = "Crafting station where you can produce this item ",
+								subTitle = stringResource(R.string.detail_subtitle_crafting_station_produce_item),
 								contentScale = ContentScale.Fit,
 							)
 							Spacer(modifier = Modifier.padding(BODY_CONTENT_PADDING.dp))
@@ -170,7 +169,7 @@ fun CraftedMaterialDetailContent(
 							SectionHeader(
 								data = SectionHeaderData(
 									title = stringResource(R.string.required_items),
-									subTitle = "Items needed to build this material.",
+									subTitle = stringResource(R.string.metal_detail_subtitle_required_items),
 									icon = Lucide.ScrollText,
 								),
 							)

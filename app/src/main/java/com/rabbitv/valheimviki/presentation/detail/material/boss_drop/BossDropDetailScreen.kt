@@ -1,5 +1,4 @@
-package com.rabbitv.valheimviki.presentation.detail.material.boss_drop
-
+package com.rabbitv.valheimviki.presentation.detail.material.boss_dro
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -163,7 +162,7 @@ fun BossDropDetailContent(
 								TridentsDividedRow()
 								ImageWithTopLabel(
 									itemData = boss,
-									subTitle = "Boss from witch this item drop",
+									subTitle = stringResource(R.string.detail_subtitle_boss_drops_item),
 									contentScale = ContentScale.Crop,
 									onItemClick = {
 										val destination = NavigationHelper.routeToCreature(

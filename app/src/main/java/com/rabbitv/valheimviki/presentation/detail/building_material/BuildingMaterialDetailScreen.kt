@@ -169,7 +169,7 @@ fun BuildingMaterialDetailContent(
 									CardImageWithTopLabel(
 										onClickedItem = handleClick,
 										itemData = craftingStation,
-										subTitle = "Crafting station that must be near the construction",
+										subTitle = stringResource(R.string.detail_subtitle_crafting_station_near_construction),
 										contentScale = ContentScale.Fit,
 
 										)
@@ -182,7 +182,7 @@ fun BuildingMaterialDetailContent(
 					if (materialsData.isNotEmpty() || foodsData.isNotEmpty()) {
 						SlavicDivider()
 						Text(
-							"Required Materials",
+							stringResource(R.string.required_items),
 							style = MaterialTheme.typography.headlineSmall,
 							autoSize = TextAutoSize.StepBased(
 								minFontSize = 16.sp,

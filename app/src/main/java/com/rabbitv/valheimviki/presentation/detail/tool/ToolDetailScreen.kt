@@ -108,7 +108,7 @@ fun ToolDetailContent(
 
 	val oreDepositData = HorizontalPagerData(
 		title = stringResource(R.string.ore_deposits),
-		subTitle = "Ore Deposits that can be mine with this pickaxe",
+		subTitle = stringResource(R.string.detail_subtitle_ore_deposits_mined_with_pickaxe),
 		icon = Lucide.Pickaxe,
 		iconRotationDegrees = -85f,
 		itemContentScale = ContentScale.Crop
@@ -174,7 +174,7 @@ fun ToolDetailContent(
 							SectionHeader(
 								data = SectionHeaderData(
 									title = stringResource(R.string.crafting_ingredients),
-									subTitle = "Items required to craft this item",
+									subTitle = stringResource(R.string.detail_subtitle_items_required_to_craft_item),
 									icon = Lucide.Hammer
 								)
 							)
@@ -203,7 +203,7 @@ fun ToolDetailContent(
 					) { data ->
 
 						Text(
-							"Upgrade Information",
+							stringResource(R.string.upgrade_information),
 							modifier = Modifier.padding(
 								start = BODY_CONTENT_PADDING.dp,
 								end = BODY_CONTENT_PADDING.dp,
@@ -236,7 +236,7 @@ fun ToolDetailContent(
 								CardImageWithTopLabel(
 									onClickedItem = handleClick,
 									itemData = craftingStation,
-									subTitle = "Requires crafting station",
+									subTitle = stringResource(R.string.detail_subtitle_requires_crafting_station),
 									contentScale = ContentScale.Fit,
 									painter = craftingStationPainter
 								)
@@ -285,7 +285,7 @@ fun ToolDetailContent(
 										onClickedItem = handleClick,
 										itemData = item,
 										cradHeight = 200.dp,
-										subTitle = "Npc that sell this item",
+										subTitle = stringResource(R.string.detail_subtitle_npc_sells_item),
 										contentScale = ContentScale.Crop,
 										painter = craftingStationPainter
 									)

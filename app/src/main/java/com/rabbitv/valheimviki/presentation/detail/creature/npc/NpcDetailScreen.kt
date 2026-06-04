@@ -120,10 +120,14 @@ fun NpcDetailContent(
 ) {
 	val scrollState = rememberScrollState()
 	val headersShopTable = listOf(
-		"Name", "Icon", "Cost",
+		stringResource(R.string.name),
+		stringResource(R.string.icon),
+		stringResource(R.string.cost),
 	)
 	val headersSellTable = listOf(
-		"Name", "Icon", "Price for One"
+		stringResource(R.string.name),
+		stringResource(R.string.icon),
+		stringResource(R.string.price_for_one)
 	)
 
 	val sideBorder = Modifier.drawBehind {
@@ -220,7 +224,7 @@ fun NpcDetailContent(
 					}
 					if (it.location.isNotBlank()) {
 						Text(
-							"Location",
+							stringResource(R.string.location),
 							style = MaterialTheme.typography.headlineSmall,
 				autoSize = TextAutoSize.StepBased(
 					minFontSize = 16.sp,
@@ -243,7 +247,7 @@ fun NpcDetailContent(
 					if (it.biography.isNotBlank()) {
 						TridentsDividedRow()
 						Text(
-							"Biography",
+							stringResource(R.string.biography),
 							style = MaterialTheme.typography.headlineSmall,
 				autoSize = TextAutoSize.StepBased(
 					minFontSize = 16.sp,

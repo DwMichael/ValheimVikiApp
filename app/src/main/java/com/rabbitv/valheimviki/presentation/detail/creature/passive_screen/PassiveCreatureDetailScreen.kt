@@ -222,7 +222,7 @@ fun PassiveCreatureDetailContent(
 								list = data,
 								starLevel = pageIndex,
 								title = stringResource(R.string.drop_items),
-								subTitle = "Materials that drop from creature after defeating",
+								subTitle = stringResource(R.string.detail_subtitle_materials_drop_from_creature),
 								onItemClick = handleClick,
 								icon = { Lucide.Trophy },
 							)
