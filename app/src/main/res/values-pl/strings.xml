@@ -360,6 +360,15 @@
     <string name="mead_detail_produced_amount_info">Liczba miodów uzyskanych po fermentacji bazy miodu przez dwa dni w grze.</string>
     <string name="trinket_detail_adrenaline_info">Adrenalina to osobisty zasób używany przez biżuterię. W HUD-zie jest pokazana jako pomarańczowy pasek.\n\nAdrenalina powstaje dzięki działaniom gracza, gdy ma on założony trinket. Zdjęcie trinketu nie zeruje adrenaliny, a jedynie zatrzymuje jej przyrost. Maksymalna ilość adrenaliny zależy od założonego trinketu.\n\nPo osiągnięciu maksymalnej ilości cała adrenalina zostaje zużyta i aktywuje się moc trinketu. Adrenalina może ponownie narastać bez opóźnienia, nawet gdy moc trinketu nadal działa.</string>
     <string name="mob_detail_health_info">Liczba punktów zdrowia tego stworzenia</string>
+    <string name="settings_applying_language">Stosowanie ustawień języka…</string>
+    <string name="page_index_of_total">%1$d/%2$d</string>
+    <string name="value_with_colon">%1$s:</string>
+    <string name="coins_value">%1$s monet</string>
+    <string name="effect_label">Efekt:</string>
+    <string name="preview_centered_text">TEKST WYŚRODKOWANY</string>
+    <string name="preview_fully_centered_text">TEKST W PEŁNI WYŚRODKOWANY</string>
+    <string name="preview_top_app_bar">Górny pasek aplikacji</string>
+    <string name="cd_sacrificial_stones_image">Obraz kamieni ofiarnych</string>
     <!-- Language Popup -->
     <string name="language_popup_title">Informacja o tłumaczeniach</string>
     <string name="language_popup_message">Treść gry w językach innych niż angielski została przetłumaczona z użyciem oficjalnych terminów Valheim tam, gdzie były dostępne, a także źródeł internetowych i narzędzi automatycznego tłumaczenia. Dlatego część nazw lub opisów może brzmieć inaczej niż w samej grze.\n\nJeśli chcesz mieć najpewniejsze źródło, przełącz język na angielski. Jeśli zauważysz błędne słowo, wyślij komentarz z dokładnym tekstem do poprawy. Dziękuję.</string>
