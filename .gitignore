@@ -17,3 +17,15 @@
 .cxx
 local.properties
 /app/src/main/java/com/rabbitv/valheimviki/utils/ApiKey.kt
+
+# Local/generated artifacts from database localization work
+/localization-review/
+/tools/localization/
+
+# Generated Room schema snapshots are not versioned in this project.
+# ValheimVikiDatabase currently uses exportSchema = false.
+/app/schemas/
+
+# Python cache files from local helper scripts
+__pycache__/
+*.py[cod]
