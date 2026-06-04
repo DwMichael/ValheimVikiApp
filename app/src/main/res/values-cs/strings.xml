@@ -370,9 +370,24 @@
     <string name="preview_fully_centered_text">PLNĚ VYCENTROVANÝ TEXT</string>
     <string name="preview_top_app_bar">Horní lišta aplikace</string>
     <string name="cd_sacrificial_stones_image">Obrázek obětních kamenů</string>
+    <!-- Guided onboarding -->
+    <string name="guided_onboarding_info_title">Než začneš</string>
+    <string name="guided_onboarding_info_message">Valheim Viki je studentský projekt tvořený s péčí pro hráče Valheimu.\n\nPřeklady používají oficiální termíny Valheimu, pokud jsou dostupné, a také ověřené internetové zdroje a automatické překladové nástroje. Některé názvy nebo popisy se proto stále mohou od hry lišit.\n\nTento krátký průvodce ti ukáže, kde změnit jazyk, přečíst si více o aplikaci a podpořit její vývoj.</string>
+    <string name="guided_onboarding_info_accept">Spustit průvodce</string>
+    <string name="guided_onboarding_wait">Počkejte (%d)</string>
+    <string name="guided_onboarding_settings_title">Otevřít nastavení</string>
+    <string name="guided_onboarding_settings_message">Klepni na zvýrazněné tlačítko Nastavení a pokračuj v průvodci.</string>
+    <string name="guided_onboarding_language_title">Jazyk</string>
+    <string name="guided_onboarding_language_message">Zde můžeš změnit jazyk aplikace. Angličtina je nejjistější reference, pokud překlad působí nejistě.</string>
+    <string name="guided_onboarding_fandom_title">Fandom Wiki</string>
+    <string name="guided_onboarding_fandom_message">Toto tlačítko otevře zdroj Valheim Wiki, kde si můžeš přečíst více o hře a datech používaných aplikací.</string>
+    <string name="guided_onboarding_donate_title">Podpořit projekt</string>
+    <string name="guided_onboarding_donate_message">Valheim Viki vzniká jako studentský projekt. Pokud ti aplikace pomáhá, tímto tlačítkem můžeš podpořit další práci dobrovolným darem.</string>
+    <string name="guided_onboarding_next">Další</string>
+    <string name="guided_onboarding_finish">Dokončit</string>
     <!-- Language Popup -->
-    <string name="language_popup_title">Upozornění k překladům</string>
-    <string name="language_popup_message">Herní obsah v jiných jazycích než angličtině byl přeložen pomocí oficiálních termínů Valheimu, pokud byly dostupné, a také pomocí internetových zdrojů a automatických překladových nástrojů. Proto mohou některé názvy nebo popisy znít jinak než ve hře.\n\nPokud chcete nejjistější referenci, přepněte na angličtinu. Pokud si všimnete špatného slova, pošlete zpětnou vazbu s přesným textem k opravě. Děkujeme.</string>
+    <string name="language_popup_title">Než vypluješ</string>
+    <string name="language_popup_message">Valheim Viki je studentský projekt tvořený s péčí pro hráče Valheimu.\n\nObsah v jiných jazycích než angličtině používá oficiální termíny Valheimu, pokud byly dostupné, a také internetové zdroje a automatické překladové nástroje. Některé názvy nebo popisy se proto mohou od hry lišit. Jazyk můžeš kdykoli změnit v Nastavení > Jazyk; angličtina je nejjistější referencí.\n\nPokud ti aplikace pomáhá, můžeš podpořit její vývoj tlačítkem Darovat. Pokud si všimneš špatného slova, pošli zpětnou vazbu s přesným textem k opravě. Děkujeme.</string>
     <string name="language_popup_dismiss">Rozumím</string>
     <string name="language_popup_wait">Počkejte (%d)</string>
 </resources>

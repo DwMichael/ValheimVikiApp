@@ -54,4 +54,14 @@ class DataStoreRepository @Inject constructor(
 	fun readLanguagePopupState(): Flow<Boolean> {
 		return dataStore.readLanguagePopupState()
 	}
+
+	suspend fun saveGuidedOnboardingStep(step: String) {
+		withContext(ioDispatcher) {
+			dataStore.saveGuidedOnboardingStep(step)
+		}
+	}
+
+	fun readGuidedOnboardingStep(): Flow<String> {
+		return dataStore.readGuidedOnboardingStep()
+	}
 }

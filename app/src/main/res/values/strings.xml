@@ -398,9 +398,24 @@
     <string name="preview_fully_centered_text">FULLY CENTERED TEXT</string>
     <string name="preview_top_app_bar">Top App Bar</string>
     <string name="cd_sacrificial_stones_image">Sacrifical Strones Image</string>
+    <!-- Guided onboarding -->
+    <string name="guided_onboarding_info_title">Before You Begin</string>
+    <string name="guided_onboarding_info_message">Valheim Viki is a student project made with care for Valheim players.\n\nTranslations use official Valheim terms where available, plus verified internet sources and automatic translation tools. Some names or descriptions may still differ from the game.\n\nThis short tour will show you where to change language, read more about the app, and support development.</string>
+    <string name="guided_onboarding_info_accept">Start tour</string>
+    <string name="guided_onboarding_wait">Wait (%d)</string>
+    <string name="guided_onboarding_settings_title">Open Settings</string>
+    <string name="guided_onboarding_settings_message">Tap the highlighted Settings button to continue the setup tour.</string>
+    <string name="guided_onboarding_language_title">Language</string>
+    <string name="guided_onboarding_language_message">Here you can change the app language. English is the safest reference if a translation looks uncertain.</string>
+    <string name="guided_onboarding_fandom_title">Fandom Wiki</string>
+    <string name="guided_onboarding_fandom_message">This button opens the Valheim Wiki source, where you can read more about the game and the data used by the app.</string>
+    <string name="guided_onboarding_donate_title">Support the Project</string>
+    <string name="guided_onboarding_donate_message">Valheim Viki is developed as a student project. If the app helps you, this button lets you support future work with an optional donation.</string>
+    <string name="guided_onboarding_next">Next</string>
+    <string name="guided_onboarding_finish">Finish</string>
     <!-- Language Popup -->
-    <string name="language_popup_title">Translation Notice</string>
-    <string name="language_popup_message">Non-English game content in this app is translated using official Valheim terms where available, plus internet sources and automatic translation tools. Because of this, some names or descriptions may differ from how they sound in the game.\n\nFor the safest reference, switch to English. If you notice a wrong word, please send feedback with the exact text to fix. Thank you.</string>
+    <string name="language_popup_title">Before You Set Sail</string>
+    <string name="language_popup_message">Valheim Viki is a student project made with care for Valheim players.\n\nNon-English content uses official Valheim terms where available, plus internet sources and automatic translation tools. Because of this, some names or descriptions may differ from the game. You can change the language anytime in Settings > Language; English is the safest reference.\n\nIf this app helps you, you can support its development with the Donate button. If you notice a wrong word, please send feedback with the exact text to fix. Thank you.</string>
     <string name="language_popup_dismiss">I understand</string>
     <string name="language_popup_wait">Wait (%d)</string>
 </resources>

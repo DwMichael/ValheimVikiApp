@@ -35,10 +35,12 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -47,7 +49,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
-import com.rabbitv.valheimviki.domain.ads.AdManager
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -70,16 +71,19 @@ import com.composables.icons.lucide.Swords
 import com.composables.icons.lucide.Trees
 import com.composables.icons.lucide.Utensils
 import com.rabbitv.valheimviki.R
+import com.rabbitv.valheimviki.domain.ads.AdManager
 import com.rabbitv.valheimviki.domain.use_cases.data_refetch.DataRefetchConfig.SEARCHABLE_CATEGORIES
 import com.rabbitv.valheimviki.presentation.armor.ArmorListScreen
 import com.rabbitv.valheimviki.presentation.biome.BiomeGridScreen
 import com.rabbitv.valheimviki.presentation.building_material.BuildingMaterialCategoryScreen
 import com.rabbitv.valheimviki.presentation.building_material.BuildingMaterialListScreen
 import com.rabbitv.valheimviki.presentation.building_material.viewmodel.BuildingMaterialListViewModel
+import com.rabbitv.valheimviki.presentation.components.AdaptiveNavigationWrapper
 import com.rabbitv.valheimviki.presentation.components.DrawerItem
 import com.rabbitv.valheimviki.presentation.components.DrawerItemCollection
 import com.rabbitv.valheimviki.presentation.components.FloatingHomeButton
-import com.rabbitv.valheimviki.presentation.components.AdaptiveNavigationWrapper
+import com.rabbitv.valheimviki.presentation.components.guided_onboarding.GuidedOnboardingOverlay
+import com.rabbitv.valheimviki.presentation.components.guided_onboarding.GuidedOnboardingTarget
 import com.rabbitv.valheimviki.presentation.components.topbar.MainAppBar
 import com.rabbitv.valheimviki.presentation.crafting.CraftingListScreen
 import com.rabbitv.valheimviki.presentation.creatures.bosses.BossGridScreen
@@ -95,7 +99,7 @@ import com.rabbitv.valheimviki.presentation.detail.creature.mini_boss_screen.Min
 import com.rabbitv.valheimviki.presentation.detail.creature.npc.NpcDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.creature.passive_screen.PassiveCreatureDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.food.FoodDetailScreen
-import com.rabbitv.valheimviki.presentation.detail.material.boss_drop.BossDropDetailScreen
+import com.rabbitv.valheimviki.presentation.detail.material.boss_dro.BossDropDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.material.crafted.CraftedMaterialDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.material.gemstones.GemstoneDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.material.general.GeneralMaterialDetailScreen
@@ -162,6 +166,12 @@ fun MainContainer(
 	val drawerCollection: DrawerItemCollection = rememberDrawerItems()
 
 	val currentBackStackEntry by valheimVikiNavController.currentBackStackEntryAsState()
+	val guidedOnboardingAnchors = remember { mutableStateMapOf<GuidedOnboardingTarget, Rect>() }
+	val registerGuidedOnboardingAnchor = remember {
+		{ target: GuidedOnboardingTarget, bounds: Rect ->
+			guidedOnboardingAnchors[target] = bounds
+		}
+	}
 
 	BackHandler(enabled = drawerState.isOpen) {
 		scope.launch {
@@ -184,30 +194,37 @@ fun MainContainer(
 
 	// Ad-aware navigation: shows interstitial after every N detail screens
 	// then proceeds to the destination automatically
-	val adAwareNavigate: (DetailDestination, (androidx.navigation.NavOptionsBuilder.() -> Unit)?) -> Unit = remember(adManager, activity) {
-		{ destination, builder ->
-			val navigateAction = {
-				if (builder != null) {
-					valheimVikiNavController.navigate(destination, builder)
-				} else {
-					valheimVikiNavController.navigate(destination)
+	val adAwareNavigate: (DetailDestination, (androidx.navigation.NavOptionsBuilder.() -> Unit)?) -> Unit =
+		remember(adManager, activity) {
+			{ destination, builder ->
+				val navigateAction = {
+					if (builder != null) {
+						valheimVikiNavController.navigate(destination, builder)
+					} else {
+						valheimVikiNavController.navigate(destination)
+					}
 				}
-			}
-			
-			if (adManager != null && adManager.onDetailScreenVisited()) {
-				adManager.showAd(activity) {
+
+				if (adManager != null && adManager.onDetailScreenVisited()) {
+					adManager.showAd(activity) {
+						navigateAction()
+					}
+				} else {
 					navigateAction()
 				}
-			} else {
-				navigateAction()
 			}
 		}
-	}
 
 	val isOnboardingFlow by remember {
 		derivedStateOf {
 			val route = currentBackStackEntry?.destination?.route.orEmpty()
 			route.contains("TopLevelDestination.Splash") || route.contains("TopLevelDestination.Welcome")
+		}
+	}
+
+	val isSettingsRoute by remember {
+		derivedStateOf {
+			currentBackStackEntry?.destination?.route.orEmpty().contains("TopLevelDestination.Settings")
 		}
 	}
 
@@ -249,12 +266,19 @@ fun MainContainer(
 							},
 							settingsClick = {
 								valheimVikiNavController.navigate(TopLevelDestination.Settings)
+							},
+							onSettingsBoundsChanged = {
+								registerGuidedOnboardingAnchor(
+									GuidedOnboardingTarget.HOME_SETTINGS,
+									it
+								)
 							}
 						)
 					}
 				},
 			) { innerPadding ->
-				val targetTopPadding = if (showTopAppBar) innerPadding.calculateTopPadding() else 0.dp
+				val targetTopPadding =
+					if (showTopAppBar) innerPadding.calculateTopPadding() else 0.dp
 				val animatedTopPadding by animateDpAsState(
 					targetValue = targetTopPadding,
 					animationSpec = tween(durationMillis = 450, easing = LinearOutSlowInEasing),
@@ -277,6 +301,7 @@ fun MainContainer(
 								valheimVikiNavController = valheimVikiNavController,
 								innerPadding = PaddingValues(0.dp),
 								adAwareNavigate = adAwareNavigate,
+								onGuidedOnboardingTargetPositioned = registerGuidedOnboardingAnchor,
 							)
 						}
 					}
@@ -288,8 +313,16 @@ fun MainContainer(
 				}
 			}
 		}
+		GuidedOnboardingOverlay(
+			anchors = guidedOnboardingAnchors,
+			isOnSettingsScreen = isSettingsRoute,
+			navigateToSettings = {
+				valheimVikiNavController.navigate(TopLevelDestination.Settings) {
+					launchSingleTop = true
+				}
+			}
+		)
 	}
-	com.rabbitv.valheimviki.presentation.components.language_popup.LanguageNotificationDialog()
 }
 
 
@@ -299,8 +332,12 @@ fun ValheimNavGraph(
 	valheimVikiNavController: NavHostController,
 	innerPadding: PaddingValues,
 	adAwareNavigate: (DetailDestination, (androidx.navigation.NavOptionsBuilder.() -> Unit)?) -> Unit = { dest, builder ->
-		if (builder != null) valheimVikiNavController.navigate(dest, builder) else valheimVikiNavController.navigate(dest)
+		if (builder != null) valheimVikiNavController.navigate(
+			dest,
+			builder
+		) else valheimVikiNavController.navigate(dest)
 	},
+	onGuidedOnboardingTargetPositioned: (GuidedOnboardingTarget, Rect) -> Unit = { _, _ -> },
 ) {
 	val lastClickTime = remember { mutableLongStateOf(0L) }
 	val clickDebounceMillis = 500
@@ -348,6 +385,7 @@ fun ValheimNavGraph(
 				onItemClick = { destination ->
 					adAwareNavigate(destination, null)
 				},
+				onGuidedOnboardingTargetPositioned = onGuidedOnboardingTargetPositioned,
 			)
 		}
 		composable<TopLevelDestination.Search> {

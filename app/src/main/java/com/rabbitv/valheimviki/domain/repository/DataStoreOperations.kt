@@ -11,4 +11,6 @@ interface DataStoreOperations {
     fun dataLanguageProvider(): Flow<String>
     suspend fun saveLanguagePopupState(shown: Boolean)
     fun readLanguagePopupState(): Flow<Boolean>
+    suspend fun saveGuidedOnboardingStep(step: String)
+    fun readGuidedOnboardingStep(): Flow<String>
 }

@@ -369,9 +369,24 @@
     <string name="preview_fully_centered_text">VISIŠKAI CENTRUOTAS TEKSTAS</string>
     <string name="preview_top_app_bar">Viršutinė programos juosta</string>
     <string name="cd_sacrificial_stones_image">Aukojimo akmenų vaizdas</string>
+    <!-- Guided onboarding -->
+    <string name="guided_onboarding_info_title">Prieš pradedant</string>
+    <string name="guided_onboarding_info_message">Valheim Viki yra studento projektas, kruopščiai kuriamas Valheim žaidėjams.\n\nVertimuose naudojami oficialūs Valheim terminai, kai jie prieinami, taip pat patikrinti interneto šaltiniai ir automatinio vertimo įrankiai. Kai kurie pavadinimai ar aprašymai vis tiek gali skirtis nuo žaidimo.\n\nŠis trumpas turas parodys, kur pakeisti kalbą, sužinoti daugiau apie programėlę ir paremti jos kūrimą.</string>
+    <string name="guided_onboarding_info_accept">Pradėti turą</string>
+    <string name="guided_onboarding_wait">Palaukite (%d)</string>
+    <string name="guided_onboarding_settings_title">Atidaryti nustatymus</string>
+    <string name="guided_onboarding_settings_message">Palieskite paryškintą Nustatymų mygtuką, kad tęstumėte turą.</string>
+    <string name="guided_onboarding_language_title">Kalba</string>
+    <string name="guided_onboarding_language_message">Čia galite pakeisti programėlės kalbą. Anglų kalba yra patikimiausia nuoroda, jei vertimas atrodo neaiškus.</string>
+    <string name="guided_onboarding_fandom_title">Fandom Wiki</string>
+    <string name="guided_onboarding_fandom_message">Šis mygtukas atidaro Valheim Wiki šaltinį, kuriame galite daugiau sužinoti apie žaidimą ir programėlėje naudojamus duomenis.</string>
+    <string name="guided_onboarding_donate_title">Paremti projektą</string>
+    <string name="guided_onboarding_donate_message">Valheim Viki kuriama kaip studento projektas. Jei programėlė jums padeda, šis mygtukas leidžia paremti tolesnį darbą savanoriška auka.</string>
+    <string name="guided_onboarding_next">Toliau</string>
+    <string name="guided_onboarding_finish">Baigti</string>
     <!-- Language Popup -->
-    <string name="language_popup_title">Pranešimas apie vertimus</string>
-    <string name="language_popup_message">Žaidimo turinys ne anglų kalbomis šioje programoje išverstas naudojant oficialius Valheim terminus, kai jie buvo prieinami, taip pat interneto šaltinius ir automatinio vertimo įrankius. Todėl kai kurie pavadinimai ar aprašymai gali skirtis nuo to, kaip jie skamba žaidime.\n\nJei norite patikimiausios nuorodos, perjunkite į anglų kalbą. Jei pastebėsite neteisingą žodį, atsiųskite komentarą su tiksliu tekstu, kurį reikia pataisyti. Ačiū.</string>
+    <string name="language_popup_title">Prieš išplaukiant</string>
+    <string name="language_popup_message">Valheim Viki yra studento projektas, kruopščiai kuriamas Valheim žaidėjams.\n\nNe angliškas turinys naudoja oficialius Valheim terminus, kai jie buvo prieinami, taip pat interneto šaltinius ir automatinio vertimo įrankius. Todėl kai kurie pavadinimai ar aprašymai gali skirtis nuo žaidimo. Kalbą bet kada galite pakeisti skiltyje Nustatymai > Kalba; anglų kalba yra patikimiausia nuoroda.\n\nJei programėlė jums padeda, galite paremti jos kūrimą mygtuku Paaukoti. Jei pastebėsite neteisingą žodį, atsiųskite komentarą su tiksliu tekstu, kurį reikia pataisyti. Ačiū.</string>
     <string name="language_popup_dismiss">Suprantu</string>
     <string name="language_popup_wait">Palaukite (%d)</string>
 </resources>

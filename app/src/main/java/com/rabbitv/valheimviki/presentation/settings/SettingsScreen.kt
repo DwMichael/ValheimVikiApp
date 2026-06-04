@@ -48,11 +48,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asComposeRenderEffect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -80,6 +83,7 @@ import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.presentation.components.LoadingIndicator
 import com.rabbitv.valheimviki.presentation.components.button.DarkGlassButton
 import com.rabbitv.valheimviki.presentation.components.dialog_pop_up.DialogPopUp
+import com.rabbitv.valheimviki.presentation.components.guided_onboarding.GuidedOnboardingTarget
 import com.rabbitv.valheimviki.presentation.components.topbar.SimpleTopBar
 import com.rabbitv.valheimviki.presentation.settings.model.SettingsUiEvent
 import com.rabbitv.valheimviki.presentation.settings.model.SettingsUiState
@@ -96,6 +100,7 @@ fun SettingsScreen(
 	modifier: Modifier = Modifier,
 	onBack: () -> Unit,
 	onItemClick: (DetailDestination) -> Unit,
+	onGuidedOnboardingTargetPositioned: (GuidedOnboardingTarget, Rect) -> Unit = { _, _ -> },
 	viewModel: SettingsViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -112,6 +117,7 @@ fun SettingsScreen(
 		onBack = onBack,
 		uiState = uiState,
 		onEvent = onEvent,
+		onGuidedOnboardingTargetPositioned = onGuidedOnboardingTargetPositioned,
 	)
 }
 
@@ -122,6 +128,7 @@ fun SettingsScreenContent(
 	onBack: () -> Unit,
 	uiState: SettingsUiState = SettingsUiState(),
 	onEvent: (SettingsUiEvent) -> Unit = {},
+	onGuidedOnboardingTargetPositioned: (GuidedOnboardingTarget, Rect) -> Unit = { _, _ -> },
 ) {
 	val context = LocalContext.current
 	val showDonateDialog = remember { mutableStateOf(false) }
@@ -163,6 +170,12 @@ fun SettingsScreenContent(
 				)
 			} else {
 				DarkGlassButton(
+					modifier = Modifier.onGloballyPositioned { coordinates ->
+						onGuidedOnboardingTargetPositioned(
+							GuidedOnboardingTarget.SETTINGS_LANGUAGE,
+							coordinates.boundsInWindow()
+						)
+					},
 					onCardClick = { onEvent(SettingsUiEvent.ShowLanguageDialog) },
 					icon = Lucide.Globe,
 					label = "${uiState.currentLanguage.flagEmoji}  ${uiState.currentLanguage.displayName}",
@@ -173,6 +186,12 @@ fun SettingsScreenContent(
 			// --- Links Section ---
 			Spacer(modifier = Modifier.height(20.dp))
 			DarkGlassButton(
+				modifier = Modifier.onGloballyPositioned { coordinates ->
+					onGuidedOnboardingTargetPositioned(
+						GuidedOnboardingTarget.SETTINGS_FANDOM,
+						coordinates.boundsInWindow()
+					)
+				},
 				onCardClick = {
 					val intent = Intent(Intent.ACTION_VIEW, VALHEIM_VIKI_LINK.toUri())
 					context.startActivity(intent)
@@ -183,6 +202,12 @@ fun SettingsScreenContent(
 			)
 			Spacer(modifier = Modifier.height(20.dp))
 			DarkGlassButton(
+				modifier = Modifier.onGloballyPositioned { coordinates ->
+					onGuidedOnboardingTargetPositioned(
+						GuidedOnboardingTarget.SETTINGS_DONATE,
+						coordinates.boundsInWindow()
+					)
+				},
 				onCardClick = { showDonateDialog.value = true },
 				icon = Lucide.Coffee,
 				label = stringResource(R.string.button_donate_pop_up_label),

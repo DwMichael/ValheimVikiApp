@@ -369,9 +369,24 @@
     <string name="preview_fully_centered_text">TEKST W PEŁNI WYŚRODKOWANY</string>
     <string name="preview_top_app_bar">Górny pasek aplikacji</string>
     <string name="cd_sacrificial_stones_image">Obraz kamieni ofiarnych</string>
+    <!-- Guided onboarding -->
+    <string name="guided_onboarding_info_title">Zanim zaczniesz</string>
+    <string name="guided_onboarding_info_message">Valheim Viki to projekt studencki tworzony z myślą o graczach Valheim.\n\nTłumaczenia korzystają z oficjalnych terminów Valheim tam, gdzie były dostępne, a także ze sprawdzonych źródeł internetowych i narzędzi automatycznego tłumaczenia. Część nazw lub opisów może nadal różnić się od gry.\n\nTen krótki samouczek pokaże Ci, gdzie zmienić język, gdzie przeczytać więcej o aplikacji i gdzie możesz wesprzeć jej rozwój.</string>
+    <string name="guided_onboarding_info_accept">Rozpocznij samouczek</string>
+    <string name="guided_onboarding_wait">Czekaj (%d)</string>
+    <string name="guided_onboarding_settings_title">Otwórz ustawienia</string>
+    <string name="guided_onboarding_settings_message">Dotknij podświetlonego przycisku Ustawienia, aby kontynuować samouczek.</string>
+    <string name="guided_onboarding_language_title">Język</string>
+    <string name="guided_onboarding_language_message">Tutaj możesz zmienić język aplikacji. Angielski jest najpewniejszym punktem odniesienia, jeśli tłumaczenie wygląda niepewnie.</string>
+    <string name="guided_onboarding_fandom_title">Fandom Wiki</string>
+    <string name="guided_onboarding_fandom_message">Ten przycisk otwiera źródło Valheim Wiki, gdzie możesz przeczytać więcej o grze i danych używanych w aplikacji.</string>
+    <string name="guided_onboarding_donate_title">Wesprzyj projekt</string>
+    <string name="guided_onboarding_donate_message">Valheim Viki powstaje jako projekt studencki. Jeśli aplikacja Ci pomaga, ten przycisk pozwala wesprzeć dalszy rozwój dobrowolną darowizną.</string>
+    <string name="guided_onboarding_next">Dalej</string>
+    <string name="guided_onboarding_finish">Zakończ</string>
     <!-- Language Popup -->
-    <string name="language_popup_title">Informacja o tłumaczeniach</string>
-    <string name="language_popup_message">Treść gry w językach innych niż angielski została przetłumaczona z użyciem oficjalnych terminów Valheim tam, gdzie były dostępne, a także źródeł internetowych i narzędzi automatycznego tłumaczenia. Dlatego część nazw lub opisów może brzmieć inaczej niż w samej grze.\n\nJeśli chcesz mieć najpewniejsze źródło, przełącz język na angielski. Jeśli zauważysz błędne słowo, wyślij komentarz z dokładnym tekstem do poprawy. Dziękuję.</string>
+    <string name="language_popup_title">Zanim wyruszysz</string>
+    <string name="language_popup_message">Valheim Viki to projekt studencki tworzony z myślą o graczach Valheim.\n\nTreści w językach innych niż angielski korzystają z oficjalnych terminów Valheim tam, gdzie były dostępne, a także ze źródeł internetowych i narzędzi automatycznego tłumaczenia. Dlatego część nazw lub opisów może różnić się od gry. Język możesz zmienić w dowolnym momencie w Ustawienia > Język; angielski jest najpewniejszym punktem odniesienia.\n\nJeśli aplikacja Ci pomaga, możesz wesprzeć jej rozwój przyciskiem Donate. Jeśli zauważysz błędne słowo, wyślij komentarz z dokładnym tekstem do poprawy. Dziękuję.</string>
     <string name="language_popup_dismiss">Rozumiem</string>
     <string name="language_popup_wait">Czekaj (%d)</string>
 </resources>

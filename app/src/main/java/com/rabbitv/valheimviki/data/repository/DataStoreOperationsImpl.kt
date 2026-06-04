@@ -11,6 +11,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.rabbitv.valheimviki.domain.repository.DataStoreOperations
 import com.rabbitv.valheimviki.utils.Constants.DEFAULT_LANG
 import com.rabbitv.valheimviki.utils.Constants.PREFERENCES_DATA_LANGUAGE_KEY
+import com.rabbitv.valheimviki.utils.Constants.PREFERENCES_GUIDED_ONBOARDING_STEP_KEY
 import com.rabbitv.valheimviki.utils.Constants.PREFERENCES_KEY
 import com.rabbitv.valheimviki.utils.Constants.PREFERENCES_LANGUAGE_KEY
 import com.rabbitv.valheimviki.utils.Constants.PREFERENCES_NAME
@@ -27,6 +28,7 @@ class DataStoreOperationsImpl(private val context: Context) : DataStoreOperation
         val languageKey = stringPreferencesKey(name = PREFERENCES_LANGUAGE_KEY)
         val dataLanguageKey = stringPreferencesKey(name = PREFERENCES_DATA_LANGUAGE_KEY)
         val languagePopupKey = booleanPreferencesKey(name = com.rabbitv.valheimviki.utils.Constants.PREFERENCES_LANGUAGE_POPUP_KEY)
+        val guidedOnboardingStepKey = stringPreferencesKey(name = PREFERENCES_GUIDED_ONBOARDING_STEP_KEY)
     }
 
     private val dataStore = context.dataStore
@@ -101,5 +103,23 @@ class DataStoreOperationsImpl(private val context: Context) : DataStoreOperation
         }
         .map { preferences ->
             preferences[PreferencesKey.languagePopupKey] ?: false
+        }
+
+    override suspend fun saveGuidedOnboardingStep(step: String) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKey.guidedOnboardingStepKey] = step
+        }
+    }
+
+    override fun readGuidedOnboardingStep(): Flow<String> = dataStore.data
+        .catch { exception ->
+            if (exception is IOException) {
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }
+        .map { preferences ->
+            preferences[PreferencesKey.guidedOnboardingStepKey] ?: "INFO_CARD"
         }
 }

@@ -370,9 +370,24 @@
     <string name="preview_fully_centered_text">TÄIELIKULT KESKJOONDATUD TEKST</string>
     <string name="preview_top_app_bar">Ülemine rakenduseriba</string>
     <string name="cd_sacrificial_stones_image">Ohvrikivide pilt</string>
+    <!-- Guided onboarding -->
+    <string name="guided_onboarding_info_title">Enne alustamist</string>
+    <string name="guided_onboarding_info_message">Valheim Viki on tudengiprojekt, mis on loodud hoolega Valheimi mängijatele.\n\nTõlked kasutavad ametlikke Valheimi termineid, kui need on saadaval, ning kontrollitud internetiallikaid ja automaatseid tõlketööriistu. Mõned nimed või kirjeldused võivad siiski mängust erineda.\n\nSee lühike tutvustus näitab, kus muuta keelt, lugeda rakenduse kohta rohkem ja toetada arendust.</string>
+    <string name="guided_onboarding_info_accept">Alusta tutvustust</string>
+    <string name="guided_onboarding_wait">Oota (%d)</string>
+    <string name="guided_onboarding_settings_title">Ava seaded</string>
+    <string name="guided_onboarding_settings_message">Puuduta esiletõstetud Seadete nuppu, et tutvustusega jätkata.</string>
+    <string name="guided_onboarding_language_title">Keel</string>
+    <string name="guided_onboarding_language_message">Siin saad muuta rakenduse keelt. Inglise keel on kõige kindlam viide, kui tõlge tundub ebakindel.</string>
+    <string name="guided_onboarding_fandom_title">Fandom Wiki</string>
+    <string name="guided_onboarding_fandom_message">See nupp avab Valheim Wiki allika, kust saad lugeda rohkem mängu ja rakenduses kasutatud andmete kohta.</string>
+    <string name="guided_onboarding_donate_title">Toeta projekti</string>
+    <string name="guided_onboarding_donate_message">Valheim Viki valmib tudengiprojektina. Kui rakendus on sulle abiks, saad selle nupu kaudu toetada edasist tööd vabatahtliku annetusega.</string>
+    <string name="guided_onboarding_next">Edasi</string>
+    <string name="guided_onboarding_finish">Lõpeta</string>
     <!-- Language Popup -->
-    <string name="language_popup_title">Teade tõlgete kohta</string>
-    <string name="language_popup_message">Mängu sisu teistes keeltes peale inglise on tõlgitud ametlike Valheimi terminite abil, kui need olid saadaval, ning Interneti-allikate ja automaatsete tõlketööriistade abil. Seetõttu võivad mõned nimed või kirjeldused erineda sellest, kuidas need mängus kõlavad.\n\nKõige kindlama viite jaoks lülitu inglise keelele. Kui märkad valet sõna, saada tagasiside täpse tekstiga, mida parandada. Aitäh.</string>
+    <string name="language_popup_title">Enne teele asumist</string>
+    <string name="language_popup_message">Valheim Viki on tudengiprojekt, mis on loodud hoolega Valheimi mängijatele.\n\nMitteingliskeelne sisu kasutab ametlikke Valheimi termineid, kui need olid saadaval, samuti internetiallikaid ja automaatseid tõlketööriistu. Seetõttu võivad mõned nimed või kirjeldused mängust erineda. Keelt saad igal ajal muuta jaotises Seaded > Keel; inglise keel on kõige kindlam viide.\n\nKui rakendus on sulle abiks, saad selle arendust toetada annetusnupuga. Kui märkad valet sõna, saada tagasiside täpse tekstiga, mida parandada. Aitäh.</string>
     <string name="language_popup_dismiss">Saan aru</string>
     <string name="language_popup_wait">Oota (%d)</string>
 </resources>

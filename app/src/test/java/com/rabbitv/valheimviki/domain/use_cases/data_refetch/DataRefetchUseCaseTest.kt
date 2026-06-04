@@ -34,10 +34,12 @@ import com.rabbitv.valheimviki.domain.repository.TrinketRepository
 import com.rabbitv.valheimviki.domain.repository.WeaponRepository
 import com.rabbitv.valheimviki.domain.use_cases.datastore.DataStoreUseCases
 import com.rabbitv.valheimviki.domain.use_cases.datastore.data_language_provider.DataLanguageProvider
+import com.rabbitv.valheimviki.domain.use_cases.datastore.get_guided_onboarding_step.ReadGuidedOnboardingStep
 import com.rabbitv.valheimviki.domain.use_cases.datastore.get_language_popup_state.ReadLanguagePopupState
 import com.rabbitv.valheimviki.domain.use_cases.datastore.get_onboarding_state.ReadOnBoardingState
 import com.rabbitv.valheimviki.domain.use_cases.datastore.language_state_provider.LanguageProvider
 import com.rabbitv.valheimviki.domain.use_cases.datastore.save_data_language_state.SaveDataLanguageState
+import com.rabbitv.valheimviki.domain.use_cases.datastore.save_guided_onboarding_step.SaveGuidedOnboardingStep
 import com.rabbitv.valheimviki.domain.use_cases.datastore.save_language_popup_state.SaveLanguagePopupState
 import com.rabbitv.valheimviki.domain.use_cases.datastore.save_onboarding_state.SaveOnBoardingState
 import com.rabbitv.valheimviki.domain.use_cases.datastore.saved_language_state.SaveLanguageState
@@ -155,7 +157,9 @@ class DataRefetchUseCaseTest {
 			dataLanguageProvider = dataLanguageProvider,
 			saveDataLanguageState = saveDataLanguageState,
 			readLanguagePopupState = mock<ReadLanguagePopupState>(),
-			saveLanguagePopupState = mock<SaveLanguagePopupState>()
+			saveLanguagePopupState = mock<SaveLanguagePopupState>(),
+			readGuidedOnboardingStep = mock<ReadGuidedOnboardingStep>(),
+			saveGuidedOnboardingStep = mock<SaveGuidedOnboardingStep>()
 		)
 		trinketRepository = mock()
 		syncFavoritesUseCase = mock()

@@ -662,8 +662,8 @@ class MaterialListViewModelTest {
 			defaultDispatcher = testDispatcher
 		)
 
-		val creatureDropLabel = viewModel.getLabelFor(MaterialSubCategory.CREATURE_DROP)
-		val miscLabel = viewModel.getLabelFor(MaterialSubCategory.MISCELLANEOUS)
+		val creatureDropLabel = viewModel.getLabelResFor(MaterialSubCategory.CREATURE_DROP)
+		val miscLabel = viewModel.getLabelResFor(MaterialSubCategory.MISCELLANEOUS)
 
 		assertNotNull(creatureDropLabel)
 		assertNotNull(miscLabel)
