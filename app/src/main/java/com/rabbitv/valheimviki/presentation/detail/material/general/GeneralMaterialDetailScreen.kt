@@ -7,29 +7,24 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
-import com.rabbitv.valheimviki.ui.adaptive.LocalAdaptiveLayoutInfo
-import com.rabbitv.valheimviki.ui.adaptive.adaptiveDetailWidth
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.foundation.text.BasicText
-import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.runtime.Composable
-import com.rabbitv.valheimviki.R
-import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -41,6 +36,7 @@ import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.MapPinned
 import com.composables.icons.lucide.Pickaxe
 import com.composables.icons.lucide.Trees
+import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.navigation.BuildingDetailDestination
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.navigation.NavigationHelper
@@ -59,6 +55,7 @@ import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.Car
 import com.rabbitv.valheimviki.presentation.detail.material.general.model.GeneralMaterialUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.general.model.GeneralMaterialUiState
 import com.rabbitv.valheimviki.presentation.detail.material.general.viewmodel.GeneralMaterialDetailViewModel
+import com.rabbitv.valheimviki.ui.adaptive.adaptiveDetailWidth
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
@@ -89,28 +86,28 @@ fun GeneralMaterialDetailContent(
 	onToggleFavorite: () -> Unit,
 	uiState: GeneralMaterialUiState,
 ) {
-    val scrollState = rememberScrollState()
+	val scrollState = rememberScrollState()
 	val handleItemClick = remember {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
 	}
 
 	val pointOfInterestData = HorizontalPagerData(
 		title = stringResource(R.string.point_of_interest),
-		subTitle = "Places where you can find this item",
+		subTitle = stringResource(R.string.detail_subtitle_places_find_item),
 		icon = Lucide.MapPinned,
 		iconRotationDegrees = 0f,
 		itemContentScale = ContentScale.Crop,
 	)
 	val oreDepositData = HorizontalPagerData(
 		title = stringResource(R.string.ore_deposit),
-		subTitle = "Ore from witch you can mine this resource",
+		subTitle = stringResource(R.string.detail_subtitle_ore_mine_resource),
 		icon = Lucide.Pickaxe,
 		iconRotationDegrees = 0f,
 		itemContentScale = ContentScale.Crop,
 	)
 	val treesData = HorizontalPagerData(
 		title = stringResource(R.string.trees),
-		subTitle = "Trees from witch this wood drop",
+		subTitle = stringResource(R.string.detail_subtitle_trees_drop_wood),
 		icon = Lucide.Trees,
 		iconRotationDegrees = 0f,
 		itemContentScale = ContentScale.Crop
@@ -130,7 +127,7 @@ fun GeneralMaterialDetailContent(
 			uiState.material?.let { material ->
 				Column(
 					modifier = Modifier
-						
+
 						.adaptiveDetailWidth()
 						.verticalScroll(scrollState)
 						.padding(
@@ -146,21 +143,21 @@ fun GeneralMaterialDetailContent(
 						material.name,
 						modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
 						style = MaterialTheme.typography.headlineLarge,
-				autoSize = TextAutoSize.StepBased(
-					minFontSize = 22.sp,
-					maxFontSize = 34.sp,
-					stepSize = 1.sp,
-				),
+						autoSize = TextAutoSize.StepBased(
+							minFontSize = 22.sp,
+							maxFontSize = 34.sp,
+							stepSize = 1.sp,
+						),
 						textAlign = TextAlign.Center
 					)
 					SlavicDivider()
-                    material.description?.let {
-                        DetailExpandableText(
-                            text = material.description,
-                            boxPadding = BODY_CONTENT_PADDING.dp,
-                        )
+					material.description?.let {
+						DetailExpandableText(
+							text = material.description,
+							boxPadding = BODY_CONTENT_PADDING.dp,
+						)
 
-                    }
+					}
 
 					UiSection(
 						state = uiState.biomes
@@ -187,11 +184,11 @@ fun GeneralMaterialDetailContent(
 										Text(
 											biome.name.uppercase(),
 											style = MaterialTheme.typography.bodyLarge,
-				autoSize = TextAutoSize.StepBased(
-					minFontSize = 13.sp,
-					maxFontSize = 18.sp,
-					stepSize = 1.sp,
-				),
+											autoSize = TextAutoSize.StepBased(
+												minFontSize = 13.sp,
+												maxFontSize = 18.sp,
+												stepSize = 1.sp,
+											),
 											modifier = Modifier
 												.fillMaxWidth()
 												.padding(8.dp),
@@ -247,7 +244,7 @@ fun GeneralMaterialDetailContent(
 									onItemClick(destination)
 								},
 								itemData = craftingStation,
-								subTitle = "Crafting station where you can produce this item ",
+								subTitle = stringResource(R.string.detail_subtitle_crafting_station_produce_item),
 								contentScale = ContentScale.Fit,
 							)
 							Spacer(modifier = Modifier.padding(BODY_CONTENT_PADDING.dp))

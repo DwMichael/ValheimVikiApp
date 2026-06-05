@@ -143,7 +143,7 @@ fun ArmorDetailContent(
 					TridentsDividedRow()
 					if (!armor.upgradeInfoList.isNullOrEmpty()) {
 						Text(
-							"Upgrade Information",
+							stringResource(R.string.upgrade_information),
 							modifier = Modifier.padding(
 								start = BODY_CONTENT_PADDING.dp,
 								end = BODY_CONTENT_PADDING.dp,
@@ -236,7 +236,7 @@ fun ArmorDetailContent(
 								CardImageWithTopLabel(
 									onClickedItem = handleClick,
 									itemData = craftingObject.data,
-									subTitle = "Crafting Station Needed to Make This Item",
+									subTitle = stringResource(R.string.detail_subtitle_crafting_station_needed),
 									contentScale = ContentScale.Fit,
 								)
 							}

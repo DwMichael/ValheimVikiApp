@@ -4,10 +4,8 @@ import com.rabbitv.valheimviki.data.repository.DataStoreRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class ReadLanguagePopupState @Inject constructor(
-    private val repository: DataStoreRepository
-) {
-    operator fun invoke(): Flow<Boolean> {
-        return repository.readLanguagePopupState()
-    }
+class ReadLanguagePopupState @Inject constructor(private val dataStoreRepository: DataStoreRepository) {
+	operator fun invoke(): Flow<Boolean> {
+		return dataStoreRepository.readLanguagePopupState()
+	}
 }

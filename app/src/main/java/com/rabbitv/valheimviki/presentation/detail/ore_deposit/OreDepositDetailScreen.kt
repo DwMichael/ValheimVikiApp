@@ -111,20 +111,22 @@ fun OreDepositDetailContent(
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
 	}
 	val pickaxesTitle = stringResource(R.string.pickaxes)
-	val pickaxesData = remember(pickaxesTitle) {
+	val pickaxesSubtitle = stringResource(R.string.detail_subtitle_pickaxes_mine_ore)
+	val pickaxesData = remember(pickaxesTitle, pickaxesSubtitle) {
 		HorizontalPagerData(
 			title = pickaxesTitle,
-			subTitle = "List of pickaxes that can mine this ore out",
+			subTitle = pickaxesSubtitle,
 			icon = Lucide.Pickaxe,
 			iconRotationDegrees = 0f,
 			itemContentScale = ContentScale.Crop
 		)
 	}
 	val extractorTitle = stringResource(R.string.extractor)
-	val craftingObjectData = remember(extractorTitle) {
+	val extractorSubtitle = stringResource(R.string.detail_subtitle_extractors_extract_resource)
+	val craftingObjectData = remember(extractorTitle, extractorSubtitle) {
 		HorizontalPagerData(
 			title = extractorTitle,
-			subTitle = "List of extractors that can extract resource",
+			subTitle = extractorSubtitle,
 			icon = Lucide.Combine,
 			iconRotationDegrees = 0f,
 			itemContentScale = ContentScale.Crop
@@ -233,7 +235,7 @@ fun OreDepositDetailContent(
 							icon = { Lucide.Gem },
 							starLevel = 0,
 							title = stringResource(R.string.materials),
-							subTitle = "Unique drops are obtained by mining this ore",
+							subTitle = stringResource(R.string.detail_subtitle_unique_drops_mining_ore),
 						)
 					}
 					Spacer(modifier = Modifier.height(90.dp))

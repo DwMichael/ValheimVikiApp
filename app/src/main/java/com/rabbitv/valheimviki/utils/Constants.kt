@@ -13,8 +13,9 @@ object Constants {
 	const val PREFERENCES_NAME = "valheimViki_preferences"
 	const val PREFERENCES_KEY = "on_boarding_completed"
 	const val PREFERENCES_LANGUAGE_KEY = "language_saved"
-	const val PREFERENCES_LANGUAGE_POPUP_KEY = "language_popup_shown"
-	const val PREFERENCES_SETTINGS_TOOLTIP_KEY = "settings_tooltip_step"
+	const val PREFERENCES_DATA_LANGUAGE_KEY = "data_language_saved"
+	const val PREFERENCES_LANGUAGE_POPUP_KEY = "language_popup_v2_shown"
+	const val PREFERENCES_GUIDED_ONBOARDING_STEP_KEY = "guided_onboarding_step_v1"
 
 	//GITDSIZE
 	const val BIOME_GRID_COLUMNS = 2

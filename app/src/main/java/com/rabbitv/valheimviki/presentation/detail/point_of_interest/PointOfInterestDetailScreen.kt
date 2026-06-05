@@ -98,21 +98,21 @@ fun PointOfInterestDetailContent(
 	}
 	val altarOfferings = HorizontalPagerData(
 		title = stringResource(R.string.offerings),
-		subTitle = "List of offerings that are needed to summon boss",
+		subTitle = stringResource(R.string.detail_subtitle_offerings_needed_to_summon_boss),
 		icon = Lucide.HandCoins,
 		iconRotationDegrees = 0f,
 		itemContentScale = ContentScale.Crop
 	)
 	val weaponsData = HorizontalPagerData(
 		title = stringResource(R.string.weapons),
-		subTitle = "Weapons that can be found in this place",
+		subTitle = stringResource(R.string.detail_subtitle_weapons_found_here),
 		icon = Lucide.Swords,
 		iconRotationDegrees = 0f,
 		itemContentScale = ContentScale.Crop
 	)
 	val creatureData = HorizontalPagerData(
 		title = stringResource(R.string.creatures),
-		subTitle = "Creatures related to this place",
+		subTitle = stringResource(R.string.detail_subtitle_creatures_related_place),
 		icon = Lucide.Skull,
 		iconRotationDegrees = 0f,
 		itemContentScale = ContentScale.Crop
@@ -216,7 +216,7 @@ fun PointOfInterestDetailContent(
 							icon = { Lucide.Gem },
 							starLevel = 0,
 							title = stringResource(R.string.materials),
-							subTitle = "Unique drops are obtained in this place"
+							subTitle = stringResource(R.string.detail_subtitle_unique_drops_place)
 						)
 					}
 					UiSection(uiState.relatedWeapons) { data ->

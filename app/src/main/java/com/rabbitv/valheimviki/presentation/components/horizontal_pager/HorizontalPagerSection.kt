@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PageSize
@@ -46,7 +48,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -99,8 +100,6 @@ fun HorizontalPagerSection(
 		initialPage = if (useInfiniteScrolling) Int.MAX_VALUE / 2 else 0,
 		pageCount = { pageCount }
 	)
-	val screenWidth = LocalConfiguration.current.screenWidthDp.dp
-	val horizontalPadding = remember { (screenWidth - pageWidth) / 2 }
 
 	LaunchedEffect(key1 = list.size, block = {
 		if (list.isNotEmpty()) {
@@ -113,49 +112,81 @@ fun HorizontalPagerSection(
 			}
 		}
 	})
-	Column(
-		modifier = Modifier
-			.fillMaxWidth()
-			.heightIn(min = minHeight, max = maxHeight)
-			.padding(
-				start = BODY_CONTENT_PADDING.dp,
-				end = BODY_CONTENT_PADDING.dp,
-				bottom = BODY_CONTENT_PADDING.dp,
-			),
-		horizontalAlignment = Alignment.Start
-	)
-	{
-		HorizontalHeader(data = data)
-		Spacer(modifier = Modifier.padding(6.dp))
-		CompositionLocalProvider(LocalOverscrollFactory provides null) {
-			HorizontalPager(
-				state = state,
-				modifier = Modifier.fillMaxWidth(),
-				contentPadding = PaddingValues(horizontal = horizontalPadding),
-				pageSize = PageSize.Fixed(pageWidth),
-				flingBehavior = PagerDefaults.flingBehavior(
+	BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+		val adaptivePageWidth = when {
+			maxWidth >= 720.dp -> pageWidth + 48.dp
+			maxWidth >= 520.dp -> pageWidth + 24.dp
+			else -> pageWidth
+		}
+		val adaptiveItemWidth = when {
+			maxWidth >= 720.dp -> itemWidth + 48.dp
+			maxWidth >= 520.dp -> itemWidth + 24.dp
+			else -> itemWidth
+		}
+		val adaptiveItemHeight = when {
+			maxWidth >= 720.dp -> itemHeight + 36.dp
+			maxWidth >= 520.dp -> itemHeight + 20.dp
+			else -> itemHeight
+		}
+		val adaptiveMinHeight = when {
+			maxWidth >= 720.dp -> minHeight + 48.dp
+			maxWidth >= 520.dp -> minHeight + 28.dp
+			else -> minHeight
+		}
+		val adaptiveMaxHeight = when {
+			maxWidth >= 720.dp -> maxHeight + 56.dp
+			maxWidth >= 520.dp -> maxHeight + 32.dp
+			else -> maxHeight
+		}
+		val horizontalPadding = if (maxWidth > adaptivePageWidth) {
+			(maxWidth - adaptivePageWidth) / 2
+		} else {
+			0.dp
+		}
+		Column(
+			modifier = Modifier
+				.fillMaxWidth()
+				.heightIn(min = adaptiveMinHeight, max = adaptiveMaxHeight)
+				.padding(
+					start = BODY_CONTENT_PADDING.dp,
+					end = BODY_CONTENT_PADDING.dp,
+					bottom = BODY_CONTENT_PADDING.dp,
+				),
+			horizontalAlignment = Alignment.Start
+		)
+		{
+			HorizontalHeader(data = data)
+			Spacer(modifier = Modifier.padding(6.dp))
+			CompositionLocalProvider(LocalOverscrollFactory provides null) {
+				HorizontalPager(
 					state = state,
-					pagerSnapDistance = PagerSnapDistance.atMost(list.size)
-				)
-			) { pageIndex ->
-				val actualIndex = if (useInfiniteScrolling) {
-					pageIndex % list.size
-				} else {
-					pageIndex
-				}
-				key(list[actualIndex].id) {
-					HorizontalPagerItem(
-						pagerState = state,
-						list = list,
-						pageIndex = actualIndex,
-						virtualPageIndex = pageIndex,
-						contentScale = data.itemContentScale,
-						totalSize = list.size,
-						onItemClick = onItemClick,
-						itemHeight = itemHeight,
-						itemWidth = itemWidth,
-						imagePadding = imagePadding
+					modifier = Modifier.fillMaxWidth(),
+					contentPadding = PaddingValues(horizontal = horizontalPadding),
+					pageSize = PageSize.Fixed(adaptivePageWidth),
+					flingBehavior = PagerDefaults.flingBehavior(
+						state = state,
+						pagerSnapDistance = PagerSnapDistance.atMost(list.size)
 					)
+				) { pageIndex ->
+					val actualIndex = if (useInfiniteScrolling) {
+						pageIndex % list.size
+					} else {
+						pageIndex
+					}
+					key(list[actualIndex].id) {
+						HorizontalPagerItem(
+							pagerState = state,
+							list = list,
+							pageIndex = actualIndex,
+							virtualPageIndex = pageIndex,
+							contentScale = data.itemContentScale,
+							totalSize = list.size,
+							onItemClick = onItemClick,
+							itemHeight = adaptiveItemHeight,
+							itemWidth = adaptiveItemWidth,
+							imagePadding = imagePadding
+						)
+					}
 				}
 			}
 		}
@@ -174,7 +205,8 @@ fun HorizontalHeader(
 		horizontalAlignment = Alignment.CenterHorizontally
 	) {
 		Row(
-			horizontalArrangement = Arrangement.Start,
+			modifier = Modifier.fillMaxWidth(),
+			horizontalArrangement = Arrangement.Center,
 			verticalAlignment = Alignment.CenterVertically
 		) {
 			Icon(
@@ -186,24 +218,29 @@ fun HorizontalHeader(
 			Spacer(modifier = Modifier.width(11.dp))
 			Text(
 				data.title,
+				modifier = Modifier.widthIn(max = 520.dp),
 				style = MaterialTheme.typography.headlineSmall,
 				autoSize = TextAutoSize.StepBased(
 					minFontSize = 16.sp,
 					maxFontSize = 24.sp,
 					stepSize = 1.sp,
 				),
+				textAlign = TextAlign.Center,
+				maxLines = 2,
 			)
 		}
 		if (data.subTitle.isNotBlank()) {
 			Spacer(modifier = Modifier.padding(6.dp))
 			Text(
 				data.subTitle,
+				modifier = Modifier.fillMaxWidth(),
 				style = MaterialTheme.typography.labelLarge,
 				autoSize = TextAutoSize.StepBased(
 					minFontSize = 12.sp,
 					maxFontSize = 16.sp,
 					stepSize = 1.sp,
 				),
+				textAlign = TextAlign.Center,
 			)
 		}
 	}
@@ -353,7 +390,7 @@ fun PreviewRectangleSectionHeader() {
 
 		val horizontalPagerData = HorizontalPagerData(
 			title = stringResource(R.string.creatures),
-			subTitle = "Creatures you may encounter in this biome",
+			subTitle = stringResource(R.string.detail_subtitle_creatures_biome),
 			icon = Lucide.PawPrint,
 			iconRotationDegrees = -85f,
 			itemContentScale = ContentScale.Crop,

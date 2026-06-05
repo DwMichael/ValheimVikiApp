@@ -1,24 +1,19 @@
 package com.rabbitv.valheimviki.presentation.detail.material.seeds
 
-
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
-import com.rabbitv.valheimviki.ui.adaptive.LocalAdaptiveLayoutInfo
-import com.rabbitv.valheimviki.ui.adaptive.adaptiveDetailWidth
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.foundation.text.BasicText
-import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -61,6 +56,7 @@ import com.rabbitv.valheimviki.presentation.detail.creature.components.cards.Car
 import com.rabbitv.valheimviki.presentation.detail.material.seeds.model.SeedUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.seeds.model.SeedUiState
 import com.rabbitv.valheimviki.presentation.detail.material.seeds.viewmodel.SeedMaterialDetailViewModel
+import com.rabbitv.valheimviki.ui.adaptive.adaptiveDetailWidth
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
@@ -101,7 +97,7 @@ fun SeedMaterialDetailContent(
 
 	val treesData = HorizontalPagerData(
 		title = stringResource(R.string.trees),
-		subTitle = "Trees from witch this wood drop",
+		subTitle = stringResource(R.string.detail_subtitle_trees_drop_wood),
 		icon = Lucide.Trees,
 		iconRotationDegrees = 0f,
 		itemContentScale = ContentScale.Crop
@@ -109,7 +105,7 @@ fun SeedMaterialDetailContent(
 
 	val pointsOfInterestData = HorizontalPagerData(
 		title = stringResource(R.string.points_of_interest),
-		subTitle = "Poi where you can find this item",
+		subTitle = stringResource(R.string.detail_subtitle_poi_find_item),
 		icon = Lucide.PawPrint,
 		iconRotationDegrees = -85f,
 		itemContentScale = ContentScale.Crop
@@ -117,7 +113,7 @@ fun SeedMaterialDetailContent(
 
 	val toolsData = HorizontalPagerData(
 		title = stringResource(R.string.tools),
-		subTitle = "Tools needed to harvest this item",
+		subTitle = stringResource(R.string.detail_subtitle_tools_harvest_item),
 		icon = Lucide.Wrench,
 		iconRotationDegrees = 0f,
 		itemContentScale = ContentScale.Crop
@@ -137,7 +133,7 @@ fun SeedMaterialDetailContent(
 			uiState.material?.let { material ->
 				Column(
 					modifier = Modifier
-						
+
 						.adaptiveDetailWidth()
 						.verticalScroll(scrollState)
 						.padding(
@@ -153,11 +149,11 @@ fun SeedMaterialDetailContent(
 						material.name,
 						modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
 						style = MaterialTheme.typography.headlineLarge,
-				autoSize = TextAutoSize.StepBased(
-					minFontSize = 22.sp,
-					maxFontSize = 34.sp,
-					stepSize = 1.sp,
-				),
+						autoSize = TextAutoSize.StepBased(
+							minFontSize = 22.sp,
+							maxFontSize = 34.sp,
+							stepSize = 1.sp,
+						),
 						textAlign = TextAlign.Center
 					)
 					SlavicDivider()
@@ -205,11 +201,11 @@ fun SeedMaterialDetailContent(
 										Text(
 											biome.name.uppercase(),
 											style = MaterialTheme.typography.bodyLarge,
-				autoSize = TextAutoSize.StepBased(
-					minFontSize = 13.sp,
-					maxFontSize = 18.sp,
-					stepSize = 1.sp,
-				),
+											autoSize = TextAutoSize.StepBased(
+												minFontSize = 13.sp,
+												maxFontSize = 18.sp,
+												stepSize = 1.sp,
+											),
 											modifier = Modifier,
 											color = Color.White,
 											textAlign = TextAlign.Center
@@ -288,7 +284,7 @@ fun SeedMaterialDetailContent(
 										onItemClick(destination)
 									},
 									itemData = npc,
-									subTitle = "NPC from whom you can buy those seeds",
+									subTitle = stringResource(R.string.detail_subtitle_npc_buy_seeds),
 									contentScale = ContentScale.Crop,
 								)
 							}
@@ -320,12 +316,9 @@ fun SeedMaterialDetailContent(
 	}
 }
 
-
 @Preview("ToolDetailContentPreview", showBackground = true)
 @Composable
 fun PreviewToolDetailContentCooked() {
-
-
 	ValheimVikiAppTheme {
 		SeedMaterialDetailContent(
 			uiState = SeedUiState(),

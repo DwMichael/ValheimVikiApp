@@ -1,4 +1,6 @@
-@file:OptIn(ExperimentalSharedTransitionApi::class)
+@file:OptIn(
+	ExperimentalSharedTransitionApi::class
+)
 
 package com.rabbitv.valheimviki.navigation
 
@@ -19,7 +21,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -34,19 +35,18 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -82,8 +82,8 @@ import com.rabbitv.valheimviki.presentation.components.AdaptiveNavigationWrapper
 import com.rabbitv.valheimviki.presentation.components.DrawerItem
 import com.rabbitv.valheimviki.presentation.components.DrawerItemCollection
 import com.rabbitv.valheimviki.presentation.components.FloatingHomeButton
-import com.rabbitv.valheimviki.presentation.components.language_popup.LanguageNotificationDialog
-import com.rabbitv.valheimviki.presentation.components.language_popup.LanguageNotificationViewModel
+import com.rabbitv.valheimviki.presentation.components.guided_onboarding.GuidedOnboardingOverlay
+import com.rabbitv.valheimviki.presentation.components.guided_onboarding.GuidedOnboardingTarget
 import com.rabbitv.valheimviki.presentation.components.topbar.MainAppBar
 import com.rabbitv.valheimviki.presentation.crafting.CraftingListScreen
 import com.rabbitv.valheimviki.presentation.creatures.bosses.BossGridScreen
@@ -99,7 +99,7 @@ import com.rabbitv.valheimviki.presentation.detail.creature.mini_boss_screen.Min
 import com.rabbitv.valheimviki.presentation.detail.creature.npc.NpcDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.creature.passive_screen.PassiveCreatureDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.food.FoodDetailScreen
-import com.rabbitv.valheimviki.presentation.detail.material.boss_drop.BossDropDetailScreen
+import com.rabbitv.valheimviki.presentation.detail.material.boss_dro.BossDropDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.material.crafted.CraftedMaterialDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.material.gemstones.GemstoneDetailScreen
 import com.rabbitv.valheimviki.presentation.detail.material.general.GeneralMaterialDetailScreen
@@ -138,12 +138,18 @@ import com.rabbitv.valheimviki.ui.adaptive.ProvideAdaptiveLayout
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import kotlinx.coroutines.launch
 
+
 @RequiresApi(Build.VERSION_CODES.S)
 @Preview
 @Composable
-fun ValheimVikiApp(adManager: AdManager? = null) {
-	ValheimVikiAppTheme { ProvideAdaptiveLayout { MainContainer(adManager = adManager) } }
+fun ValheimVikiApp(adManager: com.rabbitv.valheimviki.domain.ads.AdManager? = null) {
+	ValheimVikiAppTheme {
+		ProvideAdaptiveLayout {
+			MainContainer(adManager = adManager)
+		}
+	}
 }
+
 
 @RequiresApi(Build.VERSION_CODES.S)
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -159,25 +165,36 @@ fun MainContainer(
 
 	val drawerCollection: DrawerItemCollection = rememberDrawerItems()
 
-	val languagePopupViewModel: LanguageNotificationViewModel = hiltViewModel()
-	val highlightSettings by languagePopupViewModel.highlightSettings.collectAsStateWithLifecycle()
-
 	val currentBackStackEntry by valheimVikiNavController.currentBackStackEntryAsState()
+	val guidedOnboardingAnchors = remember { mutableStateMapOf<GuidedOnboardingTarget, Rect>() }
+	val registerGuidedOnboardingAnchor = remember {
+		{ target: GuidedOnboardingTarget, bounds: Rect ->
+			guidedOnboardingAnchors[target] = bounds
+		}
+	}
 
-	BackHandler(enabled = drawerState.isOpen) { scope.launch { drawerState.close() } }
+	BackHandler(enabled = drawerState.isOpen) {
+		scope.launch {
+			drawerState.close()
+		}
+	}
 
 	val showTopAppBar by remember {
-		derivedStateOf { currentBackStackEntry?.destination?.shouldShowTopBar() ?: false }
+		derivedStateOf {
+			currentBackStackEntry?.destination?.shouldShowTopBar() ?: false
+		}
 	}
 
 	val isTransitionActive = remember { mutableStateOf(false) }
 
-	LaunchedEffect(Unit) { adManager?.preloadAd() }
+	// Pre-load the first interstitial ad as soon as app starts
+	LaunchedEffect(Unit) {
+		adManager?.preloadAd()
+	}
 
 	// Ad-aware navigation: shows interstitial after every N detail screens
 	// then proceeds to the destination automatically
-	val adAwareNavigate:
-				(DetailDestination, (androidx.navigation.NavOptionsBuilder.() -> Unit)?) -> Unit =
+	val adAwareNavigate: (DetailDestination, (androidx.navigation.NavOptionsBuilder.() -> Unit)?) -> Unit =
 		remember(adManager, activity) {
 			{ destination, builder ->
 				val navigateAction = {
@@ -189,7 +206,9 @@ fun MainContainer(
 				}
 
 				if (adManager != null && adManager.onDetailScreenVisited()) {
-					adManager.showAd(activity) { navigateAction() }
+					adManager.showAd(activity) {
+						navigateAction()
+					}
 				} else {
 					navigateAction()
 				}
@@ -199,8 +218,13 @@ fun MainContainer(
 	val isOnboardingFlow by remember {
 		derivedStateOf {
 			val route = currentBackStackEntry?.destination?.route.orEmpty()
-			route.contains("TopLevelDestination.Splash") ||
-					route.contains("TopLevelDestination.Welcome")
+			route.contains("TopLevelDestination.Splash") || route.contains("TopLevelDestination.Welcome")
+		}
+	}
+
+	val isSettingsRoute by remember {
+		derivedStateOf {
+			currentBackStackEntry?.destination?.route.orEmpty().contains("TopLevelDestination.Settings")
 		}
 	}
 
@@ -222,6 +246,7 @@ fun MainContainer(
 			isDetailScreen = { showTopAppBar },
 			isTransitionActive = { isTransitionActive.value },
 		) {
+
 			Scaffold(
 				topBar = {
 					AnimatedVisibility(
@@ -234,32 +259,29 @@ fun MainContainer(
 							drawerState = drawerState,
 							enabled = { !isTransitionActive.value },
 							onSearchBarClick = {
-								valheimVikiNavController.navigate(
-									TopLevelDestination.Search
-								)
+								valheimVikiNavController.navigate(TopLevelDestination.Search)
 							},
 							onBookMarkClick = {
-								valheimVikiNavController.navigate(
-									TopLevelDestination.Favorite
-								)
+								valheimVikiNavController.navigate(TopLevelDestination.Favorite)
 							},
 							settingsClick = {
-								valheimVikiNavController.navigate(
-									TopLevelDestination.Settings
-								)
+								valheimVikiNavController.navigate(TopLevelDestination.Settings)
 							},
-							highlightSettings = highlightSettings
+							onSettingsBoundsChanged = {
+								registerGuidedOnboardingAnchor(
+									GuidedOnboardingTarget.HOME_SETTINGS,
+									it
+								)
+							}
 						)
 					}
 				},
 			) { innerPadding ->
 				val targetTopPadding =
 					if (showTopAppBar) innerPadding.calculateTopPadding() else 0.dp
-				val animatedTopPadding by
-				animateDpAsState(
+				val animatedTopPadding by animateDpAsState(
 					targetValue = targetTopPadding,
-					animationSpec =
-						tween(durationMillis = 450, easing = LinearOutSlowInEasing),
+					animationSpec = tween(durationMillis = 450, easing = LinearOutSlowInEasing),
 					label = "topPaddingAnimation"
 				)
 
@@ -279,6 +301,7 @@ fun MainContainer(
 								valheimVikiNavController = valheimVikiNavController,
 								innerPadding = PaddingValues(0.dp),
 								adAwareNavigate = adAwareNavigate,
+								onGuidedOnboardingTargetPositioned = registerGuidedOnboardingAnchor,
 							)
 						}
 					}
@@ -287,75 +310,90 @@ fun MainContainer(
 						navController = valheimVikiNavController,
 						paddingValues = PaddingValues(bottom = 60.dp)
 					)
-
-					AnimatedVisibility(
-						visible = highlightSettings,
-						enter = fadeIn(),
-						exit = fadeOut()
-					) {
-						Box(
-							modifier =
-								Modifier
-									.fillMaxSize()
-									.background(Color.Black.copy(alpha = 0.6f))
-									.zIndex(10f)
-						)
-					}
 				}
 			}
 		}
+		GuidedOnboardingOverlay(
+			anchors = guidedOnboardingAnchors,
+			isOnSettingsScreen = isSettingsRoute,
+			navigateToSettings = {
+				valheimVikiNavController.navigate(TopLevelDestination.Settings) {
+					launchSingleTop = true
+				}
+			}
+		)
 	}
-	LanguageNotificationDialog(
-		languagePopupViewModel
-	)
 }
+
 
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun ValheimNavGraph(
 	valheimVikiNavController: NavHostController,
 	innerPadding: PaddingValues,
-	adAwareNavigate:
-		(DetailDestination, (androidx.navigation.NavOptionsBuilder.() -> Unit)?) -> Unit =
-		{ dest, builder ->
-			if (builder != null) valheimVikiNavController.navigate(dest, builder)
-			else valheimVikiNavController.navigate(dest)
-		},
+	adAwareNavigate: (DetailDestination, (androidx.navigation.NavOptionsBuilder.() -> Unit)?) -> Unit = { dest, builder ->
+		if (builder != null) valheimVikiNavController.navigate(
+			dest,
+			builder
+		) else valheimVikiNavController.navigate(dest)
+	},
+	onGuidedOnboardingTargetPositioned: (GuidedOnboardingTarget, Rect) -> Unit = { _, _ -> },
 ) {
 	val lastClickTime = remember { mutableLongStateOf(0L) }
 	val clickDebounceMillis = 500
 
 	val enterTransition = {
-		fadeIn(animationSpec = tween(durationMillis = 300, delayMillis = 50)) +
-				slideInVertically(
-					initialOffsetY = { fullHeight -> fullHeight / 4 },
-					animationSpec =
-						tween(durationMillis = 400, delayMillis = 0, easing = EaseOutCubic)
-				)
+		fadeIn(
+			animationSpec = tween(
+				durationMillis = 300,
+				delayMillis = 50
+			)
+		) + slideInVertically(
+			initialOffsetY = { fullHeight -> fullHeight / 4 },
+			animationSpec = tween(
+				durationMillis = 400,
+				delayMillis = 0,
+				easing = EaseOutCubic
+			)
+		)
 	}
-	val popExitTransition = { fadeOut(animationSpec = tween(durationMillis = 50)) }
+	val popExitTransition = {
+		fadeOut(animationSpec = tween(durationMillis = 50))
+	}
 
 	NavHost(
 		navController = valheimVikiNavController,
 		startDestination = TopLevelDestination.Splash,
 	) {
-		composable<TopLevelDestination.Splash> { SplashScreen(valheimVikiNavController) }
-		composable<TopLevelDestination.Welcome> { WelcomeScreen(valheimVikiNavController) }
+		composable<TopLevelDestination.Splash> {
+			SplashScreen(valheimVikiNavController)
+		}
+		composable<TopLevelDestination.Welcome> {
+			WelcomeScreen(valheimVikiNavController)
+		}
 		composable<TopLevelDestination.Favorite> {
 			FavoriteScreen(
 				onBack = { valheimVikiNavController.popBackStack() },
-				onItemClick = { destination -> adAwareNavigate(destination, null) },
+				onItemClick = { destination ->
+					adAwareNavigate(destination, null)
+				},
 			)
 		}
 		composable<TopLevelDestination.Settings> {
 			SettingsScreen(
 				onBack = { valheimVikiNavController.popBackStack() },
+				onItemClick = { destination ->
+					adAwareNavigate(destination, null)
+				},
+				onGuidedOnboardingTargetPositioned = onGuidedOnboardingTargetPositioned,
 			)
 		}
 		composable<TopLevelDestination.Search> {
 			SearchScreen(
 				onBack = { valheimVikiNavController.popBackStack() },
-				onItemClick = { destination -> adAwareNavigate(destination, null) },
+				onItemClick = { destination ->
+					adAwareNavigate(destination, null)
+				},
 			)
 		}
 
@@ -368,7 +406,9 @@ fun ValheimNavGraph(
 						lastClickTime.longValue = currentTime
 						adAwareNavigate(destination) {
 							launchSingleTop = true
-							popUpTo(destination) { inclusive = true }
+							popUpTo(destination) {
+								inclusive = true
+							}
 						}
 					}
 				},
@@ -386,7 +426,9 @@ fun ValheimNavGraph(
 						lastClickTime.longValue = currentTime
 						adAwareNavigate(destination) {
 							launchSingleTop = true
-							popUpTo(destination) { inclusive = true }
+							popUpTo(destination) {
+								inclusive = true
+							}
 						}
 					}
 				},
@@ -403,7 +445,9 @@ fun ValheimNavGraph(
 						lastClickTime.longValue = currentTime
 						adAwareNavigate(destination) {
 							launchSingleTop = true
-							popUpTo(destination) { inclusive = true }
+							popUpTo(destination) {
+								inclusive = true
+							}
 						}
 					}
 				},
@@ -413,7 +457,9 @@ fun ValheimNavGraph(
 		}
 		composable<ListDestination.CreatureDestinations.MobList> {
 			MobListScreen(
-				onItemClick = { destination -> adAwareNavigate(destination, null) },
+				onItemClick = { destination ->
+					adAwareNavigate(destination, null)
+				},
 				paddingValues = innerPadding,
 			)
 		}
@@ -421,7 +467,9 @@ fun ValheimNavGraph(
 		composable<ListDestination.ItemDestinations.WeaponList> {
 			WeaponListScreen(
 				modifier = Modifier.padding(10.dp),
-				onItemClick = { destination -> adAwareNavigate(destination, null) },
+				onItemClick = { destination ->
+					adAwareNavigate(destination, null)
+				},
 				paddingValues = innerPadding,
 			)
 		}
@@ -429,7 +477,9 @@ fun ValheimNavGraph(
 		composable<ListDestination.ItemDestinations.ArmorList> {
 			ArmorListScreen(
 				modifier = Modifier.padding(10.dp),
-				onItemClick = { destination -> adAwareNavigate(destination, null) },
+				onItemClick = { destination ->
+					adAwareNavigate(destination, null)
+				},
 				paddingValues = innerPadding,
 			)
 		}
@@ -437,21 +487,27 @@ fun ValheimNavGraph(
 		composable<ListDestination.ItemDestinations.TrinketList> {
 			TrinketListScreen(
 				modifier = Modifier.padding(10.dp),
-				onItemClick = { destination -> adAwareNavigate(destination, null) },
+				onItemClick = { destination ->
+					adAwareNavigate(destination, null)
+				},
 				paddingValues = innerPadding,
 			)
 		}
 
 		composable<ListDestination.FoodDestinations.FoodList> {
 			FoodListScreen(
-				onItemClick = { destination -> adAwareNavigate(destination, null) },
+				onItemClick = { destination ->
+					adAwareNavigate(destination, null)
+				},
 				paddingValues = innerPadding,
 			)
 		}
 
 		composable<ListDestination.FoodDestinations.MeadList> {
 			MeadListScreen(
-				onItemClick = { destination -> adAwareNavigate(destination, null) },
+				onItemClick = { destination ->
+					adAwareNavigate(destination, null)
+				},
 				paddingValues = innerPadding,
 			)
 		}
@@ -459,14 +515,18 @@ fun ValheimNavGraph(
 		composable<ListDestination.CraftingDestinations.CraftingObjectsList> {
 			CraftingListScreen(
 				modifier = Modifier.padding(10.dp),
-				onItemClick = { destination -> adAwareNavigate(destination, null) },
+				onItemClick = { destination ->
+					adAwareNavigate(destination, null)
+				},
 				paddingValues = innerPadding,
 			)
 		}
 
 		composable<ListDestination.ItemDestinations.ToolList> {
 			ToolListScreen(
-				onItemClick = { destination -> adAwareNavigate(destination, null) },
+				onItemClick = { destination ->
+					adAwareNavigate(destination, null)
+				},
 				paddingValues = innerPadding,
 			)
 		}
@@ -475,34 +535,32 @@ fun ValheimNavGraph(
 			startDestination = ListDestination.CraftingDestinations.MaterialCategory
 		) {
 			composable<ListDestination.CraftingDestinations.MaterialCategory> { backStackEntry ->
-				val parentEntry =
-					remember(backStackEntry) {
-						valheimVikiNavController.getBackStackEntry<
-								NavigationGraph.MaterialGraph>()
-					}
+				val parentEntry = remember(backStackEntry) {
+					valheimVikiNavController.getBackStackEntry<NavigationGraph.MaterialGraph>()
+				}
 				val vm = hiltViewModel<MaterialListViewModel>(parentEntry)
 				MaterialCategoryScreen(
 					modifier = Modifier.padding(10.dp),
 					paddingValues = innerPadding,
 					onGridCategoryClick = {
-						valheimVikiNavController.navigate(
-							ListDestination.CraftingDestinations.MaterialList
-						)
+						valheimVikiNavController.navigate(ListDestination.CraftingDestinations.MaterialList)
 					},
 					viewModel = vm
 				)
 			}
 
 			composable<ListDestination.CraftingDestinations.MaterialList> { backStackEntry ->
-				val parentEntry =
-					remember(backStackEntry) {
-						valheimVikiNavController.getBackStackEntry<
-								NavigationGraph.MaterialGraph>()
-					}
+				val parentEntry = remember(backStackEntry) {
+					valheimVikiNavController.getBackStackEntry<NavigationGraph.MaterialGraph>()
+				}
 				val vm = hiltViewModel<MaterialListViewModel>(parentEntry)
 				MaterialListScreen(
-					onItemClick = { destination -> adAwareNavigate(destination, null) },
-					onBackClick = { valheimVikiNavController.popBackStack() },
+					onItemClick = { destination ->
+						adAwareNavigate(destination, null)
+					},
+					onBackClick = {
+						valheimVikiNavController.popBackStack()
+					},
 					viewModel = vm
 				)
 			}
@@ -512,35 +570,33 @@ fun ValheimNavGraph(
 			startDestination = ListDestination.CraftingDestinations.BuildingMaterialCategory
 		) {
 			composable<ListDestination.CraftingDestinations.BuildingMaterialCategory> { backStackEntry ->
-				val parentEntry =
-					remember(backStackEntry) {
-						valheimVikiNavController.getBackStackEntry<
-								NavigationGraph.BuildingMaterialsGraph>()
-					}
+				val parentEntry = remember(backStackEntry) {
+					valheimVikiNavController.getBackStackEntry<NavigationGraph.BuildingMaterialsGraph>()
+				}
 				val vm = hiltViewModel<BuildingMaterialListViewModel>(parentEntry)
 				BuildingMaterialCategoryScreen(
 					modifier = Modifier.padding(10.dp),
 					paddingValues = innerPadding,
 					onGridCategoryClick = {
-						valheimVikiNavController.navigate(
-							ListDestination.CraftingDestinations.BuildingMaterialList
-						)
+						valheimVikiNavController.navigate(ListDestination.CraftingDestinations.BuildingMaterialList)
 					},
 					viewModel = vm
 				)
 			}
 
-			composable<ListDestination.CraftingDestinations.BuildingMaterialList> { backStackEntry
-				->
-				val parentEntry =
-					remember(backStackEntry) {
-						valheimVikiNavController.getBackStackEntry<
-								NavigationGraph.BuildingMaterialsGraph>()
-					}
+			composable<ListDestination.CraftingDestinations.BuildingMaterialList> { backStackEntry ->
+
+				val parentEntry = remember(backStackEntry) {
+					valheimVikiNavController.getBackStackEntry<NavigationGraph.BuildingMaterialsGraph>()
+				}
 				val vm = hiltViewModel<BuildingMaterialListViewModel>(parentEntry)
 				BuildingMaterialListScreen(
-					onItemClick = { destination -> adAwareNavigate(destination, null) },
-					onBackClick = { valheimVikiNavController.popBackStack() },
+					onItemClick = { destination ->
+						adAwareNavigate(destination, null)
+					},
+					onBackClick = {
+						valheimVikiNavController.popBackStack()
+					},
 					viewModel = vm
 				)
 			}
@@ -555,7 +611,9 @@ fun ValheimNavGraph(
 						lastClickTime.longValue = currentTime
 						adAwareNavigate(destination) {
 							launchSingleTop = true
-							popUpTo(destination) { inclusive = true }
+							popUpTo(destination) {
+								inclusive = true
+							}
 						}
 					}
 				},
@@ -573,7 +631,9 @@ fun ValheimNavGraph(
 						lastClickTime.longValue = currentTime
 						adAwareNavigate(destination) {
 							launchSingleTop = true
-							popUpTo(destination) { inclusive = true }
+							popUpTo(destination) {
+								inclusive = true
+							}
 						}
 					}
 				},
@@ -584,12 +644,15 @@ fun ValheimNavGraph(
 
 		composable<ListDestination.WorldDestinations.PointOfInterestList> {
 			PoiListScreen(
-				onItemClick = { destination -> adAwareNavigate(destination, null) },
+				onItemClick = { destination ->
+					adAwareNavigate(destination, null)
+				},
 				paddingValues = innerPadding,
 			)
 		}
 
-		// Detail Screens
+
+		//Detail Screens
 		composable<WorldDetailDestination.BiomeDetail>(
 			enterTransition = { enterTransition() },
 			popExitTransition = { popExitTransition() }
@@ -597,7 +660,9 @@ fun ValheimNavGraph(
 			val animatedContentScope = this
 			BiomeDetailScreen(
 				onBack = { valheimVikiNavController.popBackStack() },
-				onItemClick = { destination -> adAwareNavigate(destination, null) },
+				onItemClick = { destination ->
+					adAwareNavigate(destination, null)
+				},
 				animatedVisibilityScope = animatedContentScope
 			)
 		}
@@ -606,46 +671,71 @@ fun ValheimNavGraph(
 			popExitTransition = { popExitTransition() }
 		) {
 			MainBossDetailScreen(
-				onBack = { valheimVikiNavController.popBackStack() },
-				onItemClick = { destination -> adAwareNavigate(destination, null) },
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+				onItemClick = { destination ->
+					adAwareNavigate(destination, null)
+				},
 				animatedVisibilityScope = this@composable,
 			)
 		}
 		composable<CreatureDetailDestination.MiniBossDetail>(
 			enterTransition = { enterTransition() },
 			popExitTransition = { popExitTransition() }
+
 		) {
 			MiniBossDetailScreen(
-				onBack = { valheimVikiNavController.popBackStack() },
-				onItemClick = { destination -> adAwareNavigate(destination, null) },
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+				onItemClick = { destination ->
+					adAwareNavigate(destination, null)
+				},
 				animatedVisibilityScope = this@composable,
 			)
 		}
 		composable<CreatureDetailDestination.AggressiveCreatureDetail> {
 			AggressiveCreatureDetailScreen(
-				onBack = { valheimVikiNavController.popBackStack() },
-				onItemClick = { destination -> adAwareNavigate(destination, null) },
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+				onItemClick = { destination ->
+					adAwareNavigate(destination, null)
+				},
 			)
 		}
 
 		composable<CreatureDetailDestination.PassiveCreatureDetail> {
 			PassiveCreatureDetailScreen(
-				onBack = { valheimVikiNavController.popBackStack() },
-				onItemClick = { destination -> adAwareNavigate(destination, null) },
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+				onItemClick = { destination ->
+					adAwareNavigate(destination, null)
+				},
 			)
 		}
 		composable<CreatureDetailDestination.NpcDetail> {
 			NpcDetailScreen(
-				onBack = { valheimVikiNavController.popBackStack() },
-				onItemClick = { destination -> adAwareNavigate(destination, null) },
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+				onItemClick = { destination ->
+					adAwareNavigate(destination, null)
+				},
 			)
 		}
 
 		composable<ConsumableDetailDestination.FoodDetail> { backStackEntry ->
 			val args = backStackEntry.toRoute<ConsumableDetailDestination.FoodDetail>()
 			FoodDetailScreen(
-				onBack = { valheimVikiNavController.popBackStack() },
-				onItemClick = { destination -> adAwareNavigate(destination, null) },
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+				onItemClick = { destination ->
+					adAwareNavigate(destination, null)
+				},
 				category = args.category,
 			)
 		}
@@ -653,150 +743,242 @@ fun ValheimNavGraph(
 		composable<ConsumableDetailDestination.MeadDetail> { backStackEntry ->
 			val args = backStackEntry.toRoute<ConsumableDetailDestination.MeadDetail>()
 			MeadDetailScreen(
-				onBack = { valheimVikiNavController.popBackStack() },
-				onItemClick = { destination -> adAwareNavigate(destination, null) },
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+				onItemClick = { destination ->
+					adAwareNavigate(destination, null)
+				},
 				category = args.category,
-			)
+
+				)
 		}
 		composable<BuildingDetailDestination.CraftingObjectDetail> {
 			CraftingDetailScreen(
-				onBack = { valheimVikiNavController.popBackStack() },
-				onItemClick = { destination -> adAwareNavigate(destination, null) },
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+				onItemClick = { destination ->
+					adAwareNavigate(destination, null)
+				},
 			)
 		}
 
 		composable<EquipmentDetailDestination.WeaponDetail> {
 			WeaponDetailScreen(
-				onBack = { valheimVikiNavController.popBackStack() },
-				onItemClick = { destination -> adAwareNavigate(destination, null) },
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+				onItemClick = { destination ->
+					adAwareNavigate(destination, null)
+				},
 			)
 		}
 
 		composable<EquipmentDetailDestination.ArmorDetail> {
 			ArmorDetailScreen(
-				onBack = { valheimVikiNavController.popBackStack() },
-				onItemClick = { destination -> adAwareNavigate(destination, null) },
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+				onItemClick = { destination ->
+					adAwareNavigate(destination, null)
+				},
 			)
 		}
 		composable<EquipmentDetailDestination.TrinketDetail> {
 			TrinketDetailScreen(
-				onBack = { valheimVikiNavController.popBackStack() },
-				onItemClick = { destination -> adAwareNavigate(destination, null) },
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+				onItemClick = { destination ->
+					adAwareNavigate(destination, null)
+				},
 			)
 		}
 
 		composable<EquipmentDetailDestination.ToolDetail> {
 			ToolDetailScreen(
-				onBack = { valheimVikiNavController.popBackStack() },
-				onItemClick = { destination -> adAwareNavigate(destination, null) },
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+				onItemClick = { destination ->
+					adAwareNavigate(destination, null)
+				},
 			)
 		}
 		composable<WorldDetailDestination.OreDepositDetail>(
 			popExitTransition = { popExitTransition() }
 		) {
 			OreDepositDetailScreen(
-				onBack = { valheimVikiNavController.popBackStack() },
-				onItemClick = { destination -> adAwareNavigate(destination, null) },
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+				onItemClick = { destination ->
+					adAwareNavigate(destination, null)
+				},
 				animatedVisibilityScope = this@composable,
 			)
 		}
-		composable<WorldDetailDestination.TreeDetail>(popExitTransition = { popExitTransition() }) {
+		composable<WorldDetailDestination.TreeDetail>(
+			popExitTransition = { popExitTransition() }
+		) {
 			TreeDetailScreen(
-				onBack = { valheimVikiNavController.popBackStack() },
-				onItemClick = { destination -> adAwareNavigate(destination, null) },
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+				onItemClick = { destination ->
+					adAwareNavigate(destination, null)
+				},
 				animatedVisibilityScope = this@composable,
 			)
 		}
 
 		composable<WorldDetailDestination.PointOfInterestDetail> {
 			PointOfInterestDetailScreen(
-				onBack = { valheimVikiNavController.popBackStack() },
-				onItemClick = { destination -> adAwareNavigate(destination, null) },
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+				onItemClick = { destination ->
+					adAwareNavigate(destination, null)
+				},
 			)
 		}
 
 		composable<MaterialDetailDestination.BossDropDetail> {
 			BossDropDetailScreen(
-				onBack = { valheimVikiNavController.popBackStack() },
-				onItemClick = { destination -> adAwareNavigate(destination, null) },
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+				onItemClick = { destination ->
+					adAwareNavigate(destination, null)
+				},
 			)
 		}
 
 		composable<MaterialDetailDestination.CraftedMaterialDetail> {
 			CraftedMaterialDetailScreen(
-				onBack = { valheimVikiNavController.popBackStack() },
-				onItemClick = { destination -> adAwareNavigate(destination, null) },
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+				onItemClick = { destination ->
+					adAwareNavigate(destination, null)
+				},
 			)
 		}
 		composable<MaterialDetailDestination.GeneralMaterialDetail> {
 			GeneralMaterialDetailScreen(
-				onBack = { valheimVikiNavController.popBackStack() },
-				onItemClick = { destination -> adAwareNavigate(destination, null) },
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+				onItemClick = { destination ->
+					adAwareNavigate(destination, null)
+				},
 			)
 		}
 		composable<MaterialDetailDestination.MetalMaterialDetail> {
 			MetalMaterialDetailScreen(
-				onBack = { valheimVikiNavController.popBackStack() },
-				onItemClick = { destination -> adAwareNavigate(destination, null) },
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+				onItemClick = { destination ->
+					adAwareNavigate(destination, null)
+				},
 			)
 		}
 		composable<MaterialDetailDestination.MiniBossDropDetail> {
 			MiniBossDropDetailScreen(
-				onBack = { valheimVikiNavController.popBackStack() },
-				onItemClick = { destination -> adAwareNavigate(destination, null) },
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+				onItemClick = { destination ->
+					adAwareNavigate(destination, null)
+				},
 			)
 		}
 		composable<MaterialDetailDestination.MobDropDetail> {
 			MobDropDetailScreen(
-				onBack = { valheimVikiNavController.popBackStack() },
-				onItemClick = { destination -> adAwareNavigate(destination, null) },
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+				onItemClick = { destination ->
+					adAwareNavigate(destination, null)
+				},
 			)
 		}
 		composable<MaterialDetailDestination.OfferingsDetail> {
 			OfferingsDetailScreen(
-				onBack = { valheimVikiNavController.popBackStack() },
-				onItemClick = { destination -> adAwareNavigate(destination, null) },
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+				onItemClick = { destination ->
+					adAwareNavigate(destination, null)
+				},
 			)
 		}
 		composable<MaterialDetailDestination.GemstoneDetail> {
 			GemstoneDetailScreen(
-				onBack = { valheimVikiNavController.popBackStack() },
-				onItemClick = { destination -> adAwareNavigate(destination, null) },
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+				onItemClick = { destination ->
+					adAwareNavigate(destination, null)
+				},
 			)
 		}
 
 		composable<MaterialDetailDestination.SeedDetail> {
 			SeedMaterialDetailScreen(
-				onBack = { valheimVikiNavController.popBackStack() },
-				onItemClick = { destination -> adAwareNavigate(destination, null) },
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+				onItemClick = { destination ->
+					adAwareNavigate(destination, null)
+				},
 			)
 		}
 		composable<MaterialDetailDestination.ShopMaterialDetail> {
 			ShopMaterialDetailScreen(
-				onBack = { valheimVikiNavController.popBackStack() },
-				onItemClick = { destination -> adAwareNavigate(destination, null) },
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+				onItemClick = { destination ->
+					adAwareNavigate(destination, null)
+				},
 			)
 		}
 		composable<MaterialDetailDestination.ValuableDetail> {
 			ValuableMaterialDetailScreen(
-				onBack = { valheimVikiNavController.popBackStack() },
-				onItemClick = { destination -> adAwareNavigate(destination, null) },
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+				onItemClick = { destination ->
+					adAwareNavigate(destination, null)
+				},
 			)
 		}
 		composable<MaterialDetailDestination.WoodDetail> {
 			WoodMaterialDetailScreen(
-				onBack = { valheimVikiNavController.popBackStack() },
-				onItemClick = { destination -> adAwareNavigate(destination, null) },
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+				onItemClick = { destination ->
+					adAwareNavigate(destination, null)
+				},
 			)
 		}
 		composable<BuildingDetailDestination.BuildingMaterialDetail> {
 			BuildingMaterialDetailScreen(
-				onBack = { valheimVikiNavController.popBackStack() },
-				onItemClick = { destination -> adAwareNavigate(destination, null) },
+				onBack = {
+					valheimVikiNavController.popBackStack()
+				},
+				onItemClick = { destination ->
+					adAwareNavigate(destination, null)
+				},
 			)
 		}
 	}
 }
+
 
 @Composable
 fun rememberDrawerItems(): DrawerItemCollection {
@@ -877,56 +1059,49 @@ fun rememberDrawerItems(): DrawerItemCollection {
 					icon = mountainSnowIcon,
 					label = biomesLabel,
 					contentDescription = biomesDesc,
-					navigationDestination =
-						GridDestination.WorldDestinations.BiomeGrid
+					navigationDestination = GridDestination.WorldDestinations.BiomeGrid
 				),
 				// Bosses
 				DrawerItem(
 					iconPainter = skullPainter,
 					label = bossesLabel,
 					contentDescription = bossesDesc,
-					navigationDestination =
-						GridDestination.CreatureDestinations.BossGrid
+					navigationDestination = GridDestination.CreatureDestinations.BossGrid
 				),
 				// Mini-bosses
 				DrawerItem(
 					iconPainter = ogrePainter,
 					label = minibossesLabel,
 					contentDescription = minibossesDesc,
-					navigationDestination =
-						GridDestination.CreatureDestinations.MiniBossGrid
+					navigationDestination = GridDestination.CreatureDestinations.MiniBossGrid
 				),
 				// Creatures
 				DrawerItem(
 					icon = rabbitIcon,
 					label = creaturesLabel,
 					contentDescription = creaturesDesc,
-					navigationDestination =
-						ListDestination.CreatureDestinations.MobList
+					navigationDestination = ListDestination.CreatureDestinations.MobList
 				),
 				// Weapons
 				DrawerItem(
 					icon = swordsIcon,
 					label = weaponsLabel,
 					contentDescription = weaponsDesc,
-					navigationDestination =
-						ListDestination.ItemDestinations.WeaponList
+					navigationDestination = ListDestination.ItemDestinations.WeaponList
 				),
 				// Armors
 				DrawerItem(
 					icon = shieldIcon,
 					label = armorsLabel,
 					contentDescription = armorsDesc,
-					navigationDestination =
-						ListDestination.ItemDestinations.ArmorList
+					navigationDestination = ListDestination.ItemDestinations.ArmorList
 				),
 				// Trinkets
 				DrawerItem(
 					icon = trinketIcon,
 					label = trinketsLabel,
 					contentDescription = trinketsDesc,
-					navigationDestination =
-						ListDestination.ItemDestinations.TrinketList
+					navigationDestination = ListDestination.ItemDestinations.TrinketList
 				),
 
 				// Food
@@ -934,86 +1109,77 @@ fun rememberDrawerItems(): DrawerItemCollection {
 					icon = utensilsIcon,
 					label = foodLabel,
 					contentDescription = foodDesc,
-					navigationDestination =
-						ListDestination.FoodDestinations.FoodList
+					navigationDestination = ListDestination.FoodDestinations.FoodList
 				),
 				// Meads
 				DrawerItem(
 					icon = flaskIcon,
 					label = meadsLabel,
 					contentDescription = meadsDesc,
-					navigationDestination =
-						ListDestination.FoodDestinations.MeadList
+					navigationDestination = ListDestination.FoodDestinations.MeadList
 				),
 				// CraftingObjects
 				DrawerItem(
 					icon = anvilIcon,
 					label = craftingObjectsLabel,
 					contentDescription = craftingObjectsDesc,
-					navigationDestination =
-						ListDestination.CraftingDestinations
-							.CraftingObjectsList
+					navigationDestination = ListDestination.CraftingDestinations.CraftingObjectsList
 				),
 				// Tools
 				DrawerItem(
 					icon = gavelIcon,
 					label = toolsLabel,
 					contentDescription = toolsDesc,
-					navigationDestination =
-						ListDestination.ItemDestinations.ToolList
+					navigationDestination = ListDestination.ItemDestinations.ToolList
 				),
 				// Materials
 				DrawerItem(
 					icon = cuboidIcon,
 					label = materialsLabel,
 					contentDescription = materialsDesc,
-					navigationDestination =
-						ListDestination.CraftingDestinations
-							.MaterialCategory
+					navigationDestination = ListDestination.CraftingDestinations.MaterialCategory
 				),
 				// Building Materials
 				DrawerItem(
 					icon = houseIcon,
 					label = buildingMatsLabel,
 					contentDescription = buildingMatsDesc,
-					navigationDestination =
-						ListDestination.CraftingDestinations
-							.BuildingMaterialCategory
+					navigationDestination = ListDestination.CraftingDestinations.BuildingMaterialCategory
 				),
 				// Ore Deposits
 				DrawerItem(
 					icon = pickaxeIcon,
 					label = oreLabel,
 					contentDescription = oreDesc,
-					navigationDestination =
-						GridDestination.WorldDestinations.OreDepositGrid
+					navigationDestination = GridDestination.WorldDestinations.OreDepositGrid
 				),
 				// Trees
 				DrawerItem(
 					icon = treesIcon,
 					label = treesLabel,
 					contentDescription = treesDesc,
-					navigationDestination =
-						GridDestination.WorldDestinations.TreeGrid
+					navigationDestination = GridDestination.WorldDestinations.TreeGrid
 				),
 				// Points of Interest
 				DrawerItem(
 					icon = mapPinnedIcon,
 					label = poiLabel,
 					contentDescription = poiDesc,
-					navigationDestination =
-						ListDestination.WorldDestinations
-							.PointOfInterestList
+					navigationDestination = ListDestination.WorldDestinations.PointOfInterestList
 				)
-			)
-				.mapIndexed { index, item -> item.copy(drawerId = index) }
+			).mapIndexed { index, item ->
+				item.copy(drawerId = index)
+			}
 		)
 	}
 }
 
+
 fun NavDestination.shouldShowTopBar(): Boolean {
 	val route = this.route ?: return false
-	return SEARCHABLE_CATEGORIES.any { screenName -> route.contains(screenName, ignoreCase = true) }
+	return SEARCHABLE_CATEGORIES.any { screenName ->
+		route.contains(screenName, ignoreCase = true)
+	}
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)

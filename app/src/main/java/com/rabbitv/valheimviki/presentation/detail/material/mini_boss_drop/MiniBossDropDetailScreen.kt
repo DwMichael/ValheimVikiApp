@@ -22,12 +22,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.data.mappers.creatures.toMiniBoss
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.navigation.DetailDestination
@@ -136,7 +138,7 @@ fun MiniBossDropDetailContent(
 										onItemClick(destination)
 									},
 									itemData = miniBoss,
-									subTitle = "Boss from witch this item drop",
+									subTitle = stringResource(R.string.detail_subtitle_boss_drops_item),
 									contentScale = ContentScale.Crop,
 								)
 								SlavicDivider()
@@ -158,7 +160,7 @@ fun MiniBossDropDetailContent(
 										onItemClick(destination)
 									},
 									itemData = npc,
-									subTitle = "Npc that give you quest for this item",
+									subTitle = stringResource(R.string.detail_subtitle_npc_gives_quest_item),
 									contentScale = ContentScale.Crop,
 								)
 							}

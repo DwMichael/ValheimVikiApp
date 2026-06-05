@@ -7,8 +7,10 @@ interface DataStoreOperations {
     fun readOnBoardingState(): Flow<Boolean>
     suspend fun saveLanguage(language: String)
     fun languageProvider(): Flow<String>
+    suspend fun saveDataLanguage(language: String)
+    fun dataLanguageProvider(): Flow<String>
     suspend fun saveLanguagePopupState(shown: Boolean)
     fun readLanguagePopupState(): Flow<Boolean>
-    suspend fun saveSettingsTooltipStep(step: Int)
-    fun readSettingsTooltipStep(): Flow<Int>
+    suspend fun saveGuidedOnboardingStep(step: String)
+    fun readGuidedOnboardingStep(): Flow<String>
 }

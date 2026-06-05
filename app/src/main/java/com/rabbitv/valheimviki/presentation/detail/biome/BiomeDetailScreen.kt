@@ -125,6 +125,11 @@ fun BiomeDetailContent(
 	val materialsTitle = stringResource(R.string.materials)
 	val pointsOfInterestTitle = stringResource(R.string.points_of_interest)
 	val treesTitle = stringResource(R.string.trees)
+	val creaturesSubtitle = stringResource(R.string.detail_subtitle_creatures_biome)
+	val oreDepositsSubtitle = stringResource(R.string.detail_subtitle_ore_deposits_biome)
+	val materialsSubtitle = stringResource(R.string.detail_subtitle_unique_materials)
+	val pointsOfInterestSubtitle = stringResource(R.string.detail_subtitle_pois_biome)
+	val treesSubtitle = stringResource(R.string.detail_subtitle_trees_biome)
 
 	val sectionConfigs = remember(
 		uiState.relatedCreatures,
@@ -137,39 +142,44 @@ fun BiomeDetailContent(
 		materialsTitle,
 		pointsOfInterestTitle,
 		treesTitle,
+		creaturesSubtitle,
+		oreDepositsSubtitle,
+		materialsSubtitle,
+		pointsOfInterestSubtitle,
+		treesSubtitle,
 	) {
 		listOf(
 			uiState.relatedCreatures to HorizontalPagerData(
 				title = creaturesTitle,
-				subTitle = "Creatures you may encounter in this biome",
+				subTitle = creaturesSubtitle,
 				icon = Lucide.PawPrint,
 				iconRotationDegrees = -85f,
 				itemContentScale = ContentScale.Crop
 			),
 			uiState.relatedOreDeposits to HorizontalPagerData(
 				title = oreDepositsTitle,
-				subTitle = "Ore deposits you may encounter in this biome",
+				subTitle = oreDepositsSubtitle,
 				icon = Lucide.Pickaxe,
 				iconRotationDegrees = 0f,
 				itemContentScale = ContentScale.Crop
 			),
 			uiState.relatedMaterials to HorizontalPagerData(
 				title = materialsTitle,
-				subTitle = "Unique materials",
+				subTitle = materialsSubtitle,
 				icon = Lucide.Gem,
 				iconRotationDegrees = 0f,
 				itemContentScale = ContentScale.Crop
 			),
 			uiState.relatedPointOfInterest to HorizontalPagerData(
 				title = pointsOfInterestTitle,
-				subTitle = "Points of interest you may encounter",
+				subTitle = pointsOfInterestSubtitle,
 				icon = Lucide.House,
 				iconRotationDegrees = 0f,
 				itemContentScale = ContentScale.Crop
 			),
 			uiState.relatedTrees to HorizontalPagerData(
 				title = treesTitle,
-				subTitle = "Trees you may encounter",
+				subTitle = treesSubtitle,
 				icon = Lucide.Trees,
 				iconRotationDegrees = 0f,
 				itemContentScale = ContentScale.Crop
@@ -219,7 +229,7 @@ fun BiomeDetailContent(
 								SlavicDivider()
 								ImageWithTopLabel(
 									itemData = boss,
-									subTitle = "BOSS",
+									subTitle = stringResource(R.string.boss_label),
 									onItemClick = handleClick
 								)
 							}

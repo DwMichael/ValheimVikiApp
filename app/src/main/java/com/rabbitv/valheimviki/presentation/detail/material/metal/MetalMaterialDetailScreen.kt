@@ -97,7 +97,7 @@ fun MetalMaterialDetailContent(
 
 	val biomesData = HorizontalPagerData(
 		title = stringResource(R.string.biomes),
-		subTitle = "Biomes where you can find this material",
+		subTitle = stringResource(R.string.metal_detail_subtitle_biomes),
 		icon = Lucide.Trees,
 		iconRotationDegrees = 0f,
 		itemContentScale = ContentScale.Crop
@@ -105,7 +105,7 @@ fun MetalMaterialDetailContent(
 
 	val creaturesData = HorizontalPagerData(
 		title = stringResource(R.string.creatures),
-		subTitle = "Creatures that drop this material",
+		subTitle = stringResource(R.string.metal_detail_subtitle_creatures),
 		icon = Lucide.PawPrint,
 		iconRotationDegrees = -85f,
 		itemContentScale = ContentScale.Crop
@@ -113,7 +113,7 @@ fun MetalMaterialDetailContent(
 
 	val pointOfInterestData = HorizontalPagerData(
 		title = stringResource(R.string.points_of_interest),
-		subTitle = "Poi where you can find this item",
+		subTitle = stringResource(R.string.metal_detail_subtitle_poi),
 		icon = Lucide.PawPrint,
 		iconRotationDegrees = -85f,
 		itemContentScale = ContentScale.Crop
@@ -121,7 +121,7 @@ fun MetalMaterialDetailContent(
 
 	val oreDepositsData = HorizontalPagerData(
 		title = stringResource(R.string.ore_deposits),
-		subTitle = "Ore deposits where you can find this material",
+		subTitle = stringResource(R.string.metal_detail_subtitle_ore_deposits),
 		icon = Lucide.PawPrint,
 		iconRotationDegrees = -85f,
 		itemContentScale = ContentScale.Crop
@@ -226,7 +226,7 @@ fun MetalMaterialDetailContent(
 							SectionHeader(
 								data = SectionHeaderData(
 									title = stringResource(R.string.required_items),
-									subTitle = "Items needed to build this material.",
+									subTitle = stringResource(R.string.metal_detail_subtitle_required_items),
 									icon = Lucide.ScrollText,
 								),
 
@@ -262,7 +262,7 @@ fun MetalMaterialDetailContent(
 									onItemClick(destination)
 								},
 								itemData = craftingStation,
-								subTitle = "Crafting station where you can produce this item ",
+								subTitle = stringResource(R.string.detail_subtitle_crafting_station_produce_item),
 								contentScale = ContentScale.Fit,
 							)
 							Spacer(modifier = Modifier.padding(BODY_CONTENT_PADDING.dp))

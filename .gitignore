@@ -36,3 +36,15 @@ scripts/
 
 # IDE noise
 /.idea/androidTestResultsUserPreferences.xml
+
+# Local/generated artifacts from database localization work
+/localization-review/
+/tools/localization/
+
+# Generated Room schema snapshots are not versioned in this project.
+# ValheimVikiDatabase currently uses exportSchema = false.
+/app/schemas/
+
+# Python cache files from local helper scripts
+__pycache__/
+*.py[cod]

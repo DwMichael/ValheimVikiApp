@@ -34,6 +34,17 @@ class DataStoreRepository @Inject constructor(
 		return dataStore.languageProvider()
 	}
 
+	suspend fun saveDataLanguage(language: String) {
+		withContext(ioDispatcher)
+		{
+			dataStore.saveDataLanguage(language = language)
+		}
+	}
+
+	fun dataLanguageProvider(): Flow<String> {
+		return dataStore.dataLanguageProvider()
+	}
+
 	suspend fun saveLanguagePopupState(shown: Boolean) {
 		withContext(ioDispatcher) {
 			dataStore.saveLanguagePopupState(shown)
@@ -44,13 +55,13 @@ class DataStoreRepository @Inject constructor(
 		return dataStore.readLanguagePopupState()
 	}
 
-	suspend fun saveSettingsTooltipStep(step: Int) {
+	suspend fun saveGuidedOnboardingStep(step: String) {
 		withContext(ioDispatcher) {
-			dataStore.saveSettingsTooltipStep(step)
+			dataStore.saveGuidedOnboardingStep(step)
 		}
 	}
 
-	fun readSettingsTooltipStep(): Flow<Int> {
-		return dataStore.readSettingsTooltipStep()
+	fun readGuidedOnboardingStep(): Flow<String> {
+		return dataStore.readGuidedOnboardingStep()
 	}
 }

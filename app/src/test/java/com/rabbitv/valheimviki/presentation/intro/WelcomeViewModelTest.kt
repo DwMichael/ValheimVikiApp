@@ -1,8 +1,14 @@
 package com.rabbitv.valheimviki.presentation.intro
 
 import com.rabbitv.valheimviki.domain.use_cases.datastore.DataStoreUseCases
+import com.rabbitv.valheimviki.domain.use_cases.datastore.data_language_provider.DataLanguageProvider
+import com.rabbitv.valheimviki.domain.use_cases.datastore.get_guided_onboarding_step.ReadGuidedOnboardingStep
+import com.rabbitv.valheimviki.domain.use_cases.datastore.get_language_popup_state.ReadLanguagePopupState
 import com.rabbitv.valheimviki.domain.use_cases.datastore.get_onboarding_state.ReadOnBoardingState
 import com.rabbitv.valheimviki.domain.use_cases.datastore.language_state_provider.LanguageProvider
+import com.rabbitv.valheimviki.domain.use_cases.datastore.save_data_language_state.SaveDataLanguageState
+import com.rabbitv.valheimviki.domain.use_cases.datastore.save_guided_onboarding_step.SaveGuidedOnboardingStep
+import com.rabbitv.valheimviki.domain.use_cases.datastore.save_language_popup_state.SaveLanguagePopupState
 import com.rabbitv.valheimviki.domain.use_cases.datastore.save_onboarding_state.SaveOnBoardingState
 import com.rabbitv.valheimviki.domain.use_cases.datastore.saved_language_state.SaveLanguageState
 import com.rabbitv.valheimviki.presentation.intro.viewmodel.WelcomeViewModel
@@ -45,6 +51,24 @@ class WelcomeViewModelTest {
 	@Mock
 	private lateinit var saveLanguageState: SaveLanguageState
 
+	@Mock
+	private lateinit var dataLanguageProvider: DataLanguageProvider
+
+	@Mock
+	private lateinit var saveDataLanguageState: SaveDataLanguageState
+
+	@Mock
+	private lateinit var readLanguagePopupState: ReadLanguagePopupState
+
+	@Mock
+	private lateinit var saveLanguagePopupState: SaveLanguagePopupState
+
+	@Mock
+	private lateinit var readGuidedOnboardingStep: ReadGuidedOnboardingStep
+
+	@Mock
+	private lateinit var saveGuidedOnboardingStep: SaveGuidedOnboardingStep
+
 	@BeforeEach
 	fun setUp() {
 		Dispatchers.setMain(testDispatcher)
@@ -52,7 +76,13 @@ class WelcomeViewModelTest {
 			readOnBoardingUseCase = readOnBoardingUseCase,
 			saveOnBoardingState = saveOnBoardingState,
 			languageProvider = languageProvider,
-			saveLanguageState = saveLanguageState
+			saveLanguageState = saveLanguageState,
+			dataLanguageProvider = dataLanguageProvider,
+			saveDataLanguageState = saveDataLanguageState,
+			readLanguagePopupState = readLanguagePopupState,
+			saveLanguagePopupState = saveLanguagePopupState,
+			readGuidedOnboardingStep = readGuidedOnboardingStep,
+			saveGuidedOnboardingStep = saveGuidedOnboardingStep
 		)
 	}
 

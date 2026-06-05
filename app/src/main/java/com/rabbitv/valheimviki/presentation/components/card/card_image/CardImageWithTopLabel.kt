@@ -206,7 +206,7 @@ fun PreviewCardImageWithTopLabel() {
 	ValheimVikiAppTheme {
 		CardImageWithTopLabel(
 			itemData = fakeMainBoss,
-			subTitle = "Przykładowy opis głównego bossa Przykładowy.",
+			subTitle = stringResource(R.string.boss_label),
 			contentScale = ContentScale.FillBounds
 		)
 	}

@@ -5,25 +5,21 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
-import com.rabbitv.valheimviki.ui.adaptive.LocalAdaptiveLayoutInfo
-import com.rabbitv.valheimviki.ui.adaptive.adaptiveDetailWidth
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.foundation.text.BasicText
-import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -32,6 +28,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.PawPrint
+import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.creature.Creature
 import com.rabbitv.valheimviki.domain.model.ui_state.uistate.UIState
 import com.rabbitv.valheimviki.navigation.DetailDestination
@@ -48,11 +45,11 @@ import com.rabbitv.valheimviki.presentation.components.ui_section.UiSection
 import com.rabbitv.valheimviki.presentation.detail.material.gemstones.model.GemstoneDetailUiState
 import com.rabbitv.valheimviki.presentation.detail.material.gemstones.model.GemstoneUiEvent
 import com.rabbitv.valheimviki.presentation.detail.material.gemstones.viewmodel.GemstoneDetailViewModel
+import com.rabbitv.valheimviki.ui.adaptive.adaptiveDetailWidth
 import com.rabbitv.valheimviki.ui.theme.BODY_CONTENT_PADDING
 import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.FakeData
-import com.rabbitv.valheimviki.R
 
 @Composable
 fun GemstoneDetailScreen(
@@ -81,14 +78,14 @@ fun GemstoneDetailContent(
 	uiState: GemstoneDetailUiState,
 ) {
 
-    val scrollState = rememberScrollState()
+	val scrollState = rememberScrollState()
 	val handleItemClick = remember {
 		NavigationHelper.createItemDetailClickHandler(onItemClick)
 	}
 
 	val pointsOfInterestData = HorizontalPagerData(
 		title = stringResource(R.string.points_of_interest),
-		subTitle = "Poi where you can find this item",
+		subTitle = stringResource(R.string.detail_subtitle_poi_find_item),
 		icon = Lucide.PawPrint,
 		iconRotationDegrees = -85f,
 		itemContentScale = ContentScale.Crop
@@ -108,7 +105,7 @@ fun GemstoneDetailContent(
 			uiState.material?.let { material ->
 				Column(
 					modifier = Modifier
-						
+
 						.adaptiveDetailWidth()
 						.verticalScroll(scrollState)
 						.padding(
@@ -124,20 +121,20 @@ fun GemstoneDetailContent(
 						material.name,
 						modifier = Modifier.padding(BODY_CONTENT_PADDING.dp),
 						style = MaterialTheme.typography.headlineLarge,
-				autoSize = TextAutoSize.StepBased(
-					minFontSize = 22.sp,
-					maxFontSize = 34.sp,
-					stepSize = 1.sp,
-				),
+						autoSize = TextAutoSize.StepBased(
+							minFontSize = 22.sp,
+							maxFontSize = 34.sp,
+							stepSize = 1.sp,
+						),
 						textAlign = TextAlign.Center
 					)
 					SlavicDivider()
 
-                    material.description?.let {
-                        DetailExpandableText(
-                            text = material.description,
-                            boxPadding = BODY_CONTENT_PADDING.dp,
-                        )
+					material.description?.let {
+						DetailExpandableText(
+							text = material.description,
+							boxPadding = BODY_CONTENT_PADDING.dp,
+						)
 					}
 
 					UiSection(

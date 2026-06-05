@@ -69,7 +69,9 @@ class SettingsViewModel @Inject constructor(
                 _uiState.update { it.copy(showAdTrigger = false) }
             }
             is SettingsUiEvent.LanguageSwitchOverlayShown -> {
-                _uiState.update { it.copy(isLanguageSwitching = false) }
+                _uiState.update {
+                    if (it.isRefetching) it else it.copy(isLanguageSwitching = false)
+                }
             }
             is SettingsUiEvent.NextTooltipStep -> {
                 val currentStep = _uiState.value.tooltipStep
@@ -112,19 +114,25 @@ class SettingsViewModel @Inject constructor(
     private fun changeLanguage(language: AppLanguage) {
         val current = _uiState.value.currentLanguage
         if (language == current) {
-            _uiState.update { it.copy(showLanguageDialog = false) }
+            refreshLanguageData(language = language, shouldShowAd = false)
             return
         }
 
         languageChangeCount++
         val shouldShowAd = languageChangeCount % AD_THRESHOLD == 0
+        refreshLanguageData(language = language, shouldShowAd = shouldShowAd)
+    }
 
+    private fun refreshLanguageData(language: AppLanguage, shouldShowAd: Boolean) {
         viewModelScope.launch {
             // 1) Start smooth switching overlay (avoids abrupt black flash)
             _uiState.update {
                 it.copy(
+                    currentLanguage = language,
                     isLanguageSwitching = true,
+                    isRefetching = true,
                     showLanguageDialog = false,
+                    showAdTrigger = false,
                 )
             }
 
@@ -133,14 +141,18 @@ class SettingsViewModel @Inject constructor(
             // 2) Save preference
             dataStoreUseCases.saveLanguageState(language.code)
 
-            // 3) Update Android App Locale
+            // 3) Refresh cached game data for the selected language
+            dataRefetchUseCase.refetchAllData(forceRefresh = true)
+
+            // 4) Update Android App Locale
             AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(language.code))
 
-            // 4) Update UI
+            // 5) Update UI
             _uiState.update {
                 it.copy(
                     currentLanguage = language,
                     isRefetching = false,
+                    isLanguageSwitching = false,
                     showAdTrigger = shouldShowAd,
                 )
             }

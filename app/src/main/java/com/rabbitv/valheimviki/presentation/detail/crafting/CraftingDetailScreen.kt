@@ -243,14 +243,14 @@ fun CraftingDetailContent(
 						handleClick = handleClick,
 						icon = ICONS[0],
 						title = stringResource(R.string.food_items),
-						subTitle = "Food items that can be created at this crafting station",
+						subTitle = stringResource(R.string.detail_subtitle_food_created_at_station),
 					)
 					DroppedItemSection(
 						state = uiState.craftingMeadProducts,
 						handleClick = handleClick,
 						icon = ICONS[1],
 						title = stringResource(R.string.mead_items),
-						subTitle = "Mead items that can be created at this crafting station",
+						subTitle = stringResource(R.string.detail_subtitle_mead_created_at_station),
 					)
 
 					DroppedItemSection(
@@ -258,7 +258,7 @@ fun CraftingDetailContent(
 						handleClick = handleClick,
 						icon = ICONS[2],
 						title = stringResource(R.string.weapon_items),
-						subTitle = "Weapon items that can be created at this crafting station",
+						subTitle = stringResource(R.string.detail_subtitle_weapon_created_at_station),
 					)
 
 					DroppedItemSection(
@@ -266,7 +266,7 @@ fun CraftingDetailContent(
 						handleClick = handleClick,
 						icon = ICONS[3],
 						title = stringResource(R.string.armor_items),
-						subTitle = "Armor items that can be created at this crafting station",
+						subTitle = stringResource(R.string.detail_subtitle_armor_created_at_station),
 					)
 
 
@@ -275,28 +275,28 @@ fun CraftingDetailContent(
 						handleClick = handleClick,
 						icon = ICONS[4],
 						title = stringResource(R.string.material_items),
-						subTitle = "Materials that can be created at this crafting station",
+						subTitle = stringResource(R.string.detail_subtitle_materials_created_at_station),
 					)
 					DroppedItemSection(
 						state = uiState.craftingMaterialRequired,
 						handleClick = handleClick,
 						icon = ICONS[5],
 						title = stringResource(R.string.fuel_items),
-						subTitle = "Items required as fuel for this station",
+						subTitle = stringResource(R.string.detail_subtitle_fuel_required_for_station),
 					)
 					DroppedItemSection(
 						state = uiState.craftingBuildingMaterialProducts,
 						handleClick = handleClick,
 						icon = ICONS[6],
 						title = stringResource(R.string.building_materials),
-						subTitle = "Building materials that can be created at this crafting station",
+						subTitle = stringResource(R.string.detail_subtitle_building_materials_created_at_station),
 					)
 					DroppedItemSection(
 						state = uiState.craftingToolProducts,
 						handleClick = handleClick,
 						icon = ICONS[7],
 						title = stringResource(R.string.tool_items),
-						subTitle = "Tools that can be created at this crafting station",
+						subTitle = stringResource(R.string.detail_subtitle_tools_created_at_station),
 					)
 
 					Spacer(

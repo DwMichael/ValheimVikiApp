@@ -130,7 +130,7 @@ fun MainBossContent(
 	}
 	val dropData = HorizontalPagerData(
 		title = stringResource(R.string.drop_items),
-		subTitle = "Items that drop from boss after defeating him",
+		subTitle = stringResource(R.string.detail_subtitle_boss_drops),
 		icon = Lucide.Trophy,
 		iconRotationDegrees = 0f,
 		itemContentScale = ContentScale.Crop
@@ -225,7 +225,7 @@ fun MainBossContent(
 									.padding(horizontal = BODY_CONTENT_PADDING.dp),
 								data = SectionHeaderData(
 									stringResource(R.string.summoning_items),
-									"Items needed to summon boss",
+									stringResource(R.string.detail_subtitle_boss_summoning_items),
 									Lucide.TrendingUp
 								),
 							)

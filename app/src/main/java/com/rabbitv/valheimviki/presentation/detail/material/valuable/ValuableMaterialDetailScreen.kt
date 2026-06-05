@@ -85,7 +85,7 @@ fun ValuableMaterialDetailContent(
 
 	val pointsOfInterestData = HorizontalPagerData(
 		title = stringResource(R.string.points_of_interest),
-		subTitle = "Poi where you can find this item",
+		subTitle = stringResource(R.string.detail_subtitle_poi_find_item),
 		icon = Lucide.PawPrint,
 		iconRotationDegrees = -85f,
 		itemContentScale = ContentScale.Crop
@@ -93,7 +93,7 @@ fun ValuableMaterialDetailContent(
 
 	val creatureData = HorizontalPagerData(
 		title = stringResource(R.string.creatures),
-		subTitle = "Creatures that drop this material",
+		subTitle = stringResource(R.string.metal_detail_subtitle_creatures),
 		icon = Lucide.PawPrint,
 		iconRotationDegrees = -85f,
 		itemContentScale = ContentScale.Crop
@@ -101,7 +101,7 @@ fun ValuableMaterialDetailContent(
 
 	val npcData = HorizontalPagerData(
 		title = stringResource(R.string.npc),
-		subTitle = "NPC from whom you can buy this item",
+		subTitle = stringResource(R.string.detail_subtitle_npc_buy_item),
 		icon = Lucide.User,
 		iconRotationDegrees = 0f,
 		itemContentScale = ContentScale.Crop

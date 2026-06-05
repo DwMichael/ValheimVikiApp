@@ -177,7 +177,7 @@ fun FoodDetailContent(
 								icon = Lucide.Heart,
 								label = stringResource(R.string.health),
 								value = "${food.health.toString()} min",
-								details = "The amount of health points this food adds to your health bar. Health regenerates at 1% per second when above 25% HP. Maximum health is crucial for effective shield use as it directly affects your stagger resistance capacity.",
+								details = stringResource(R.string.food_detail_health_info),
 							)
 						}
 						if (shouldShowValue(food.healing)) {
@@ -186,7 +186,7 @@ fun FoodDetailContent(
 								painter = healingPainter,
 								label = stringResource(R.string.healing),
 								value = "${food.healing.toString()}/s",
-								details = "The rate of health regeneration in HP per second while this food effect is active. This healing occurs continuously throughout the food's duration.",
+								details = stringResource(R.string.food_detail_healing_info),
 							)
 						}
 						if (shouldShowValue(food.stamina)) {
@@ -195,7 +195,7 @@ fun FoodDetailContent(
 								painter = staminaPainter,
 								label = stringResource(R.string.stamina),
 								value = food.stamina.toString(),
-								details = "The amount of stamina points this food adds to your stamina bar. Stamina is used for running, jumping, attacking, and blocking. Higher stamina allows for longer combat engagements and exploration.",
+								details = stringResource(R.string.food_detail_stamina_info),
 							)
 						}
 						if (shouldShowValue(food.duration)) {
@@ -204,7 +204,7 @@ fun FoodDetailContent(
 								icon = Lucide.Clock2,
 								label = stringResource(R.string.duration),
 								value = "${food.duration.toString()} min",
-								details = "How long this food's effects remain active after consumption. The timer begins immediately upon eating and cannot be paused or extended.",
+								details = stringResource(R.string.food_detail_duration_info),
 							)
 						}
 						if (shouldShowValue(food.eitr)) {
@@ -213,7 +213,7 @@ fun FoodDetailContent(
 								icon = Lucide.Wand,
 								label = stringResource(R.string.eitr),
 								value = food.eitr.toString(),
-								details = "The amount of eitr (magic energy) this food provides. Eitr is required for casting magic spells and using staffs. Only certain foods provide this mystical resource.",
+								details = stringResource(R.string.food_detail_eitr_info),
 							)
 						}
 						if (shouldShowValue(food.weight)) {
@@ -222,7 +222,7 @@ fun FoodDetailContent(
 								icon = Lucide.Weight,
 								label = stringResource(R.string.weight),
 								value = food.weight.toString(),
-								details = "The weight of one unit of this food in your inventory. Total weight affects movement speed when overencumbered.",
+								details = stringResource(R.string.food_detail_weight_info),
 							)
 						}
 						if (shouldShowValue(food.forkType)) {
@@ -231,7 +231,7 @@ fun FoodDetailContent(
 								icon = Lucide.Info,
 								label = stringResource(R.string.fork_type),
 								value = food.forkType.toString(),
-								details = "The fork icon color indicates this food's primary benefit: Red fork for health-focused foods, yellow fork for stamina-focused foods, blue fork for eitr-focused foods, and white fork for balanced foods that provide equal benefits to multiple stats.",
+								details = stringResource(R.string.food_detail_fork_info),
 							)
 						}
 						if (shouldShowValue(food.stackSize)) {
@@ -240,7 +240,7 @@ fun FoodDetailContent(
 								icon = Lucide.Layers2,
 								label = stringResource(R.string.stack_size),
 								value = food.stackSize.toString(),
-								details = "The maximum number of this food item that can be stored in a single inventory slot. Higher stack sizes save valuable inventory space during long expeditions.",
+								details = stringResource(R.string.food_detail_stack_info),
 							)
 						}
 
@@ -255,7 +255,11 @@ fun FoodDetailContent(
 								onItemClick(destination)
 							},
 							itemData = craftingStation,
-							subTitle = if (category == FoodSubCategory.COOKED_FOOD) "Cook at Station to Consume" else "Requires Cooking Station To Make",
+							subTitle = if (category == FoodSubCategory.COOKED_FOOD) {
+								stringResource(R.string.detail_subtitle_cook_at_station_to_consume)
+							} else {
+								stringResource(R.string.detail_subtitle_requires_cooking_station_to_make)
+							},
 							contentScale = ContentScale.Fit,
 							painter = painterResource(R.drawable.food_bg)
 						)
@@ -271,7 +275,7 @@ fun FoodDetailContent(
 							SectionHeader(
 								data = SectionHeaderData(
 									title = stringResource(R.string.recipe),
-									subTitle = "Ingredients required to craft this item",
+									subTitle = stringResource(R.string.detail_subtitle_ingredients_required_to_craft_item),
 									icon = Lucide.CookingPot
 								)
 							)
