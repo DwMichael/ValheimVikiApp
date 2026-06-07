@@ -16,6 +16,21 @@ android {
 	val file = rootProject.file("local.properties")
 	val properties = Properties()
 	properties.load(FileInputStream(file))
+
+	val envFile = rootProject.file(".env")
+	val envProperties = Properties()
+	if (envFile.isFile) {
+		envProperties.load(FileInputStream(envFile))
+	}
+
+	fun envValue(key: String, fallback: String): String {
+		return envProperties.getProperty(key)
+			?.trim()
+			?.removeSurrounding("\"")
+			?.takeIf { it.isNotBlank() }
+			?: fallback
+	}
+
 	fun buildConfigString(value: String, requireTrailingSlash: Boolean = false): String {
 		val unquotedValue = value.trim().removeSurrounding("\"")
 		val normalizedValue = if (requireTrailingSlash && !unquotedValue.endsWith("/")) {
@@ -25,6 +40,15 @@ android {
 		}
 		return "\"$normalizedValue\""
 	}
+
+	val adMobApplicationId = envValue(
+		key = "ADMOB_APPLICATION_ID",
+		fallback = "ca-app-pub-3940256099942544~3347511713"
+	)
+	val adMobInterstitialAdUnitId = envValue(
+		key = "ADMOB_INTERSTITIAL_AD_UNIT_ID",
+		fallback = "ca-app-pub-3940256099942544/1033173712"
+	)
 
 	defaultConfig {
 		applicationId = "com.rabbitv.valheimviki"
@@ -37,6 +61,12 @@ android {
 		// Orchestrator runs each test in its own process and clears app data between tests.
 		// Needed because DataStore + Room hold process-level singletons that bleed across tests.
 		testInstrumentationRunnerArguments["clearPackageData"] = "true"
+		manifestPlaceholders["adMobApplicationId"] = adMobApplicationId
+		buildConfigField(
+			"String",
+			"ADMOB_INTERSTITIAL_AD_UNIT_ID",
+			buildConfigString(adMobInterstitialAdUnitId)
+		)
 	}
 
 	flavorDimensions += "backend"
@@ -96,7 +126,7 @@ android {
 	}
 
 	sourceSets {
-		getByName("androidTest").assets.srcDir("$projectDir/schemas")
+		getByName("androidTest").assets.directories.add("$projectDir/schemas")
 	}
 }
 
@@ -201,7 +231,7 @@ dependencies {
 		exclude(group = "org.mockito", module = "mockito-android")
 	}
 
-	androidTestImplementation("androidx.concurrent:concurrent-futures-ktx:1.1.0") // Use the latest version
+	androidTestImplementation(libs.androidx.concurrent.futures.ktx) // Use the latest version
 
 	testImplementation(libs.kotlin.test.junit5)
 	testImplementation(libs.turbine)

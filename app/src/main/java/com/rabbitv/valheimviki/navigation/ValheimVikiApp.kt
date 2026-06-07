@@ -142,7 +142,7 @@ import kotlinx.coroutines.launch
 @RequiresApi(Build.VERSION_CODES.S)
 @Preview
 @Composable
-fun ValheimVikiApp(adManager: com.rabbitv.valheimviki.domain.ads.AdManager? = null) {
+fun ValheimVikiApp(adManager: AdManager? = null) {
 	ValheimVikiAppTheme {
 		ProvideAdaptiveLayout {
 			MainContainer(adManager = adManager)
@@ -187,13 +187,10 @@ fun MainContainer(
 
 	val isTransitionActive = remember { mutableStateOf(false) }
 
-	// Pre-load the first interstitial ad as soon as app starts
 	LaunchedEffect(Unit) {
 		adManager?.preloadAd()
 	}
 
-	// Ad-aware navigation: shows interstitial after every N detail screens
-	// then proceeds to the destination automatically
 	val adAwareNavigate: (DetailDestination, (androidx.navigation.NavOptionsBuilder.() -> Unit)?) -> Unit =
 		remember(adManager, activity) {
 			{ destination, builder ->
@@ -224,7 +221,8 @@ fun MainContainer(
 
 	val isSettingsRoute by remember {
 		derivedStateOf {
-			currentBackStackEntry?.destination?.route.orEmpty().contains("TopLevelDestination.Settings")
+			currentBackStackEntry?.destination?.route.orEmpty()
+				.contains("TopLevelDestination.Settings")
 		}
 	}
 

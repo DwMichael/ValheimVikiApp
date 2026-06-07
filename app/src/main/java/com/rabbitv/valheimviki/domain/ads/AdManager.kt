@@ -9,6 +9,7 @@ import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
+import com.rabbitv.valheimviki.BuildConfig
 import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
@@ -24,7 +25,7 @@ import jakarta.inject.Singleton
  */
 @Singleton
 class AdManager @Inject constructor(
-	@ApplicationContext private val context: Context,
+	@param:ApplicationContext private val context: Context,
 ) {
 	private var interstitialAd: InterstitialAd? = null
 	private var detailViewCount = 0
@@ -37,9 +38,7 @@ class AdManager @Inject constructor(
 		// Professional apps typically use 4-6 to avoid annoying users.
 		const val DETAIL_VIEWS_BETWEEN_ADS = 10
 
-		// Google's official test interstitial ad unit ID.
-		// TODO: Replace with your real ad unit ID from AdMob console before publishing!
-		const val INTERSTITIAL_AD_UNIT_ID = "ca-app-pub-3940256099942544/1033173712"
+		private val INTERSTITIAL_AD_UNIT_ID = BuildConfig.ADMOB_INTERSTITIAL_AD_UNIT_ID
 	}
 
 	/**

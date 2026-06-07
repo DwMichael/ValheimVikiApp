@@ -1,4 +1,5 @@
 [versions]
+concurrentFuturesKtx = "1.3.0"
 guava = "33.6.0-android"
 agp = "9.2.1"
 appcompat = "1.7.1"
@@ -18,7 +19,7 @@ iconsLucide = "1.1.0"
 integrity = "1.6.0"
 junitJunit = "4.13.2"
 kotlin = "2.3.21"
-coreKtx = "1.18.0"
+coreKtx = "1.19.0"
 junitVersion = "1.3.0"
 espressoCore = "3.7.0"
 kotlinTestJunit5 = "2.2.0"
@@ -64,6 +65,7 @@ roomTesting = "2.8.4"
 
 
 [libraries]
+androidx-concurrent-futures-ktx = { module = "androidx.concurrent:concurrent-futures-ktx", version.ref = "concurrentFuturesKtx" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
