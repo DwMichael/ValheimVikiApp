@@ -5,26 +5,36 @@ import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import com.rabbitv.valheimviki.e2e.E2ETestTags
+import com.rabbitv.valheimviki.e2e.E2ETimeouts
 
 /**
- * Page object for the biome grid (post-onboarding landing).
- *
- * UI surface used:
- *  - testTag("BiomeSurface") — root surface of [BiomeGridScreen]
- *  - testTag("GridItem_<id>") — per-grid-cell (added to AnimatedGridItem, shared across all grids).
+ * Biome grid landing screen.
+ *  - [E2ETestTags.BIOME_SURFACE] — root surface
+ *  - [E2ETestTags.gridItem] — per-cell, shared across all grids via AnimatedGridItem
  */
 class BiomesPage(private val compose: ComposeTestRule) {
 
 	fun assertVisible() = apply {
-		compose.waitUntil(timeoutMillis = 15_000) {
-			compose.onAllNodes(hasTestTag("BiomeSurface")).fetchSemanticsNodes().size == 1
+		compose.waitUntil(timeoutMillis = E2ETimeouts.VERY_LONG_MS) {
+			compose.onAllNodes(hasTestTag(E2ETestTags.BIOME_SURFACE))
+				.fetchSemanticsNodes().isNotEmpty()
 		}
-		compose.onNodeWithTag("BiomeSurface").assertIsDisplayed()
+		compose.onNodeWithTag(E2ETestTags.BIOME_SURFACE).assertIsDisplayed()
 	}
 
-	/** Open the detail screen for a biome by id. */
 	fun openBiome(id: String): BiomesPage = apply {
-		compose.onNodeWithTag("GridItem_$id").performClick()
+		val tag = E2ETestTags.gridItem(id)
+		compose.waitUntil(timeoutMillis = E2ETimeouts.MEDIUM_MS) {
+			compose.onAllNodes(hasTestTag(tag)).fetchSemanticsNodes().isNotEmpty()
+		}
+		compose.onNodeWithTag(tag).performClick()
 		compose.waitForIdle()
+	}
+
+	fun assertBiomeLoaded(id: String, name: String): BiomesPage = apply {
+		compose.waitForNodeWithTag(E2ETestTags.gridItem(id), E2ETimeouts.VERY_LONG_MS)
+		compose.waitForText(name, substring = false)
+		compose.waitForImageLoaded(E2ETestTags.gridItemImage(id))
 	}
 }

@@ -14,10 +14,12 @@ object TestModuleConfig {
 	@Volatile var useRealDatabase: Boolean = false
 	@Volatile var useRealDataStore: Boolean = false
 	@Volatile var useRealLocaleProvider: Boolean = false
+	@Volatile var useRealNetwork: Boolean = false
 
 	fun reset() {
 		useRealDatabase = false
 		useRealDataStore = false
 		useRealLocaleProvider = false
+		useRealNetwork = false
 	}
 }

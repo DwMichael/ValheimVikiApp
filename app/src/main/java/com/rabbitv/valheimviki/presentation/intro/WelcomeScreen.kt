@@ -55,7 +55,9 @@ import com.rabbitv.valheimviki.ui.theme.ForestGreen10Dark
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.Constants.LAST_ON_BOARDING_PAGE
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 @Composable
@@ -175,8 +177,14 @@ fun NavigationButton(
 					pagerState.scrollToPage(pagerState.currentPage + 1)
 				} else {
 					welcomeViewModel.saveOnBoardingState(completed = true)
-					navController.popBackStack()
-					navController.navigate(GridDestination.WorldDestinations.BiomeGrid)
+					// Nav must run on the main thread. In production scope.launch already
+					// dispatches on Main; under Compose UI test, rememberCoroutineScope can
+					// resume on the test interceptor thread (see ApplyingContinuationInterceptor),
+					// which fails LifecycleRegistry's main-thread check.
+					withContext(Dispatchers.Main.immediate) {
+						navController.popBackStack()
+						navController.navigate(GridDestination.WorldDestinations.BiomeGrid)
+					}
 				}
 			}
 		},

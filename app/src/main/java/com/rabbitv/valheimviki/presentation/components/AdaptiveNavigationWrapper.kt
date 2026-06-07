@@ -216,6 +216,7 @@ private fun PermanentDrawerContent(
 				selected = item.drawerId == selectedItem(),
 				onClick = { onItemClick(item) },
 				modifier = Modifier
+					.testTag(drawerItemTag(item))
 					.height(48.dp)
 					.padding(NavigationDrawerItemDefaults.ItemPadding),
 			)
@@ -261,6 +262,7 @@ private fun NavigationRailContent(
 					onClick = { onItemClick(item) },
 					icon = { DrawerItemIcon(item, size = 22) },
 					label = null, // icons-only for rail
+					modifier = Modifier.testTag(drawerItemTag(item)),
 					colors = androidx.compose.material3.NavigationRailItemDefaults.colors(
 						selectedIconColor = PrimaryText,
 						unselectedIconColor = PrimaryWhite,
@@ -311,6 +313,7 @@ private fun ModalDrawerContent(
 				selected = item.drawerId == selectedItem(),
 				onClick = { onItemClick(item) },
 				modifier = Modifier
+					.testTag(drawerItemTag(item))
 					.height(48.dp)
 					.padding(NavigationDrawerItemDefaults.ItemPadding),
 			)
@@ -366,3 +369,6 @@ private fun DrawerItemIcon(item: DrawerItem, size: Int = 24) {
 		}
 	}
 }
+
+private fun drawerItemTag(item: DrawerItem): String =
+	"DrawerItem_${item.navigationDestination::class.simpleName}"

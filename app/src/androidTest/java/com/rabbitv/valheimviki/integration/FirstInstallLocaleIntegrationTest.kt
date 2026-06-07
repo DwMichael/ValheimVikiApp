@@ -18,7 +18,7 @@ class FirstInstallLocaleIntegrationTest : BaseE2ETest() {
 
     @Test
     fun freshInstall_polishDevice_picksPolish() {
-        fakeLocale.setLocale(Locale("pl"))
+        fakeLocale.setLocale(Locale.forLanguageTag("pl"))
         localeBootstrapper.run(force = true)
 
         val savedLang = runBlocking { fakeDataStore.languageProvider().first() }
@@ -27,7 +27,7 @@ class FirstInstallLocaleIntegrationTest : BaseE2ETest() {
 
     @Test
     fun freshInstall_unsupportedDevice_fallsBackToEnglish() {
-        fakeLocale.setLocale(Locale("ja")) // Japanese — not in AppLanguage list
+        fakeLocale.setLocale(Locale.forLanguageTag("ja")) // Japanese — not in AppLanguage list
         localeBootstrapper.run(force = true)
 
         val savedLang = runBlocking { fakeDataStore.languageProvider().first() }
@@ -36,7 +36,7 @@ class FirstInstallLocaleIntegrationTest : BaseE2ETest() {
 
     @Test
     fun freshInstall_germanDevice_picksGerman() {
-        fakeLocale.setLocale(Locale("de"))
+        fakeLocale.setLocale(Locale.forLanguageTag("de"))
         localeBootstrapper.run(force = true)
 
         val savedLang = runBlocking { fakeDataStore.languageProvider().first() }
@@ -45,7 +45,7 @@ class FirstInstallLocaleIntegrationTest : BaseE2ETest() {
 
     @Test
     fun freshInstall_lithuanianDevice_picksLithuanian() {
-        fakeLocale.setLocale(Locale("lt"))
+        fakeLocale.setLocale(Locale.forLanguageTag("lt"))
         localeBootstrapper.run(force = true)
 
         val savedLang = runBlocking { fakeDataStore.languageProvider().first() }

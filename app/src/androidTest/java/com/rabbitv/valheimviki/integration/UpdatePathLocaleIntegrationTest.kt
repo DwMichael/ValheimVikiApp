@@ -30,7 +30,7 @@ class UpdatePathLocaleIntegrationTest : BaseE2ETest() {
     fun oldUser_neverChangedLanguage_keepsSystemDefault_andSeesPopup() {
         fakeDataStore.seedOnboardingTrue()
         // popup_shown remains false (default from reset)
-        fakeLocale.setLocale(Locale("pl"))
+        fakeLocale.setLocale(Locale.forLanguageTag("pl"))
         // Per-app locale is empty (no user-set locale via AndroidX)
         AppCompatDelegate.setApplicationLocales(LocaleListCompat.getEmptyLocaleList())
 
@@ -56,7 +56,7 @@ class UpdatePathLocaleIntegrationTest : BaseE2ETest() {
         fakeDataStore.seedLanguage("de")
         // popup_shown=false (default)
         AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags("de"))
-        fakeLocale.setLocale(Locale("pl"))
+        fakeLocale.setLocale(Locale.forLanguageTag("pl"))
 
         localeBootstrapper.run()
 

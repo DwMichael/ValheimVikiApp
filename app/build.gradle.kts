@@ -11,7 +11,7 @@ plugins {
 
 android {
 	namespace = "com.rabbitv.valheimviki"
-	compileSdk = 36
+	compileSdk = 37
 
 	val file = rootProject.file("local.properties")
 	val properties = Properties()
@@ -34,6 +34,9 @@ android {
 		versionName = "1.1.4"
 
 		testInstrumentationRunner = "com.rabbitv.valheimviki.CustomTestRunner"
+		// Orchestrator runs each test in its own process and clears app data between tests.
+		// Needed because DataStore + Room hold process-level singletons that bleed across tests.
+		testInstrumentationRunnerArguments["clearPackageData"] = "true"
 	}
 
 	flavorDimensions += "backend"
@@ -85,6 +88,7 @@ android {
 		buildConfig = true
 	}
 	testOptions {
+		execution = "ANDROIDX_TEST_ORCHESTRATOR"
 		unitTests {
 			isIncludeAndroidResources = true
 			isReturnDefaultValues = true
@@ -121,6 +125,7 @@ dependencies {
 	androidTestImplementation(libs.androidx.junit)
 	androidTestImplementation(libs.androidx.espresso.core)
 	androidTestImplementation(platform(libs.androidx.compose.bom))
+	androidTestImplementation(libs.androidx.ui.test)
 	androidTestImplementation(libs.androidx.ui.test.junit4)
 	debugImplementation(libs.androidx.ui.tooling)
 	debugImplementation(libs.androidx.ui.test.manifest)
@@ -161,6 +166,9 @@ dependencies {
 
 	implementation(libs.androidx.work.runtime.ktx)
 	androidTestImplementation(libs.work.testing)
+	androidTestImplementation(libs.androidx.test.orchestrator)
+	androidTestUtil(libs.androidx.test.orchestrator)
+	androidTestUtil(libs.androidx.test.services)
 
 	implementation(libs.coil.compose)
 	implementation(libs.coil3.coil.network.okhttp)
@@ -170,11 +178,13 @@ dependencies {
 	implementation(libs.androidx.room.runtime)
 	implementation(libs.room.ktx)
 	implementation(libs.androidx.security.crypto)
+	implementation(libs.guava)
 
 	androidTestImplementation(libs.dagger.hilt.android.testing)
 	androidTestImplementation(libs.androidx.test.uiautomator)
 	androidTestImplementation(libs.androidx.room.testing)
 	androidTestImplementation(libs.okhttp.mockwebserver)
+	androidTestImplementation(libs.postgresql)
 	androidTestImplementation(libs.turbine)
 	ksp(libs.androidx.room.compiler)
 
@@ -190,6 +200,8 @@ dependencies {
 	testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0") {
 		exclude(group = "org.mockito", module = "mockito-android")
 	}
+
+	androidTestImplementation("androidx.concurrent:concurrent-futures-ktx:1.1.0") // Use the latest version
 
 	testImplementation(libs.kotlin.test.junit5)
 	testImplementation(libs.turbine)

@@ -56,6 +56,7 @@ class MainActivity() : AppCompatActivity() {
 				backoffPolicy = BackoffPolicy.EXPONENTIAL,
 				duration = Duration.ofSeconds(10)
 			)
+			.addTag(FetchWorker.INITIAL_FETCH_WORK_TAG)
 			.build()
 		WorkManager.getInstance(applicationContext).enqueue(workRequest)
 

@@ -13,20 +13,25 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.foundation.text.BasicText
-import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -53,6 +58,7 @@ fun MainDetailImageAnimated(
 ) {
 	val context = LocalContext.current
 	val imageLoader: ImageLoader = remember { ImageLoader(context) }
+	var imageLoadState by remember(imageUrl) { mutableStateOf("loading") }
 
 	// Optimize image request with better caching and sizing
 	val request = remember(imageUrl, id) {
@@ -96,7 +102,11 @@ fun MainDetailImageAnimated(
 					model = request,
 					contentDescription = stringResource(R.string.item_grid_image),
 					contentScale = ContentScale.Crop,
+					onSuccess = { imageLoadState = "loaded" },
+					onError = { imageLoadState = "error" },
 					modifier = Modifier
+						.testTag("DetailImage_$id")
+						.semantics { stateDescription = imageLoadState }
 						.fillMaxSize()
 				)
 				Surface(
@@ -115,11 +125,11 @@ fun MainDetailImageAnimated(
 						text = title,
 						color = Color.White,
 						style = MaterialTheme.typography.headlineLarge,
-				autoSize = TextAutoSize.StepBased(
-					minFontSize = 22.sp,
-					maxFontSize = 34.sp,
-					stepSize = 1.sp,
-				),
+						autoSize = TextAutoSize.StepBased(
+							minFontSize = 22.sp,
+							maxFontSize = 34.sp,
+							stepSize = 1.sp,
+						),
 						textAlign = textAlign,
 						modifier = Modifier
 							.padding(horizontal = 8.dp)

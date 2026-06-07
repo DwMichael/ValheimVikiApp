@@ -418,4 +418,8 @@
     <string name="language_popup_message">Valheim Viki is a student project made with care for Valheim players.\n\nNon-English content uses official Valheim terms where available, plus internet sources and automatic translation tools. Because of this, some names or descriptions may differ from the game. You can change the language anytime in Settings > Language; English is the safest reference.\n\nIf this app helps you, you can support its development with the Donate button. If you notice a wrong word, please send feedback with the exact text to fix. Thank you.</string>
     <string name="language_popup_dismiss">I understand</string>
     <string name="language_popup_wait">Wait (%d)</string>
+    <string name="settings_tooltip_language">Here you can change the app language to your preferred one.</string>
+    <string name="settings_tooltip_donate">This is a fan project. If you like it, you can support its development with a small donation!</string>
+    <string name="settings_tooltip_next">Next</string>
+    <string name="settings_tooltip_finish">I understand</string>
 </resources>

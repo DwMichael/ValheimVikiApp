@@ -8,3 +8,5 @@ fun FakeDataStoreOperations.seedOnboardingFalse() = runBlocking { saveOnBoarding
 fun FakeDataStoreOperations.seedTooltipStep(step: Int) = runBlocking { saveSettingsTooltipStep(step) }
 fun FakeDataStoreOperations.seedPopupShown(shown: Boolean) = runBlocking { saveLanguagePopupState(shown) }
 fun FakeDataStoreOperations.seedLanguage(code: String) = runBlocking { saveLanguage(code) }
+fun FakeDataStoreOperations.seedLastSuccessfulDataRefreshAt(timestampMillis: Long) =
+	runBlocking { saveLastSuccessfulDataRefreshAt(timestampMillis) }

@@ -5,12 +5,12 @@ import com.rabbitv.valheimviki.data.remote.api.ApiOreDepositService
 import com.rabbitv.valheimviki.di.qualifiers.IoDispatcher
 import com.rabbitv.valheimviki.domain.model.ore_deposit.OreDeposit
 import com.rabbitv.valheimviki.domain.repository.OreDepositRepository
-import jakarta.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import retrofit2.Response
+import javax.inject.Inject
 
 class OreDepositRepositoryImpl @Inject constructor(
 	private val apiService: ApiOreDepositService,

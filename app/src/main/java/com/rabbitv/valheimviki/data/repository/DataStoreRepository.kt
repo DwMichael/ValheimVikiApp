@@ -64,4 +64,24 @@ class DataStoreRepository @Inject constructor(
 	fun readGuidedOnboardingStep(): Flow<String> {
 		return dataStore.readGuidedOnboardingStep()
 	}
+
+	suspend fun saveSettingsTooltipStep(step: Int) {
+		withContext(ioDispatcher) {
+			dataStore.saveSettingsTooltipStep(step)
+		}
+	}
+
+	fun readSettingsTooltipStep(): Flow<Int> {
+		return dataStore.readSettingsTooltipStep()
+	}
+
+	suspend fun saveLastSuccessfulDataRefreshAt(timestampMillis: Long) {
+		withContext(ioDispatcher) {
+			dataStore.saveLastSuccessfulDataRefreshAt(timestampMillis)
+		}
+	}
+
+	fun readLastSuccessfulDataRefreshAt(): Flow<Long> {
+		return dataStore.readLastSuccessfulDataRefreshAt()
+	}
 }

@@ -17,6 +17,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.composables.icons.lucide.ArrowLeft
 import com.composables.icons.lucide.Lucide
@@ -56,7 +57,9 @@ fun AnimatedBackButton(
 			colors = IconButtonDefaults.filledIconButtonColors(
 				containerColor = ForestGreen10Dark,
 			),
-			modifier = Modifier.size(56.dp)
+			modifier = Modifier
+				.testTag("DetailBackButton")
+				.size(56.dp)
 		) {
 			Icon(
 				Lucide.ArrowLeft,

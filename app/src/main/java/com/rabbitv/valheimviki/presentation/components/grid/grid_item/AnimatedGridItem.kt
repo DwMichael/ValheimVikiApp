@@ -18,7 +18,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,6 +31,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -64,6 +69,7 @@ fun AnimatedGridItem(
 
 	val context = LocalContext.current
 	val imageLoader: ImageLoader = remember { ImageLoader(context) }
+	var imageLoadState by remember(item.imageUrl) { mutableStateOf("loading") }
 
 	val request = remember(item.imageUrl) {
 		ImageRequest.Builder(context)
@@ -101,7 +107,11 @@ fun AnimatedGridItem(
 				placeholder = painterResource(R.drawable.ic_placeholder),
 				contentDescription = stringResource(R.string.item_grid_image),
 				contentScale = ContentScale.Crop,
+				onSuccess = { imageLoadState = "loaded" },
+				onError = { imageLoadState = "error" },
 				modifier = Modifier
+					.testTag("GridItemImage_${item.id}")
+					.semantics { stateDescription = imageLoadState }
 					.sharedElement(
 						sharedContentState = imageState,
 						animatedVisibilityScope = animatedVisibilityScope

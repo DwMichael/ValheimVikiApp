@@ -4,12 +4,16 @@ import com.rabbitv.valheimviki.domain.use_cases.datastore.DataStoreUseCases
 import com.rabbitv.valheimviki.domain.use_cases.datastore.data_language_provider.DataLanguageProvider
 import com.rabbitv.valheimviki.domain.use_cases.datastore.get_guided_onboarding_step.ReadGuidedOnboardingStep
 import com.rabbitv.valheimviki.domain.use_cases.datastore.get_language_popup_state.ReadLanguagePopupState
+import com.rabbitv.valheimviki.domain.use_cases.datastore.get_last_data_refresh_at.ReadLastSuccessfulDataRefreshAt
 import com.rabbitv.valheimviki.domain.use_cases.datastore.get_onboarding_state.ReadOnBoardingState
+import com.rabbitv.valheimviki.domain.use_cases.datastore.get_settings_tooltip_state.ReadSettingsTooltipState
 import com.rabbitv.valheimviki.domain.use_cases.datastore.language_state_provider.LanguageProvider
 import com.rabbitv.valheimviki.domain.use_cases.datastore.save_data_language_state.SaveDataLanguageState
 import com.rabbitv.valheimviki.domain.use_cases.datastore.save_guided_onboarding_step.SaveGuidedOnboardingStep
 import com.rabbitv.valheimviki.domain.use_cases.datastore.save_language_popup_state.SaveLanguagePopupState
+import com.rabbitv.valheimviki.domain.use_cases.datastore.save_last_data_refresh_at.SaveLastSuccessfulDataRefreshAt
 import com.rabbitv.valheimviki.domain.use_cases.datastore.save_onboarding_state.SaveOnBoardingState
+import com.rabbitv.valheimviki.domain.use_cases.datastore.save_settings_tooltip_state.SaveSettingsTooltipState
 import com.rabbitv.valheimviki.domain.use_cases.datastore.saved_language_state.SaveLanguageState
 import com.rabbitv.valheimviki.presentation.intro.viewmodel.WelcomeViewModel
 import kotlinx.coroutines.Dispatchers
@@ -69,6 +73,18 @@ class WelcomeViewModelTest {
 	@Mock
 	private lateinit var saveGuidedOnboardingStep: SaveGuidedOnboardingStep
 
+	@Mock
+	private lateinit var readSettingsTooltipState: ReadSettingsTooltipState
+
+	@Mock
+	private lateinit var saveSettingsTooltipState: SaveSettingsTooltipState
+
+	@Mock
+	private lateinit var readLastSuccessfulDataRefreshAt: ReadLastSuccessfulDataRefreshAt
+
+	@Mock
+	private lateinit var saveLastSuccessfulDataRefreshAt: SaveLastSuccessfulDataRefreshAt
+
 	@BeforeEach
 	fun setUp() {
 		Dispatchers.setMain(testDispatcher)
@@ -82,7 +98,11 @@ class WelcomeViewModelTest {
 			readLanguagePopupState = readLanguagePopupState,
 			saveLanguagePopupState = saveLanguagePopupState,
 			readGuidedOnboardingStep = readGuidedOnboardingStep,
-			saveGuidedOnboardingStep = saveGuidedOnboardingStep
+			saveGuidedOnboardingStep = saveGuidedOnboardingStep,
+			readSettingsTooltipState = readSettingsTooltipState,
+			saveSettingsTooltipState = saveSettingsTooltipState,
+			readLastSuccessfulDataRefreshAt = readLastSuccessfulDataRefreshAt,
+			saveLastSuccessfulDataRefreshAt = saveLastSuccessfulDataRefreshAt
 		)
 	}
 

@@ -10,6 +10,7 @@ import androidx.work.WorkerParameters
 import com.google.android.gms.ads.MobileAds
 import com.rabbitv.valheimviki.boot.LocaleBootstrapper
 import com.rabbitv.valheimviki.domain.use_cases.data_refetch.DataRefetchUseCase
+import com.rabbitv.valheimviki.domain.use_cases.datastore.DataStoreUseCases
 import dagger.hilt.android.HiltAndroidApp
 import jakarta.inject.Inject
 
@@ -38,10 +39,16 @@ class MainApplication : Application(), Configuration.Provider {
 
 class FetchWorkerFactory @Inject constructor(
 	private val refetchUseCase: DataRefetchUseCase,
+	private val dataStoreUseCases: DataStoreUseCases,
 ) : WorkerFactory() {
 	override fun createWorker(
 		appContext: Context,
 		workerClassName: String,
 		workerParameters: WorkerParameters
-	): ListenableWorker? = FetchWorker(refetchUseCase, appContext, workerParameters)
+	): ListenableWorker = FetchWorker(
+		refetchUseCase,
+		dataStoreUseCases,
+		appContext,
+		workerParameters
+	)
 }

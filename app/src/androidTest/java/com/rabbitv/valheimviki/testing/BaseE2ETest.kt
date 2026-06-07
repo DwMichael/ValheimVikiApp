@@ -2,7 +2,7 @@ package com.rabbitv.valheimviki.testing
 
 import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.core.os.LocaleListCompat
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.work.Configuration

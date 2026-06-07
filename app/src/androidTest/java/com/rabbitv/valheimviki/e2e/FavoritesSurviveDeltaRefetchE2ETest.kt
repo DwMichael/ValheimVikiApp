@@ -1,66 +1,89 @@
 package com.rabbitv.valheimviki.e2e
 
-import androidx.test.core.app.ActivityScenario
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import com.rabbitv.valheimviki.MainActivity
+import com.rabbitv.valheimviki.domain.use_cases.data_refetch.DataRefetchUseCase
+import com.rabbitv.valheimviki.e2e.pages.BiomeDetailPage
 import com.rabbitv.valheimviki.e2e.pages.BiomesPage
 import com.rabbitv.valheimviki.e2e.pages.FavoritesPage
+import com.rabbitv.valheimviki.e2e.pages.LanguageNotificationPage
 import com.rabbitv.valheimviki.e2e.pages.OnboardingPage
 import dagger.hilt.android.testing.HiltAndroidTest
-import org.junit.Ignore
+import kotlinx.coroutines.runBlocking
+import org.junit.Rule
 import org.junit.Test
+import javax.inject.Inject
 
 /**
- * Real user flow — favorites survive a delta refetch + Room migration.
+ * Real-user E2E for the favorites-survive-delta-refetch invariant.
  *
- * Scenario:
- *  1. Fresh install → splash → onboarding 3 pages → land on Biomes grid.
- *  2. User opens biome-1, taps Favorite. Repeat for biome-2..biome-5 (5 favorites).
- *  3. Kill process via `am force-stop` (uiautomator) + reopen with MockWebServer now serving v2.
- *  4. Assert: Favorites screen shows all 5 ids AND biome-1 detail reflects v2 description.
+ * Phase 1 (v1 backend, fresh install):
+ *   onboarding (3 pages) → biomes grid → favorite biome-1..biome-5 via UI →
+ *   favorites screen shows 5.
  *
- * Status: SKELETON. Tagged @Ignore until the following are in place:
- *  - testTag("BiomeItem_<id>") on each grid cell (DefaultGrid)
- *  - testTag("FavoriteToggle") on biome detail favorite button
- *  - testTag("FavoriteItem_<id>") on favorite grid items
- *  - testTag("nav_favorites") in MainAppBar (already have "nav_settings")
- *  - DataRefetchUseCase must run on second launch (currently shouldNotRefreshData guard may skip
- *    it if DB rows >= expected sizes). Either: trigger force refresh from UI on relaunch, OR
- *    let WorkManager run FetchWorker via TestDriver.setAllConstraintsMet.
+ * Phase 2 (v2 backend, same session, biome-1 description changed server-side):
+ *   trigger delta refetch (stands in for FetchWorker) → favorites screen STILL shows 5
+ *   (REPLACE-on-conflict never deletes favorites) → biome-1 detail reflects v2 text.
  */
 @HiltAndroidTest
-@Ignore("Skeleton — see KDoc for outstanding prerequisites (refetch trigger + back-nav helper).")
-class FavoritesSurviveDeltaRefetchE2ETest : BaseRealE2ETest() {
+class FavoritesSurviveDeltaRefetchE2ETest : BaseMockedE2ETest() {
+
+	@Inject lateinit var dataRefetchUseCase: DataRefetchUseCase
+
+	@get:Rule(order = 2)
+	val compose = createAndroidComposeRule<MainActivity>()
+
+	override fun seedBeforeLaunch() {
+		MockServerFixtures(mockServer).biomes(E2EFixtures.BIOMES_V1).install()
+		runBlocking { dataRefetchUseCase.refetchAllData(forceRefresh = true) }
+	}
 
 	@Test
-	fun favorites_survive_delta_refetch_and_restart() {
-		// --- Phase 1: fresh install, v1 backend ---
-		MockServerFixtures(mockServer)
-			.biomes("biomes_v1_en.json")
-			.install()
+	fun favorites_persist_through_delta_refetch() {
+		// --- Phase 1: v1 backend, user adds favorites ---
+		OnboardingPage(compose).assertVisible().completeAll()
+		LanguageNotificationPage(compose).completeFirstRunTutorial()
+		val biomes = BiomesPage(compose).assertVisible()
+		val detail = BiomeDetailPage(compose)
 
-		ActivityScenario.launch(MainActivity::class.java).use { scenario ->
-			val onboarding = OnboardingPage(compose).assertVisible().completeAll()
-			val biomes = BiomesPage(compose).assertVisible()
-
-			// Favorite biome-1..biome-5. Requires testTag("BiomeItem_<id>") + favorite toggle on detail.
-			listOf("biome-1", "biome-2", "biome-3", "biome-4", "biome-5").forEach { id ->
-				biomes.openBiome(id)
-				// TODO compose.onNodeWithTag("FavoriteToggle").performClick()
-				// TODO compose.activity.onBackPressed() // or use back navigation
-			}
+		E2EBiomes.FIVE_FAVORITE_IDS.forEach { id ->
+			biomes.openBiome(id)
+			detail.assertVisible().tapFavorite(expectedChecked = true).goBackToBiomes()
+			biomes.assertVisible()
 		}
 
-		// --- Phase 2: kill + relaunch w/ v2 backend (modified biome-1 description) ---
-		// TODO: uiautomator `am force-stop com.rabbitv.valheimviki`
-		MockServerFixtures(mockServer)
-			.biomes("biomes_v2_en.json")
-			.install()
-
-		ActivityScenario.launch(MainActivity::class.java).use {
-			val favs = FavoritesPage(compose).open().assertVisible()
-			// TODO: assertEquals(5, favs.count())
-			// TODO: assertTrue(favs.containsFavorite("biome-1"))
-			// TODO: open biome-1 detail → assert description contains "[v2_updated]"
+		val favs = FavoritesPage(compose).open().assertVisible()
+		favs.assertCount(
+			expected = E2EBiomes.FIVE_FAVORITE_IDS.size,
+			message = "Phase 1 favorites count"
+		)
+		E2EBiomes.FIVE_FAVORITE_IDS.forEach { id ->
+			favs.assertContainsFavorite(id, "Phase 1: favorite $id missing")
 		}
+
+		// --- Phase 2: v2 backend delta-refetch (same activity) ---
+		MockServerFixtures(mockServer).biomes(E2EFixtures.BIOMES_V2).install()
+		runBlocking { dataRefetchUseCase.refetchAllData(forceRefresh = true) }
+		compose.waitForIdle()
+
+		favs.assertCount(
+			expected = E2EBiomes.FIVE_FAVORITE_IDS.size,
+			message = "Phase 2 favorites count after delta"
+		)
+		E2EBiomes.FIVE_FAVORITE_IDS.forEach { id ->
+			favs.assertContainsFavorite(id, "Phase 2: favorite $id missing")
+		}
+
+		// Verify the modified biome's detail reflects the v2 marker.
+		favs.openFavorite(E2EBiomes.MODIFIED_BIOME_ID)
+		detail.assertVisible()
+		compose.waitUntil(timeoutMillis = E2ETimeouts.SHORT_MS) {
+			compose.onAllNodes(hasText(E2EFixtures.V2_DELTA_MARKER, substring = true))
+				.fetchSemanticsNodes().isNotEmpty()
+		}
+		compose.onAllNodes(hasText(E2EFixtures.V2_DELTA_MARKER, substring = true))[0]
+			.assertIsDisplayed()
 	}
 }

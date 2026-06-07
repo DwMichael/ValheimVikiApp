@@ -13,4 +13,8 @@ interface DataStoreOperations {
     fun readLanguagePopupState(): Flow<Boolean>
     suspend fun saveGuidedOnboardingStep(step: String)
     fun readGuidedOnboardingStep(): Flow<String>
+    suspend fun saveSettingsTooltipStep(step: Int)
+    fun readSettingsTooltipStep(): Flow<Int>
+    suspend fun saveLastSuccessfulDataRefreshAt(timestampMillis: Long)
+    fun readLastSuccessfulDataRefreshAt(): Flow<Long>
 }
