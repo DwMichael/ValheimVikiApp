@@ -72,6 +72,7 @@ import com.composables.icons.lucide.Trees
 import com.composables.icons.lucide.Utensils
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.ads.AdManager
+import com.rabbitv.valheimviki.domain.model.onboarding.GuidedOnboardingStep
 import com.rabbitv.valheimviki.domain.use_cases.data_refetch.DataRefetchConfig.SEARCHABLE_CATEGORIES
 import com.rabbitv.valheimviki.presentation.armor.ArmorListScreen
 import com.rabbitv.valheimviki.presentation.biome.BiomeGridScreen
@@ -167,6 +168,7 @@ fun MainContainer(
 
 	val currentBackStackEntry by valheimVikiNavController.currentBackStackEntryAsState()
 	val guidedOnboardingAnchors = remember { mutableStateMapOf<GuidedOnboardingTarget, Rect>() }
+	val activeGuidedOnboardingStep = remember { mutableStateOf<GuidedOnboardingStep?>(null) }
 	val registerGuidedOnboardingAnchor = remember {
 		{ target: GuidedOnboardingTarget, bounds: Rect ->
 			guidedOnboardingAnchors[target] = bounds
@@ -295,13 +297,14 @@ fun MainContainer(
 									!this@SharedTransitionLayout.isTransitionActive
 							}
 
-							ValheimNavGraph(
-								valheimVikiNavController = valheimVikiNavController,
-								innerPadding = PaddingValues(0.dp),
-								adAwareNavigate = adAwareNavigate,
-								onGuidedOnboardingTargetPositioned = registerGuidedOnboardingAnchor,
-							)
-						}
+								ValheimNavGraph(
+									valheimVikiNavController = valheimVikiNavController,
+									innerPadding = PaddingValues(0.dp),
+									adAwareNavigate = adAwareNavigate,
+									activeGuidedOnboardingStep = activeGuidedOnboardingStep.value,
+									onGuidedOnboardingTargetPositioned = registerGuidedOnboardingAnchor,
+								)
+							}
 					}
 
 					FloatingHomeButton(
@@ -318,7 +321,8 @@ fun MainContainer(
 				valheimVikiNavController.navigate(TopLevelDestination.Settings) {
 					launchSingleTop = true
 				}
-			}
+			},
+			onActiveStepChanged = { activeGuidedOnboardingStep.value = it }
 		)
 	}
 }
@@ -335,6 +339,7 @@ fun ValheimNavGraph(
 			builder
 		) else valheimVikiNavController.navigate(dest)
 	},
+	activeGuidedOnboardingStep: GuidedOnboardingStep? = null,
 	onGuidedOnboardingTargetPositioned: (GuidedOnboardingTarget, Rect) -> Unit = { _, _ -> },
 ) {
 	val lastClickTime = remember { mutableLongStateOf(0L) }
@@ -383,6 +388,7 @@ fun ValheimNavGraph(
 				onItemClick = { destination ->
 					adAwareNavigate(destination, null)
 				},
+				activeGuidedOnboardingStep = activeGuidedOnboardingStep,
 				onGuidedOnboardingTargetPositioned = onGuidedOnboardingTargetPositioned,
 			)
 		}

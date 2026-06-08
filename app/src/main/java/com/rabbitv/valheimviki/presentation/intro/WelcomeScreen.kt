@@ -153,7 +153,7 @@ fun PagerScreen(onBoardingPage: OnBoardingPage, position: Int, horizontalPadding
 			Spacer(modifier = Modifier.height(24.dp))
 		}
 		Text(
-			text = onBoardingPage.description,
+			text = stringResource(onBoardingPage.description),
 			textAlign = TextAlign.Center,
 			style = MaterialTheme.typography.labelLarge,
 			color = Color.White
@@ -204,7 +204,7 @@ fun NavigationButton(
 		interactionSource = remember { MutableInteractionSource() }
 	) {
 		Text(
-			text = onBoardingPage.buttonTitle,
+			text = stringResource(onBoardingPage.buttonTitle),
 			style = TextStyle(
 				color = Color.White,
 				fontSize = 16.sp,

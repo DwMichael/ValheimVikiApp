@@ -22,6 +22,7 @@ import com.google.android.play.core.install.InstallStateUpdatedListener
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
+import com.rabbitv.valheimviki.boot.LocaleBootstrapper
 import com.rabbitv.valheimviki.domain.ads.AdManager
 import com.rabbitv.valheimviki.navigation.ValheimVikiApp
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
@@ -38,12 +39,17 @@ class MainActivity() : AppCompatActivity() {
 	@Inject
 	lateinit var adManager: AdManager
 
+	@Inject
+	lateinit var localeBootstrapper: LocaleBootstrapper
+
 	private lateinit var appUpdateManager: AppUpdateManager
 	private val updateType = AppUpdateType.FLEXIBLE
 
 	@RequiresApi(Build.VERSION_CODES.S)
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
+		// Apply the first-run locale while the activity delegate is active, before Compose reads resources.
+		localeBootstrapper.run()
 		installSplashScreen()
 		enableEdgeToEdge()
 

@@ -8,7 +8,6 @@ import androidx.work.ListenableWorker
 import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
 import com.google.android.gms.ads.MobileAds
-import com.rabbitv.valheimviki.boot.LocaleBootstrapper
 import com.rabbitv.valheimviki.domain.use_cases.data_refetch.DataRefetchUseCase
 import com.rabbitv.valheimviki.domain.use_cases.datastore.DataStoreUseCases
 import dagger.hilt.android.HiltAndroidApp
@@ -20,12 +19,8 @@ class MainApplication : Application(), Configuration.Provider {
 	@Inject
 	lateinit var workerFactory: FetchWorkerFactory
 
-	@Inject
-	lateinit var localeBootstrapper: LocaleBootstrapper
-
 	override fun onCreate() {
 		super.onCreate()
-		localeBootstrapper.run()
 		MobileAds.initialize(this) {}
 	}
 

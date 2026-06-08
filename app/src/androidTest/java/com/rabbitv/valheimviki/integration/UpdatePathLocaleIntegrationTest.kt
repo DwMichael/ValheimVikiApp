@@ -14,7 +14,6 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.util.Locale
 
@@ -23,11 +22,11 @@ class UpdatePathLocaleIntegrationTest : BaseE2ETest() {
 
     /**
      * Existing user who never changed language. Device locale is Polish.
-     * App must NOT auto-switch to Polish (onboarding=true guards this).
+     * App must NOT auto-switch to Polish; it reapplies the saved/default English app language.
      * Language popup MUST appear (popup_shown=false by default for this user).
      */
     @Test
-    fun oldUser_neverChangedLanguage_keepsSystemDefault_andSeesPopup() {
+    fun oldUser_neverChangedLanguage_keepsDefaultEnglish_andSeesPopup() {
         fakeDataStore.seedOnboardingTrue()
         // popup_shown remains false (default from reset)
         fakeLocale.setLocale(Locale.forLanguageTag("pl"))
@@ -36,8 +35,8 @@ class UpdatePathLocaleIntegrationTest : BaseE2ETest() {
 
         localeBootstrapper.run()
 
-        // run() must NOT set locale (guarded by onboarding=true)
-        assertTrue(AppCompatDelegate.getApplicationLocales().isEmpty)
+        val savedLang = runBlocking { fakeDataStore.languageProvider().first() }
+        assertEquals("en", savedLang)
 
         ActivityScenario.launch(MainActivity::class.java).use {
             compose.waitForIdle()

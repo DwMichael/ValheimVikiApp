@@ -54,8 +54,8 @@ android {
 		applicationId = "com.rabbitv.valheimviki"
 		minSdk = 26
 		targetSdk = 36
-		versionCode = 21
-		versionName = "1.1.4"
+		versionCode = 22
+		versionName = "2.0.0"
 
 		testInstrumentationRunner = "com.rabbitv.valheimviki.CustomTestRunner"
 		// Orchestrator runs each test in its own process and clears app data between tests.

@@ -18,14 +18,13 @@
 .cxx
 local.properties
 /app/src/main/java/com/rabbitv/valheimviki/utils/ApiKey.kt
+*.jks
+*.keystore
+keystore/
+signing/
 
 # Local workspace / agent tooling (private to dev machine)
 .claude/
-!.claude/
-!.claude/skills/
-!.claude/skills/valheim-db/
-!.claude/skills/valheim-db/**
-.claude/settings.local.json
 AGENTS.md
 CLAUDE.md
 

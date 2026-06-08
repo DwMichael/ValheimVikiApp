@@ -1,6 +1,8 @@
 package com.rabbitv.valheimviki.presentation.components.topbar
 
 import android.content.res.Configuration
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
@@ -8,7 +10,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
@@ -22,6 +23,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
 import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.Settings
@@ -67,10 +69,17 @@ fun MainAppBar(
 			}
 		},
 		title = {
-			Text(
-				stringResource(R.string.app_name),
-				color = MaterialTheme.colorScheme.onPrimaryContainer,
+			val titleColor = MaterialTheme.colorScheme.onPrimaryContainer
+			BasicText(
+				text = stringResource(R.string.app_name).replace(" ", "\u00A0"),
 				style = MaterialTheme.typography.headlineMedium,
+				autoSize = TextAutoSize.StepBased(
+					maxFontSize = MaterialTheme.typography.headlineMedium.fontSize,
+					minFontSize = 18.sp,
+					stepSize = 1.sp
+				),
+				color = { titleColor },
+				maxLines = 1
 			)
 		},
 		actions = {

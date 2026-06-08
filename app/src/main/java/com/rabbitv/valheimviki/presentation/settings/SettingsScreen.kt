@@ -23,6 +23,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -79,6 +81,7 @@ import com.composables.icons.lucide.Globe
 import com.composables.icons.lucide.Lucide
 import com.rabbitv.valheimviki.R
 import com.rabbitv.valheimviki.domain.model.language.AppLanguage
+import com.rabbitv.valheimviki.domain.model.onboarding.GuidedOnboardingStep
 import com.rabbitv.valheimviki.navigation.DetailDestination
 import com.rabbitv.valheimviki.presentation.components.LoadingIndicator
 import com.rabbitv.valheimviki.presentation.components.button.DarkGlassButton
@@ -93,6 +96,7 @@ import com.rabbitv.valheimviki.ui.theme.PrimaryWhite
 import com.rabbitv.valheimviki.ui.theme.Shapes
 import com.rabbitv.valheimviki.ui.theme.ValheimVikiAppTheme
 import com.rabbitv.valheimviki.utils.Constants.VALHEIM_VIKI_LINK
+import kotlinx.coroutines.delay
 
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
@@ -100,6 +104,7 @@ fun SettingsScreen(
 	modifier: Modifier = Modifier,
 	onBack: () -> Unit,
 	onItemClick: (DetailDestination) -> Unit,
+	activeGuidedOnboardingStep: GuidedOnboardingStep? = null,
 	onGuidedOnboardingTargetPositioned: (GuidedOnboardingTarget, Rect) -> Unit = { _, _ -> },
 	viewModel: SettingsViewModel = hiltViewModel()
 ) {
@@ -117,6 +122,7 @@ fun SettingsScreen(
 		onBack = onBack,
 		uiState = uiState,
 		onEvent = onEvent,
+		activeGuidedOnboardingStep = activeGuidedOnboardingStep,
 		onGuidedOnboardingTargetPositioned = onGuidedOnboardingTargetPositioned,
 	)
 }
@@ -128,11 +134,29 @@ fun SettingsScreenContent(
 	onBack: () -> Unit,
 	uiState: SettingsUiState = SettingsUiState(),
 	onEvent: (SettingsUiEvent) -> Unit = {},
+	activeGuidedOnboardingStep: GuidedOnboardingStep? = null,
 	onGuidedOnboardingTargetPositioned: (GuidedOnboardingTarget, Rect) -> Unit = { _, _ -> },
 ) {
 	val context = LocalContext.current
 	val showDonateDialog = remember { mutableStateOf(false) }
 	val columnScrollable = rememberScrollState()
+	val languageBringIntoViewRequester = remember { BringIntoViewRequester() }
+	val fandomBringIntoViewRequester = remember { BringIntoViewRequester() }
+	val donateBringIntoViewRequester = remember { BringIntoViewRequester() }
+
+	LaunchedEffect(activeGuidedOnboardingStep) {
+		delay(160)
+		when (activeGuidedOnboardingStep) {
+			GuidedOnboardingStep.SETTINGS_LANGUAGE -> languageBringIntoViewRequester.bringIntoView()
+			GuidedOnboardingStep.SETTINGS_FANDOM -> fandomBringIntoViewRequester.bringIntoView()
+			GuidedOnboardingStep.SETTINGS_DONATE -> {
+				columnScrollable.animateScrollTo(columnScrollable.maxValue)
+				delay(80)
+				donateBringIntoViewRequester.bringIntoView()
+			}
+			else -> Unit
+		}
+	}
 
 	Scaffold(
 		modifier = modifier.testTag("SettingsListScaffold"),
@@ -170,12 +194,14 @@ fun SettingsScreenContent(
 				)
 			} else {
 				DarkGlassButton(
-					modifier = Modifier.onGloballyPositioned { coordinates ->
-						onGuidedOnboardingTargetPositioned(
-							GuidedOnboardingTarget.SETTINGS_LANGUAGE,
-							coordinates.boundsInWindow()
-						)
-					},
+					modifier = Modifier
+						.bringIntoViewRequester(languageBringIntoViewRequester)
+						.onGloballyPositioned { coordinates ->
+							onGuidedOnboardingTargetPositioned(
+								GuidedOnboardingTarget.SETTINGS_LANGUAGE,
+								coordinates.boundsInWindow()
+							)
+						},
 					onCardClick = { onEvent(SettingsUiEvent.ShowLanguageDialog) },
 					icon = Lucide.Globe,
 					label = "${uiState.currentLanguage.flagEmoji}  ${uiState.currentLanguage.displayName}",
@@ -186,12 +212,14 @@ fun SettingsScreenContent(
 			// --- Links Section ---
 			Spacer(modifier = Modifier.height(20.dp))
 			DarkGlassButton(
-				modifier = Modifier.onGloballyPositioned { coordinates ->
-					onGuidedOnboardingTargetPositioned(
-						GuidedOnboardingTarget.SETTINGS_FANDOM,
-						coordinates.boundsInWindow()
-					)
-				},
+				modifier = Modifier
+					.bringIntoViewRequester(fandomBringIntoViewRequester)
+					.onGloballyPositioned { coordinates ->
+						onGuidedOnboardingTargetPositioned(
+							GuidedOnboardingTarget.SETTINGS_FANDOM,
+							coordinates.boundsInWindow()
+						)
+					},
 				onCardClick = {
 					val intent = Intent(Intent.ACTION_VIEW, VALHEIM_VIKI_LINK.toUri())
 					context.startActivity(intent)
@@ -202,12 +230,14 @@ fun SettingsScreenContent(
 			)
 			Spacer(modifier = Modifier.height(20.dp))
 			DarkGlassButton(
-				modifier = Modifier.onGloballyPositioned { coordinates ->
-					onGuidedOnboardingTargetPositioned(
-						GuidedOnboardingTarget.SETTINGS_DONATE,
-						coordinates.boundsInWindow()
-					)
-				},
+				modifier = Modifier
+					.bringIntoViewRequester(donateBringIntoViewRequester)
+					.onGloballyPositioned { coordinates ->
+						onGuidedOnboardingTargetPositioned(
+							GuidedOnboardingTarget.SETTINGS_DONATE,
+							coordinates.boundsInWindow()
+						)
+					},
 				onCardClick = { showDonateDialog.value = true },
 				icon = Lucide.Coffee,
 				label = stringResource(R.string.button_donate_pop_up_label),

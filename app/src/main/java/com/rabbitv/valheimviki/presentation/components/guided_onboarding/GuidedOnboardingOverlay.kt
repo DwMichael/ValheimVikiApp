@@ -7,10 +7,13 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -41,6 +44,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -64,9 +68,15 @@ fun GuidedOnboardingOverlay(
 	anchors: Map<GuidedOnboardingTarget, Rect>,
 	isOnSettingsScreen: Boolean,
 	navigateToSettings: () -> Unit,
+	onActiveStepChanged: (GuidedOnboardingStep?) -> Unit = {},
 	viewModel: GuidedOnboardingViewModel = hiltViewModel()
 ) {
 	val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+	LaunchedEffect(uiState.step, uiState.initialized) {
+		onActiveStepChanged(if (uiState.isActive) uiState.step else null)
+	}
+
 	if (!uiState.isActive) return
 
 	BackHandler(enabled = true) {}
@@ -83,8 +93,12 @@ fun GuidedOnboardingOverlay(
 		with(density) { rect.expand(8.dp.toPx()) }
 	}
 
-	Box(modifier = Modifier.fillMaxSize()) {
-		GuidedScrim(targetBounds = paddedTarget)
+	BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+		val targetIsReady = !uiState.step.isSettingsStep ||
+			paddedTarget?.isFullyVisibleIn(with(density) { maxHeight.toPx() }) == true
+		val visiblePaddedTarget = if (targetIsReady) paddedTarget else null
+
+		GuidedScrim(targetBounds = visiblePaddedTarget)
 
 		Box(
 			modifier = Modifier
@@ -96,18 +110,18 @@ fun GuidedOnboardingOverlay(
 				)
 		)
 
-		if (uiState.step == GuidedOnboardingStep.HOME_SETTINGS && paddedTarget != null) {
+		if (uiState.step == GuidedOnboardingStep.HOME_SETTINGS && visiblePaddedTarget != null) {
 			Box(
 				modifier = Modifier
 					.offset {
 						IntOffset(
-							x = paddedTarget.left.roundToInt(),
-							y = paddedTarget.top.roundToInt()
+							x = visiblePaddedTarget.left.roundToInt(),
+							y = visiblePaddedTarget.top.roundToInt()
 						)
 					}
 					.size(
-						width = with(density) { paddedTarget.width.toDp() },
-						height = with(density) { paddedTarget.height.toDp() }
+						width = with(density) { visiblePaddedTarget.width.toDp() },
+						height = with(density) { visiblePaddedTarget.height.toDp() }
 					)
 					.clip(Shapes.medium)
 					.clickable {
@@ -116,6 +130,8 @@ fun GuidedOnboardingOverlay(
 					}
 			)
 		}
+
+		if (!targetIsReady) return@BoxWithConstraints
 
 		when (uiState.step) {
 			GuidedOnboardingStep.INFO_CARD -> GuidedInfoCard(
@@ -136,13 +152,10 @@ fun GuidedOnboardingOverlay(
 
 			GuidedOnboardingStep.SETTINGS_LANGUAGE,
 			GuidedOnboardingStep.SETTINGS_FANDOM,
-			GuidedOnboardingStep.SETTINGS_DONATE -> GuidedStepCard(
+			GuidedOnboardingStep.SETTINGS_DONATE -> GuidedAnchoredStepCard(
 				step = uiState.step,
-				showButton = true,
+				targetBounds = visiblePaddedTarget,
 				onNext = viewModel::nextSettingsStep,
-				modifier = Modifier
-					.align(Alignment.BottomCenter)
-					.padding(bottom = 28.dp)
 			)
 
 			GuidedOnboardingStep.DONE -> Unit
@@ -176,6 +189,84 @@ private fun GuidedScrim(targetBounds: Rect?) {
 				cornerRadius = corner,
 				style = Stroke(width = 2.dp.toPx())
 			)
+		}
+	}
+}
+
+@Composable
+private fun GuidedAnchoredStepCard(
+	step: GuidedOnboardingStep,
+	targetBounds: Rect?,
+	onNext: () -> Unit,
+) {
+	val density = LocalDensity.current
+	BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+		if (targetBounds == null) {
+			GuidedStepCard(
+				step = step,
+				showButton = true,
+				onNext = onNext,
+				modifier = Modifier
+					.align(Alignment.BottomCenter)
+					.padding(bottom = 28.dp)
+			)
+		} else {
+			val screenHeight = maxHeight
+			val topSafePadding = 24.dp
+			val bottomSafePadding = 28.dp
+			val targetGap = 14.dp
+			val minimumCardSpace = 220.dp
+			val targetTop = with(density) { targetBounds.top.toDp() }
+				.boundTo(0.dp, screenHeight)
+			val targetBottom = with(density) { targetBounds.bottom.toDp() }
+				.boundTo(0.dp, screenHeight)
+			val spaceAboveTarget =
+				(targetTop - topSafePadding - targetGap).atLeastZero()
+			val spaceBelowTarget =
+				(screenHeight - targetBottom - bottomSafePadding - targetGap).atLeastZero()
+			val canPlaceOutsideTarget =
+				maxOf(spaceAboveTarget, spaceBelowTarget) >= minimumCardSpace
+
+			if (canPlaceOutsideTarget) {
+				val placeAboveTarget = spaceAboveTarget >= spaceBelowTarget
+				val cardSpace = if (placeAboveTarget) spaceAboveTarget else spaceBelowTarget
+				val cardTop = if (placeAboveTarget) {
+					topSafePadding
+				} else {
+					targetBottom + targetGap
+				}
+				val cardAlignment = if (placeAboveTarget) {
+					Alignment.BottomCenter
+				} else {
+					Alignment.TopCenter
+				}
+
+				Box(
+					modifier = Modifier
+						.fillMaxWidth()
+						.height(cardSpace)
+						.offset(y = cardTop)
+				) {
+					GuidedStepCard(
+						step = step,
+						showButton = true,
+						onNext = onNext,
+						modifier = Modifier
+							.align(cardAlignment)
+							.heightIn(max = cardSpace)
+					)
+				}
+			} else {
+				GuidedStepCard(
+					step = step,
+					showButton = true,
+					onNext = onNext,
+					modifier = Modifier
+						.align(Alignment.Center)
+						.padding(vertical = topSafePadding)
+						.heightIn(max = screenHeight - topSafePadding - bottomSafePadding)
+				)
+			}
 		}
 	}
 }
@@ -338,3 +429,16 @@ private fun Rect.expand(padding: Float): Rect =
 		right = right + padding,
 		bottom = bottom + padding
 	)
+
+private fun Rect.isFullyVisibleIn(height: Float): Boolean =
+	top >= 0f && bottom <= height
+
+private fun Dp.boundTo(min: Dp, max: Dp): Dp =
+	when {
+		this < min -> min
+		this > max -> max
+		else -> this
+	}
+
+private fun Dp.atLeastZero(): Dp =
+	if (this < 0.dp) 0.dp else this

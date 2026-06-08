@@ -1,35 +1,37 @@
 package com.rabbitv.valheimviki.domain.model.welcome
 
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import com.rabbitv.valheimviki.R
 
 sealed class OnBoardingPage(
 	@param:DrawableRes
 	val image: Int,
-	val title: String,
-	val description: String,
-	val buttonTitle: String,
+	@param:StringRes
+	val title: Int,
+	@param:StringRes
+	val description: Int,
+	@param:StringRes
+	val buttonTitle: Int,
 ) {
 	object First : OnBoardingPage(
 		image = R.drawable.welcome_bg,
-		title = "ValheimViki",
-		description = "Explore Valheim's vast world & knowledge",
-		buttonTitle = "GET STARTED"
+		title = R.string.onboarding_title_app,
+		description = R.string.onboarding_desc_app,
+		buttonTitle = R.string.onboarding_cta_get_started
 	)
 
 	object Second : OnBoardingPage(
 		image = R.drawable.welcome_bg_second,
-		title = "EXPLORE",
-		description = "A beautiful, procedurally generated world awaits you, shrouded in mystery. Venture into deep dark forests, climb snow-peaked mountains and discover what’s left of those who came before you. Take to the seas on a mighty longship, but be wary of sailing too far…",
-		buttonTitle = "CONTINUE"
+		title = R.string.onboarding_title_explore,
+		description = R.string.onboarding_desc_explore,
+		buttonTitle = R.string.onboarding_cta_continue
 	)
 
 	object Third : OnBoardingPage(
 		image = R.drawable.welcome_bg_third,
-		title = "WELCOME",
-		description = "Thank you for downloading ValheimViki.\n" +
-				" Dive into the world of Valheim and explore the rich knowledge base we have to " +
-				"offer.",
-		buttonTitle = "EXPLORE NOW"
+		title = R.string.onboarding_title_welcome,
+		description = R.string.onboarding_desc_welcome,
+		buttonTitle = R.string.onboarding_cta_explore_now
 	)
 }
